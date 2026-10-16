@@ -22,4 +22,4 @@
 | [.ai-spec/backend/](.ai-spec/backend/) | java.md / gates.md |
 | [.ai-spec/frontend/](.ai-spec/frontend/) | spec.md / gates.md |
 
-其他：贡献流程见 [CONTRIBUTING.md](CONTRIBUTING.md)；文档规范见 [docs/README.md](docs/README.md)；命令与版本的事实来源是 POM、manifest 与 GitHub workflows。
+其他：文档规范见 [docs/README.md](docs/README.md)；命令与版本的事实来源是 POM、manifest 与 GitHub workflows。

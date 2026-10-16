@@ -354,17 +354,6 @@
                     ]
                   }
                 ]
-              },
-              {
-                "tab": "Community",
-                "groups": [
-                  {
-                    "group": "Community",
-                    "pages": [
-                      "v2/en/community/contributors"
-                    ]
-                  }
-                ]
               }
             ]
           },
@@ -478,8 +467,7 @@
                   {
                     "group": "Community",
                     "pages": [
-                      "v1/en/community/overview",
-                      "v1/en/community/contributors"
+                      "v1/en/community/overview"
                     ]
                   }
                 ]
@@ -904,17 +892,6 @@
                     ]
                   }
                 ]
-              },
-              {
-                "tab": "社区",
-                "groups": [
-                  {
-                    "group": "社区",
-                    "pages": [
-                      "v2/zh/community/contributors"
-                    ]
-                  }
-                ]
               }
             ]
           },
@@ -1031,8 +1008,7 @@
                   {
                     "group": "社区",
                     "pages": [
-                      "v1/zh/community/overview",
-                      "v1/zh/community/contributors"
+                      "v1/zh/community/overview"
                     ]
                   }
                 ]
@@ -1144,14 +1120,6 @@
     {
       "source": "/en/blogs/index.html",
       "destination": "/v1/en/blogs/index"
-    },
-    {
-      "source": "/v1/en/community/contributors.html",
-      "destination": "/v1/en/community/contributors"
-    },
-    {
-      "source": "/en/community/contributors.html",
-      "destination": "/v1/en/community/contributors"
     },
     {
       "source": "/v1/en/community/overview.html",
@@ -1576,14 +1544,6 @@
     {
       "source": "/zh/blogs/index.html",
       "destination": "/v1/zh/blogs/index"
-    },
-    {
-      "source": "/v1/zh/community/contributors.html",
-      "destination": "/v1/zh/community/contributors"
-    },
-    {
-      "source": "/zh/community/contributors.html",
-      "destination": "/v1/zh/community/contributors"
     },
     {
       "source": "/v1/zh/community/overview.html",
@@ -2050,10 +2010,6 @@
       "destination": "/v2/en/blogs/usecases/logistics"
     },
     {
-      "source": "/v2/en/community/contributors.html",
-      "destination": "/v2/en/community/contributors"
-    },
-    {
       "source": "/v2/en/docs/building-blocks/agent.html",
       "destination": "/v2/en/docs/building-blocks/agent"
     },
@@ -2506,10 +2462,6 @@
     {
       "source": "/v2/zh/blogs/usecases/logistics.html",
       "destination": "/v2/zh/blogs/usecases/logistics"
-    },
-    {
-      "source": "/v2/zh/community/contributors.html",
-      "destination": "/v2/zh/community/contributors"
     },
     {
       "source": "/v2/zh/docs/building-blocks/agent.html",

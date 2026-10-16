@@ -5,7 +5,6 @@ zh_link: /v1/zh/community/overview
 
 Links and guidance for getting help, contributing, and connecting with other AgentScope Java users.
 
-- [Contributors](/v1/en/community/contributors) — active contributors and GitHub profiles
 
 
 <Note>

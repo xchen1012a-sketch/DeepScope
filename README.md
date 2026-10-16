@@ -1,216 +1,97 @@
-<p align="center">
-  <img
-    src="https://img.alicdn.com/imgextra/i1/O1CN01nTg6w21NqT5qFKH1u_!!6000000001621-55-tps-550-550.svg"
-    alt="AgentScope Logo"
-    width="200"
-  />
-</p>
+# DeepScope
 
-<span align="center">
+面向个人与团队的智能体工作台，把模型、工具、技能和知识库组织到同一个工作空间中，完成从对话到任务执行的完整流程。
 
-[**中文主页**](https://github.com/agentscope-ai/agentscope-java/blob/main/README_zh.md) | [**Documentation**](https://java.agentscope.io/)
+由 [xchen1012a-sketch](https://github.com/xchen1012a-sketch) 维护。项目仓库：[DeepScope](https://github.com/xchen1012a-sketch/DeepScope)。
 
-</span>
+## 主要功能
 
-<p align="center">
-    <a href="https://discord.gg/eYMpfnkG8h">
-        <img
-            src="https://img.shields.io/badge/Discord-Join%20Us-5865F2?logo=discord&logoColor=white"
-            alt="discord"
-        />
-    </a>
-    <a href="https://java.agentscope.io/">
-        <img
-            src="https://img.shields.io/badge/Docs-English%7C%E4%B8%AD%E6%96%87-blue?logo=markdown"
-            alt="docs"
-        />
-    </a>
-    <a href="https://img.shields.io/maven-central/v/io.agentscope/agentscope">
-        <img
-            src="https://img.shields.io/maven-central/v/io.agentscope/agentscope?color=green"
-            alt="Maven Central"
-        />
-    </a>
-    <a href="#">
-        <img
-            src="https://img.shields.io/badge/JDK-17%2B-orange?logo=openjdk"
-            alt="JDK 17+"
-        />
-    </a>
-    <a href="./LICENSE">
-        <img
-            src="https://img.shields.io/badge/license-Apache--2.0-black"
-            alt="license"
-        />
-    </a>
-    <a href="https://deepwiki.com/agentscope-ai/agentscope-java">
-        <img
-            src="https://deepwiki.com/badge.svg"
-            alt="Ask DeepWiki"
-        />
-    </a>
-</p>
+- **智能对话**：流式回复、执行过程展示、模型与智能体切换、结构化追问、会话历史与上下文压缩。
+- **智能体管理**：创建与配置智能体，编写工作要求，绑定工具、技能、知识库和子智能体。
+- **工具与 MCP**：导入与编辑工具、连接 MCP 服务、测试调用，并按权限执行或等待确认。
+- **技能管理**：管理技能包、编辑技能内容与发布状态，并同步到智能体工作空间。
+- **知识库**：上传与处理文档，查看解析内容，配置向量检索；支持 PDF 页面处理与来源查看。
+- **模型管理**：配置模型供应商、发现远端模型、测试连接，管理对话与向量模型。
+- **账号与权限**：用户、角色和权限管理，以及个人资料、偏好与登录会话管理。
 
-## What is AgentScope Java 2.0?
+## 技术栈
 
-AgentScope Java 2.0 is a production-ready framework for building distributed, enterprise-grade agents, providing essential abstractions that work with rising model capability and built-in support for long-running, safely-controlled agent execution.
+| 层次 | 技术 |
+| --- | --- |
+| 后端 | Java 17+、Spring Boot、Maven |
+| 前端 | React、TypeScript、Vite、Tailwind CSS |
+| 数据存储 | PostgreSQL、pgvector |
+| 智能体运行时 | AgentScope Java、AG-UI、MCP |
 
-- [**Event System** →](https://java.agentscope.io/v2/en/docs/building-blocks/message-and-event.html) A unified event stream with 31 typed events for real-time frontend rendering and human-in-the-loop.
-- [**Permission System** →](https://java.agentscope.io/v2/en/docs/building-blocks/permission-system.html) Tool-call gating: allow / require user approval / deny.
-- [**Middleware** →](https://java.agentscope.io/v2/en/docs/building-blocks/middleware.html) AOP-style hook interception for flexibly extending the reasoning-acting loop.
-- [**Workspace & Sandbox** →](https://java.agentscope.io/v2/en/docs/harness/workspace.html) Run tools in isolated environments — local, Docker, Kubernetes, or AgentRun cloud sandbox.
-- [**Multi-Agent Orchestration** →](https://java.agentscope.io/v2/en/docs/harness/subagent.html) Multiple subagent definition patterns with `agent_spawn` / `agent_send` and real-time event forwarding.
-- [**Distributed Deployment** →](https://java.agentscope.io/v2/en/docs/others/going-to-production.html) True distributed session and memory management (Redis / MySQL / PostgreSQL / OSS / COS) with cross-replica session recovery.
-- [**Agent Evolution** →](https://help.aliyun.com/zh/document_detail/3042583.html) Provides Agent observability and auditing, Agent evaluation and experimentation, and Agent asset management and continuous optimization.
+## 项目目录
 
-<img src="./docs/imgs/landscape.png" alt="agentscope" width="100%"/>
-
-## News
-<!-- BEGIN NEWS -->
-- **[2026-07] `v2.0.0 GA`:** First production-ready release! Dual-layer agent architecture, event stream, permission system, middleware, workspace sandbox, multi-agent orchestration, and distributed deployment all ready. [Docs](https://java.agentscope.io/) | [Release Notes](https://github.com/agentscope-ai/agentscope-java/releases/tag/v2.0.0)
-- **[2026-07] `v2.0.0-RC5`:** Model provider modularization; unified DataBlock multimodal support; native structured output; Channel IM integration; Tencent Cloud COS state persistence. [Release Notes](https://github.com/agentscope-ai/agentscope-java/releases/tag/v2.0.0-RC5)
-- **[2026-06] `v2.0.0-RC4`:** Async tool execution and scheduled wakeup dispatching; subagent cross-replica routing and session recovery. [Release Notes](https://github.com/agentscope-ai/agentscope-java/releases/tag/v2.0.0-RC4)
-- **[2026-06] `v2.0.0-RC3`:** Unified `call()` / `streamEvents()` execution core; `AgentResultEvent`, `CustomEvent`, `HintBlockEvent` new event types. [Release Notes](https://github.com/agentscope-ai/agentscope-java/releases/tag/v2.0.0-RC3)
-- **[2026-06] `v2.0.0-RC2`:** Fully stateless agent; one-line DistributedBackend; subagent event forwarding; Channel module (DingTalk, Feishu, WeCom); A2A / AG-UI protocol support. [Release Notes](https://github.com/agentscope-ai/agentscope-java/releases/tag/v2.0.0-RC2)
-- **[2026-05] `v2.0.0-RC1`:** First 2.0 RC — harness engineering, enterprise distributed deployment, event stream / message model / middleware / HITL full redesign. [Release Notes](https://github.com/agentscope-ai/agentscope-java/releases/tag/v2.0.0-RC1)
-- **[2026-05] `v1.1.0`:** Introduced `agentscope-harness` and `HarnessAgent`; Workspace (persona / memory / skills / subagents); pluggable filesystem (local / shared store / sandbox); session persistence with cross-process resume; layered memory and context compaction; declarative subagent orchestration. [Release Notes](https://github.com/agentscope-ai/agentscope-java/releases/tag/v1.1.0-RC1)
-<!-- END NEWS -->
-
-## Community
-
-Welcome to join our community on
-
-| [Discord](https://discord.gg/eYMpfnkG8h)                     | DingTalk                                                              | WeChat                                                       |
-|--------------------------------------------------------------|-----------------------------------------------------------------------|--------------------------------------------------------------|
-| <img src="./docs/imgs/discord.png" width="100" height="100"> | <img src="./docs/imgs/dingtalk_qr_code.png" width="100" height="100"> | <img src="./docs/imgs/wechat.jpeg" width="100" height="100"> |
-
-## Quickstart
-
-### Installation
-
-> AgentScope Java requires **JDK 17** or higher.
-
-#### Maven
-
-```xml
-<dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-harness</artifactId>
-    <version>2.0.3</version>
-</dependency>
+```text
+technical-advisor-app/
+  backend/                 应用后端
+  frontend/                Web 工作台
+  docs/                    应用设计与验证记录
+agentscope-core/           智能体基础能力
+agentscope-harness/        工作空间与任务运行能力
+agentscope-extensions/     模型、工具、协议与框架扩展
+docs/                     技术文档与设计方案
+.ai-spec/                 工程规范
 ```
 
-Model providers are shipped as separate extension modules in 2.0. Add the one you need — for example, DashScope:
+现有模块路径沿用代码中的名称，应用入口位于 `technical-advisor-app`。
 
-```xml
-<dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-dashscope</artifactId>
-    <version>2.0.3</version>
-</dependency>
+## 本地运行
+
+准备 Java 17+、Maven、支持前端依赖的 Node.js/npm，以及安装了 pgvector 扩展的 PostgreSQL。先创建应用数据库和对应用户。
+
+### 1. 配置环境
+
+后端从环境变量读取配置，下面的值需替换为本机实际配置：
+
+```sh
+export ADVISOR_DATABASE_URL='jdbc:postgresql://localhost:5432/technical_advisor'
+export ADVISOR_DATABASE_USERNAME='technical_advisor'
+export ADVISOR_DATABASE_PASSWORD='<数据库密码>'
+export ADVISOR_ADMIN_USERNAME='<初始管理员用户名>'
+export ADVISOR_ADMIN_PASSWORD='<初始管理员密码>'
 ```
 
-Other options: `agentscope-extensions-model-openai`, `agentscope-extensions-model-anthropic`, `agentscope-extensions-model-gemini`, `agentscope-extensions-model-ollama`. See the [Model docs](https://java.agentscope.io/v2/en/docs/building-blocks/model.html) for details.
+如使用环境配置的默认对话模型，再设置 `MODEL_API_KEY`、`MODEL_BASE_URL` 和 `ADVISOR_MODEL`。模型也可在工作台的模型设置中管理。
 
-To use the reasoning and tool APIs of `ReActAgent` and compose application capabilities yourself, depend on `agentscope-core` and your model extension.
+需要保存工具凭据时，配置 `ADVISOR_TOOL_CREDENTIAL_KEY`，其值为 Base64 编码的 32 字节密钥，并保持稳定。PDF 图片识别与重排模型在配置后启用。
 
-## Hello AgentScope!
+完整配置见 [application.yaml](technical-advisor-app/backend/src/main/resources/application.yaml)。本地密钥、数据库、上传文件与运行日志不纳入版本管理。
 
-Configure a shared Builder at startup, then use `builder.build()` to create and close an Agent for each request. The same identity and persistent storage keep the conversation across instances. Set `DASHSCOPE_API_KEY` before running:
+### 2. 启动后端
 
-```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.event.TextBlockDeltaEvent;
-import io.agentscope.core.event.ToolCallStartEvent;
-import io.agentscope.core.message.UserMessage;
-import io.agentscope.harness.agent.HarnessAgent;
-import java.nio.file.Paths;
+在仓库根目录执行：
 
-public class FirstAgent {
-    // Configure once at startup; requests only call build().
-    private static final HarnessAgent.Builder AGENT_BUILDER = HarnessAgent.builder()
-            .name("assistant")
-            .agentId("assistant")
-            .sysPrompt("You are a helpful AI assistant.")
-            .model("dashscope:qwen-plus")
-            .workspace(Paths.get(".agentscope/workspace"));
+构建会运行测试；pgvector 集成测试需要通过 `ADVISOR_TEST_PGVECTOR_URL`、`ADVISOR_TEST_PGVECTOR_USER`、`ADVISOR_TEST_PGVECTOR_PASSWORD` 指定独立测试数据库，请勿使用应用数据库。
 
-    public static void main(String[] args) {
-        try (HarnessAgent agent = AGENT_BUILDER.build()) {
-            RuntimeContext ctx = RuntimeContext.builder()
-                    .sessionId("demo").userId("alice").build();
-            agent.call(new UserMessage("Hello!"), ctx).block();
-        }
-
-        // COMMENT_Summarize today in three bullets.
-        try (HarnessAgent agent = AGENT_BUILDER.build()) {
-            RuntimeContext ctx = RuntimeContext.builder()
-                    .sessionId("demo").userId("alice").build();
-            agent.streamEvents(new UserMessage("Summarize today in three bullets."), ctx)
-                    .doOnNext(event -> {
-                        switch (event.getType()) {
-                            case TEXT_BLOCK_DELTA -> System.out.print(
-                                    ((TextBlockDeltaEvent) event).getDelta());
-                            case TOOL_CALL_START -> System.out.println(
-                                    "\n[tool] " + ((ToolCallStartEvent) event).getToolCallName());
-                            default -> { }
-                        }
-                    })
-                    .blockLast();
-        }
-    }
-}
+```sh
+mvn -T1 -pl technical-advisor-app/backend -am package
+java -jar technical-advisor-app/backend/target/technical-advisor-backend-2.0.5-SNAPSHOT.jar
 ```
 
-Start with `call` / `streamEvents` for ordinary replies, multi-turn chat and workflow steps; follow the [Quick Start](https://java.agentscope.io/v2/en/docs/quickstart). Both also record Harness conversation history by default. Introduce [AgentSession](https://java.agentscope.io/v2/en/docs/harness/session-log) when work must continue after a page closes, queue while busy or resume after interruption. The [recoverable chat example](./agentscope-examples/agents/agentscope-chat/README.md) shows the full integration.
+后端默认监听 `18080`。运行数据默认存放在 `technical-advisor-app/data/`。
 
-## Key Design
+### 3. 启动前端
 
-AgentScope Java 2.0 is a major step up from a "build an agent" toolkit toward a complete platform for **running agents in production**. The improvements fall into three focus areas:
+另开终端执行：
 
-### 1 · Harness Engineering — built for long-running, complex tasks
+```sh
+cd technical-advisor-app/frontend
+npm ci
+npm run dev
+```
 
-A bare ReAct loop solves one reasoning turn. **HarnessAgent** layers engineering infrastructure on top of ReActAgent via Middleware and Toolkit channels — the reasoning core stays untouched, capabilities layer on:
+通过终端显示的本地地址访问工作台，默认端口为 `5173`；开发服务器会将 API 请求代理至本地后端。
 
-- **Self-evolution & skill repository** — successful patterns auto-save as Markdown skills, shared across sessions and loaded on demand
-- **Layered memory** — in-context conversation + agent-curated `MEMORY.md` + on-disk fact log, with auto-compaction to bound the prompt
-- **Sub-agents** — declare child agent specs in Markdown, `agent_spawn` / `agent_send` at runtime, sync or background delegation
-- **Auto context management** — structured compaction preserves goals / state / findings / next steps; oversized tool results offload to disk
-- **Plan Mode** — read-only planning state for long tasks, plan files persist and drive execution
+## 开发检查
 
-### 2 · Enterprise-grade distributed deployment
+前端在 `technical-advisor-app/frontend` 下执行 `npm test`、`npm run lint` 和 `npm run build`。后端测试与格式检查按 [.ai-spec/backend/gates.md](.ai-spec/backend/gates.md) 执行。
 
-Production agents must serve many tenants, run untrusted code safely, and survive rolling restarts. AgentScope 2.0 is built for stateless horizontal scaling:
+项目规范见 [AGENTS.md](AGENTS.md)，应用说明见 [功能文档](docs/v2/zh/docs/others/technical-advisor-login.md)。
 
-- **Multi-tenant isolation** — `session` / `user` / `agent` / `org` dimension isolation, `RuntimeContext` keys flow through workspace paths, KV namespaces, and sandbox state slots
-- **Secure sandbox** — local subprocess / Docker / Kubernetes / E2B cloud sandbox, with snapshot and resume
-- **Permission control** — three-state engine (allow / approve / deny), sensitive tools require HITL approval
-- **Session recovery** — `AgentStateStore` (in-memory / JSON file / MySQL / Redis / PostgreSQL) backs zero-downtime rolling deploys
+## 许可证与基础组件
 
-### 3 · Foundation framework — a leaner, more developer-friendly core
-
-Messages, events, and the extension model are smaller, more orthogonal — HITL and event streaming are part of how the framework runs, not add-ons:
-
-- **Event stream** — 31 typed events covering model calls, text deltas, tool execution, and user confirmations in real time
-- **Message model** — text / files / images / audio / video / tool results unified into `ContentBlock`, role-strict validation at construction
-- **Middleware** — `onAgent` / `onReasoning` / `onActing` / `onModelCall` / `onSystemPrompt` / `onAgentStateReady` six stages replace v1's flat hooks
-- **HITL first class** — confirm tool arguments, approve sensitive actions, hand off to external systems, agent pauses and resumes exactly
-
-For the complete architecture overview, see the [documentation](https://java.agentscope.io/v2/en/docs/index.html).
-
-## Contributing
-
-We welcome contributions from the community! Please refer to our [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines
-on how to contribute.
-
-## License
-
-AgentScope is released under Apache License 2.0.
-
-## Contributors
-
-All thanks to our contributors:
-
-<a href="https://github.com/agentscope-ai/agentscope-java/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=agentscope-ai/agentscope-java&max=999&columns=12&anon=1" />
-</a>
+DeepScope 在 AgentScope Java 基础上开发，保留底层组件的版权声明。许可证见 [Apache License 2.0](LICENSE)。

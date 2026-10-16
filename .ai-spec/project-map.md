@@ -19,7 +19,7 @@
 
 | 场景 | 文档 |
 |---|---|
-| 贡献规则 | [CONTRIBUTING.md](../CONTRIBUTING.md) |
+| 协作与提交规则 | [collaboration.md](collaboration.md) |
 | Harness 行为 | [docs/v2/en/docs/harness/architecture.md](../docs/v2/en/docs/harness/architecture.md) |
 | Channel 词汇表 | [CONTEXT.md](../CONTEXT.md) |
 | 文档工作 | [docs/README.md](../docs/README.md) |

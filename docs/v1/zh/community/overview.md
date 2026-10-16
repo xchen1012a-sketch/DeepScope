@@ -5,7 +5,6 @@ en_link: /v1/en/community/overview
 
 获取帮助、参与贡献与连接其他 AgentScope Java 用户的入口与说明。
 
-- [核心贡献者](/v1/zh/community/contributors) — 活跃贡献者与 GitHub 主页汇总
 
 
 <Note>

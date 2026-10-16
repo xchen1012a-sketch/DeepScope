@@ -45,7 +45,7 @@
 1. 不包含限制 AI 能力的内容，不提供具体操作流程指导（step-by-step 教程）。
 2. 不包含业务逻辑规则或具体业务实现细节。
 3. 不作为项目记录文档，不记录历史变更、决策过程或进度。
-4. 不重复其他文档：AI 协作与沟通原则见本目录 [collaboration.md](collaboration.md)，贡献流程见 `CONTRIBUTING.md`，文档编写规范见 `docs/README.md`。工程规范如有冲突，以本目录为准。
+4. 不重复其他文档：AI 协作与沟通原则见本目录 [collaboration.md](collaboration.md)，文档编写规范见 `docs/README.md`。工程规范如有冲突，以本目录为准。
 
 ## 技术栈基线
 
