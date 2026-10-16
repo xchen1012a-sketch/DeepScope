@@ -1,0 +1,6 @@
+{
+  "name": "technical-advisor-acceptance",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test stage4.test.mjs" }
+}

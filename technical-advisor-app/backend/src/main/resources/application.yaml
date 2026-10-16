@@ -1,0 +1,82 @@
+# Technical Advisor backend configuration.
+# Model endpoint and key come from env vars or the local (git-ignored)
+# config/application.yaml override — never commit real secrets here.
+server:
+  port: 18080
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 30MB
+  datasource:
+    # Business data (accounts, sessions, event timeline, deliverables) lives in PostgreSQL.
+    # Create the database once, e.g.
+    #   createdb technical_advisor
+    url: ${ADVISOR_DATABASE_URL:jdbc:postgresql://localhost:5432/technical_advisor}
+    username: ${ADVISOR_DATABASE_USERNAME:technical_advisor}
+    password: ${ADVISOR_DATABASE_PASSWORD:}
+
+advisor:
+  knowledge:
+    ingest:
+      workers: ${ADVISOR_KNOWLEDGE_WORKERS:2}
+      embedding-workers: ${ADVISOR_EMBEDDING_WORKERS:3}
+      queue-capacity: ${ADVISOR_KNOWLEDGE_QUEUE_CAPACITY:32}
+      timeout-minutes: ${ADVISOR_KNOWLEDGE_TIMEOUT_MINUTES:20}
+    pdf:
+      # Explicit saved chat endpoints. Empty means no vision/rerank request is sent.
+      vision-endpoint-id: ${ADVISOR_PDF_VISION_ENDPOINT_ID:}
+      rerank-endpoint-id: ${ADVISOR_PDF_RERANK_ENDPOINT_ID:}
+      max-pages: ${ADVISOR_PDF_MAX_PAGES:300}
+      max-image-edge: ${ADVISOR_PDF_MAX_IMAGE_EDGE:2000}
+      # Enable only when the configured provider supports response_format=json_object.
+      json-output: ${ADVISOR_PDF_JSON_OUTPUT:false}
+  # Runtime files (seeded workspace, agent session state) stay under this directory.
+  data-dir: technical-advisor-app/data
+  tools:
+    # Base64-encoded 32-byte key that encrypts saved tool credentials. Without it, tools that
+    # need credentials cannot be saved; tools that need none keep working.
+    credential-key: ${ADVISOR_TOOL_CREDENTIAL_KEY:}
+  embedding:
+    # Empty until a vector model is connected. The chat model is not used.
+    provider: ${ADVISOR_EMBEDDING_PROVIDER:}
+    api-key: ${ADVISOR_EMBEDDING_API_KEY:}
+    model-name: ${ADVISOR_EMBEDDING_MODEL:}
+    base-url: ${ADVISOR_EMBEDDING_BASE_URL:}
+    dimensions: ${ADVISOR_EMBEDDING_DIMENSIONS:1024}
+  auth:
+    bootstrap-username: ${ADVISOR_ADMIN_USERNAME:}
+    bootstrap-password: ${ADVISOR_ADMIN_PASSWORD:}
+    session-ttl: 12h
+
+logging:
+  file:
+    name: ${advisor.data-dir}/logs/backend.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 7
+      total-size-cap: 70MB
+  pattern:
+    level: '%5p [document=%X{documentId} attempt=%X{attemptId}]'
+
+agentscope:
+  model:
+    provider: openai
+  openai:
+    api-key: ${MODEL_API_KEY:}
+    model-name: ${ADVISOR_MODEL:glm-5.3-flash}
+    base-url: ${MODEL_BASE_URL:}
+  agui:
+    # Keep server execution alive when the browser refreshes or loses its SSE connection.
+    interrupt-on-disconnect: false
+    # NF1: one task must not run longer than 10 minutes.
+    run-timeout: 10m
+    # Forward the model's streamed thinking as REASONING_* events so the chat page can
+    # render a live thinking panel (like Claude/DeepSeek) instead of a silent wait.
+    enable-reasoning: true
+    # NF4 skeleton: token usage is emitted per run; quota enforcement arrives with settings stage.
+    emit-token-usage: true
+  admin:
+    enabled: true

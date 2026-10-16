@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="ds_cyan_grad" x1="12" y1="16" x2="62" y2="84" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#01C8FF" />
+      <stop offset="55%" stop-color="#019DFB" />
+      <stop offset="100%" stop-color="#0064FC" />
+    </linearGradient>
+    <linearGradient id="ds_slash_grad" x1="22" y1="78" x2="86" y2="18" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0064FC" />
+      <stop offset="55%" stop-color="#395EEF" />
+      <stop offset="100%" stop-color="#4701EF" />
+    </linearGradient>
+    <linearGradient id="ds_indigo_grad" x1="56" y1="18" x2="84" y2="84" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#395EEF" />
+      <stop offset="100%" stop-color="#4701EF" />
+    </linearGradient>
+  </defs>
+
+  <!-- S 左下至右上穿插斜杠与顶部横梁（位于 D 竖杆后方、D 右侧圆弧间隙上方） -->
+  <path
+    d="M21 77 L50 30 C54.5 22.8 61.5 19 70 19 H85 L71 42"
+    stroke="url(#ds_slash_grad)"
+    stroke-width="10.5"
+    stroke-linecap="butt"
+    stroke-linejoin="round"
+  />
+
+  <!-- S 右侧棱镜折角与底部弧线 -->
+  <path
+    d="M85 19 L69.5 44.5 C67.8 47.3 68.5 50.5 71.2 52.8 C78.5 59 82 64.5 82 70.5 C82 78.5 75.5 84 66 84 H48"
+    stroke="url(#ds_indigo_grad)"
+    stroke-width="10.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- D 左侧主干与上下穿插圆弧（在右上留出穿插断口） -->
+  <path
+    d="M46.5 23.5 C41.2 20.5 34.8 19 27 19 H16 V84 H29 C47.5 84 60 71 60 51.5 C60 44.5 58 38.2 54.5 33"
+    stroke="url(#ds_cyan_grad)"
+    stroke-width="10.5"
+    stroke-linecap="round"
+    stroke-linejoin="miter"
+  />
+</svg>
