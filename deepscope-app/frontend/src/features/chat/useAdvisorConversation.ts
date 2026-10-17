@@ -329,7 +329,9 @@ export function groupSubagents(events: ConversationEvent[]): SubagentRecord[] {
               }
             }
           }
-        } catch {}
+        } catch {
+          /* Ignore malformed tool result JSON. */
+        }
       }
     } else if (event.kind === 'subagent_facts') {
       const id = payloadText(event.payload, 'subagentId');
@@ -346,6 +348,13 @@ export function groupSubagents(events: ConversationEvent[]): SubagentRecord[] {
       record.status = SETTLED_STATUSES.includes(status) ? status : 'failed';
       record.summary = payloadText(event.payload, 'summary') || record.summary;
       record.endedAt = event.createdAt;
+    } else if (event.kind === 'advisor_message') {
+      for (const record of byId.values()) {
+        if (record.status === 'running') {
+          record.status = 'done';
+          record.endedAt = record.endedAt ?? event.createdAt;
+        }
+      }
     }
   }
   return [...byId.values()];

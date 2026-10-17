@@ -205,6 +205,15 @@ final class SessionProcessProjector {
                     record.put("summary", summary);
                 }
                 record.put("endedAt", event.createdAt());
+            } else if ("advisor_message".equals(event.kind())) {
+                for (Map<String, Object> record : byId.values()) {
+                    if ("running".equals(record.get("status"))) {
+                        record.put("status", "done");
+                        if (!record.containsKey("endedAt")) {
+                            record.put("endedAt", event.createdAt());
+                        }
+                    }
+                }
             }
         }
 
@@ -256,14 +265,28 @@ final class SessionProcessProjector {
                 }
             }
         } else if ("agent_spawn".equals(toolName) || "invoke_subagent".equals(toolName)) {
-            String id = text(args, "agent_id");
+            String taskText = text(args, "task");
+            Matcher tm =
+                    Pattern.compile(
+                                    "(?:看板任务|任务|task)[\\s:：]*([a-zA-Z0-9_-]+)",
+                                    Pattern.CASE_INSENSITIVE)
+                            .matcher(taskText);
+            String id = "";
+            if (tm.find() && byId.containsKey(tm.group(1).trim())) {
+                id = tm.group(1).trim();
+            }
+            if (id.isEmpty()) id = text(args, "task_id");
+            if (id.isEmpty()) id = text(args, "taskId");
+            if (id.isEmpty()) id = text(args, "label");
             if (id.isEmpty()) id = text(args, "id");
             if (id.isEmpty()) id = text(args, "agent_key");
+            if (id.isEmpty()) id = text(args, "agent_id");
             if (id.isEmpty()) id = text(event.payload(), "id");
             if (id.isEmpty()) id = "spawn-" + event.seq();
 
             Map<String, Object> record = ensureSubagent(byId, id, stepsByTask);
-            String name = text(args, "name");
+            String name = text(args, "label");
+            if (name.isEmpty()) name = text(args, "name");
             if (name.isEmpty()) name = text(args, "agent_id");
             if (!name.isEmpty()) record.put("name", name);
 

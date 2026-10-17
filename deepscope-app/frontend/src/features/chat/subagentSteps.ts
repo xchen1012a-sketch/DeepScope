@@ -76,7 +76,9 @@ export function extractDispatchesFromEvent(event: EventEntry): Array<{ subtaskId
           taskId = String(parsed.task_id || parsed.taskId || '');
           title = String(parsed.title || parsed.name || '');
         }
-      } catch {}
+      } catch {
+        /* Ignore malformed payload args. */
+      }
       taskId = taskId || payloadText(event.payload, 'id');
       if (taskId) return [{ subtaskId: taskId, name: title || taskId }];
     } else if (toolName === 'agent_spawn' || toolName === 'invoke_subagent') {
@@ -86,10 +88,14 @@ export function extractDispatchesFromEvent(event: EventEntry): Array<{ subtaskId
       try {
         const parsed = JSON.parse(rawArgs);
         if (parsed && typeof parsed === 'object') {
-          agentId = String(parsed.agent_id || parsed.id || parsed.agent_key || '');
-          name = String(parsed.name || parsed.label || agentId || '');
+          const taskText = String(parsed.task || '');
+          const taskMatch = taskText.match(/(?:看板任务|任务|task)[\s:：]*([a-zA-Z0-9_-]+)/i);
+          agentId = taskMatch ? taskMatch[1].trim() : String(parsed.label || parsed.task_id || parsed.taskId || parsed.agent_id || '');
+          name = String(parsed.label || parsed.name || parsed.agent_id || agentId || '');
         }
-      } catch {}
+      } catch {
+        /* Ignore malformed payload args. */
+      }
       agentId = agentId || payloadText(event.payload, 'id') || `spawn-${event.seq}`;
       return [{ subtaskId: agentId, name: name || agentId }];
     }

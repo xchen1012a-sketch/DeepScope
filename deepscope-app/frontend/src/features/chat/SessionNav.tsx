@@ -19,7 +19,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { Ellipsis, Pencil, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ConfirmActionDialog, ConfirmDeleteDialog } from '@/components/ConfirmDeleteDialog';
 import { cn } from '@/lib/utils';
@@ -115,6 +115,7 @@ function SessionNavItem({
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(session.title?.trim() || '');
   const [isHovered, setIsHovered] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const startInlineEdit = () => {
@@ -139,6 +140,7 @@ function SessionNavItem({
   const cancelInlineEdit = () => {
     setIsEditing(false);
   };
+
 
   return (
     <div
@@ -196,11 +198,12 @@ function SessionNavItem({
         </button>
       )}
 
-      <DropdownMenu.Root modal={false}>
+      <DropdownMenu.Root modal={false} open={menuOpen} onOpenChange={setMenuOpen}>
         <DropdownMenu.Trigger asChild>
           <button
             type="button"
             aria-label={t('chat.moreActions', { title })}
+            title={t('chat.moreActions', { title })}
             onPointerDown={(event) => {
               actionTriggerRef.current = event.currentTarget;
             }}
@@ -208,11 +211,10 @@ function SessionNavItem({
               actionTriggerRef.current = event.currentTarget;
             }}
             className={cn(
-              'flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-slate-400 hover:bg-white/80 hover:text-slate-700 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-hover:opacity-100 data-[state=open]:opacity-100 [@media(pointer:coarse)]:opacity-100 [@media(pointer:coarse)]:h-11 [@media(pointer:coarse)]:w-11',
-              active ? 'opacity-100' : 'opacity-0',
+              'flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-slate-500 opacity-0 transition-opacity hover:text-slate-900 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-hover:opacity-100 group-hover:text-slate-700 data-[state=open]:opacity-100 [@media(pointer:coarse)]:opacity-100 [@media(pointer:coarse)]:h-11 [@media(pointer:coarse)]:w-11',
             )}
           >
-            <Ellipsis className="h-4 w-4" />
+            <MoreHorizontal className="h-4 w-4 fill-current" strokeWidth={2.5} />
           </button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Portal>

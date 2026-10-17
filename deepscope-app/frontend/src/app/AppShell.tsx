@@ -226,7 +226,7 @@ export default function AppShell() {
                     </button>
                   </h2>
                   <ScrollArea.Root id="recent-sessions-list" hidden={!recentSessionsOpen} type="scroll" scrollHideDelay={600} className="relative min-h-0 flex-1 overflow-hidden">
-                    <ScrollArea.Viewport role="region" aria-label={t('nav.recentSessions')} tabIndex={0} className="h-full w-full overscroll-y-contain">
+                    <ScrollArea.Viewport role="region" aria-label={t('nav.recentSessions')} tabIndex={0} className="h-full w-full overscroll-y-contain [&>div]:block! [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                       <SessionNav onNavigate={() => setMobileNavOpen(false)} />
                     </ScrollArea.Viewport>
                     <ScrollArea.Scrollbar orientation="vertical" className="flex w-1.5 touch-none select-none p-px">
