@@ -56,14 +56,22 @@ export function describeTool(tool: ToolCall): ToolDescription {
   const args = object(tool.args, 16_384);
   let action: ActivityAction = toolAction(tool.name) ?? 'other';
   if (tool.name === 'task_output' || tool.name === 'wait_async_results') action = 'collect';
-  if (tool.name === 'task_list') action = 'tasks';
+  if (tool.name === 'task_list' || tool.name === 'task_get' || tool.name === 'task_update') action = 'tasks';
+  if (tool.name === 'task_dispatch' || tool.name === 'task_create') action = 'spawn';
+  if (tool.name === 'retrieve_knowledge') action = 'search';
   if (action === 'run' && TEST_COMMANDS.has(stringValue(args, ['command', 'cmd']))) action = 'test';
   let target = '';
   if (['read', 'write', 'edit', 'list'].includes(action)) {
     target = stringValue(args, ['path', 'file_path', 'filePath']).replace(/[/\\]+$/, '').split(/[/\\]/).pop() ?? '';
   } else if (action === 'fetch') {
     try { target = new URL(stringValue(args, ['url', 'uri'])).hostname; } catch { /* No complete URL yet. */ }
-  } else if (action === 'spawn') target = stringValue(args, ['label', 'title']);
+  } else if (action === 'spawn') {
+    target = stringValue(args, ['label', 'title', 'task', 'name', 'task_id', 'taskId', 'agent_id']);
+    if (!target && tool.name === 'task_dispatch' && tool.result) {
+      const match = /\[([a-zA-Z0-9_-]+)\]\s*([^,\n\]]+)/.exec(tool.result);
+      if (match) target = `[${match[1]}] ${match[2].trim()}`;
+    }
+  }
   target = target.replace(/\s+/g, ' ').slice(0, 80);
   const result: ToolDescription = { action, titleKey: `chat.activity.actions.${action}.${tool.status}`, target, resultKey: 'chat.activity.result.returned' };
   if (tool.status === 'running') return { ...result, resultKey: 'chat.activity.result.waiting' };

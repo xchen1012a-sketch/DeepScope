@@ -36,15 +36,35 @@ export function ActionBatch({ blocks, highlight, children, open, onOpenChange }:
   const multiple = blocks.length > 1;
   const expanded = !multiple || open || located;
   const running = blocks.some(block => block.status === 'running' || block.tool?.status === 'running');
+  const activeBlock = running ? [...blocks].reverse().find(block => block.status === 'running' || block.tool?.status === 'running') : undefined;
+  let activeTicker: string | null = null;
+  if (activeBlock) {
+    if (activeBlock.tool) {
+      const desc = describeTool(activeBlock.tool);
+      activeTicker = desc.target ? `${t(desc.titleKey)}: ${desc.target}` : t(desc.titleKey);
+    } else if (activeBlock.kind === 'dispatch') {
+      activeTicker = activeBlock.summary ? `${t('chat.activity.dispatched')}: ${activeBlock.summary}` : t('chat.activity.dispatched');
+    } else if (activeBlock.kind === 'thinking') {
+      activeTicker = activeBlock.summary || t('chat.activity.analyzing');
+    }
+  }
+
   return <div className="space-y-1" data-action-batch onClickCapture={event => {
     const button = (event.target as HTMLElement).closest('button');
     if (button && !button.hasAttribute('data-batch-trigger')) onOpenChange(true);
   }}>
     {multiple ? <button type="button" data-batch-trigger aria-expanded={expanded} onClick={() => onOpenChange(!expanded)}
-      className="flex min-h-9 items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] text-slate-500 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300">
+      className="flex min-h-9 w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] text-slate-500 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300">
       {running ? <ProcessStateIcon state="running" /> : expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-      <ProcessStatusLabel active={running}>{categories.map(action => t(`chat.activity.batchCategories.${action}`)).join(' · ')} · {t('chat.flow.batchOperations', { count: blocks.length })}</ProcessStatusLabel>
-      {running ? <span>{t('chat.flow.batchRunning')}</span> : null}
+      <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+        <ProcessStatusLabel active={running}>{categories.map(action => t(`chat.activity.batchCategories.${action}`)).join(' · ')} · {t('chat.flow.batchOperations', { count: blocks.length })}</ProcessStatusLabel>
+        {running && activeTicker ? (
+          <span className="truncate rounded-md bg-indigo-50 px-1.5 py-0.5 text-xs font-medium text-indigo-600 animate-pulse">
+            {activeTicker}
+          </span>
+        ) : null}
+      </div>
+      {running ? <span className="shrink-0 text-xs text-indigo-500 font-medium">{t('chat.flow.batchRunning')}</span> : null}
     </button> : null}
     {expanded ? <ProcessMotionContext.Provider value={multiple ? false : motion}><div className="space-y-1">{children}</div></ProcessMotionContext.Provider> : null}
   </div>;

@@ -213,6 +213,82 @@ class SessionProcessProjectorTest {
                 .anySatisfy(card -> assertThat(card).containsEntry("summary", "Unique conclusion"));
     }
 
+    @Test
+    void projectsSubagentsFromTaskDispatchAndAgentSpawn() throws Exception {
+        var subagents =
+                SessionProcessProjector.projectSubagents(
+                        List.of(
+                                entry(
+                                        1,
+                                        "tool_call",
+                                        Map.of(
+                                                "id",
+                                                "c1",
+                                                "name",
+                                                "task_dispatch",
+                                                "args",
+                                                "{}",
+                                                "result",
+                                                "Dispatched 1 task(s) to RUNNING: [[task-1] 依赖分析]"
+                                                        + " (available slots remaining: 1)")),
+                                entry(
+                                        2,
+                                        "tool_call",
+                                        Map.of(
+                                                "id",
+                                                "c2",
+                                                "name",
+                                                "agent_spawn",
+                                                "args",
+                                                json.writeValueAsString(
+                                                        Map.of(
+                                                                "agent_id",
+                                                                "reviewer",
+                                                                "name",
+                                                                "代码审查员",
+                                                                "task",
+                                                                "审查并发模型")),
+                                                "status",
+                                                "done")),
+                                entry(
+                                        3,
+                                        "tool_call",
+                                        Map.of(
+                                                "id",
+                                                "c3",
+                                                "name",
+                                                "task_update",
+                                                "args",
+                                                json.writeValueAsString(
+                                                        Map.of(
+                                                                "task_id",
+                                                                "task-1",
+                                                                "status",
+                                                                "SUCCEEDED",
+                                                                "result_summary",
+                                                                "无版本冲突"))))),
+                        json);
+
+        assertThat(subagents).hasSize(2);
+        var task1 =
+                subagents.stream()
+                        .filter(s -> "task-1".equals(s.get("id")))
+                        .findFirst()
+                        .orElseThrow();
+        assertThat(task1).containsEntry("name", "依赖分析");
+        assertThat(task1).containsEntry("task", "依赖分析");
+        assertThat(task1).containsEntry("status", "done");
+        assertThat(task1).containsEntry("summary", "无版本冲突");
+
+        var reviewer =
+                subagents.stream()
+                        .filter(s -> "reviewer".equals(s.get("id")))
+                        .findFirst()
+                        .orElseThrow();
+        assertThat(reviewer).containsEntry("name", "代码审查员");
+        assertThat(reviewer).containsEntry("task", "审查并发模型");
+    }
+
     private TimelineStore.TimelineEntry entry(int seq, String kind, Map<String, ?> payload)
             throws Exception {
         return new TimelineStore.TimelineEntry(

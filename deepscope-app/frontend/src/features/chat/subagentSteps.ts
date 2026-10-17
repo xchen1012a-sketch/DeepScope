@@ -52,20 +52,70 @@ function appendStep(state: SubagentAccumulator, subtaskId: string, step: Omit<Su
   return { ...state, steps: [...state.steps, { ...step, subtaskId, order }] };
 }
 
+/** 从事件中解析出待派发的子任务列表（兼容 dispatch 与 task_dispatch / agent_spawn 工具调用） */
+export function extractDispatchesFromEvent(event: EventEntry): Array<{ subtaskId: string; name: string }> {
+  if (event.kind === 'dispatch') {
+    const subtaskId = payloadText(event.payload, 'subtaskId');
+    if (!subtaskId) return [];
+    return [{ subtaskId, name: payloadText(event.payload, 'name') || subtaskId }];
+  }
+  if (event.kind === 'tool_call') {
+    const toolName = payloadText(event.payload, 'name');
+    if (toolName === 'task_dispatch') {
+      const result = payloadText(event.payload, 'result');
+      const matches = [...result.matchAll(/\[([a-zA-Z0-9_-]+)\]\s*([^,\n\]]+)/g)];
+      if (matches.length > 0) {
+        return matches.map(m => ({ subtaskId: m[1].trim(), name: m[2].trim() || m[1].trim() }));
+      }
+      const rawArgs = payloadText(event.payload, 'args');
+      let taskId = '';
+      let title = '';
+      try {
+        const parsed = JSON.parse(rawArgs);
+        if (parsed && typeof parsed === 'object') {
+          taskId = String(parsed.task_id || parsed.taskId || '');
+          title = String(parsed.title || parsed.name || '');
+        }
+      } catch {}
+      taskId = taskId || payloadText(event.payload, 'id');
+      if (taskId) return [{ subtaskId: taskId, name: title || taskId }];
+    } else if (toolName === 'agent_spawn' || toolName === 'invoke_subagent') {
+      const rawArgs = payloadText(event.payload, 'args');
+      let agentId = '';
+      let name = '';
+      try {
+        const parsed = JSON.parse(rawArgs);
+        if (parsed && typeof parsed === 'object') {
+          agentId = String(parsed.agent_id || parsed.id || parsed.agent_key || '');
+          name = String(parsed.name || parsed.label || agentId || '');
+        }
+      } catch {}
+      agentId = agentId || payloadText(event.payload, 'id') || `spawn-${event.seq}`;
+      return [{ subtaskId: agentId, name: name || agentId }];
+    }
+  }
+  return [];
+}
+
 /** 派发登记：把「子任务 id + 子智能体名」排进待认领队列。 */
 export function registerSubagentDispatch(
   state: SubagentAccumulator,
   event: EventEntry,
 ): SubagentAccumulator {
-  const subtaskId = payloadText(event.payload, 'subtaskId');
-  if (
-    !subtaskId ||
-    state.claimed.includes(subtaskId) ||
-    state.waiting.some((pending) => pending.subtaskId === subtaskId)
-  ) {
-    return state;
+  const dispatches = extractDispatchesFromEvent(event);
+  if (dispatches.length === 0) return state;
+  let nextWaiting = [...state.waiting];
+  for (const item of dispatches) {
+    if (
+      !item.subtaskId ||
+      state.claimed.includes(item.subtaskId) ||
+      nextWaiting.some((pending) => pending.subtaskId === item.subtaskId)
+    ) {
+      continue;
+    }
+    nextWaiting.push(item);
   }
-  return { ...state, waiting: [...state.waiting, { subtaskId, name: payloadText(event.payload, 'name') }] };
+  return { ...state, waiting: nextWaiting };
 }
 
 /**
@@ -220,12 +270,12 @@ export function subagentStepsFromReplay(events: EventEntry[]): Map<string, Subag
   const dispatched = new Set<string>();
   const byName = new Map<string, string[]>();
   for (const event of events) {
-    if (event.kind !== 'dispatch') continue;
-    const subtaskId = payloadText(event.payload, 'subtaskId');
-    if (!subtaskId) continue;
-    dispatched.add(subtaskId);
-    const name = payloadText(event.payload, 'name');
-    if (name) byName.set(name, [...(byName.get(name) ?? []), subtaskId]);
+    const dispatches = extractDispatchesFromEvent(event);
+    for (const item of dispatches) {
+      if (!item.subtaskId) continue;
+      dispatched.add(item.subtaskId);
+      if (item.name) byName.set(item.name, [...(byName.get(item.name) ?? []), item.subtaskId]);
+    }
   }
   const byId = new Map<string, SubagentStep[]>();
   const claimedByName = new Map<string, number>();

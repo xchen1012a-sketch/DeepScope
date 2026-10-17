@@ -16,6 +16,7 @@
 
 import { payloadText, type EventEntry } from '@/api/advisor';
 import { thinkLine, toolFromEvent, type ToolCall } from '../conversationModel';
+import { toolPresentation } from '../toolPresentation';
 import { normalizeLegacyDeliverables } from './legacyDeliverable';
 
 /**
@@ -47,6 +48,7 @@ export const HIDDEN_TOOL_NAMES: ReadonlySet<string> = new Set([
   'report_proposal',
   'report_note',
   'report_error',
+  'task_dispatch',
 ]);
 
 /** 留在过程组外面的对话内容，顺序不变：访客消息、错误、追问、提案。 */
@@ -252,6 +254,14 @@ function partsTurn(events: EventEntry[], open: boolean): DraftTurn | null {
         const event = { ...snapshot, kind: 'tool_call', payload: part.tool as Record<string, unknown> };
         const parsed = toolFromEvent(event);
         const tool = status === 'failed' && parsed.status === 'running' ? { ...parsed, status: 'failed' as const } : parsed;
+        if (tool.name === 'task_dispatch') {
+          const target = toolPresentation(tool.name, tool.args).target;
+          const summary = target || summaryOf(event) || '已派发子任务';
+          if (!ordered.some(b => b.kind === 'dispatch' && b.summary === summary)) {
+            ordered.push(draft(event, 'dispatch', { ...extra, summary, status: tool.status }));
+          }
+          continue;
+        }
         if (!HIDDEN_TOOL_NAMES.has(tool.name)) ordered.push(draft(event, 'tool_call', { ...extra, tool, status: tool.status, summary: tool.name }));
       } else if (part.kind === 'event' && part.event && typeof part.event === 'object') {
         const recorded = part.event as Record<string, unknown>;
@@ -309,6 +319,15 @@ function buildTurn(events: EventEntry[], open: boolean): DraftTurn {
     }
     if (event.kind === 'tool_call') {
       const tool = toolFromEvent(event);
+      if (tool.name === 'task_dispatch') {
+        subagentCount += 1;
+        const target = toolPresentation(tool.name, tool.args).target;
+        const summary = target || summaryOf(event) || '已派发子任务';
+        if (!process.some(b => b.kind === 'dispatch' && b.summary === summary)) {
+          process.push(draft(event, 'dispatch', { summary, status: tool.status }));
+        }
+        continue;
+      }
       if (HIDDEN_TOOL_NAMES.has(tool.name)) continue;
       toolCount += 1;
       process.push(draft(event, 'tool_call', { tool, status: tool.status, summary: tool.name }));

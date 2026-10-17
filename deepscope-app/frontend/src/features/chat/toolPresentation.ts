@@ -31,7 +31,10 @@ const DEFINITIONS = new Map<string, ToolDefinition>([
   ['glob_files', { action: 'search', targets: ['pattern', 'glob'], scope: ['path'] }],
   ['web_search', { action: 'search', targets: ['query'] }],
   ['web_fetch', { action: 'fetch', targets: ['url', 'uri'] }],
-  ['agent_spawn', { action: 'spawn', targets: ['agent_id', 'agent_key', 'name'] }],
+  ['agent_spawn', { action: 'spawn', targets: ['agent_id', 'agent_key', 'name', 'title', 'label'] }],
+  ['task_dispatch', { action: 'spawn', targets: ['title', 'task_id', 'name'] }],
+  ['task_create', { action: 'spawn', targets: ['title', 'task_id'] }],
+  ['retrieve_knowledge', { action: 'search', targets: ['query', 'question', 'text'] }],
 ]);
 const FALLBACK_TARGETS = ['path', 'file_path', 'filePath', 'query', 'question', 'command', 'cmd', 'pattern', 'glob', 'url', 'uri', 'skill_name', 'skillName', 'agent_id', 'agent_key', 'name', 'id'];
 const MAX_ARGUMENTS = 16_384;

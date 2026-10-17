@@ -27,9 +27,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Server-side projector for the execution process drawer's paginated Timeline and Subagents tabs.
@@ -56,7 +59,8 @@ final class SessionProcessProjector {
                     "report_question",
                     "report_proposal",
                     "report_note",
-                    "report_error");
+                    "report_error",
+                    "task_dispatch");
 
     private static final Set<String> OUTSIDE_KINDS =
             Set.of("proposal", "proposal_resolved", "error", "question");
@@ -170,6 +174,15 @@ final class SessionProcessProjector {
                 if (!record.containsKey("startedAt")) {
                     record.put("startedAt", event.createdAt());
                 }
+            } else if ("tool_call".equals(event.kind())) {
+                String toolName = toolNameOf(event.payload(), event.seq());
+                if ("task_dispatch".equals(toolName)
+                        || "agent_spawn".equals(toolName)
+                        || "invoke_subagent".equals(toolName)) {
+                    extractToolSubagents(event, byId, stepsByTask, json);
+                } else if ("task_update".equals(toolName)) {
+                    updateTaskFromTool(event, byId, json);
+                }
             } else if ("subagent_facts".equals(event.kind())) {
                 String id = text(event.payload(), "subagentId");
                 if (id.isEmpty()) continue;
@@ -200,6 +213,119 @@ final class SessionProcessProjector {
         return list;
     }
 
+    private static final Pattern DISPATCHED_PATTERN =
+            Pattern.compile("\\[([a-zA-Z0-9_-]+)\\]\\s*([^,\\]]+)");
+
+    private static void extractToolSubagents(
+            ParsedEvent event,
+            Map<String, Map<String, Object>> byId,
+            Map<String, List<Map<String, Object>>> stepsByTask,
+            ObjectMapper json) {
+        String toolName = toolNameOf(event.payload(), event.seq());
+        Map<String, Object> args = parseArgs(event.payload().get("args"), json);
+        String result = text(event.payload(), "result");
+
+        if ("task_dispatch".equals(toolName)) {
+            Matcher matcher = DISPATCHED_PATTERN.matcher(result);
+            boolean matched = false;
+            while (matcher.find()) {
+                matched = true;
+                String id = matcher.group(1).trim();
+                String taskTitle = matcher.group(2).trim();
+                Map<String, Object> record = ensureSubagent(byId, id, stepsByTask);
+                record.put("name", taskTitle.isEmpty() ? id : taskTitle);
+                record.put("task", taskTitle);
+                if (!record.containsKey("startedAt")) {
+                    record.put("startedAt", event.createdAt());
+                }
+            }
+            if (!matched) {
+                String id = text(args, "task_id");
+                if (id.isEmpty()) id = text(args, "taskId");
+                if (id.isEmpty()) id = text(event.payload(), "id");
+                if (!id.isEmpty()) {
+                    Map<String, Object> record = ensureSubagent(byId, id, stepsByTask);
+                    String title = text(args, "title");
+                    if (!title.isEmpty()) {
+                        record.put("name", title);
+                        record.put("task", title);
+                    }
+                    if (!record.containsKey("startedAt")) {
+                        record.put("startedAt", event.createdAt());
+                    }
+                }
+            }
+        } else if ("agent_spawn".equals(toolName) || "invoke_subagent".equals(toolName)) {
+            String id = text(args, "agent_id");
+            if (id.isEmpty()) id = text(args, "id");
+            if (id.isEmpty()) id = text(args, "agent_key");
+            if (id.isEmpty()) id = text(event.payload(), "id");
+            if (id.isEmpty()) id = "spawn-" + event.seq();
+
+            Map<String, Object> record = ensureSubagent(byId, id, stepsByTask);
+            String name = text(args, "name");
+            if (name.isEmpty()) name = text(args, "agent_id");
+            if (!name.isEmpty()) record.put("name", name);
+
+            String task = text(args, "task");
+            if (task.isEmpty()) task = text(args, "label");
+            if (!task.isEmpty()) record.put("task", task);
+
+            if (!record.containsKey("startedAt")) {
+                record.put("startedAt", event.createdAt());
+            }
+            if ("failed".equals(toolStatusOf(event.payload()))) {
+                record.put("status", "failed");
+            }
+        }
+    }
+
+    private static void updateTaskFromTool(
+            ParsedEvent event, Map<String, Map<String, Object>> byId, ObjectMapper json) {
+        Map<String, Object> args = parseArgs(event.payload().get("args"), json);
+        String id = text(args, "task_id");
+        if (id.isEmpty()) id = text(args, "taskId");
+        if (id.isEmpty()) return;
+
+        Map<String, Object> record = byId.get(id);
+        if (record == null) return;
+
+        String status = text(args, "status").toUpperCase(Locale.ROOT);
+        if ("SUCCEEDED".equals(status)) {
+            record.put("status", "done");
+            record.put("endedAt", event.createdAt());
+            String summary = text(args, "result_summary");
+            if (!summary.isEmpty()) {
+                record.put("summary", summary);
+            }
+        } else if ("FAILED".equals(status)) {
+            record.put("status", "failed");
+            record.put("endedAt", event.createdAt());
+            String summary = text(args, "result_summary");
+            if (!summary.isEmpty()) {
+                record.put("summary", summary);
+            }
+        }
+    }
+
+    private static Map<String, Object> parseArgs(Object raw, ObjectMapper json) {
+        if (raw instanceof Map<?, ?> map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> typed = (Map<String, Object>) map;
+            return typed;
+        }
+        if (raw instanceof String str
+                && !str.isBlank()
+                && str.startsWith("{")
+                && str.endsWith("}")) {
+            try {
+                return json.readValue(str, new TypeReference<Map<String, Object>>() {});
+            } catch (Exception ignored) {
+            }
+        }
+        return Map.of();
+    }
+
     private static Map<String, Object> ensureSubagent(
             Map<String, Map<String, Object>> byId,
             String id,
@@ -228,13 +354,28 @@ final class SessionProcessProjector {
         Set<String> dispatched = new HashSet<>();
         Map<String, List<String>> byName = new HashMap<>();
         for (ParsedEvent event : events) {
-            if (!"dispatch".equals(event.kind())) continue;
-            String subtaskId = text(event.payload(), "subtaskId");
-            if (subtaskId.isEmpty()) continue;
-            dispatched.add(subtaskId);
-            String name = text(event.payload(), "name");
-            if (!name.isEmpty()) {
-                byName.computeIfAbsent(name, k -> new ArrayList<>()).add(subtaskId);
+            if ("dispatch".equals(event.kind())) {
+                String subtaskId = text(event.payload(), "subtaskId");
+                if (subtaskId.isEmpty()) continue;
+                dispatched.add(subtaskId);
+                String name = text(event.payload(), "name");
+                if (!name.isEmpty()) {
+                    byName.computeIfAbsent(name, k -> new ArrayList<>()).add(subtaskId);
+                }
+            } else if ("tool_call".equals(event.kind())) {
+                String toolName = toolNameOf(event.payload(), event.seq());
+                if ("task_dispatch".equals(toolName)) {
+                    String result = text(event.payload(), "result");
+                    Matcher matcher = DISPATCHED_PATTERN.matcher(result);
+                    while (matcher.find()) {
+                        String id = matcher.group(1).trim();
+                        String name = matcher.group(2).trim();
+                        dispatched.add(id);
+                        if (!name.isEmpty()) {
+                            byName.computeIfAbsent(name, k -> new ArrayList<>()).add(id);
+                        }
+                    }
+                }
             }
         }
 

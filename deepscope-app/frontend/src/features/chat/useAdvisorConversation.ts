@@ -49,6 +49,7 @@ import { foldToolCall, foldUsage, type UsageSample } from './conversationModel';
 import {
   applySubagentSignal,
   EMPTY_SUBAGENT_ACCUMULATOR,
+  extractDispatchesFromEvent,
   registerSubagentDispatch,
   subagentStepsFromReplay,
   toSubagentRuns,
@@ -297,6 +298,39 @@ export function groupSubagents(events: ConversationEvent[]): SubagentRecord[] {
       record.task = payloadText(spec, 'task') || record.task;
       // 耗时的起算点是这次派发写入记录的时间，不是子智能体首次说话的时间。
       record.startedAt = record.startedAt ?? event.createdAt;
+    } else if (event.kind === 'tool_call') {
+      const dispatches = extractDispatchesFromEvent(event);
+      for (const d of dispatches) {
+        if (!d.subtaskId) continue;
+        const record = ensure(d.subtaskId);
+        record.name = d.name || record.name;
+        record.task = d.name || record.task;
+        record.startedAt = record.startedAt ?? event.createdAt;
+        if (event.payload.status === 'failed') record.status = 'failed';
+      }
+      const toolName = payloadText(event.payload, 'name');
+      if (toolName === 'task_update') {
+        const rawArgs = payloadText(event.payload, 'args');
+        try {
+          const parsed = JSON.parse(rawArgs);
+          if (parsed && typeof parsed === 'object') {
+            const taskId = String(parsed.task_id || parsed.taskId || '');
+            if (taskId && byId.has(taskId)) {
+              const record = byId.get(taskId)!;
+              const status = String(parsed.status || '').toUpperCase();
+              if (status === 'SUCCEEDED') {
+                record.status = 'done';
+                record.endedAt = event.createdAt;
+                if (parsed.result_summary) record.summary = String(parsed.result_summary);
+              } else if (status === 'FAILED') {
+                record.status = 'failed';
+                record.endedAt = event.createdAt;
+                if (parsed.result_summary) record.summary = String(parsed.result_summary);
+              }
+            }
+          }
+        } catch {}
+      }
     } else if (event.kind === 'subagent_facts') {
       const id = payloadText(event.payload, 'subagentId');
       if (!id) continue;
@@ -946,8 +980,11 @@ export function useAdvisorConversation(sessionId: string) {
                 route = { mode: payloadText(entry.payload, 'mode'), skillName: payloadText(entry.payload, 'skillName') };
               }
               updateCurrent((state) => {
-                if (entry.kind === 'dispatch') {
-                  return { ...state, subagents: registerSubagentDispatch(state.subagents, entry) };
+                if (entry.kind === 'dispatch' || entry.kind === 'tool_call') {
+                  const dispatches = extractDispatchesFromEvent(entry);
+                  if (dispatches.length > 0) {
+                    return { ...state, subagents: registerSubagentDispatch(state.subagents, entry) };
+                  }
                 }
                 if (entry.kind === 'compaction') {
                   const turn = entry.turn > 0 ? entry.turn : currentTurn(state);
