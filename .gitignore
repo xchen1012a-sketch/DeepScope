@@ -25,8 +25,8 @@ target/
 /nbdist/
 /.nb-gradle/
 build/
-!technical-advisor-app/frontend/src/features/build/
-!technical-advisor-app/frontend/src/features/build/**
+!deepscope-app/frontend/src/features/build/
+!deepscope-app/frontend/src/features/build/**
 !**/src/main/**/build/
 !**/src/test/**/build/
 ### VS Code ###
@@ -126,8 +126,11 @@ deepscope-service/.dev-stack/
 /docs/.mintlify/
 
 # Local runtime secrets for the technical advisor backend (never commit)
-technical-advisor-app/backend/config/
+deepscope-app/backend/config/
 
 # Session journals and other per-workspace runtime state (generated, never commit)
 .deepscope-runtime/
-technical-advisor-app/data/
+deepscope-app/data/
+**/data/
+technical-advisor-app/
+.deploy/

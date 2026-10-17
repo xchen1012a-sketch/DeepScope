@@ -4,7 +4,7 @@ description: Bootstrap a local administrator for the standalone Technical Adviso
 zh_link: /v2/zh/docs/others/technical-advisor-login
 ---
 
-This guide applies to `technical-advisor-app/backend`, the standalone application, rather than the removed platform services.
+This guide applies to `deepscope-app/backend`, the standalone application, rather than the removed platform services.
 
 The agent creation field Describe your needs for AI generation is optional and used only to assist generation. A manually entered name and work instructions are sufficient without a purpose; existing validation for those fields still applies. Free-mode routing uses the agent name and description rather than this auxiliary input.
 
@@ -13,6 +13,8 @@ Temporary input on a new agent page does not automatically create a sidebar draf
 The knowledge library list fits the available viewport: search and pagination remain visible, table content scrolls internally and the header stays fixed. Horizontal scrolling and server pagination are preserved.
 
 ## PDF knowledge parsing and sources
+
+Library Settings offers a vector-model selector and Save model, without changing the system default. Empty libraries save directly. Existing documents require confirmation before a full index rebuild and then open Documents for progress. Retrieval and new uploads remain paused for the entire library until every document is ready. Failures or restarts keep retrieval paused; process failed/interrupted documents again to recover. Agents skip rebuilding libraries while other libraries remain available. Rebuilding reuses complete published passages and their page evidence where available, falling back to source files only when needed, with no reupload required. A failed database reset rolls back the previous binding and physical index, preventing mixed model spaces.
 
 All documents share one bounded embedding pool, defaulting to 3 concurrent requests (`ADVISOR_EMBEDDING_WORKERS`, range 1–8). Requests remain single-input compatible; multimodal inputs are not assumed to support independent batches. Documents report completed/total passages. Internal checkpoints reuse only matching file/model/dimensions/content/source results and are removed in the successful publication transaction. Failed work is never searchable. Short text merges within page/title boundaries; tables and image interpretations remain separate with individual source-region mappings.
 
@@ -263,7 +265,7 @@ Configuration keeps the endpoint identity and retains existing credentials unles
 
 Settings controls the system default. The conversation picker persists only that conversation's choice. A new conversation binds the current system default at creation time, and later default changes do not change existing conversations. Each run pins its selected model, context window and usage identity. Existing management permissions and conversation ownership checks remain enforced.
 
-Switching or reconfiguring an active embedding model is blocked while indexed knowledge data exists, even when dimensions match. Reindexing must be handled explicitly; the system does not silently replace vector models. Restarting the backend applies the additive display-name, last-test and conversation-selection schema fields.
+Embedding models are decoupled from the system and bound per knowledge base. The global "current embedding model" serves as the default for newly created knowledge bases and can be freely switched at any time without blocking. Existing knowledge bases lock to their bound embedding model when indexed; subsequent reprocessing and cross-library searches use each library's bound endpoint independently without conflict. Deleting an embedding endpoint currently in use by any knowledge base is prohibited and explicitly reports the names of dependent knowledge bases. Restarting the backend applies the additive display-name, last-test and conversation-selection schema fields.
 
 
 ## Management List Format

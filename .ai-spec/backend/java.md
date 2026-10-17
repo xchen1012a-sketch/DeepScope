@@ -1,8 +1,8 @@
 # Java 工程规范
 
-适用模块：`deepscope-core`、`deepscope-harness`、`deepscope-extensions`、`deepscope-examples`、`deepscope-dependencies-bom`、`deepscope-distribution`。
+适用模块：`deepscope-core`、`deepscope-harness`、`deepscope-extensions`、`deepscope-app/backend`、`deepscope-examples`、`deepscope-dependencies-bom`、`deepscope-distribution`。
 
-技术基线：Java 17（禁止 preview 特性与 switch 模式匹配）、Maven 多模块（`-T1` 构建）、Reactor、JUnit 5 + Mockito + StepVerifier；**core 与 harness 保持 Spring 无关**；extensions 中 `deepscope-spring-boot-starters/*` 及部分 channel/protocol 扩展基于 Spring，属设计内选择，但 Spring 依赖不得反向带入 core/harness。
+技术基线：Java 17（禁止 preview 特性与 switch 模式匹配）、Maven 多模块（`-T1` 构建）、Reactor、JUnit 5 + Mockito + StepVerifier；**core 与 harness 保持 Spring 无关**；extensions 中 `deepscope-spring-boot-starters/*` 及部分 channel/protocol 扩展基于 Spring，属设计内选择，但 Spring 依赖不得反向带入 core/harness；`deepscope-app/backend` 作为应用层宿主使用 Spring Boot。
 
 ## 门禁规则（工具强制）
 
@@ -18,8 +18,8 @@
 
 ### 架构边界
 
-- **【人工】分层归属**：可复用的 Agent 行为放入 `deepscope-core`；workspace、memory、subagents、channels、`HarnessAgent` 等高层能力放入 `deepscope-harness`；Provider 特定实现（模型、存储、协议、channel、sandbox）放入 `deepscope-extensions`；应用装配代码只出现在 examples。
-- **【人工】依赖方向**：core 不依赖 Harness 与任何具体 extension；库模块不得依赖 `deepscope-examples/*`；传输层 handler 保持薄（decode → call → map）。
+- **【人工】分层归属**：可复用的 Agent 行为放入 `deepscope-core`；workspace、memory、subagents、channels、`HarnessAgent` 等高层能力放入 `deepscope-harness`；Provider 特定实现（模型、存储、协议、channel、sandbox）放入 `deepscope-extensions`；应用装配与业务编排代码放入 `examples` 与 `deepscope-app/backend`。
+- **【人工】依赖方向**：core 不依赖 Harness 与任何具体 extension；底层库模块不得反向依赖 `deepscope-app/*` 与 `deepscope-examples/*`；传输层 handler 保持薄（decode → call → map）。
 - **【人工】扩展方式**：Agent 行为扩展只能通过 `MiddlewareBase` / `MiddlewareChain` 组合，禁止 fork 或继承改写 Agent 核心类。
 
 ### 兼容性
@@ -32,6 +32,7 @@
 - **【人工】禁止硬编码凭据**：API Key、密码、Token 等敏感信息禁止出现在源码与配置文件中，必须通过环境变量或外部密钥管理注入；测试使用 fake 凭据。
 - **【人工】依赖安全**：新引入的第三方依赖不得存在已知高危 CVE（CVSS ≥ 7.0）；升级依赖时须确认无新引入的高危漏洞。
 - **【人工】输入边界**：来自外部的输入（用户消息、工具返回、HTTP 请求参数）不得未经校验直接拼入命令、SQL、文件路径或模板；使用参数化方式或既有的校验/转义工具。
+- **【人工】工具执行门禁**：具备写操作、系统变更或外部副作用的工具（如 Catalog Tool / MCP 调用）必须提供确认机制或拦截门禁，禁止无约束自动执行。
 
 ### 状态与会话
 

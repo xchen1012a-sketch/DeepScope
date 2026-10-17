@@ -15,6 +15,7 @@
  */
 package io.deepscope.harness.agent.tool;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -57,16 +58,19 @@ class WaitAsyncResultsToolTest {
     @DisplayName("timeout_seconds > 120 is clamped — wait finishes within cap")
     void timeoutClampedToMax() throws Exception {
         WaitAsyncResultsTool tool = new WaitAsyncResultsTool(emptyBus());
+        assertEquals(120, tool.normalizeTimeout(600, "test-session"));
+        assertEquals(120, tool.normalizeTimeout(121, "test-session"));
+        assertEquals(120, tool.normalizeTimeout(120, "test-session"));
+        assertEquals(50, tool.normalizeTimeout(50, "test-session"));
+        assertEquals(60, tool.normalizeTimeout(null, "test-session"));
+
+        // Verify tool handles a short timeout call properly without hanging
         long start = System.currentTimeMillis();
-        String result = tool.waitForResults(600, ctx());
+        String result = tool.waitForResults(1, ctx());
         long elapsed = System.currentTimeMillis() - start;
 
         assertTrue(result.contains("Timeout"), "should timeout, got: " + result);
-        // Clamped to 120s, but we expect it to finish much faster in tests
-        // since we pass 600 which gets clamped. We can't wait 120s in a unit test,
-        // so we verify the tool accepted the call and returned a timeout.
-        // The real assertion is that it didn't wait 600s.
-        assertTrue(elapsed < 130_000, "should not wait 600s, elapsed: " + elapsed + "ms");
+        assertTrue(elapsed < 5_000, "1s timeout should finish quickly, elapsed: " + elapsed + "ms");
     }
 
     @Test

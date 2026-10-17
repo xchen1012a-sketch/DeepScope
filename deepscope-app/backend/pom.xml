@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2024-2026 the original author or authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+<!--
+  Technical Advisor demo app backend.
+  Hosts the advisor HarnessAgent (defined by workspace files under
+  src/main/resources/workspace) and exposes the framework's standard
+  AG-UI chat API plus the admin/ops surface. The frontend lives in
+  deepscope-app/frontend.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.deepscope</groupId>
+        <artifactId>deepscope-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>technical-advisor-backend</artifactId>
+    <name>DeepScope Java - Technical Advisor Backend</name>
+    <description>Demo app backend hosting the technical advisor agent with AG-UI chat and admin surfaces</description>
+
+    <properties>
+        <spring.boot.version>4.0.4</spring.boot.version>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Spring Boot dependency management (same import pattern as the starters parent) -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Harness agent runtime: workspace, skills, subagents, sessions -->
+        <dependency>
+            <groupId>io.deepscope</groupId>
+            <artifactId>deepscope-harness</artifactId>
+        </dependency>
+
+        <!-- Chat surface: AG-UI streaming endpoints, auto-registers Agent beans -->
+        <dependency>
+            <groupId>io.deepscope</groupId>
+            <artifactId>deepscope-agui-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- Ops surface: agent inventory, session admin, subagent task views -->
+        <dependency>
+            <groupId>io.deepscope</groupId>
+            <artifactId>deepscope-admin-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- Document readers, embedding client, and the pgvector store. -->
+        <dependency>
+            <groupId>io.deepscope</groupId>
+            <artifactId>deepscope-extensions-rag-simple</artifactId>
+        </dependency>
+
+        <!-- Model provider: OpenAI-protocol model bean from deepscope.openai.* config -->
+        <dependency>
+            <groupId>io.deepscope</groupId>
+            <artifactId>deepscope-openai-spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.deepscope</groupId>
+            <artifactId>deepscope-extensions-model-anthropic</artifactId>
+        </dependency>
+
+        <!-- Servlet web stack for the MVC-based starters -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Business-data persistence: accounts, sessions, event timeline, deliverables. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <!-- PostgreSQL + pgvector hosts all business data; version is managed by Boot. -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Paste-a-definition import reads both JSON and YAML; version is managed by the BOM. -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+        </dependency>
+
+        <!-- Portable in-memory database so tests run without a PostgreSQL server. -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

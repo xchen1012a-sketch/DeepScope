@@ -26,7 +26,7 @@
 ## 项目目录
 
 ```text
-technical-advisor-app/
+deepscope-app/
   backend/                 应用后端
   frontend/                Web 工作台
   docs/                    应用设计与验证记录
@@ -37,7 +37,7 @@ docs/                     技术文档与设计方案
 .ai-spec/                 工程规范
 ```
 
-现有模块路径沿用代码中的名称，应用入口位于 `technical-advisor-app`。
+现有模块路径沿用代码中的名称，应用入口位于 `deepscope-app`。
 
 ## 本地运行
 
@@ -59,7 +59,7 @@ export ADVISOR_ADMIN_PASSWORD='<初始管理员密码>'
 
 需要保存工具凭据时，配置 `ADVISOR_TOOL_CREDENTIAL_KEY`，其值为 Base64 编码的 32 字节密钥，并保持稳定。PDF 图片识别与重排模型在配置后启用。
 
-完整配置见 [application.yaml](technical-advisor-app/backend/src/main/resources/application.yaml)。本地密钥、数据库、上传文件与运行日志不纳入版本管理。
+完整配置见 [application.yaml](deepscope-app/backend/src/main/resources/application.yaml)。本地密钥、数据库、上传文件与运行日志不纳入版本管理。
 
 ### 2. 启动后端
 
@@ -68,18 +68,18 @@ export ADVISOR_ADMIN_PASSWORD='<初始管理员密码>'
 构建会运行测试；pgvector 集成测试需要通过 `ADVISOR_TEST_PGVECTOR_URL`、`ADVISOR_TEST_PGVECTOR_USER`、`ADVISOR_TEST_PGVECTOR_PASSWORD` 指定独立测试数据库，请勿使用应用数据库。
 
 ```sh
-mvn -T1 -pl technical-advisor-app/backend -am package
-java -jar technical-advisor-app/backend/target/technical-advisor-backend-2.0.5-SNAPSHOT.jar
+mvn -T1 -pl deepscope-app/backend -am package
+java -jar deepscope-app/backend/target/technical-advisor-backend-2.0.5-SNAPSHOT.jar
 ```
 
-后端默认监听 `18080`。运行数据默认存放在 `technical-advisor-app/data/`。
+后端默认监听 `18080`。运行数据默认存放在 `deepscope-app/data/`。
 
 ### 3. 启动前端
 
 另开终端执行：
 
 ```sh
-cd technical-advisor-app/frontend
+cd deepscope-app/frontend
 npm ci
 npm run dev
 ```
@@ -88,7 +88,7 @@ npm run dev
 
 ## 开发检查
 
-前端在 `technical-advisor-app/frontend` 下执行 `npm test`、`npm run lint` 和 `npm run build`。后端测试与格式检查按 [.ai-spec/backend/gates.md](.ai-spec/backend/gates.md) 执行。
+前端在 `deepscope-app/frontend` 下执行 `npm test`、`npm run lint` 和 `npm run build`。后端测试与格式检查按 [.ai-spec/backend/gates.md](.ai-spec/backend/gates.md) 执行。
 
 项目规范见 [AGENTS.md](AGENTS.md)，应用说明见 [功能文档](docs/v2/zh/docs/others/technical-advisor-login.md)。
 

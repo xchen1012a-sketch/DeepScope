@@ -1,6 +1,6 @@
 # .ai-spec — 工程规范唯一可信源（SSOT）
 
-本目录集中存放 DeepScope Java 的全部工程规范。根目录的 `AGENTS.md` 与 `CLAUDE.md`（两者内容相同）是轻量导航入口，规范内容只在本目录维护，禁止在别处复制副本。
+本目录集中存放 DeepScope Java 的全部工程规范。根目录的 `AGENTS.md`、`CLAUDE.md` 与 `GEMINI.md`（三者内容相同）是轻量导航入口，规范内容只在本目录维护，禁止在别处复制副本。
 
 ## 目录结构
 
@@ -11,7 +11,7 @@
 | [project-map.md](project-map.md) | 项目地图：模块 → 职责 → 技术栈 → 适用规范，及按需阅读文档 |
 | [backend/java.md](backend/java.md) | Java 侧工程规范（core / harness / extensions / examples） |
 | [backend/gates.md](backend/gates.md) | 后端自动化门禁清单（Java + CI） |
-| [frontend/spec.md](frontend/spec.md) | 前端工程规范（technical-advisor-app/frontend） |
+| [frontend/spec.md](frontend/spec.md) | 前端工程规范（deepscope-app/frontend） |
 | [frontend/gates.md](frontend/gates.md) | 前端自动化门禁清单 |
 
 ## 项目地图

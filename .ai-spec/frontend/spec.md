@@ -1,6 +1,6 @@
 # 前端工程规范
 
-适用模块：`technical-advisor-app/frontend`（技术参谋演示前端，源自原平台控制台整体剥离）。源码目录：`src/`。
+适用模块：`deepscope-app/frontend`（技术参谋演示前端，源自原平台控制台整体剥离）。源码目录：`src/`。
 
 技术基线：React 18 + TypeScript 5.7 + Vite 6、Tailwind CSS 4 + Radix UI + class-variance-authority / clsx / tailwind-merge、TanStack Query 5（服务端状态）、React Router 6、i18next + react-i18next（国际化）、Vitest + ESLint（flat config）+ Playwright。
 

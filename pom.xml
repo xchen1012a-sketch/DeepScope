@@ -59,7 +59,7 @@
         <module>deepscope-harness</module>
         <module>deepscope-extensions</module>
         <module>deepscope-examples</module>
-        <module>technical-advisor-app/backend</module>
+        <module>deepscope-app/backend</module>
         <module>deepscope-dependencies-bom</module>
         <module>deepscope-distribution</module>
     </modules>

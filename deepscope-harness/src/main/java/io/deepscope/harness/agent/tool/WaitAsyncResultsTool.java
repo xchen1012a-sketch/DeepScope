@@ -440,7 +440,7 @@ public class WaitAsyncResultsTool {
                 + "blocking.";
     }
 
-    private int normalizeTimeout(Integer timeoutSeconds, String sessionId) {
+    int normalizeTimeout(Integer timeoutSeconds, String sessionId) {
         int raw =
                 timeoutSeconds != null && timeoutSeconds > 0
                         ? timeoutSeconds
