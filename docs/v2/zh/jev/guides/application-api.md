@@ -13,10 +13,10 @@ title: "对业务候选进行多标签分类"
 ## 初始化
 
 ```java
-import io.agentscope.extensions.judge.jev.JevClient;
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.JevJudge;
-import io.agentscope.extensions.judge.jev.application.JevCandidateSelector;
+import io.deepscope.extensions.judge.jev.JevClient;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.JevJudge;
+import io.deepscope.extensions.judge.jev.application.JevCandidateSelector;
 import java.time.Duration;
 import java.util.Map;
 
@@ -65,7 +65,7 @@ var observed = pending.doOnNext(decision -> {
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后执行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios classification
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevApplicationScenarios classification
 ```
 
 预设订单 0.95、账单 0.90、技术 0.05，输出选中 `[orders, billing]`、排除 `[technical]`，实际业务动作数为 0。它验证多标签结果与业务动作的分离，不代表真实模型准确率。[JevApplicationScenarios 完整源码](/examples/jev/source/JevApplicationScenarios.java.txt)

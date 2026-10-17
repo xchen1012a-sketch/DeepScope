@@ -12,15 +12,15 @@ This page has been superseded by [Distributed Storage — Redis](/v2/en/integrat
 
 # Redis State Store
 
-`agentscope-extensions-redis` persists AgentScope agent state in Redis. The unified `RedisClientAdapter` abstracts over **Jedis, Lettuce, and Redisson**, covering Standalone, Cluster, and Sentinel deployment modes.
+`deepscope-extensions-redis` persists DeepScope agent state in Redis. The unified `RedisClientAdapter` abstracts over **Jedis, Lettuce, and Redisson**, covering Standalone, Cluster, and Sentinel deployment modes.
 
 ## Add the dependency
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-redis</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-redis</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -30,8 +30,8 @@ The module does not pin a Redis client — bring whatever you already use (Jedis
 
 ```java
 import io.lettuce.core.RedisClient;
-import io.agentscope.core.state.AgentStateStore;
-import io.agentscope.extensions.redis.state.RedisAgentStateStore;
+import io.deepscope.core.state.AgentStateStore;
+import io.deepscope.extensions.redis.state.RedisAgentStateStore;
 
 RedisClient redisClient = RedisClient.create("redis://localhost:6379");
 
@@ -86,7 +86,7 @@ AgentStateStore stateStore = RedisAgentStateStore.builder()
 
 ## Custom key prefix
 
-By default, all keys look like `agentscope:session:{userSegment}/{sessionId}:...` (where `userSegment` is the `userId`, or `__anon__` for anonymous sessions). When several projects share the same Redis, override it:
+By default, all keys look like `deepscope:session:{userSegment}/{sessionId}:...` (where `userSegment` is the `userId`, or `__anon__` for anonymous sessions). When several projects share the same Redis, override it:
 
 ```java
 AgentStateStore stateStore = RedisAgentStateStore.builder()
@@ -148,6 +148,6 @@ AgentStateStore stateStore = RedisAgentStateStore.builder()
 | `lettuceClusterClient(RedisClusterClient)` | Lettuce cluster |
 | `redissonClient(RedissonClient)` | Redisson, any deployment mode |
 | `clientAdapter(RedisClientAdapter)` | Custom adapter |
-| `keyPrefix(String)` | Default `agentscope:session:` |
+| `keyPrefix(String)` | Default `deepscope:session:` |
 
 > The client setters are mutually exclusive — set exactly one.

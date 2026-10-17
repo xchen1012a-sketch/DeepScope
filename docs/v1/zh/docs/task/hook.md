@@ -7,7 +7,7 @@ Hook 是一系列的扩展点，用于在特定执行阶段监控和修改智能
 
 ## Hook 概述
 
-AgentScope Java 使用**统一事件模型**，所有 Hook 都需要实现 `onEvent(HookEvent)` 方法：
+DeepScope Java 使用**统一事件模型**，所有 Hook 都需要实现 `onEvent(HookEvent)` 方法：
 
 - **基于事件**：所有智能体活动生成事件
 - **类型安全**：对事件类型进行模式匹配
@@ -36,10 +36,10 @@ AgentScope Java 使用**统一事件模型**，所有 Hook 都需要实现 `onEv
 ### 基础 Hook
 
 ```java
-import io.agentscope.core.hook.Hook;
-import io.agentscope.core.hook.HookEvent;
-import io.agentscope.core.hook.PreCallEvent;
-import io.agentscope.core.hook.PostCallEvent;
+import io.deepscope.core.hook.Hook;
+import io.deepscope.core.hook.HookEvent;
+import io.deepscope.core.hook.PreCallEvent;
+import io.deepscope.core.hook.PostCallEvent;
 import reactor.core.publisher.Mono;
 
 public class LoggingHook implements Hook {
@@ -85,12 +85,12 @@ public class HighPriorityHook implements Hook {
 某些事件允许修改：
 
 ```java
-import io.agentscope.core.hook.Hook;
-import io.agentscope.core.hook.HookEvent;
-import io.agentscope.core.hook.PreReasoningEvent;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.TextBlock;
+import io.deepscope.core.hook.Hook;
+import io.deepscope.core.hook.HookEvent;
+import io.deepscope.core.hook.PreReasoningEvent;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.TextBlock;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -119,7 +119,7 @@ public class PromptEnhancingHook implements Hook {
 在构建智能体时注册 Hook：
 
 ```java
-import io.agentscope.core.ReActAgent;
+import io.deepscope.core.ReActAgent;
 import java.util.List;
 
 ReActAgent agent = ReActAgent.builder()
@@ -143,11 +143,11 @@ ReActAgent agent = ReActAgent.builder()
 跟踪工具调用：
 
 ```java
-import io.agentscope.core.hook.Hook;
-import io.agentscope.core.hook.HookEvent;
-import io.agentscope.core.hook.PostActingEvent;
-import io.agentscope.core.hook.PreActingEvent;
-import io.agentscope.core.message.TextBlock;
+import io.deepscope.core.hook.Hook;
+import io.deepscope.core.hook.HookEvent;
+import io.deepscope.core.hook.PostActingEvent;
+import io.deepscope.core.hook.PreActingEvent;
+import io.deepscope.core.message.TextBlock;
 import reactor.core.publisher.Mono;
 
 public class ToolMonitorHook implements Hook {
@@ -181,9 +181,9 @@ public class ToolMonitorHook implements Hook {
 监控和处理错误：
 
 ```java
-import io.agentscope.core.hook.ErrorEvent;
-import io.agentscope.core.hook.Hook;
-import io.agentscope.core.hook.HookEvent;
+import io.deepscope.core.hook.ErrorEvent;
+import io.deepscope.core.hook.Hook;
+import io.deepscope.core.hook.HookEvent;
 import reactor.core.publisher.Mono;
 
 public class ErrorHandlingHook implements Hook {
@@ -205,27 +205,27 @@ public class ErrorHandlingHook implements Hook {
 ## 完整示例
 
 查看完整的 Hook 示例：
-- [HookExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/HookExample.java)
+- [HookExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/HookExample.java)
 
 运行示例：
 ```bash
-cd agentscope-examples/documentation/quickstart
-mvn exec:java -Dexec.mainClass="io.agentscope.examples.quickstart.HookExample"
+cd deepscope-examples/documentation/quickstart
+mvn exec:java -Dexec.mainClass="io.deepscope.examples.quickstart.HookExample"
 ```
 
 ## 内置 JSONL 跟踪导出器
 
-为了便于本地调试和离线排障，AgentScope Java 提供了一个内置的 JSONL 导出器：
+为了便于本地调试和离线排障，DeepScope Java 提供了一个内置的 JSONL 导出器：
 
 > **警告**：JSONL 跟踪导出器会将完整的 prompt、消息、工具输入以及错误堆栈
 > 写入本地文件。这些记录可能包含敏感用户数据、凭据或其他机密信息，
 > 因此只能在受信任的环境中启用，并应将输出文件按敏感数据处理。
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.hook.recorder.JsonlTraceExporter;
-import io.agentscope.core.model.Model;
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.hook.recorder.JsonlTraceExporter;
+import io.deepscope.core.model.Model;
+import io.deepscope.core.tool.Toolkit;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -234,7 +234,7 @@ public class JsonlTraceExample {
 
     public void run(Model model, Toolkit toolkit) throws IOException {
         try (JsonlTraceExporter exporter =
-                JsonlTraceExporter.builder(Path.of("logs", "agentscope-trace.jsonl"))
+                JsonlTraceExporter.builder(Path.of("logs", "deepscope-trace.jsonl"))
                         .includeReasoningChunks(true) // 可选
                         .includeActingChunks(true)    // 可选
                         .build()) {

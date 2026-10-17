@@ -1,5 +1,5 @@
 {
-  "name": "agentscope-java-docs",
+  "name": "deepscope-java-docs",
   "private": true,
   "type": "module",
   "engines": { "node": ">=22" },

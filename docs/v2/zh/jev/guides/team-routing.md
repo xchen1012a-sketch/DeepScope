@@ -13,7 +13,7 @@ title: "为显式阶段选择团队候选"
 ## 1. 提供成员职责与宿主过滤条件
 
 ```java
-import io.agentscope.extensions.judge.jev.application.JevTeamPlanner;
+import io.deepscope.extensions.judge.jev.application.JevTeamPlanner;
 import java.util.List;
 import java.util.Set;
 
@@ -44,7 +44,7 @@ var pending = planner.recommend(ctx, "review",
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后执行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios team
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevApplicationScenarios team
 ```
 
 预设结果推荐 `reviewer`，不考虑 `offline-reviewer`，创建任务数为 0。这个用例验证宿主过滤在先、建议不自动执行；没有评测团队最终交付质量。[JevApplicationScenarios 完整源码](/examples/jev/source/JevApplicationScenarios.java.txt)

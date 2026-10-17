@@ -1,11 +1,11 @@
 # Channel Integration Context
 
-This glossary defines the messaging-channel concepts used by AgentScope integrations, including the personal Weixin channel in the multi-tenant Agent platform.
+This glossary defines the messaging-channel concepts used by DeepScope integrations, including the personal Weixin channel in the multi-tenant Agent platform.
 
 ## Channel concepts
 
 **Channel**:
-A runtime adapter that receives messages from one provider, routes them through AgentScope, and sends replies back to that provider.
+A runtime adapter that receives messages from one provider, routes them through DeepScope, and sends replies back to that provider.
 _Avoid_: Channel resource, connector
 
 **Channel extension**:
@@ -37,7 +37,7 @@ The product-owned relationship between a Channel resource, its authorizing Platf
 _Avoid_: Channel extension, login session, account file
 
 **Channel binding**:
-A routing rule that selects the logical AgentScope target for messages received through a Channel resource.
+A routing rule that selects the logical DeepScope target for messages received through a Channel resource.
 _Avoid_: Weixin connection, login session
 
 **Provider login session**:
@@ -49,7 +49,7 @@ The secret issued by iLink after authorization and used by a running Channel to 
 _Avoid_: Context token, credential reference, QR code
 
 **Peer**:
-The conversation counterpart used to build an AgentScope session key; it may be an individual user or a group conversation.
+The conversation counterpart used to build an DeepScope session key; it may be an individual user or a group conversation.
 _Avoid_: sender
 
 **Context token**:

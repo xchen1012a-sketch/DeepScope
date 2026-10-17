@@ -6,7 +6,7 @@ title: 让 Agent 学会判断：Jev 与结构化决策
 
 这个请求该用哪个模型处理？当前上下文里哪些工具应该暴露给模型？这个 bash 命令能不能自动放行？这个回答的置信度够不够直接返回？这些判断每一个都不复杂，但它们出现在 Agent 运行时的每一个角落，加起来就变成了一个被长期低估的系统性开销。
 
-AgentScope Java 最近集成了 [TypeSafe AI 的 Jev](https://docs.typesafe.ai/)。这篇文章不只介绍集成本身——更重要的是借这个机会聊清楚：为什么 Agent 系统需要一种独立于"推理"的"判断"能力，以及这种能力应该怎么用。
+DeepScope Java 最近集成了 [TypeSafe AI 的 Jev](https://docs.typesafe.ai/)。这篇文章不只介绍集成本身——更重要的是借这个机会聊清楚：为什么 Agent 系统需要一种独立于"推理"的"判断"能力，以及这种能力应该怎么用。
 
 ---
 
@@ -60,17 +60,17 @@ AgentScope Java 最近集成了 [TypeSafe AI 的 Jev](https://docs.typesafe.ai/)
 
 ---
 
-## 在 AgentScope Java 里怎么接入
+## 在 DeepScope Java 里怎么接入
 
-AgentScope 没有把 Jev 注册成 `Model` provider。原因很简单：`Model` 接口面向的是聊天推理，返回 `ChatResponse`；Jev 返回的是结构化答案，两者在调用频率、超时预期和类型系统上都不匹配。硬塞进同一个接口只会让配置语义变得混乱。所以 Jev 以独立扩展模块的方式存在，应用代码直接注入 `JevClient` 做判断，或者通过 middleware 挂到 Agent 循环里。
+DeepScope 没有把 Jev 注册成 `Model` provider。原因很简单：`Model` 接口面向的是聊天推理，返回 `ChatResponse`；Jev 返回的是结构化答案，两者在调用频率、超时预期和类型系统上都不匹配。硬塞进同一个接口只会让配置语义变得混乱。所以 Jev 以独立扩展模块的方式存在，应用代码直接注入 `JevClient` 做判断，或者通过 middleware 挂到 Agent 循环里。
 
 依赖引入：
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-jev</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-jev</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -78,14 +78,14 @@ Spring Boot 项目可以直接用 starter：
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-jev-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-jev-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ```yaml
-agentscope:
+deepscope:
   jev:
     api-key: ${TYPESAFE_API_KEY:}
     base-url: https://api.typesafe.ai
@@ -120,8 +120,8 @@ JevModelRouterMiddleware modelRouter =
                 .choice("powerful", powerfulModel, "Architecture and high-stakes decisions.")
                 .instructions("Choose the least costly model that can complete the task.")
                 .confidenceThreshold(0.75)
-                .execution(new io.agentscope.extensions.judge.jev.JevExecution.Options(
-                    io.agentscope.extensions.judge.jev.JevExecution.Mode.SHADOW,
+                .execution(new io.deepscope.extensions.judge.jev.JevExecution.Options(
+                    io.deepscope.extensions.judge.jev.JevExecution.Mode.SHADOW,
                     java.time.Duration.ofSeconds(2), "v1", (ctx, record) -> {}))
                 .build();
 
@@ -147,8 +147,8 @@ JevToolSelectionMiddleware toolSelection =
                 .alwaysIncludeTools(Set.of("load_skill_through_path", "reset_tools"))
                 .maxTools(3)
                 .confidenceThreshold(0.8)
-                .execution(new io.agentscope.extensions.judge.jev.JevExecution.Options(
-                    io.agentscope.extensions.judge.jev.JevExecution.Mode.SHADOW,
+                .execution(new io.deepscope.extensions.judge.jev.JevExecution.Options(
+                    io.deepscope.extensions.judge.jev.JevExecution.Mode.SHADOW,
                     java.time.Duration.ofSeconds(2), "v1", (ctx, record) -> {}))
                 .build();
 ```
@@ -164,8 +164,8 @@ JevAutoModeMiddleware autoMode =
         JevAutoModeMiddleware.builder(client)
                 .guardedTool("bash")
                 .safetyThreshold(0.8)
-                .execution(new io.agentscope.extensions.judge.jev.JevExecution.Options(
-                    io.agentscope.extensions.judge.jev.JevExecution.Mode.SHADOW,
+                .execution(new io.deepscope.extensions.judge.jev.JevExecution.Options(
+                    io.deepscope.extensions.judge.jev.JevExecution.Mode.SHADOW,
                     java.time.Duration.ofSeconds(2), "v1", (ctx, record) -> {}))
                 .build();
 

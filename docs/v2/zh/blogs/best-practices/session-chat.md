@@ -1,10 +1,10 @@
 ---
 title: 可恢复聊天示例
-description: 运行 agentscope-chat，体验聊天历史、SSE 续传、用户补充与 checkpoint 恢复。
+description: 运行 deepscope-chat，体验聊天历史、SSE 续传、用户补充与 checkpoint 恢复。
 en_link: /v2/en/blogs/best-practices/session-chat
 ---
 
-完整源代码位于仓库 [agentscope-chat](https://github.com/agentscope-ai/agentscope-java/tree/main/agentscope-examples/agents/agentscope-chat)。
+完整源代码位于仓库 [deepscope-chat](https://github.com/xchen1012a-sketch/DeepScope/tree/main/deepscope-examples/agents/deepscope-chat)。
 
 一个可以直接运行的 HarnessAgent Web Chat，演示持久会话、实时事件、SSE 续传和 checkpoint 恢复。浏览器页面包含聊天区、待答请求和已提交事件时间线。
 
@@ -14,20 +14,20 @@ en_link: /v2/en/blogs/best-practices/session-chat
 
 ## 启动
 
-在 agentscope-java 仓库根目录运行：
+在 deepscope-java 仓库根目录运行：
 
 ```bash
-mvn -pl agentscope-examples/agents/agentscope-chat -am package -DskipTests
-java -jar agentscope-examples/agents/agentscope-chat/target/agentscope-chat.jar
+mvn -pl deepscope-examples/agents/deepscope-chat -am package -DskipTests
+java -jar deepscope-examples/agents/deepscope-chat/target/deepscope-chat.jar
 ```
 
-打开 [http://127.0.0.1:8087](http://127.0.0.1:8087)。示例只监听本机地址。默认 Workspace 是 `~/.agentscope/session-chat`，原生日志保存在该目录的 `.agentscope-runtime/` 中；重启时保留此目录即可。
+打开 [http://127.0.0.1:8087](http://127.0.0.1:8087)。示例只监听本机地址。默认 Workspace 是 `~/.deepscope/session-chat`，原生日志保存在该目录的 `.deepscope-runtime/` 中；重启时保留此目录即可。
 
 可以指定独立的数据目录和端口：
 
 ```bash
 CHAT_WORKSPACE=/absolute/path/to/chat-workspace CHAT_PORT=8088 \
-  java -jar agentscope-examples/agents/agentscope-chat/target/agentscope-chat.jar
+  java -jar deepscope-examples/agents/deepscope-chat/target/deepscope-chat.jar
 ```
 
 ## 按顺序体验
@@ -84,7 +84,7 @@ SSE 只观察已提交事件并触发视图更新。普通断线由 EventSource 
 ```bash
 export DASHSCOPE_API_KEY=your_api_key
 export CHAT_MODEL=qwen-plus
-java -jar agentscope-examples/agents/agentscope-chat/target/agentscope-chat.jar
+java -jar deepscope-examples/agents/deepscope-chat/target/deepscope-chat.jar
 ```
 
 真实模型下使用自然语言聊天，`/slow` 和 `/ask` 是离线模型的演示指令。要体验挂起，可以请模型先通过 ask_user 询问你的偏好。切回离线模式使用 `CHAT_MODEL=demo`。模型切换不改变日志位置；如需分开历史，可新建会话。
@@ -122,6 +122,6 @@ java -jar agentscope-examples/agents/agentscope-chat/target/agentscope-chat.jar
 ## 验证
 
 ```bash
-mvn -pl agentscope-examples/agents/agentscope-chat -am test \
+mvn -pl deepscope-examples/agents/deepscope-chat -am test \
   -Dtest=ChatSessionsTest,ChatItemsTest -Dsurefire.failIfNoSpecifiedTests=false
 ```

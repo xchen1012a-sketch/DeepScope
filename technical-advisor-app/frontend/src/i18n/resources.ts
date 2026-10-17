@@ -28,4 +28,4 @@ export const i18nResources = {
 export const SUPPORTED_LANGUAGES = ['zh-CN', 'en'] as const;
 export type AppLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 export const DEFAULT_LANGUAGE: AppLanguage = 'zh-CN';
-export const LOCALE_STORAGE_KEY = 'controlplane.console.locale';
+export const LOCALE_STORAGE_KEY = 'deepscope.locale';

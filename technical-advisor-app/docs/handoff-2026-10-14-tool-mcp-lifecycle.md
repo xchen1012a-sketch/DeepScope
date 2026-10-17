@@ -132,13 +132,13 @@
 3. 前端文案与错误码必须 `en` 与 `zh-CN` 同步；前端 TS target 是 ES2020（没有 `.at()`）。
 4. 注入 `ObjectMapper` 参数名固定 `advisorObjectMapper`；H2 测试 URL 必须带 `DB_CLOSE_DELAY=-1`。
 5. 需要绑定本地端口的测试在沙箱内会失败，原命令用 require_escalated 重跑；不要因此改业务代码。
-6. 禁改 `agentscope-core` / `agentscope-harness`；数据库既有表 / 列（`advisor_tool_change_requests`、`advisor_tool_definition_revisions`、`provider_name`、`lifecycle_status`、`pending_json`）保持原样。
+6. 禁改 `deepscope-core` / `deepscope-harness`；数据库既有表 / 列（`advisor_tool_change_requests`、`advisor_tool_definition_revisions`、`provider_name`、`lifecycle_status`、`pending_json`）保持原样。
 7. 测试要用真实行为断言；**跳过的测试就是缺口，必须明说**；中间结论不要报成最终结果；RED 必须是行为失败，不能拿格式失败冒充。
 
 ## 8. 续接提示词（可直接复制给下一个 AI）
 
 ```text
-你是接手「技术顾问 App」工具 / MCP 生命周期的 AI。工作目录 /Users/agent/agentscope-java，业务代码只在 technical-advisor-app/。全程中文汇报，结论先行、说重点。
+你是接手「技术顾问 App」工具 / MCP 生命周期的 AI。工作目录 /Users/agent/deepscope-java，业务代码只在 technical-advisor-app/。全程中文汇报，结论先行、说重点。
 
 先读（按顺序）：
 1. technical-advisor-app/docs/handoff-2026-10-14-tool-mcp-lifecycle.md（当前真实状态，本文档）
@@ -157,7 +157,7 @@ mvn -T1 -pl technical-advisor-app/backend spotless:check
 - 完成后跑完整门禁 + spotless:check，报告写明“跳过的测试 = 缺口”。
 第 2 项通过独立复审前，不要开工第 3 项。
 
-纪律：不 commit / push / reset；保留混合 diff；改 Java 先 spotless:apply；i18n 中英同步；ObjectMapper 注入参数名 advisorObjectMapper；H2 加 DB_CLOSE_DELAY=-1；端口测试需要沙箱外权限；禁改 agentscope-core / harness；既有表列保持原样。
+纪律：不 commit / push / reset；保留混合 diff；改 Java 先 spotless:apply；i18n 中英同步；ObjectMapper 注入参数名 advisorObjectMapper；H2 加 DB_CLOSE_DELAY=-1；端口测试需要沙箱外权限；禁改 deepscope-core / harness；既有表列保持原样。
 
 汇报格式：改了哪些文件、跑了哪些检查及实际结果、还剩哪些缺口。
 ```

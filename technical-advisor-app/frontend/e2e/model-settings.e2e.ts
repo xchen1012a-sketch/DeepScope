@@ -19,8 +19,8 @@ import { listPageFixture } from './listPageFixture';
 
 async function mockModels(page: Page, language = 'en') {
   await page.addInitScript(language => {
-    localStorage.setItem('claw_token', 'model-ui-test');
-    localStorage.setItem('controlplane.console.locale', language);
+    localStorage.setItem('deepscope_token', 'model-ui-test');
+    localStorage.setItem('deepscope.locale', language);
   }, language);
   const models = [
     { endpointId: 'one', kind: 'chat', provider: 'dashscope', modelName: 'qwen-plus', displayName: 'Qwen Plus', current: true, baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1', secretMask: '••••', lastTestStatus: 'passed', lastTestAt: Date.now(), lastTestElapsedMs: 820 },

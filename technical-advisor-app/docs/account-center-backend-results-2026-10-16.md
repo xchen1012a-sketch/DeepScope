@@ -26,10 +26,10 @@
 
 新增：
 
-- backend/src/main/java/io/agentscope/advisor/account/AccountSelfServiceController.java
+- backend/src/main/java/io/deepscope/advisor/account/AccountSelfServiceController.java
 - 同目录AccountPreferencesStore.java、AvatarStore.java、WebpDimensions.java
-- backend/src/test/java/io/agentscope/advisor/account/AccountSelfServiceTest.java、AccountPreferencesStoreTest.java
-- backend/src/test/java/io/agentscope/advisor/auth/AccountPasswordConcurrencyTest.java
+- backend/src/test/java/io/deepscope/advisor/account/AccountSelfServiceTest.java、AccountPreferencesStoreTest.java
+- backend/src/test/java/io/deepscope/advisor/auth/AccountPasswordConcurrencyTest.java
 
 本轮增量修改：
 

@@ -34,7 +34,7 @@ DistributedStore store = DistributedStore.builder()
 
 ### Alternative: Control Plane hosted store
 
-If you run an AgentScope Service Control Plane, it can host BaseStore / sandbox lock & snapshot / MessageBus / AsyncToolRegistry / **TaskRepository** / optional **SessionTurnGate**. You still supply **one** `AgentStateStore` (Redis/MySQL/Postgres/OSS); core provides `getVersioned` / `saveIfVersion`, but storage stays off the control plane:
+If you run an DeepScope Service Control Plane, it can host BaseStore / sandbox lock & snapshot / MessageBus / AsyncToolRegistry / **TaskRepository** / optional **SessionTurnGate**. You still supply **one** `AgentStateStore` (Redis/MySQL/Postgres/OSS); core provides `getVersioned` / `saveIfVersion`, but storage stays off the control plane:
 
 ```java
 ControlPlaneStores cp = ControlPlaneStores.fromEnv();
@@ -60,7 +60,7 @@ Enable with `--enable-hosted-store` on the control plane (Postgres recommended).
 
 ### DistributedStore capability matrix
 
-| Capability | Redis (`agentscope-extensions-redis`) | OSS (`agentscope-extensions-oss`) | MySQL (`agentscope-extensions-mysql`) |
+| Capability | Redis (`deepscope-extensions-redis`) | OSS (`deepscope-extensions-oss`) | MySQL (`deepscope-extensions-mysql`) |
 |------------|:-----:|:---:|:-----:|
 | `AgentStateStore` | `RedisAgentStateStore` | `OssAgentStateStore` | `MysqlAgentStateStore` |
 | `BaseStore` | `RedisStore` | `OssBaseStore` | `JdbcStore` |
@@ -88,16 +88,16 @@ Each component solves a different production problem:
 
 | Implementation | Module | When to use |
 |----------------|--------|-------------|
-| `InMemoryAgentStateStore` | `agentscope-core` | unit tests; everything dies on process exit |
-| `JsonFileAgentStateStore` | `agentscope-core` | single-machine dev; one directory per `(userId, sessionId)`. **HarnessAgent default**, rooted at `~/.agentscope/state/<agentId>/`; **single-machine** |
-| `RedisAgentStateStore` | `agentscope-extensions-redis` | **multi-replica production default**; supports Jedis / Lettuce / Redisson (Standalone / Cluster / Sentinel) |
-| `MysqlAgentStateStore` | `agentscope-extensions-mysql` | when state must live in a relational store (audit / reporting / joins) |
+| `InMemoryAgentStateStore` | `deepscope-core` | unit tests; everything dies on process exit |
+| `JsonFileAgentStateStore` | `deepscope-core` | single-machine dev; one directory per `(userId, sessionId)`. **HarnessAgent default**, rooted at `~/.deepscope/state/<agentId>/`; **single-machine** |
+| `RedisAgentStateStore` | `deepscope-extensions-redis` | **multi-replica production default**; supports Jedis / Lettuce / Redisson (Standalone / Cluster / Sentinel) |
+| `MysqlAgentStateStore` | `deepscope-extensions-mysql` | when state must live in a relational store (audit / reporting / joins) |
 
 **Redis with any of the three client adapters** through `RedisAgentStateStore.builder()`:
 
 ```java
-import io.agentscope.core.state.AgentStateStore;
-import io.agentscope.extensions.redis.state.RedisAgentStateStore;
+import io.deepscope.core.state.AgentStateStore;
+import io.deepscope.extensions.redis.state.RedisAgentStateStore;
 import redis.clients.jedis.JedisPooled;
 
 // Jedis Standalone
@@ -163,8 +163,8 @@ HarnessAgent.builder()
 
 | Implementation | Dependency | Concurrency safety | Use it when |
 |----------------|------------|--------------------|-------------|
-| `RedisStore` | `agentscope-extensions-redis` | Lua-based CAS `putIfVersion`, `ZRANGEBYLEX` for prefix search | the default; multi-replica sharing |
-| `JdbcStore` | `agentscope-extensions-mysql`; auto-detects MySQL / PostgreSQL / SQLite / H2 dialect | single-statement CAS UPDATE | existing relational infra / need joins |
+| `RedisStore` | `deepscope-extensions-redis` | Lua-based CAS `putIfVersion`, `ZRANGEBYLEX` for prefix search | the default; multi-replica sharing |
+| `JdbcStore` | `deepscope-extensions-mysql`; auto-detects MySQL / PostgreSQL / SQLite / H2 dialect | single-statement CAS UPDATE | existing relational infra / need joins |
 | `InMemoryStore` | — | — | tests |
 
 ```java
@@ -211,7 +211,7 @@ To prevent key collisions across subsystems, the spec slices the workspace into 
 | `agents/<agentId>/tasks/` | `tasks` |
 | Extra: `.addSharedPrefix("prompts/")` | derived automatically |
 
-Each segment is then bucketed by `IsolationScope` (`USER` → `agents/<agentId>/users/<userId>/`). A Redis key ends up looking like `agentscope:store:item:agents\0X\0users\0alice\0memory\0memory/2026-06-02.md`.
+Each segment is then bucketed by `IsolationScope` (`USER` → `agents/<agentId>/users/<userId>/`). A Redis key ends up looking like `deepscope:store:item:agents\0X\0users\0alice\0memory\0memory/2026-06-02.md`.
 
 ### `CompositeFilesystem`: two-layer reads + write-through
 
@@ -233,7 +233,7 @@ Skills compose from low to high priority (details in [Skill](/v2/en/docs/harness
 
 | Layer | Source | Configured by | Use it for |
 |-------|--------|---------------|------------|
-| 1 | Project global | `.projectGlobalSkillsDir(Path)` | personal dev box; `~/.agentscope/skills/` |
+| 1 | Project global | `.projectGlobalSkillsDir(Path)` | personal dev box; `~/.deepscope/skills/` |
 | 2 | Marketplace | `.skillRepository(...)` | cross-project sharing |
 | 3 | Workspace shared | `workspace/skills/` | project-specific; checked into git |
 | 4 | Per-user | `<userId>/skills/` | user-level override |
@@ -242,17 +242,17 @@ Skills compose from low to high priority (details in [Skill](/v2/en/docs/harness
 
 | Repository | Module | Notes | Best for |
 |-----------|--------|-------|----------|
-| `GitSkillRepository` | `agentscope-extensions-skill-git-repository` | team git repo; pulls only when HEAD changes; read-only distribution | early stage / small teams; review skill changes via PR |
-| `MysqlSkillRepository` | `agentscope-extensions-skill-mysql-repository` | `DataSource`-driven; `writeable(true/false)` toggle; agent can write back | platform-side central governance; multi-team multi-agent |
-| `NacosSkillRepository` | `agentscope-extensions-nacos-skill` | online distribution + config-center change subscription; `AutoCloseable` | Aliyun ecosystem; "change once, take effect fleet-wide" |
-| `ClasspathSkillRepository` | `agentscope-core` | shipped with the JAR; Spring Boot fat-JAR compatible | hard-bound capabilities baked into the product |
+| `GitSkillRepository` | `deepscope-extensions-skill-git-repository` | team git repo; pulls only when HEAD changes; read-only distribution | early stage / small teams; review skill changes via PR |
+| `MysqlSkillRepository` | `deepscope-extensions-skill-mysql-repository` | `DataSource`-driven; `writeable(true/false)` toggle; agent can write back | platform-side central governance; multi-team multi-agent |
+| `NacosSkillRepository` | `deepscope-extensions-nacos-skill` | online distribution + config-center change subscription; `AutoCloseable` | Aliyun ecosystem; "change once, take effect fleet-wide" |
+| `ClasspathSkillRepository` | `deepscope-core` | shipped with the JAR; Spring Boot fat-JAR compatible | hard-bound capabilities baked into the product |
 
 ```java
 HarnessAgent agent = HarnessAgent.builder()
         // ...
         .skillRepository(new GitSkillRepository("https://github.com/your-org/team-skills.git"))
         .skillRepository(MysqlSkillRepository.builder(dataSource)
-                .databaseName("agentscope")
+                .databaseName("deepscope")
                 .skillsTableName("skills")
                 .createIfNotExist(true)
                 .writeable(false)                  // read-only distribution; recommended for production
@@ -281,7 +281,7 @@ When you must use a sandbox:
 
 | Spec | Module | Use it for |
 |------|--------|------------|
-| `DockerFilesystemSpec` | `io.agentscope.harness.agent.sandbox.impl.docker` | single-machine / local cluster; container from an image; most familiar |
+| `DockerFilesystemSpec` | `io.deepscope.harness.agent.sandbox.impl.docker` | single-machine / local cluster; container from an image; most familiar |
 | `KubernetesFilesystemSpec` | `...impl.kubernetes` | already running K8s; pods / Jobs |
 | `DaytonaFilesystemSpec` | `...impl.daytona` | Daytona (dev-env-as-a-service) |
 | `E2bFilesystemSpec` | `...impl.e2b` | E2B cloud sandboxes; fastest to ship, no self-managed infra |
@@ -299,18 +299,18 @@ Sandboxes are ephemeral by default — the next `call()` may land on a different
 
 | Spec | Store | Module | When to use |
 |------|-------|--------|-------------|
-| `NoopSnapshotSpec` | — | `agentscope-harness` | not for production; sandbox cold-starts every time the container is lost |
-| `LocalSnapshotSpec(Path)` | local directory `tar` files | `agentscope-harness` | single-node debugging |
-| `OssSnapshotSpec` | Alibaba Cloud OSS | `agentscope-extensions-oss` | **large objects first choice**; natural fit for object storage |
-| `RedisSnapshotSpec` | Redis | `agentscope-extensions-redis` | small workspaces + short TTL (watch Redis memory cost) |
-| `JdbcSnapshotSpec` | JDBC BLOB | `agentscope-extensions-jdbc` | existing relational DB, no extra middleware |
+| `NoopSnapshotSpec` | — | `deepscope-harness` | not for production; sandbox cold-starts every time the container is lost |
+| `LocalSnapshotSpec(Path)` | local directory `tar` files | `deepscope-harness` | single-node debugging |
+| `OssSnapshotSpec` | Alibaba Cloud OSS | `deepscope-extensions-oss` | **large objects first choice**; natural fit for object storage |
+| `RedisSnapshotSpec` | Redis | `deepscope-extensions-redis` | small workspaces + short TTL (watch Redis memory cost) |
+| `JdbcSnapshotSpec` | JDBC BLOB | `deepscope-extensions-jdbc` | existing relational DB, no extra middleware |
 | Custom `RemoteSnapshotClient` → `RemoteSnapshotSpec` | S3 / GCS / MinIO | — | anything not in the built-in list |
 
 ```java
 DistributedStore redisStore = RedisDistributedStore.fromJedis(jedis);
 DistributedStore ossStore = OssDistributedStore.create(
         ossClient,
-        "agentscope-sandbox-snapshots",
+        "deepscope-sandbox-snapshots",
         "prod/");                         // key prefix for environment isolation
 
 DistributedStore store = DistributedStore.builder()
@@ -339,8 +339,8 @@ Under `SESSION` / `USER` scope, buckets are already partitioned by session/user 
 
 | Implementation | Module | Mechanism |
 |---------------|--------|-----------|
-| `RedisSandboxExecutionGuard` | `agentscope-extensions-redis` | Redis `SET NX PX` lease |
-| `JdbcSandboxExecutionGuard` | `agentscope-extensions-mysql` | MySQL `GET_LOCK()` / `RELEASE_LOCK()` |
+| `RedisSandboxExecutionGuard` | `deepscope-extensions-redis` | Redis `SET NX PX` lease |
+| `JdbcSandboxExecutionGuard` | `deepscope-extensions-mysql` | MySQL `GET_LOCK()` / `RELEASE_LOCK()` |
 
 The recommended path is still to inject the guard through `DistributedStore`:
 
@@ -421,23 +421,23 @@ Pulling the single-component picks above into one table:
 Configure a shared Builder and external dependencies at startup. Build a new instance for each request and close it after execution. Keep request identity in `RuntimeContext`, not in the Builder. See [Agent lifecycle](/v2/en/docs/building-blocks/agent#instance-lifecycle).
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.skill.repository.mysql.MysqlSkillRepository;
-import io.agentscope.extensions.redis.RedisDistributedStore;
-import io.agentscope.core.tracing.OtelTracingMiddleware;
-import io.agentscope.harness.agent.DistributedStore;
-import io.agentscope.harness.agent.HarnessAgent;
-import io.agentscope.harness.agent.IsolationScope;
-import io.agentscope.harness.agent.sandbox.impl.docker.DockerFilesystemSpec;
-import io.agentscope.core.memory.compaction.CompactionConfig;
-import io.agentscope.core.memory.compaction.ToolResultEvictionConfig;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.skill.repository.mysql.MysqlSkillRepository;
+import io.deepscope.extensions.redis.RedisDistributedStore;
+import io.deepscope.core.tracing.OtelTracingMiddleware;
+import io.deepscope.harness.agent.DistributedStore;
+import io.deepscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.IsolationScope;
+import io.deepscope.harness.agent.sandbox.impl.docker.DockerFilesystemSpec;
+import io.deepscope.core.memory.compaction.CompactionConfig;
+import io.deepscope.core.memory.compaction.ToolResultEvictionConfig;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import redis.clients.jedis.JedisPooled;
 
 // --- Dependencies (create once at startup) ---
-Path workspace = Paths.get("/var/agentscope/workspace");
+Path workspace = Paths.get("/var/deepscope/workspace");
 JedisPooled jedis = new JedisPooled(System.getenv("REDIS_URI"));
 DistributedStore store = RedisDistributedStore.fromJedis(jedis);
 

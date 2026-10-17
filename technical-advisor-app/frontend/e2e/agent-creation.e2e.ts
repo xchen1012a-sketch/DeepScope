@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('claw_token', 'local-ui-test');
-    localStorage.setItem('controlplane.console.locale', 'zh-CN');
+    localStorage.setItem('deepscope_token', 'local-ui-test');
+    localStorage.setItem('deepscope.locale', 'zh-CN');
   });
 
   const drafts: any[] = [];

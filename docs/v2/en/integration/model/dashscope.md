@@ -3,15 +3,15 @@ title: DashScope
 zh_link: /v2/zh/integration/model/dashscope
 ---
 
-`agentscope-extensions-model-dashscope` integrates Alibaba Cloud DashScope Qwen models, including multimodal and reasoning-capable Qwen models.
+`deepscope-extensions-model-dashscope` integrates Alibaba Cloud DashScope Qwen models, including multimodal and reasoning-capable Qwen models.
 
 ## Add the dependency
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-dashscope</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-model-dashscope</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -38,7 +38,7 @@ ReActAgent agent = ReActAgent.builder()
 Use the builder when you need DashScope-specific options such as endpoint type, thinking, search, encryption:
 
 ```java
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
 
 DashScopeChatModel model = DashScopeChatModel.builder()
     .apiKey(System.getenv("DASHSCOPE_API_KEY"))
@@ -53,9 +53,9 @@ Spring Boot applications can use the DashScope starter:
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-dashscope-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-dashscope-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 

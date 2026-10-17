@@ -20,7 +20,7 @@ Before every reasoning turn, a few key workspace files are automatically injecte
 ## Directory Layout
 
 ```
-workspace/                           ← default: .agentscope/workspace
+workspace/                           ← default: .deepscope/workspace
 ├── AGENTS.md                        ← persona / behavior guidelines (full text injected each turn)
 ├── MEMORY.md                        ← curated long-term memory (injected each turn, token-budgeted)
 ├── knowledge/
@@ -106,7 +106,7 @@ wm.updateSessionIndex(agentId, sessionId, summary); // maintains sessions.json
 HarnessAgent agent = HarnessAgent.builder()
     .name("MyAgent")
     .model(model)
-    .workspace(Paths.get(".agentscope/workspace"))   // uses default if not provided
+    .workspace(Paths.get(".deepscope/workspace"))   // uses default if not provided
     .additionalContextFile("SOUL.md")                // any workspace-relative path
     .additionalContextFile("PREFERENCES.md")
     .maxContextTokens(8000)                          // controls injection cap for MEMORY

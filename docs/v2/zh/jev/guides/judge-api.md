@@ -13,8 +13,8 @@ title: "用条件定义评审标准"
 ## 1. 定义要满足的条件
 
 ```java
-import io.agentscope.extensions.judge.jev.JevJudge;
-import io.agentscope.extensions.judge.jev.NoulQuestion;
+import io.deepscope.extensions.judge.jev.JevJudge;
+import io.deepscope.extensions.judge.jev.NoulQuestion;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +72,7 @@ var observed = pending.doOnNext(result -> {
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP`：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios judge
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevApplicationScenarios judge
 ```
 
 用例把同一条件分别送入三个预设概率分支，验证 PASS、FAIL 和 INCONCLUSIVE 的处理，没有真实模型调用。完整代码见 [JevApplicationScenarios](/examples/jev/source/JevApplicationScenarios.java.txt)。
@@ -80,7 +80,7 @@ java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios judge
 需要“覆盖客户条件 + 无依据承诺”两条条件组合，可运行 [JevCustomerSupportExample](/examples/jev/source/JevCustomerSupportExample.java.txt)：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevCustomerSupportExample
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevCustomerSupportExample
 ```
 
 它默认离线，只有显式追加 `--live` 才调用真实接口。离线结果不用于计算真实模型准确率或速度。

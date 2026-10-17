@@ -20,7 +20,7 @@ agent 每次推理时，工作区里的几个关键文件会被自动注入到 s
 ## 目录结构
 
 ```
-workspace/                           ← 默认 .agentscope/workspace
+workspace/                           ← 默认 .deepscope/workspace
 ├── AGENTS.md                        ← 人格 / 行为约定（每次注入全文）
 ├── MEMORY.md                        ← 整理过的长期记忆（每次注入，受 token 预算）
 ├── knowledge/
@@ -106,7 +106,7 @@ wm.updateSessionIndex(agentId, sessionId, summary); // 维护 sessions.json
 HarnessAgent agent = HarnessAgent.builder()
     .name("MyAgent")
     .model(model)
-    .workspace(Paths.get(".agentscope/workspace"))   // 不传则用默认
+    .workspace(Paths.get(".deepscope/workspace"))   // 不传则用默认
     .additionalContextFile("SOUL.md")                // 任意工作区相对路径
     .additionalContextFile("PREFERENCES.md")
     .maxContextTokens(8000)                          // 控制 MEMORY 的注入上限

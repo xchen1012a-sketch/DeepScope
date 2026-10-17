@@ -3,7 +3,7 @@ title: 企业微信 Channel
 en_link: /v2/en/integration/channel/wecom
 ---
 
-`agentscope-extensions-channel-wecom` 通过**加密回调**机制将你的 Agent 接入企业微信（WeCom / WeChat Work）。一个 Spring `@RestController` 接收消息回调，解密后通过 Gateway 分发。
+`deepscope-extensions-channel-wecom` 通过**加密回调**机制将你的 Agent 接入企业微信（WeCom / WeChat Work）。一个 Spring `@RestController` 接收消息回调，解密后通过 Gateway 分发。
 
 ## 适用场景
 
@@ -14,9 +14,9 @@ en_link: /v2/en/integration/channel/wecom
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-channel-wecom</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-channel-wecom</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 

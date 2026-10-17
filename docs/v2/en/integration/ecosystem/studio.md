@@ -3,7 +3,7 @@ title: Studio
 zh_link: /v2/zh/integration/ecosystem/studio
 ---
 
-`agentscope-extensions-studio` integrates Agents with [AgentScope Studio](https://github.com/agentscope-ai/agentscope-studio): every Agent invocation is pushed to Studio for visual debugging, trace replay, and human-in-the-loop input.
+`deepscope-extensions-studio` integrates Agents with [DeepScope Studio](https://github.com/deepscope-ai/deepscope-studio): every Agent invocation is pushed to Studio for visual debugging, trace replay, and human-in-the-loop input.
 
 ## When to use
 
@@ -14,17 +14,17 @@ zh_link: /v2/zh/integration/ecosystem/studio
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-studio</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-studio</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## Quickstart
 
 ```java
-import io.agentscope.core.studio.StudioManager;
-import io.agentscope.core.studio.StudioMessageHook;
+import io.deepscope.core.studio.StudioManager;
+import io.deepscope.core.studio.StudioMessageHook;
 
 // 1) Initialize Studio connection (HTTP + WebSocket)
 StudioManager.init()
@@ -68,7 +68,7 @@ In production, you usually don't want this hook attached (every call writes to S
 
 ```java
 @Bean
-@ConditionalOnProperty("agentscope.studio.enabled")
+@ConditionalOnProperty("deepscope.studio.enabled")
 StudioMessageHook studioHook() {
     StudioManager.init().studioUrl(url).project(project).initialize().block();
     return new StudioMessageHook(StudioManager.getClient());

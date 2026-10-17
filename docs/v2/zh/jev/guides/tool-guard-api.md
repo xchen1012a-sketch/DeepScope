@@ -22,9 +22,9 @@ JEV 在这里增加一次结合上下文的判断：**根据当前对话和这�
 先创建客户端，并把 `refund` 加入受保护工具集合。下面使用 SHADOW 模式观察判断，暂不改变原有执行流程。
 
 ```java
-import io.agentscope.extensions.judge.jev.JevClient;
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.example.JevAutoModeMiddleware;
+import io.deepscope.extensions.judge.jev.JevClient;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.example.JevAutoModeMiddleware;
 import java.time.Duration;
 import java.util.Set;
 
@@ -60,7 +60,7 @@ var guard = JevAutoModeMiddleware.builder(client)
 将 `guard` 注册到已有 Agent。`model` 是生成模型，`toolkit` 已注册 `query_order` 和 `refund`，`permissionContext` 是应用现有的权限配置。
 
 ```java
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.HarnessAgent;
 
 var agent = HarnessAgent.builder()
     .name("order-support")
@@ -95,7 +95,7 @@ SHADOW 用来查看判断是否符合你的业务预期，**不会阻止退款**
 [JevHarnessExample](/examples/jev/source/JevHarnessExample.java.txt)使用合成判断展示 OFF、SHADOW、ENFORCE 下的行为。按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后执行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevHarnessExample
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevHarnessExample
 ```
 
 示例给退款调用设置低安全概率：SHADOW 仍进入模拟派发，ENFORCE 只生成拒绝事件，不进入模拟派发。它不连接模型，也不执行真实退款。
@@ -106,7 +106,7 @@ java -cp "$JEV_CP" io.agentscope.examples.jev.JevHarnessExample
 - **人工已确认**：已确认的 ALLOWED 调用沿用原确认链。Service 通过 `JevConfirmedCalls` 绑定工具名和参数指纹；确认后参数变化时，ENFORCE 会以 `CONFIRMATION_CHANGED` 拒绝，必须重新确认。
 - **中间件顺序**：会修改工具参数的中间件应在此检查之前完成修改，避免执行的参数与检查时不同。
 
-运行模式和观察记录的完整契约见[运行配置](/v2/zh/jev/guides/harness-runtime)。使用 AgentScope Service 时，也可以通过 `agentOverrides.jev.guard` 装配同一能力，见[Service 配置](/v2/zh/jev/guides/service-api)。
+运行模式和观察记录的完整契约见[运行配置](/v2/zh/jev/guides/harness-runtime)。使用 DeepScope Service 时，也可以通过 `agentOverrides.jev.guard` 装配同一能力，见[Service 配置](/v2/zh/jev/guides/service-api)。
 
 ## 退款场景对比测试
 
@@ -122,4 +122,4 @@ java -cp "$JEV_CP" io.agentscope.examples.jev.JevHarnessExample
 
 当前通用安全问题与阈值组合下，JEV 判断较快，但过于保守，全部正常退款也被拦截。Qwen 在有效判断中的准确率为 99.16%，另有 9 次响应未通过格式校验；失败兜底造成了上表中的 6 次正常退款受阻。两者均无超时。检查耗时不代表完整 Agent 任务耗时，这组结果也不代表真实支付成功率；启用接管前仍需按业务场景校准。
 
-完整数据集、标注规则、运行命令、离线行为测试及 60 秒预算对照均放在 `agentscope-examples/jev/benchmarks/tool-guard`。可[查看测试方法](/examples/jev/tool-guard/README.md.txt)或[下载完整用例与原始结果](/examples/jev/tool-guard-benchmark.zip)。
+完整数据集、标注规则、运行命令、离线行为测试及 60 秒预算对照均放在 `deepscope-examples/jev/benchmarks/tool-guard`。可[查看测试方法](/examples/jev/tool-guard/README.md.txt)或[下载完整用例与原始结果](/examples/jev/tool-guard-benchmark.zip)。

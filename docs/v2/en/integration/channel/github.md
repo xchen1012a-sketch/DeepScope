@@ -3,7 +3,7 @@ title: GitHub Channel
 zh_link: /v2/zh/integration/channel/github
 ---
 
-`agentscope-extensions-channel-github` connects your Agent to GitHub issue and PR comment threads. When someone comments on an issue or pull request, the Agent replies as a new comment.
+`deepscope-extensions-channel-github` connects your Agent to GitHub issue and PR comment threads. When someone comments on an issue or pull request, the Agent replies as a new comment.
 
 ## When to use
 
@@ -14,9 +14,9 @@ zh_link: /v2/zh/integration/channel/github
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-channel-github</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-channel-github</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 

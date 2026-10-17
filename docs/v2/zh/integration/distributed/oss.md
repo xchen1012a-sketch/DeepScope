@@ -3,26 +3,26 @@ title: 阿里云 OSS
 en_link: /v2/en/integration/distributed/oss
 ---
 
-`agentscope-extensions-oss` 提供基于阿里云对象存储（OSS）的分布式存储实现，适合大容量数据和阿里云生态的场景。
+`deepscope-extensions-oss` 提供基于阿里云对象存储（OSS）的分布式存储实现，适合大容量数据和阿里云生态的场景。
 
 ## 添加依赖
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-oss</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-oss</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## 一键配置
 
 ```java
-import io.agentscope.extensions.oss.OssDistributedStore;
+import io.deepscope.extensions.oss.OssDistributedStore;
 import com.aliyun.oss.OSSClientBuilder;
 
 OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
-DistributedStore store = OssDistributedStore.create(ossClient, "my-bucket", "agentscope/");
+DistributedStore store = OssDistributedStore.create(ossClient, "my-bucket", "deepscope/");
 
 HarnessAgent agent = HarnessAgent.builder()
     .distributedStore(store)
@@ -38,12 +38,12 @@ HarnessAgent agent = HarnessAgent.builder()
 Agent 状态持久化到 OSS 对象。
 
 ```java
-import io.agentscope.extensions.oss.OssAgentStateStore;
+import io.deepscope.extensions.oss.OssAgentStateStore;
 
 AgentStateStore store = OssAgentStateStore.builder()
     .ossClient(ossClient)
     .bucketName("my-bucket")
-    .keyPrefix("agentscope/state/")
+    .keyPrefix("deepscope/state/")
     .build();
 ```
 
@@ -52,12 +52,12 @@ AgentStateStore store = OssAgentStateStore.builder()
 工作区文件系统 KV 存储到 OSS 对象。
 
 ```java
-import io.agentscope.extensions.oss.OssBaseStore;
+import io.deepscope.extensions.oss.OssBaseStore;
 
 BaseStore store = OssBaseStore.builder()
     .ossClient(ossClient)
     .bucketName("my-bucket")
-    .keyPrefix("agentscope/store/")
+    .keyPrefix("deepscope/store/")
     .build();
 ```
 
@@ -66,15 +66,15 @@ BaseStore store = OssBaseStore.builder()
 沙箱快照存储到 OSS 对象。大工作区快照的首选——对象存储天然适合大二进制文件。
 
 ```java
-import io.agentscope.extensions.oss.OssSnapshotSpec;
+import io.deepscope.extensions.oss.OssSnapshotSpec;
 
-SandboxSnapshotSpec spec = new OssSnapshotSpec(ossClient, "my-bucket", "agentscope/snapshot/");
+SandboxSnapshotSpec spec = new OssSnapshotSpec(ossClient, "my-bucket", "deepscope/snapshot/");
 
 // 或者从 endpoint + AK/SK 直接构造
 SandboxSnapshotSpec spec = new OssSnapshotSpec(
     "oss-cn-hangzhou.aliyuncs.com",
     accessKeyId, accessKeySecret,
-    "my-bucket", "agentscope/snapshot/");
+    "my-bucket", "deepscope/snapshot/");
 ```
 
 ### 不提供：SandboxExecutionGuard
@@ -82,7 +82,7 @@ SandboxSnapshotSpec spec = new OssSnapshotSpec(
 对象存储不适合做分布式锁。如需 sandbox 并发控制，混合 Redis store：
 
 ```java
-DistributedStore ossStore = OssDistributedStore.create(ossClient, "my-bucket", "agentscope/");
+DistributedStore ossStore = OssDistributedStore.create(ossClient, "my-bucket", "deepscope/");
 
 DistributedStore mixed = DistributedStore.builder()
     .agentStateStore(ossStore.agentStateStore())

@@ -3,7 +3,7 @@ title: MsgHub
 zh_link: /v1/zh/docs/task/msghub
 ---
 
-MsgHub is a message broadcasting center for multi-agent conversations in AgentScope. It manages message distribution among a group of agents, eliminating the need for manual message passing code.
+MsgHub is a message broadcasting center for multi-agent conversations in DeepScope. It manages message distribution among a group of agents, eliminating the need for manual message passing code.
 
 ## Overview
 
@@ -47,14 +47,14 @@ try (MsgHub hub = MsgHub.builder()
 ### Creating and Using MsgHub
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeMultiAgentFormatter;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.pipeline.MsgHub;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeMultiAgentFormatter;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.pipeline.MsgHub;
 
 // Create model with MultiAgentFormatter (important!)
 DashScopeChatModel model = DashScopeChatModel.builder()

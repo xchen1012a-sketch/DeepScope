@@ -3,7 +3,7 @@ title: WeCom Channel
 zh_link: /v2/zh/integration/channel/wecom
 ---
 
-`agentscope-extensions-channel-wecom` connects your Agent to WeCom (企业微信 / WeChat Work) via the **encrypted callback** mechanism. A Spring `@RestController` receives message callbacks, decrypts them, and dispatches through the Gateway.
+`deepscope-extensions-channel-wecom` connects your Agent to WeCom (企业微信 / WeChat Work) via the **encrypted callback** mechanism. A Spring `@RestController` receives message callbacks, decrypts them, and dispatches through the Gateway.
 
 ## When to use
 
@@ -14,9 +14,9 @@ zh_link: /v2/zh/integration/channel/wecom
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-channel-wecom</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-channel-wecom</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 

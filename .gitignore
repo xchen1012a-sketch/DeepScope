@@ -85,10 +85,10 @@ logs/
 # boba-tea-shop: generated static assets served by the supervisor-agent
 **/boba-tea-shop/supervisor-agent/**/static/
 # copilotkit: frontend-maven-plugin npm build output served from the jar
-agentscope-examples/agentscope-copilotkit/src/main/resources/static/
+deepscope-examples/deepscope-copilotkit/src/main/resources/static/
 
-##agentscope
-.agentscope/
+##deepscope
+.deepscope/
 
 ## harness db
 **/*.db
@@ -96,30 +96,30 @@ agentscope-examples/agentscope-copilotkit/src/main/resources/static/
 .dev-stack/
 
 # controlplane local build artifacts
-agentscope-service/service-controlplane/bin/
-agentscope-service/service-controlplane/service-controlplane
-agentscope-service/service-controlplane/service-controlplane.exe
-agentscope-service/service-controlplane/*.test
-agentscope-service/service-controlplane/cover.out
-agentscope-service/service-controlplane/coverage.*
-agentscope-service/service-controlplane/.idea/
-agentscope-service/.dev-stack/
+deepscope-service/service-controlplane/bin/
+deepscope-service/service-controlplane/service-controlplane
+deepscope-service/service-controlplane/service-controlplane.exe
+deepscope-service/service-controlplane/*.test
+deepscope-service/service-controlplane/cover.out
+deepscope-service/service-controlplane/coverage.*
+deepscope-service/service-controlplane/.idea/
+deepscope-service/.dev-stack/
 
-# AgentScope Service release hygiene (reports remain local / CI artifacts).
-/agentscope-service/docs/test-reports/
-/agentscope-service/service-controlplane/ui/*
-!/agentscope-service/service-controlplane/ui/.gitkeep
-/agentscope-service/frontend/test-results/
-/agentscope-service/frontend/playwright-report/
-/agentscope-service/release/dist/
-/agentscope-service/deploy/.env
-/agentscope-service/deploy/*.env
-/agentscope-service/deploy/*.local.yaml
-/agentscope-service/service-controlplane/sdk/dsh/node_modules/
-/agentscope-service/service-controlplane/sdk/dsh/dist/
-/agentscope-service/service-controlplane/sdk/dsh/*.tgz
-/agentscope-service/service-controlplane/sdk/python/dist/
-/agentscope-service/service-controlplane/sdk/python/.pytest_cache/
+# DeepScope Service release hygiene (reports remain local / CI artifacts).
+/deepscope-service/docs/test-reports/
+/deepscope-service/service-controlplane/ui/*
+!/deepscope-service/service-controlplane/ui/.gitkeep
+/deepscope-service/frontend/test-results/
+/deepscope-service/frontend/playwright-report/
+/deepscope-service/release/dist/
+/deepscope-service/deploy/.env
+/deepscope-service/deploy/*.env
+/deepscope-service/deploy/*.local.yaml
+/deepscope-service/service-controlplane/sdk/dsh/node_modules/
+/deepscope-service/service-controlplane/sdk/dsh/dist/
+/deepscope-service/service-controlplane/sdk/dsh/*.tgz
+/deepscope-service/service-controlplane/sdk/python/dist/
+/deepscope-service/service-controlplane/sdk/python/.pytest_cache/
 
 # Mintlify documentation dependencies and local preview
 /docs/node_modules/
@@ -129,5 +129,5 @@ agentscope-service/.dev-stack/
 technical-advisor-app/backend/config/
 
 # Session journals and other per-workspace runtime state (generated, never commit)
-.agentscope-runtime/
+.deepscope-runtime/
 technical-advisor-app/data/

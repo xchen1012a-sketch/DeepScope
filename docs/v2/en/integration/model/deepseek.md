@@ -3,15 +3,15 @@ title: DeepSeek
 zh_link: /v2/zh/integration/model/deepseek
 ---
 
-`agentscope-extensions-model-openai` provides first-class DeepSeek support through the OpenAI-compatible model stack. Add the OpenAI model extension module, then use `deepseek:<model>` with `ModelRegistry`.
+`deepscope-extensions-model-openai` provides first-class DeepSeek support through the OpenAI-compatible model stack. Add the OpenAI model extension module, then use `deepseek:<model>` with `ModelRegistry`.
 
 ## Add the dependency
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-openai</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-model-openai</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -26,16 +26,16 @@ ReActAgent agent = ReActAgent.builder()
     .build();
 ```
 
-The provider defaults to `https://api.deepseek.com`, strips the `deepseek:` prefix before sending the model name, and uses the DeepSeek formatter from `io.agentscope.extensions.model.openai.compat.deepseek`.
+The provider defaults to `https://api.deepseek.com`, strips the `deepseek:` prefix before sending the model name, and uses the DeepSeek formatter from `io.deepscope.extensions.model.openai.compat.deepseek`.
 
 ## Thinking mode
 
 Enable DeepSeek thinking mode through `ModelCreationContext` when resolving the model:
 
 ```java
-import io.agentscope.core.model.Model;
-import io.agentscope.core.model.ModelCreationContext;
-import io.agentscope.core.model.ModelRegistry;
+import io.deepscope.core.model.Model;
+import io.deepscope.core.model.ModelCreationContext;
+import io.deepscope.core.model.ModelRegistry;
 
 Model model = ModelRegistry.resolve(
     "deepseek:deepseek-v4-flash",
@@ -50,6 +50,6 @@ Streaming callers can render `ThinkingBlockDeltaEvent` separately from `TextBloc
 
 The DeepSeek compatibility formatter preserves DeepSeek-compatible message fields, including `system` roles and supported `name` fields. It fully passes back `reasoning_content` for every assistant turn — including framework-synthesized messages without thinking content, which are backfilled with an empty string so tool-carrying requests are not rejected with HTTP 400 (issue #3246).
 
-DeepSeek's stable endpoint does not use the tool schema `strict` field by default, so the default formatter omits `strict` even when a tool is registered with strict schema validation. Structured output uses the normal AgentScope fallback behavior unless you explicitly configure native structured output for a compatible endpoint.
+DeepSeek's stable endpoint does not use the tool schema `strict` field by default, so the default formatter omits `strict` even when a tool is registered with strict schema validation. Structured output uses the normal DeepScope fallback behavior unless you explicitly configure native structured output for a compatible endpoint.
 
 For beta or compatible endpoints, pass `baseUrl`, `endpointPath`, generation options, or formatter overrides through `ModelCreationContext`.

@@ -1,16 +1,16 @@
 ---
-title: AgentScope 2.0 是什么？
+title: DeepScope 2.0 是什么？
 description: 用 Harness 构建能持续完成任务的 Agent，并将它接入业务应用、运行环境与服务 API。
 en_link: /v2/en/docs/index
 ---
 
-**AgentScope 2.0 是面向智能体应用的开源开发框架，帮助你把模型、工具和业务数据组织成能够持续执行任务的 Agent。** 你可以用它构建多轮对话助手，也可以让 Agent 检索资料、处理文件、运行代码、委派子任务，在需要时等待人的确认，再继续完成工作。
+**DeepScope 2.0 是面向智能体应用的开源开发框架，帮助你把模型、工具和业务数据组织成能够持续执行任务的 Agent。** 你可以用它构建多轮对话助手，也可以让 Agent 检索资料、处理文件、运行代码、委派子任务，在需要时等待人的确认，再继续完成工作。
 
 推荐在应用启动时定义共享 Builder，每次请求前用 `builder.build()` 创建新的 Agent，执行结束后关闭。相同会话通过稳定身份和持久存储延续，具体用法见[快速开始](/v2/zh/docs/quickstart)。
 
-这份文档介绍 Java 版本。你可以将 Agent 直接嵌入现有 Java 或 Spring Boot 应用，从一次调用开始，逐步加入上下文管理、工作区、持久会话和多 Agent 协作。需要统一部署和对外提供 API 时，还可以使用 AgentScope Service。
+这份文档介绍 Java 版本。你可以将 Agent 直接嵌入现有 Java 或 Spring Boot 应用，从一次调用开始，逐步加入上下文管理、工作区、持久会话和多 Agent 协作。需要统一部署和对外提供 API 时，还可以使用 DeepScope Service。
 
-## 用 AgentScope 能做什么
+## 用 DeepScope 能做什么
 
 对于客服、知识问答和业务助理，你可以让 Agent 结合会话历史、检索结果和实时业务数据回答问题，并通过工具查询订单、更新工单或调用已有系统。前端既能展示回答，也能展示正在调用的工具和需要用户处理的待办。
 
@@ -20,7 +20,7 @@ en_link: /v2/en/docs/index
 
 ## Harness 如何支撑 Agent 持续工作
 
-ReAct 的“推理、执行工具、观察结果”循环是 AgentScope Harness 的基础。`ReActAgent` 提供推理、工具、权限和中间件等能力，`HarnessAgent` 在同一循环上组合工作区、上下文与会话管理，围绕下面三个维度支撑持续执行。推荐从 `HarnessAgent` 开始，再按场景配置所需能力；具体组合见 [Harness 架构](/v2/zh/docs/harness/architecture)。
+ReAct 的“推理、执行工具、观察结果”循环是 DeepScope Harness 的基础。`ReActAgent` 提供推理、工具、权限和中间件等能力，`HarnessAgent` 在同一循环上组合工作区、上下文与会话管理，围绕下面三个维度支撑持续执行。推荐从 `HarnessAgent` 开始，再按场景配置所需能力；具体组合见 [Harness 架构](/v2/zh/docs/harness/architecture)。
 
 ### 持续跟进长程任务
 
@@ -42,18 +42,18 @@ Java 工具和 MCP 将模型的行动请求连接到文件、代码与业务系�
 
 ## 在业务应用中扩展和部署
 
-AgentScope 通过模型扩展接入不同供应商，你可以按任务选择模型，并配置重试与备用模型策略。统一的消息结构承载文本、图片、文件和工具结果；业务能力可以通过 Java 工具或 MCP 接入。需要动态上下文、模型调用策略、审计或工具检查时，可以通过 Middleware 介入执行环节。详见[模型](/v2/zh/docs/building-blocks/model)、[工具](/v2/zh/docs/building-blocks/tool)和[Middleware](/v2/zh/docs/building-blocks/middleware)。
+DeepScope 通过模型扩展接入不同供应商，你可以按任务选择模型，并配置重试与备用模型策略。统一的消息结构承载文本、图片、文件和工具结果；业务能力可以通过 Java 工具或 MCP 接入。需要动态上下文、模型调用策略、审计或工具检查时，可以通过 Middleware 介入执行环节。详见[模型](/v2/zh/docs/building-blocks/model)、[工具](/v2/zh/docs/building-blocks/tool)和[Middleware](/v2/zh/docs/building-blocks/middleware)。
 
 从本地开发走向多用户、多副本部署时，需要为用户和会话配置稳定身份，选择合适的工作区隔离范围，并使用各副本可访问的持久后端。Workspace 的 Filesystem 可以对接共享存储，Session Log 也支持替换后端；原生会话写入通过租约和写入隔离控制并发。沙箱生命周期与恢复策略则按所选执行后端配置。部署方式和存储选型见[上生产](/v2/zh/docs/others/going-to-production)。
 
-## 通过 AgentScope Service 对外提供 API
+## 通过 DeepScope Service 对外提供 API
 
-[AgentScope Service](/v2/zh/service/index) 提供 Agent 的注册、托管、编排与服务发布能力。你可以配置由平台运行的 Managed Agent，也可以接入自己部署的 Agent，或连接已有的 Coding Agent；具备相应任务能力的 Agent 还可以组成 Team，或参与 Workflow。
+[DeepScope Service](/v2/zh/service/index) 提供 Agent 的注册、托管、编排与服务发布能力。你可以配置由平台运行的 Managed Agent，也可以接入自己部署的 Agent，或连接已有的 Coding Agent；具备相应任务能力的 Agent 还可以组成 Team，或参与 Workflow。
 
 对业务调用方，可以将单个 Agent、Team 或 Workflow 发布为 Endpoint，通过统一的 Invocation API 提交工作、查询结果、接收 SSE 事件和处理待办。前端使用快照与增量事件恢复完整页面，无需了解 Team 内部如何分工。需要多轮会话、文件、子会话或 checkpoint 等托管能力时，可以使用 Managed Agent API。详见[统一服务 API](/v2/zh/service/service-api)和[Managed Agent API](/v2/zh/service/session-event-log)。
 
 <Note>
-AgentScope Service 当前为预览能力，正式版本尚未发布。使用 Java SDK 构建和运行 Agent 不依赖部署 Service。
+DeepScope Service 当前为预览能力，正式版本尚未发布。使用 Java SDK 构建和运行 Agent 不依赖部署 Service。
 </Note>
 
 ## 从哪里开始

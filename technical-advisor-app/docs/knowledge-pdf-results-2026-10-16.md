@@ -16,7 +16,7 @@
 
 以下路径相对 `technical-advisor-app/`：
 
-- `backend/src/main/java/io/agentscope/advisor/knowledge/PdfParser.java`、`PdfPageGraphics.java`、`PdfContent.java`：PDF 读取、绘制检测和结构切片。
+- `backend/src/main/java/io/deepscope/advisor/knowledge/PdfParser.java`、`PdfPageGraphics.java`、`PdfContent.java`：PDF 读取、绘制检测和结构切片。
 - 同目录 `PdfModelReader.java`：视觉转录、严格响应校验、可选重排/页面复核。
 - 同目录 `DocumentStructureStore.java`、`KnowledgeTerms.java`：页及切片持久化、关键词候选与有限邻接上下文。
 - 同目录 `DocumentIngest.java`、`KnowledgeSearch.java`、`ChunkIndex.java`、`PgChunkIndex.java`、`MemoryChunkIndex.java`、`KnowledgeRetrievalTool.java`、`DocumentTexts.java`、`KnowledgeCatalog.java`：入库、融合、来源传递及兼容。

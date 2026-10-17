@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import io.agentscope.advisor.auth.AccountStore;
+import io.deepscope.advisor.auth.AccountStore;
 import java.time.Clock;
 import java.time.Duration;
 import org.postgresql.Driver;

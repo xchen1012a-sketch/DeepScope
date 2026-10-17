@@ -5,7 +5,7 @@ zh_link: /v2/zh/integration/skill/postgresql-repository
 
 
 > **Deprecated**: migrate to [`JdbcAgentSkillRepository`](/v2/en/integration/distributed/jdbc) in the unified JDBC module — one implementation for MySQL, PostgreSQL, H2, SQLite, and future dialects. Tables from this module work as-is; pre-`metadata_json` tables need one ALTER first. See the [migration notes](/v2/en/integration/distributed/jdbc#migrating-from-legacy-modules).
-`agentscope-extensions-skill-postgresql-repository` stores skills in PostgreSQL with full CRUD: edit and save in your admin console / business system, and the Agent picks up changes immediately on the next read.
+`deepscope-extensions-skill-postgresql-repository` stores skills in PostgreSQL with full CRUD: edit and save in your admin console / business system, and the Agent picks up changes immediately on the next read.
 
 ## When to use
 
@@ -17,9 +17,9 @@ zh_link: /v2/zh/integration/skill/postgresql-repository
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-skill-postgresql-repository</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-skill-postgresql-repository</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -27,7 +27,7 @@ zh_link: /v2/zh/integration/skill/postgresql-repository
 
 ```java
 import javax.sql.DataSource;
-import io.agentscope.core.skill.repository.postgresql.PostgresSkillRepository;
+import io.deepscope.core.skill.repository.postgresql.PostgresSkillRepository;
 
 DataSource ds = ...;  // HikariCP, PgBouncer, etc.
 
@@ -55,7 +55,7 @@ PostgresSkillRepository repo = PostgresSkillRepository.builder(ds)
 When `createIfNotExist=true`, the following tables are created (under the configured schema):
 
 ```sql
-CREATE TABLE IF NOT EXISTS "agentscope"."agentscope_skills" (
+CREATE TABLE IF NOT EXISTS "deepscope"."deepscope_skills" (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
     description TEXT NOT NULL,
@@ -66,26 +66,26 @@ CREATE TABLE IF NOT EXISTS "agentscope"."agentscope_skills" (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS "agentscope"."agentscope_skill_resources" (
+CREATE TABLE IF NOT EXISTS "deepscope"."deepscope_skill_resources" (
     id BIGINT NOT NULL,
     resource_path VARCHAR(500) NOT NULL,
     resource_content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id, resource_path),
-    FOREIGN KEY (id) REFERENCES "agentscope"."agentscope_skills"(id) ON DELETE CASCADE
+    FOREIGN KEY (id) REFERENCES "deepscope"."deepscope_skills"(id) ON DELETE CASCADE
 );
 ```
 
-- `agentscope_skills`: the skills themselves; `name` is unique; `skill_content` stores the full `SKILL.md`.
-- `agentscope_skill_resources`: attached resource files (screenshots, templates, ...) cascaded by `id`.
+- `deepscope_skills`: the skills themselves; `name` is unique; `skill_content` stores the full `SKILL.md`.
+- `deepscope_skill_resources`: attached resource files (screenshots, templates, ...) cascaded by `id`.
 
 Unlike the MySQL variant, PostgreSQL uses **schemas** (not databases) as the namespace isolation boundary — the database is selected via the JDBC URL.
 
 ## Compatibility with legacy tables
 
 - If an existing table lacks `metadata_json`, the repository falls back to round-tripping `name` + `description` only. It does not auto-`ALTER TABLE`.
-- To upgrade: run `ALTER TABLE "agentscope"."agentscope_skills" ADD COLUMN metadata_json TEXT NULL;` yourself.
+- To upgrade: run `ALTER TABLE "deepscope"."deepscope_skills" ADD COLUMN metadata_json TEXT NULL;` yourself.
 
 ## CRUD
 
@@ -109,8 +109,8 @@ Writes and deletes run in transactions; the resource table's `ON DELETE CASCADE`
 
 | Method | Notes |
 | --- | --- |
-| `schemaName(String)` | Default `agentscope` |
-| `skillsTableName(String)` | Default `agentscope_skills` |
-| `resourcesTableName(String)` | Default `agentscope_skill_resources` |
+| `schemaName(String)` | Default `deepscope` |
+| `skillsTableName(String)` | Default `deepscope_skills` |
+| `resourcesTableName(String)` | Default `deepscope_skill_resources` |
 | `createIfNotExist(boolean)` | `true` to auto-`CREATE SCHEMA` + `CREATE TABLE`, default `true` |
 | `writeable(boolean)` | Whether write operations are allowed, default `true` |

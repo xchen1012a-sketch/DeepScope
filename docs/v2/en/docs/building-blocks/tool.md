@@ -8,15 +8,15 @@ zh_link: /v2/zh/docs/building-blocks/tool
 
 Tools are how an agent acts on the world — running business operations, calling APIs, reading and writing data. Each tool exposes itself to the LLM as a JSON Schema, and the agent invokes it through a unified interface.
 
-AgentScope organizes tool-related building blocks under three concepts:
+DeepScope organizes tool-related building blocks under three concepts:
 
 - **Tool** — any object implementing the `AgentTool` contract (typically by extending `ToolBase`) or any plain class whose methods are annotated with `@Tool`. Java refers to the latter as *reflective function tools* — `Toolkit#registerTool(Object)` registers them by reflection automatically.
 - **Toolkit** — the container that registers tools, MCP clients, and skills, exposes their JSON schemas to the model, and dispatches each tool call to the matching tool object.
 - **Tool Group** — a named bundle of tools / MCP clients / skills that can be activated or deactivated as a unit. The agent uses a built-in meta tool to switch groups at runtime, keeping the context focused.
 
 ```java
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.builtin.TodoTools;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.builtin.TodoTools;
 
 Toolkit toolkit = new Toolkit();
 toolkit.registerTool(new TodoTools());
@@ -27,7 +27,7 @@ When you only call `registerTool(Object)`, every `@Tool` method on the registere
 
 ## Java tools
 
-A Java tool is any object satisfying the `AgentTool` contract. AgentScope ships an abstract base class `ToolBase` for declaring tools with explicit parameter schemas, plus a reflective adapter that wraps plain methods into tools.
+A Java tool is any object satisfying the `AgentTool` contract. DeepScope ships an abstract base class `ToolBase` for declaring tools with explicit parameter schemas, plus a reflective adapter that wraps plain methods into tools.
 
 ### AgentTool / ToolBase contract
 
@@ -58,7 +58,7 @@ Methods that integrate with the execution flow and the permission system:
 
 ### Built-in tools
 
-AgentScope currently ships these built-in tools:
+DeepScope currently ships these built-in tools:
 
 | Tool | Description | Read-only |
 |------|-------------|-----------|
@@ -68,7 +68,7 @@ Usage:
 
 ```java
 Toolkit toolkit = new Toolkit();
-toolkit.registerTool(new io.agentscope.core.tool.builtin.TodoTools());
+toolkit.registerTool(new io.deepscope.core.tool.builtin.TodoTools());
 ```
 
 
@@ -84,9 +84,9 @@ The `Toolkit` automatically registers the `reset_tools` meta tool and the `load_
 The lightest-weight way: annotate plain methods with `@Tool` and `@ToolParam`, then call `Toolkit#registerTool(Object)`. The framework derives the JSON schema from Java types and the `description` for the agent.
 
 ```java
-import io.agentscope.core.tool.Tool;
-import io.agentscope.core.tool.ToolParam;
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.core.tool.Tool;
+import io.deepscope.core.tool.ToolParam;
+import io.deepscope.core.tool.Toolkit;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -127,13 +127,13 @@ Common `@Tool` attributes:
 When you need a custom permission policy, external execution, or a more complex schema, extend `ToolBase`:
 
 ```java
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.core.message.ToolResultBlock;
-import io.agentscope.core.permission.PermissionBehavior;
-import io.agentscope.core.permission.PermissionContextState;
-import io.agentscope.core.permission.PermissionDecision;
-import io.agentscope.core.tool.ToolBase;
-import io.agentscope.core.tool.ToolCallParam;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.core.message.ToolResultBlock;
+import io.deepscope.core.permission.PermissionBehavior;
+import io.deepscope.core.permission.PermissionContextState;
+import io.deepscope.core.permission.PermissionDecision;
+import io.deepscope.core.tool.ToolBase;
+import io.deepscope.core.tool.ToolCallParam;
 import java.util.List;
 import java.util.Map;
 import reactor.core.publisher.Mono;
@@ -185,9 +185,9 @@ This pattern is the foundation of [human-in-the-loop](/v2/en/docs/building-block
 To create an external tool, set `externalTool` to `true` and skip implementing `callAsync`:
 
 ```java
-import io.agentscope.core.permission.PermissionContextState;
-import io.agentscope.core.permission.PermissionDecision;
-import io.agentscope.core.tool.ToolBase;
+import io.deepscope.core.permission.PermissionContextState;
+import io.deepscope.core.permission.PermissionDecision;
+import io.deepscope.core.tool.ToolBase;
 import java.util.List;
 import java.util.Map;
 import reactor.core.publisher.Mono;
@@ -218,7 +218,7 @@ public class HumanApprovalTool extends ToolBase {
 }
 ```
 
-Runnable examples: `agentscope-examples/documentation/.../tool/ToolBaseExample.java`, `tool/ToolExecutionContextExample.java`.
+Runnable examples: `deepscope-examples/documentation/.../tool/ToolBaseExample.java`, `tool/ToolExecutionContextExample.java`.
 
 ## Receiving context
 
@@ -255,8 +255,8 @@ public String runTask(ToolEmitter emitter) {
 "User POJO" means: no `@ToolParam`, not primitive, not `ContentBlock` / `Msg`, not under `java.*` / `javax.*`. Every other parameter (those with `@ToolParam`, or that fall outside the above types) is read from the LLM-supplied JSON by name.
 
 ```java
-import io.agentscope.core.tool.Tool;
-import io.agentscope.core.tool.ToolParam;
+import io.deepscope.core.tool.Tool;
+import io.deepscope.core.tool.ToolParam;
 
 public record UserContext(String username, String locale) {}
 
@@ -284,16 +284,16 @@ RuntimeContext ctx =
 agent.call(List.of(new UserMessage("Greet me.")), ctx).block();
 ```
 
-The model never sees `userCtx` — it is not part of the tool's JSON schema. Full example: `agentscope-examples/documentation/.../tool/ToolExecutionContextExample.java`.
+The model never sees `userCtx` — it is not part of the tool's JSON schema. Full example: `deepscope-examples/documentation/.../tool/ToolExecutionContextExample.java`.
 
 ### Accessing context in `ToolBase.callAsync`
 
 Tools that extend `ToolBase` read context through `ToolCallParam`:
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.tool.ToolBase;
-import io.agentscope.core.tool.ToolCallParam;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.tool.ToolBase;
+import io.deepscope.core.tool.ToolCallParam;
 import reactor.core.publisher.Mono;
 
 public class TenantAwareTool extends ToolBase {
@@ -303,7 +303,7 @@ public class TenantAwareTool extends ToolBase {
     }
 
     @Override
-    public Mono<io.agentscope.core.message.ToolResultBlock> callAsync(ToolCallParam param) {
+    public Mono<io.deepscope.core.message.ToolResultBlock> callAsync(ToolCallParam param) {
         RuntimeContext rc = param.getRuntimeContext();
         String tenantId = rc != null ? rc.getUserId() : null;
         TenantConfig cfg = rc != null ? rc.get(TenantConfig.class) : null;
@@ -320,7 +320,7 @@ The `RuntimeContext` string layer (`put(String, Object)` / `get(String)`) is a s
 
 ## MCP
 
-AgentScope integrates with the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), letting the agent talk to any MCP-compatible tool provider. The framework handles protocol negotiation, tool discovery, and result conversion.
+DeepScope integrates with the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), letting the agent talk to any MCP-compatible tool provider. The framework handles protocol negotiation, tool discovery, and result conversion.
 
 Three transports are supported:
 
@@ -340,9 +340,9 @@ Use `McpClientBuilder` to build an `McpClientWrapper`, then register it on the `
 <Tab title="STDIO">
 
 ```java
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.mcp.McpClientBuilder;
-import io.agentscope.core.tool.mcp.McpClientWrapper;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.mcp.McpClientBuilder;
+import io.deepscope.core.tool.mcp.McpClientWrapper;
 
 McpClientWrapper filesystem =
         McpClientBuilder.create("filesystem")
@@ -360,9 +360,9 @@ toolkit.registerMcpClient(filesystem).block();
 <Tab title="Streamable HTTP">
 
 ```java
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.mcp.McpClientBuilder;
-import io.agentscope.core.tool.mcp.McpClientWrapper;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.mcp.McpClientBuilder;
+import io.deepscope.core.tool.mcp.McpClientWrapper;
 
 McpClientWrapper weather =
         McpClientBuilder.create("weather")
@@ -381,8 +381,8 @@ toolkit.registerMcpClient(weather).block();
 <Tab title="SSE">
 
 ```java
-import io.agentscope.core.tool.mcp.McpClientBuilder;
-import io.agentscope.core.tool.mcp.McpClientWrapper;
+import io.deepscope.core.tool.mcp.McpClientBuilder;
+import io.deepscope.core.tool.mcp.McpClientWrapper;
 
 McpClientWrapper search =
         McpClientBuilder.create("search")
@@ -400,7 +400,7 @@ toolkit.registerMcpClient(search).block();
 </Tabs>
 
 
-Runnable examples: `agentscope-examples/documentation/.../mcp/McpStdioExample.java`, `mcp/McpSseExample.java`, `mcp/McpStreamableHttpExample.java`.
+Runnable examples: `deepscope-examples/documentation/.../mcp/McpStdioExample.java`, `mcp/McpSseExample.java`, `mcp/McpStreamableHttpExample.java`.
 
 ## Skill
 
@@ -413,8 +413,8 @@ Unlike tools, skills are not directly callable. The agent reads skill instructio
 Attach one or more `AgentSkillRepository` directly via `ReActAgent.builder().skillRepository(...)`. At `build()` time the builder auto-installs `DynamicSkillMiddleware`, which rebuilds the skill prompt and tool groups from the configured sources on every `call()`:
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.skill.repository.FileSystemSkillRepository;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.skill.repository.FileSystemSkillRepository;
 import java.nio.file.Paths;
 
 ReActAgent agent =
@@ -428,7 +428,7 @@ ReActAgent agent =
 
 Multiple `skillRepository(...)` calls append in order (low → high priority); when two repositories expose a skill with the same name, the later entry wins. Use `skillRepositories(List<AgentSkillRepository>)` to replace the list.
 
-Reference implementations: `agentscope-examples/documentation/.../skill/AgentSkillExample.java`, `skill/SkillWithToolGroupExample.java`.
+Reference implementations: `deepscope-examples/documentation/.../skill/AgentSkillExample.java`, `skill/SkillWithToolGroupExample.java`.
 
 ### How skills work
 
@@ -437,7 +437,7 @@ When skills are present, the `Toolkit` performs a two-phase setup.
 Initialisation:
 
 - The toolkit scans every registered skill source and collects each skill's name, description, and directory.
-- It auto-registers the built-in viewer tool `load_skill_through_path` (implemented in `io.agentscope.core.skill.SkillToolFactory`) as an ungrouped, always-visible tool.
+- It auto-registers the built-in viewer tool `load_skill_through_path` (implemented in `io.deepscope.core.skill.SkillToolFactory`) as an ungrouped, always-visible tool.
 - It assembles a system-prompt fragment listing the available skills (names + descriptions) and instructing the agent to read full content via `load_skill_through_path`.
 
 At runtime, the agent invokes the viewer with two required arguments:
@@ -476,10 +476,10 @@ Skills only provide instructions — actual execution relies on the tools the ag
 - **`ReActAgent`** — register `ShellCommandTool` in the toolkit:
 
 ```java
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.coding.ShellCommandTool;
-import io.agentscope.core.tool.file.ReadFileTool;
-import io.agentscope.core.tool.file.WriteFileTool;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.coding.ShellCommandTool;
+import io.deepscope.core.tool.file.ReadFileTool;
+import io.deepscope.core.tool.file.WriteFileTool;
 
 Toolkit toolkit = new Toolkit();
 toolkit.registerTool(new ShellCommandTool());
@@ -503,8 +503,8 @@ ReActAgent agent =
 `SkillToolGroup` binds a group of tools to a skill name — the group activates automatically when the agent loads that skill, and stays hidden from the model's schema otherwise, reducing context noise.
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tool.Toolkit;
 
 Toolkit toolkit = new Toolkit();
 
@@ -535,7 +535,7 @@ ReActAgent agent =
 
 When the agent loads the `data-analysis` skill via `load_skill_through_path`, the `analysis-tools` group activates and its tools become immediately available. With `enableMetaTool(true)`, the model can also manage group activation via `reset_tools`.
 
-Reference implementation: `agentscope-examples/documentation/.../skill/SkillWithToolGroupExample.java`.
+Reference implementation: `deepscope-examples/documentation/.../skill/SkillWithToolGroupExample.java`.
 
 ## Self-managed tools
 
@@ -546,10 +546,10 @@ The built-in **meta tool** (`reset_tools`) lets the agent self-manage which tool
 `ToolGroup` is a named bundle of tools / MCP clients / skills. Register the group on the `Toolkit` and turn on the meta tool through the builder:
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.ToolGroup;
-import io.agentscope.core.tool.ToolGroupScope;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.ToolGroup;
+import io.deepscope.core.tool.ToolGroupScope;
 
 Toolkit toolkit = new Toolkit();
 toolkit.registerTool(new BasicTools());
@@ -654,7 +654,7 @@ External execution tools and approval workflows
 
 Agent construction copies tool registries and registration metadata. Existing tool instances remain shared by reference, so custom tools must support concurrent use. Hook and knowledge tools registered while building one agent do not overwrite another agent's registrations.
 
-Use `io.agentscope.core.tool.ToolRequestConfig` instead of mutating a shared Toolkit during a call:
+Use `io.deepscope.core.tool.ToolRequestConfig` instead of mutating a shared Toolkit during a call:
 
 ```java
 ToolRequestConfig tools = new ToolRequestConfig(
@@ -670,4 +670,4 @@ External tools contain schemas only. Execution suspends for the caller to execut
 
 `Toolkit.callTool` and `callTools` also read configuration from their explicit RuntimeContext. `getTool(name)` inspects the underlying registry; use `getTool(name, config)` for the request view. Activation groups live in the session's `ToolContextState`; streaming tool callbacks belong to each invocation.
 
-Repositories with user- or session-dependent visibility implement `io.agentscope.core.skill.repository.RuntimeContextSkillRepository` in Core. Both Core and Harness pass the current context to the repository. Dynamic Skill views are cached by content signature. Concurrent cache misses share one completed materialization; rebuilding an evicted view uses a fresh directory so active executions keep their files. Cache eviction bounds retained boxes, not disk usage: generated directories remain until JVM shutdown. Callers own cleanup of explicitly supplied working directories; do not remove resources while executions still reference them.
+Repositories with user- or session-dependent visibility implement `io.deepscope.core.skill.repository.RuntimeContextSkillRepository` in Core. Both Core and Harness pass the current context to the repository. Dynamic Skill views are cached by content signature. Concurrent cache misses share one completed materialization; rebuilding an evicted view uses a fresh directory so active executions keep their files. Cache eviction bounds retained boxes, not disk usage: generated directories remain until JVM shutdown. Callers own cleanup of explicitly supplied working directories; do not remove resources while executions still reference them.

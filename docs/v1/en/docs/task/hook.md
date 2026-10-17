@@ -7,7 +7,7 @@ Hooks provide extension points to monitor and modify agent behavior at specific 
 
 ## Hook Overview
 
-AgentScope Java uses a **unified event model** where all hooks implement the `onEvent(HookEvent)` method:
+DeepScope Java uses a **unified event model** where all hooks implement the `onEvent(HookEvent)` method:
 
 - **Event-based**: All agent activities generate events
 - **Type-safe**: Pattern matching on event types
@@ -36,10 +36,10 @@ AgentScope Java uses a **unified event model** where all hooks implement the `on
 ### Basic Hook
 
 ```java
-import io.agentscope.core.hook.Hook;
-import io.agentscope.core.hook.HookEvent;
-import io.agentscope.core.hook.PreCallEvent;
-import io.agentscope.core.hook.PostCallEvent;
+import io.deepscope.core.hook.Hook;
+import io.deepscope.core.hook.HookEvent;
+import io.deepscope.core.hook.PreCallEvent;
+import io.deepscope.core.hook.PostCallEvent;
 import reactor.core.publisher.Mono;
 
 public class LoggingHook implements Hook {
@@ -85,12 +85,12 @@ public class HighPriorityHook implements Hook {
 Some events allow modification:
 
 ```java
-import io.agentscope.core.hook.Hook;
-import io.agentscope.core.hook.HookEvent;
-import io.agentscope.core.hook.PreReasoningEvent;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.TextBlock;
+import io.deepscope.core.hook.Hook;
+import io.deepscope.core.hook.HookEvent;
+import io.deepscope.core.hook.PreReasoningEvent;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.TextBlock;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -119,7 +119,7 @@ public class PromptEnhancingHook implements Hook {
 Register hooks when building an agent:
 
 ```java
-import io.agentscope.core.ReActAgent;
+import io.deepscope.core.ReActAgent;
 import java.util.List;
 
 ReActAgent agent = ReActAgent.builder()
@@ -138,17 +138,17 @@ Hooks are immutable after agent construction.
 
 ## Built-in JSONL Trace Exporter
 
-For local debugging and offline troubleshooting, AgentScope Java provides a built-in JSONL exporter:
+For local debugging and offline troubleshooting, DeepScope Java provides a built-in JSONL exporter:
 
 > Warning: the JSONL trace exporter writes full prompts, messages, tool inputs, and error stack
 > traces to local files. These records may contain sensitive user data, credentials, or other
 > secrets, so only enable it in trusted environments and handle the output file as sensitive data.
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.hook.recorder.JsonlTraceExporter;
-import io.agentscope.core.model.Model;
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.hook.recorder.JsonlTraceExporter;
+import io.deepscope.core.model.Model;
+import io.deepscope.core.tool.Toolkit;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -157,7 +157,7 @@ public class JsonlTraceExample {
 
     public void run(Model model, Toolkit toolkit) throws IOException {
         try (JsonlTraceExporter exporter =
-                JsonlTraceExporter.builder(Path.of("logs", "agentscope-trace.jsonl"))
+                JsonlTraceExporter.builder(Path.of("logs", "deepscope-trace.jsonl"))
                         .includeReasoningChunks(true) // optional
                         .includeActingChunks(true)    // optional
                         .build()) {
@@ -181,11 +181,11 @@ public class JsonlTraceExample {
 Track tool calls:
 
 ```java
-import io.agentscope.core.hook.Hook;
-import io.agentscope.core.hook.HookEvent;
-import io.agentscope.core.hook.PostActingEvent;
-import io.agentscope.core.hook.PreActingEvent;
-import io.agentscope.core.message.TextBlock;
+import io.deepscope.core.hook.Hook;
+import io.deepscope.core.hook.HookEvent;
+import io.deepscope.core.hook.PostActingEvent;
+import io.deepscope.core.hook.PreActingEvent;
+import io.deepscope.core.message.TextBlock;
 import reactor.core.publisher.Mono;
 
 public class ToolMonitorHook implements Hook {
@@ -219,9 +219,9 @@ public class ToolMonitorHook implements Hook {
 Monitor and handle errors:
 
 ```java
-import io.agentscope.core.hook.ErrorEvent;
-import io.agentscope.core.hook.Hook;
-import io.agentscope.core.hook.HookEvent;
+import io.deepscope.core.hook.ErrorEvent;
+import io.deepscope.core.hook.Hook;
+import io.deepscope.core.hook.HookEvent;
 import reactor.core.publisher.Mono;
 
 public class ErrorHandlingHook implements Hook {
@@ -243,10 +243,10 @@ public class ErrorHandlingHook implements Hook {
 ## Complete Example
 
 See the complete Hook example:
-- `agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/HookExample.java`
+- `deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/HookExample.java`
 
 Run the example:
 ```bash
-cd agentscope-examples/documentation/quickstart
-mvn exec:java -Dexec.mainClass="io.agentscope.examples.quickstart.HookExample"
+cd deepscope-examples/documentation/quickstart
+mvn exec:java -Dexec.mainClass="io.deepscope.examples.quickstart.HookExample"
 ```

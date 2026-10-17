@@ -12,14 +12,14 @@ title: "持续观察进展与交付状态"
 
 ## 基本 API
 
-依赖 `io.agentscope:agentscope-extensions-jev`，版本随当前项目 BOM。类型位于 `io.agentscope.extensions.judge.jev.supervision`：`JevTaskSupervisor`、`JevSupervisionMiddleware`、`SupervisionEvidence`。
+依赖 `io.deepscope:deepscope-extensions-jev`，版本随当前项目 BOM。类型位于 `io.deepscope.extensions.judge.jev.supervision`：`JevTaskSupervisor`、`JevSupervisionMiddleware`、`SupervisionEvidence`。
 
 ```java
-import io.agentscope.extensions.judge.jev.JevClient;
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.supervision.JevTaskSupervisor;
-import io.agentscope.extensions.judge.jev.supervision.JevSupervisionMiddleware;
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.extensions.judge.jev.JevClient;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.supervision.JevTaskSupervisor;
+import io.deepscope.extensions.judge.jev.supervision.JevSupervisionMiddleware;
+import io.deepscope.harness.agent.HarnessAgent;
 import java.time.Duration;
 
 var client = JevClient.builder().build();
@@ -120,7 +120,7 @@ HTTP Session overrides 不接收任意证据路径或“验证成功”声明。
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后运行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevSupervisionExample
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevSupervisionExample
 ```
 
 案例使用真实 ReActAgent、脚本模型、模拟订单工具与合成 JEV 响应。宿主检查工具恰好执行一次，再提供与当前观察 UUID 匹配的验证记录。预期输出包含 `Tool executions: 1, advice: REVIEW_COMPLETION, verified revision: true`。该例验证执行边界，不代表模型语义准确率。

@@ -3,15 +3,15 @@ title: DashScope
 en_link: /v2/en/integration/model/dashscope
 ---
 
-`agentscope-extensions-model-dashscope` 接入阿里云 DashScope Qwen Model，包括多模态和推理能力的 Qwen 模型。
+`deepscope-extensions-model-dashscope` 接入阿里云 DashScope Qwen Model，包括多模态和推理能力的 Qwen 模型。
 
 ## 添加依赖
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-dashscope</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-model-dashscope</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -38,7 +38,7 @@ ReActAgent agent = ReActAgent.builder()
 需要 DashScope 专属配置时使用 builder，例如 endpoint type、thinking、search、encryption：
 
 ```java
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
 
 DashScopeChatModel model = DashScopeChatModel.builder()
     .apiKey(System.getenv("DASHSCOPE_API_KEY"))
@@ -53,9 +53,9 @@ Spring Boot 应用可以使用 DashScope starter：
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-dashscope-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-dashscope-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 

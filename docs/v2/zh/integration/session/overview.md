@@ -10,7 +10,7 @@ en_link: /v2/en/integration/session/overview
 </Note>
 
 
-`io.agentscope.core.state.AgentStateStore` 是 AgentScope 用来持久化 Agent 状态的接口——比如 Memory、Workspace、Plan 等组件都会被序列化为 `State` 后由 `AgentStateStore` 落盘，从而支持重启恢复、跨节点共享。
+`io.deepscope.core.state.AgentStateStore` 是 DeepScope 用来持久化 Agent 状态的接口——比如 Memory、Workspace、Plan 等组件都会被序列化为 `State` 后由 `AgentStateStore` 落盘，从而支持重启恢复、跨节点共享。
 
 状态通过 `(userId, sessionId)` 二元组寻址：
 
@@ -25,11 +25,11 @@ en_link: /v2/en/integration/session/overview
 
 | 实现 | 模块 | 适合场景 |
 | --- | --- | --- |
-| `InMemoryAgentStateStore` | `agentscope-core` | 单元测试 |
-| `JsonFileAgentStateStore` | `agentscope-core` | 单机开发（**HarnessAgent 默认**） |
-| `RedisAgentStateStore` | `agentscope-extensions-redis` | [多副本生产首选](/v2/zh/integration/distributed/redis) |
-| `JdbcAgentStateStore` | `agentscope-extensions-jdbc` | [已有数据库的场景](/v2/zh/integration/distributed/jdbc) |
-| `OssAgentStateStore` | `agentscope-extensions-oss` | [阿里云生态](/v2/zh/integration/distributed/oss) |
+| `InMemoryAgentStateStore` | `deepscope-core` | 单元测试 |
+| `JsonFileAgentStateStore` | `deepscope-core` | 单机开发（**HarnessAgent 默认**） |
+| `RedisAgentStateStore` | `deepscope-extensions-redis` | [多副本生产首选](/v2/zh/integration/distributed/redis) |
+| `JdbcAgentStateStore` | `deepscope-extensions-jdbc` | [已有数据库的场景](/v2/zh/integration/distributed/jdbc) |
+| `OssAgentStateStore` | `deepscope-extensions-oss` | [阿里云生态](/v2/zh/integration/distributed/oss) |
 
 ## 单独配置
 

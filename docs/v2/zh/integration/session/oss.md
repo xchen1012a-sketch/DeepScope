@@ -12,15 +12,15 @@ en_link: /v2/en/integration/session/oss
 
 # OSS 状态存储
 
-`agentscope-extensions-oss` 把 AgentScope 的 Agent 状态持久化到阿里云对象存储（OSS）。适合大容量数据和阿里云生态的场景。
+`deepscope-extensions-oss` 把 DeepScope 的 Agent 状态持久化到阿里云对象存储（OSS）。适合大容量数据和阿里云生态的场景。
 
 ## 添加依赖
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-oss</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-oss</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -29,15 +29,15 @@ en_link: /v2/en/integration/session/oss
 ```java
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
-import io.agentscope.core.state.AgentStateStore;
-import io.agentscope.extensions.oss.OssAgentStateStore;
+import io.deepscope.core.state.AgentStateStore;
+import io.deepscope.extensions.oss.OssAgentStateStore;
 
 OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
 
 AgentStateStore stateStore = OssAgentStateStore.builder()
     .ossClient(ossClient)
-    .bucketName("my-agentscope-bucket")
-    .keyPrefix("agentscope/state/")
+    .bucketName("my-deepscope-bucket")
+    .keyPrefix("deepscope/state/")
     .build();
 
 ReActAgent agent = ReActAgent.builder()
@@ -65,7 +65,7 @@ ReActAgent agent = ReActAgent.builder()
 | --- | --- |
 | `ossClient(OSS)` | 必填。阿里云 OSS 客户端 |
 | `bucketName(String)` | 必填。OSS Bucket 名称 |
-| `keyPrefix(String)` | 默认 `agentscope/state/` |
+| `keyPrefix(String)` | 默认 `deepscope/state/` |
 
 ## 安全提示
 

@@ -41,7 +41,7 @@ These questions made us suddenly realize: what we had built before was just a si
 
 Let's first ask: what does your high-code actually look like?
 
-We observed several Agent applications (Java) built on frameworks such as Google ADK and AgentScope. They exhibited a strikingly similar structure:
+We observed several Agent applications (Java) built on frameworks such as Google ADK and DeepScope. They exhibited a strikingly similar structure:
 
 ```text
 my-agent-app/
@@ -249,7 +249,7 @@ In the original system, we implemented permission management based on the Web la
 
 ## 02 Technology Selection
 
-In the selection of the Agent runtime framework, we systematically evaluated the three mainstream technology systems — LangChain, Google ADK, and AgentScope. Finally choosing AgentScope as the core foundation was a comprehensive decision based on three dimensions: enterprise-grade production requirements, Alibaba internal ecosystem fit, and the specificity of business-finance needs.
+In the selection of the Agent runtime framework, we systematically evaluated the three mainstream technology systems — LangChain, Google ADK, and DeepScope. Finally choosing DeepScope as the core foundation was a comprehensive decision based on three dimensions: enterprise-grade production requirements, Alibaba internal ecosystem fit, and the specificity of business-finance needs.
 
 ### 2.1 Core Capability Comparison of the Three Frameworks
 
@@ -257,11 +257,11 @@ In the selection of the Agent runtime framework, we systematically evaluated the
 
 ### 2.2 Final Choice
 
-![Final choice: AgentScope](https://mmbiz.qpic.cn/sz_mmbiz_png/bvDbzNRia8j3y2iaYibfXsUyoZiayltDUG2aZjqhkAfSXqKQkhA9pwMtY0uUOAiamgaCBK54f8nSa16djxaic8FC80XOIwhUiaQPtFA6eqJCKCzWiaA/640?wx_fmt=png&from=appmsg)
+![Final choice: DeepScope](https://mmbiz.qpic.cn/sz_mmbiz_png/bvDbzNRia8j3y2iaYibfXsUyoZiayltDUG2aZjqhkAfSXqKQkhA9pwMtY0uUOAiamgaCBK54f8nSa16djxaic8FC80XOIwhUiaQPtFA6eqJCKCzWiaA/640?wx_fmt=png&from=appmsg)
 
-## 03 AgentScope's Three-Layer Architecture Capability Analysis
+## 03 DeepScope's Three-Layer Architecture Capability Analysis
 
-I believe AgentScope has three layers of capability: the model layer, the ReAct reasoning loop layer, and the external abstraction layer:
+I believe DeepScope has three layers of capability: the model layer, the ReAct reasoning loop layer, and the external abstraction layer:
 
 ### 3.1 Model Layer
 
@@ -330,7 +330,7 @@ We also considered that in the future, other businesses wanting to reference our
 
 ![Integration of tool classes with Alibaba ecosystem platforms](https://mmbiz.qpic.cn/sz_mmbiz_png/bvDbzNRia8j1XPXn6Kj87p0BzWDFYssB8Mw2pzcF6OUOrUJzJt4sYBIP3hWXTkzGEBDBIlGwfcEvMKicmrKibJKhG3qh8VhwAnS8dyPKHHGv6I/640?wx_fmt=png&from=appmsg)
 
-AgentScope natively only provides the `AgentSkill` + `SkillBox` interface definitions and does not provide any external sources. The reuse layer completes the ecosystem of enterprise-grade tools and derived classes:
+DeepScope natively only provides the `AgentSkill` + `SkillBox` interface definitions and does not provide any external sources. The reuse layer completes the ecosystem of enterprise-grade tools and derived classes:
 
 ![Enterprise-grade tool ecosystem completed by the reuse layer](https://mmbiz.qpic.cn/sz_mmbiz_png/bvDbzNRia8j3QNqRlZnYSoAmIS1sic4TbsDYUyzicviaO3Fr2dIRwZX4OnBJJOpic0usOQOMKYK7vrJdzeJaXP1dUDmNbdWh9erBcTEmelcVqqVw/640?wx_fmt=png&from=appmsg)
 
@@ -358,7 +358,7 @@ There are many concepts in the runtime layer; I will elaborate on the practical 
 
 ## 05 Practice Process Based on Development Key Points
 
-The previous sections sorted out the core architecture and capability boundaries of AgentScope and the reuse layer. Based on this, we walk through the practice process around the five major building points one by one — what problems we encountered, how we decomposed them, and how we designed and implemented the solutions.
+The previous sections sorted out the core architecture and capability boundaries of DeepScope and the reuse layer. Based on this, we walk through the practice process around the five major building points one by one — what problems we encountered, how we decomposed them, and how we designed and implemented the solutions.
 
 ### 5.1 Key Point One: DB-Driven Agent Execution Engine
 
@@ -747,7 +747,7 @@ public ProcessResult process(RunAgentInput input, String headerAgentId, String p
 }
 ```
 
-It essentially constructs a context object that spans the entire AgentScope request link. The reuse layer framework opens up the creation of `RuntimeContext` to the business layer for customization via the `AguiRuntimeContextBuilder` SPI.
+It essentially constructs a context object that spans the entire DeepScope request link. The reuse layer framework opens up the creation of `RuntimeContext` to the business layer for customization via the `AguiRuntimeContextBuilder` SPI.
 
 This project implemented `FinanceAguiRuntimeContextBuilder` by inheriting `AguiRuntimeContextBuilder`, assembling the context data of each AG-UI request into the framework's `RuntimeContext`, which contains 4 fields:
 
@@ -941,9 +941,9 @@ Since the model is unaware of engineering-level HITL, we can see that engineerin
 2. How to confirm that interception operations are needed before/after the user uses a tool?
    a. Once an interception point is discovered, how to stop all Agent behavior! Wait for the confirmation result before continuing the previous link;
 
-Fortunately, AgentScope's hooks system is very powerful:
+Fortunately, DeepScope's hooks system is very powerful:
 
-![AgentScope hooks system](https://mmbiz.qpic.cn/mmbiz_jpg/bvDbzNRia8j3JvZBkDfGvriaX6YEvybArD2xo992Frx8VT3D3gubqmv2ASmUbKsAvt1THovYldvo8wzDSxytIjLsQnMLPOPOGibQCtLHCJa8Dc/640?wx_fmt=jpeg&from=appmsg)
+![DeepScope hooks system](https://mmbiz.qpic.cn/mmbiz_jpg/bvDbzNRia8j3JvZBkDfGvriaX6YEvybArD2xo992Frx8VT3D3gubqmv2ASmUbKsAvt1THovYldvo8wzDSxytIjLsQnMLPOPOGibQCtLHCJa8Dc/640?wx_fmt=jpeg&from=appmsg)
 
 Overall link presentation:
 
@@ -979,7 +979,7 @@ Detailed explanation of the three working modes:
 
 ##### 5.1.4.4 ContextInjectingMcpTool (SPI4)
 
-AgentTool is AgentScope's tool-level SPI extension point, which can define encapsulated tool invocation logic:
+AgentTool is DeepScope's tool-level SPI extension point, which can define encapsulated tool invocation logic:
 
 ```java
 public interface AgentTool {
@@ -994,7 +994,7 @@ public interface AgentTool {
 
 **1) Problem background**
 
-The identity of AgentScope's native `McpTool` is already determined at the build time of `AoneMcpClientBuilder.buildSync()` (DB `ac_mcp_server.user_id`); all users share the same identity when calling the MCP Server. This is unacceptable in financial scenarios — when different users call the same MCP tool (such as querying approval forms), the MCP Server must see the caller's own identity to perform permission verification and data isolation.
+The identity of DeepScope's native `McpTool` is already determined at the build time of `AoneMcpClientBuilder.buildSync()` (DB `ac_mcp_server.user_id`); all users share the same identity when calling the MCP Server. This is unacceptable in financial scenarios — when different users call the same MCP tool (such as querying approval forms), the MCP Server must see the caller's own identity to perform permission verification and data isolation.
 
 **2) Design: identity injection at invocation time**
 

@@ -17,7 +17,7 @@
 import { clearAccountIdentity } from './accountIdentity';
 import { clearTabDrafts } from './tabDraftStorage';
 
-const TOKEN_KEY = 'claw_token';
+const TOKEN_KEY = 'deepscope_token';
 
 export class ApiError extends Error {
   status: number;

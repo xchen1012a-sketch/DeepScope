@@ -3,7 +3,7 @@ title: 可观测与调试
 en_link: /v1/en/docs/task/observability
 ---
 
-AgentScope Java 提供了多种机制来观测和调试智能体的执行过程：
+DeepScope Java 提供了多种机制来观测和调试智能体的执行过程：
 
 - **Studio（可视化调试）**：通过 Web 界面实时可视化和交互式调试
 - **OpenTelemetry 链路追踪**：通过 OTLP 协议将 Trace 数据导出到外部可观测性平台（如 Langfuse、Jaeger）
@@ -31,14 +31,14 @@ Studio 提供 Web 界面实时可视化 Agent 执行过程，支持交互式调�
 
 从源码启动
 ```bash
-git clone https://github.com/agentscope-ai/agentscope-studio
-cd agentscope-studio
+git clone https://github.com/deepscope-ai/deepscope-studio
+cd deepscope-studio
 npm install
 npm run dev
 ```
 npm安装
 ```bash
-npm install -g @agentscope/studio  # or npm install @agentscope/studio
+npm install -g @deepscope/studio  # or npm install @deepscope/studio
 as_studio
 ```
 Studio 将运行在 `http://localhost:5173`（前端开发服务器）
@@ -48,9 +48,9 @@ Studio 将运行在 `http://localhost:5173`（前端开发服务器）
 #### 2. Java 应用集成
 
 ```java
-import io.agentscope.core.studio.StudioManager;
-import io.agentscope.core.studio.StudioMessageHook;
-import io.agentscope.core.studio.StudioUserAgent;
+import io.deepscope.core.studio.StudioManager;
+import io.deepscope.core.studio.StudioMessageHook;
+import io.deepscope.core.studio.StudioUserAgent;
 
 // 初始化 Studio 连接
 StudioManager.init()
@@ -74,7 +74,7 @@ agent.call(msg).block();
 StudioManager.shutdown();
 ```
 
-#### 3. 在AgentScope Studio 查看Trace信息
+#### 3. 在DeepScope Studio 查看Trace信息
 
 ![Trace信息](/imgs/studioServer-trace.png)
 
@@ -85,7 +85,7 @@ StudioManager.shutdown();
 通过 Web UI 接收用户输入。
 
 ```java
-import io.agentscope.core.studio.StudioUserAgent;
+import io.deepscope.core.studio.StudioUserAgent;
 
 // 创建用户 Agent
 StudioUserAgent user = StudioUserAgent.builder()
@@ -122,14 +122,14 @@ while (true) {
 ### 完整示例
 
 ```java
-package io.agentscope.examples;
+package io.deepscope.examples;
 
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.message.Msg;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.studio.StudioManager;
-import io.agentscope.core.studio.StudioMessageHook;
-import io.agentscope.core.studio.StudioUserAgent;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.message.Msg;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.studio.StudioManager;
+import io.deepscope.core.studio.StudioMessageHook;
+import io.deepscope.core.studio.StudioUserAgent;
 
 public class StudioExample {
 
@@ -239,15 +239,15 @@ ReActAgent agent2 = ReActAgent.builder()
 
 ## OpenTelemetry 链路追踪
 
-AgentScope Java 集成了 OpenTelemetry，提供分布式链路追踪能力。你可以将 Trace 导出到任何支持 OTLP 协议的平台，如 Langfuse。
+DeepScope Java 集成了 OpenTelemetry，提供分布式链路追踪能力。你可以将 Trace 导出到任何支持 OTLP 协议的平台，如 Langfuse。
 
 ### 快速开始
 
 使用 `TelemetryTracer` 并通过 `TracerRegistry` 注册，即可自动追踪所有智能体调用、模型调用和工具执行：
 
 ```java
-import io.agentscope.core.tracing.TracerRegistry;
-import io.agentscope.core.tracing.telemetry.TelemetryTracer;
+import io.deepscope.core.tracing.TracerRegistry;
+import io.deepscope.core.tracing.telemetry.TelemetryTracer;
 
 // 注册 TelemetryTracer，配置 OTLP 端点
 TracerRegistry.register(
@@ -288,8 +288,8 @@ ReActAgent agent = ReActAgent.builder()
 [Langfuse](https://langfuse.com/) 是一个开源的可观测性平台，支持 OpenTelemetry 协议。你可以将 Trace 发送到 Langfuse Cloud 或自部署的实例。
 
 ```java
-import io.agentscope.core.tracing.TracerRegistry;
-import io.agentscope.core.tracing.telemetry.TelemetryTracer;
+import io.deepscope.core.tracing.TracerRegistry;
+import io.deepscope.core.tracing.telemetry.TelemetryTracer;
 import java.util.Base64;
 
 // 将 Langfuse API Key 编码为 Base64
@@ -326,6 +326,6 @@ TracerRegistry.register(
 
 ## 更多资源
 
-- **Studio 完整示例**: [StudioExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/advanced/src/main/java/io/agentscope/examples/advanced/StudioExample.java)
-- **Studio 仓库**: https://github.com/agentscope-ai/agentscope-studio
+- **Studio 完整示例**: [StudioExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/advanced/src/main/java/io/deepscope/examples/advanced/StudioExample.java)
+- **Studio 仓库**: https://github.com/deepscope-ai/deepscope-studio
 - **Hook 文档**: [hook.md](/v1/zh/docs/task/hook)

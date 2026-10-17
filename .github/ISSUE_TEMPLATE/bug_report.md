@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-**<u>AgentScope-Java is an open-source project. To involve a broader community, we recommend asking your questions in English.</u>**
+**<u>DeepScope-Java is an open-source project. To involve a broader community, we recommend asking your questions in English.</u>**
 
 **Describe the bug**
 A clear and concise description of what the bug is.
@@ -27,7 +27,7 @@ Detailed error messages.
 
 **Environment (please complete the following information):**
 
-- AgentScope-Java Version: [e.g. 1.0.12, check your pom.xml dependency version or run `mvn dependency:tree | grep agentscope-parent:pom`(only mac/linux)]
+- DeepScope-Java Version: [e.g. 1.0.12, check your pom.xml dependency version or run `mvn dependency:tree | grep deepscope-parent:pom`(only mac/linux)]
 - Java Version: [e.g. 17]
 - OS: [e.g. macos, windows]
 

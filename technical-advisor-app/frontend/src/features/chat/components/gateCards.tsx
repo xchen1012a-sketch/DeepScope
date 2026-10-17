@@ -28,7 +28,7 @@ import { ProcessText } from './ProcessText';
 export function ToolConfirmationCard({ interrupts, busy, onResolve }: { interrupts: AguiInterrupt[]; busy: boolean; onResolve: (responses: AguiResumeInput[]) => void }) {
   const { t } = useTranslation();
   const [decisions, setDecisions] = useState<Record<string, boolean>>({});
-  const supported = (item: AguiInterrupt) => item.metadata?.['agentscope.interruptKind'] === 'permission_confirm'
+  const supported = (item: AguiInterrupt) => item.metadata?.['deepscope.interruptKind'] === 'permission_confirm'
     && (!item.expiresAt || Number.isFinite(Date.parse(item.expiresAt)) && Date.parse(item.expiresAt) > Date.now());
   const ready = interrupts.length > 0 && interrupts.every(item => supported(item) && typeof decisions[item.id] === 'boolean');
   return <section className="space-y-3 rounded-xl border border-amber-200 bg-amber-50/40 p-4" aria-label={t('chat.confirmation.title')}>

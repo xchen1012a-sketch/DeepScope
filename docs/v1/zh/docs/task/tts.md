@@ -3,7 +3,7 @@ title: Text-to-Speech (TTS) 语音合成
 en_link: /v1/en/docs/task/tts
 ---
 
-AgentScope Java 提供了完整的 TTS 能力支持，让 Agent 不仅能思考和回复，还能开口说话。相比于纯文本的场景，语音是更自然的交互方式，适用于 智能客服、车载助手，以及边生成边朗读的实时对话场景。
+DeepScope Java 提供了完整的 TTS 能力支持，让 Agent 不仅能思考和回复，还能开口说话。相比于纯文本的场景，语音是更自然的交互方式，适用于 智能客服、车载助手，以及边生成边朗读的实时对话场景。
 
 
 ## 选择合适的模型
@@ -15,7 +15,7 @@ AgentScope Java 提供了完整的 TTS 能力支持，让 Agent 不仅能思考�
 
 ## 使用方式
 
-AgentScope 提供三种使用 TTS 的方式：
+DeepScope 提供三种使用 TTS 的方式：
 
 **ReActAgent 集成**：通过在 ReActAgent 中添加 TTSHook，可以实现 Agent 所有回复的自动朗读，只需添加 TTSHook 就能实现边生成边播放的效果。
 
@@ -71,7 +71,7 @@ Msg response = agent.call(Msg.builder().textContent("你好，今天天气怎么
 
 ### 服务器模式（Web/SSE）
 
-在 Web 应用中，音频需要发送到前端播放，可以将音频通过 SSE 发送到前端，或者使用响应式流，完整的代码可以参考 `agentscope-examples/documentation/chat-tts` 模块，包含前后端交互。
+在 Web 应用中，音频需要发送到前端播放，可以将音频通过 SSE 发送到前端，或者使用响应式流，完整的代码可以参考 `deepscope-examples/documentation/chat-tts` 模块，包含前后端交互。
 
 ---
 
@@ -173,8 +173,8 @@ Msg response = agent.call(Msg.builder().textContent("请用语音说一句'欢�
 
 ## 完整示例
 
-- 快速开始：`agentscope-examples/documentation/quickstart/TTSExample.java`
-- 完整示例：`agentscope-examples/documentation/chat-tts` 模块，包含前后端交互
+- 快速开始：`deepscope-examples/documentation/quickstart/TTSExample.java`
+- 完整示例：`deepscope-examples/documentation/chat-tts` 模块，包含前后端交互
 
 ---
 

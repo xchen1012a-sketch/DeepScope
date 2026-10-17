@@ -39,10 +39,10 @@ This pattern is inspired by research showing that multi-agent debate can improve
 ### Step 1: Create Debater Agents
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeMultiAgentFormatter;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeMultiAgentFormatter;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
 
 // Define the debate topic
 String topic = """
@@ -133,10 +133,10 @@ public class JudgeResult {
 ### Step 4: Implement the Debate Loop
 
 ```java
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.core.pipeline.MsgHub;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.core.pipeline.MsgHub;
 
 public void runDebate() {
     int maxRounds = 5;
@@ -207,16 +207,16 @@ public void runDebate() {
 Here's a complete, runnable example:
 
 ```java
-package io.agentscope.examples;
+package io.deepscope.examples;
 
-import io.agentscope.core.ReActAgent;
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeMultiAgentFormatter;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.pipeline.MsgHub;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeMultiAgentFormatter;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.pipeline.MsgHub;
 
 public class MultiAgentDebateExample {
 

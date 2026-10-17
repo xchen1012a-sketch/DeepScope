@@ -19,8 +19,8 @@ import { listPageFixture } from './listPageFixture';
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('claw_token', 'list-ui-test');
-    localStorage.setItem('controlplane.console.locale', 'zh-CN');
+    localStorage.setItem('deepscope_token', 'list-ui-test');
+    localStorage.setItem('deepscope.locale', 'zh-CN');
   });
   await page.route('http://127.0.0.1:5190/api/**', async route => {
     const requestURL = new URL(route.request().url());

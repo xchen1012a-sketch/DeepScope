@@ -19,8 +19,8 @@ Session enables persistent storage and recovery of Agent state, allowing convers
 ## Quick Start
 
 ```java
-import io.agentscope.core.session.JsonSession;
-import io.agentscope.core.session.Session;
+import io.deepscope.core.session.JsonSession;
+import io.deepscope.core.session.Session;
 import java.nio.file.Path;
 
 // 1. Create components
@@ -32,7 +32,7 @@ ReActAgent agent = ReActAgent.builder()
     .build();
 
 // 2. Create Session and load existing session
-Path sessionPath = Path.of(System.getProperty("user.home"), ".agentscope", "sessions");
+Path sessionPath = Path.of(System.getProperty("user.home"), ".deepscope", "sessions");
 Session session = new JsonSession(sessionPath);
 agent.loadIfExists(session, "userId");
 
@@ -47,7 +47,7 @@ agent.saveTo(session, "userId");
 
 ## Session Implementations
 
-AgentScope provides two Session implementations:
+DeepScope provides two Session implementations:
 
 | Implementation | Persistence | Use Case |
 |---------------|-------------|----------|
@@ -59,7 +59,7 @@ AgentScope provides two Session implementations:
 Stores state as JSON files on the filesystem.
 
 ```java
-import io.agentscope.core.session.JsonSession;
+import io.deepscope.core.session.JsonSession;
 
 // Create JsonSession
 Path sessionPath = Path.of("/path/to/sessions");
@@ -88,7 +88,7 @@ agent.loadFrom(session, "user123");
 Stores state in memory, suitable for testing and single-process temporary scenarios.
 
 ```java
-import io.agentscope.core.session.InMemorySession;
+import io.deepscope.core.session.InMemorySession;
 
 // Create in-memory session (typically used as singleton)
 InMemorySession session = new InMemorySession();
@@ -132,7 +132,7 @@ agent.loadFrom(session, "sessionId");
 ### Session Management Operations
 
 ```java
-import io.agentscope.core.state.SimpleSessionKey;
+import io.deepscope.core.state.SimpleSessionKey;
 
 // Check if session exists
 boolean exists = session.exists(SimpleSessionKey.of("sessionId"));
@@ -149,13 +149,13 @@ Set<SessionKey> keys = session.listSessionKeys();
 ## Complete Example
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.core.session.JsonSession;
-import io.agentscope.core.session.Session;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.core.session.JsonSession;
+import io.deepscope.core.session.Session;
 import java.nio.file.Path;
 
 public class SessionExample {
@@ -170,7 +170,7 @@ public class SessionExample {
 
         // Set up session
         String sessionId = "user_session_001";
-        Path sessionPath = Path.of(System.getProperty("user.home"), ".agentscope", "sessions");
+        Path sessionPath = Path.of(System.getProperty("user.home"), ".deepscope", "sessions");
         Session session = new JsonSession(sessionPath);
 
         // Load existing session (if exists)
@@ -201,9 +201,9 @@ public class SessionExample {
 Implement the `Session` interface to create custom storage stores:
 
 ```java
-import io.agentscope.core.session.Session;
-import io.agentscope.core.state.SessionKey;
-import io.agentscope.core.state.State;
+import io.deepscope.core.session.Session;
+import io.deepscope.core.state.SessionKey;
+import io.deepscope.core.state.State;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -322,7 +322,7 @@ If old data is not important, simply delete old session files and use the new AP
 
 ```bash
 # Delete old session files
-rm -rf ~/.agentscope/sessions/*.json
+rm -rf ~/.deepscope/sessions/*.json
 ```
 
 #### Option 2: Manual Migration
@@ -331,9 +331,9 @@ If you need to preserve historical conversation data, write a migration script:
 
 ```java
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.session.JsonSession;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.session.JsonSession;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -401,7 +401,7 @@ The new API uses a different table structure. If you previously used `MysqlSessi
 
 **Old Table Structure**:
 ```sql
-CREATE TABLE agentscope_sessions (
+CREATE TABLE deepscope_sessions (
     session_id VARCHAR(255) PRIMARY KEY,
     state_data JSON NOT NULL,
     created_at TIMESTAMP,
@@ -411,7 +411,7 @@ CREATE TABLE agentscope_sessions (
 
 **New Table Structure**:
 ```sql
-CREATE TABLE agentscope_sessions (
+CREATE TABLE deepscope_sessions (
     session_id VARCHAR(255) NOT NULL,
     state_key VARCHAR(255) NOT NULL,
     item_index INT NOT NULL DEFAULT 0,
@@ -430,12 +430,12 @@ The `item_index` column enables true incremental list storage:
 
 1. **Backup old data**:
 ```sql
-CREATE TABLE agentscope_sessions_backup AS SELECT * FROM agentscope_sessions;
+CREATE TABLE deepscope_sessions_backup AS SELECT * FROM deepscope_sessions;
 ```
 
 2. **Drop old table**:
 ```sql
-DROP TABLE agentscope_sessions;
+DROP TABLE deepscope_sessions;
 ```
 
 3. **Recreate** (use `createIfNotExist=true` for automatic creation):
@@ -451,21 +451,21 @@ The new API uses a different Redis key structure:
 
 **Old Structure**:
 ```
-agentscope:session:{sessionId}  -> JSON string (all states)
+deepscope:session:{sessionId}  -> JSON string (all states)
 ```
 
 **New Structure**:
 ```
-agentscope:session:{sessionId}:{stateKey}       -> JSON string (single state)
-agentscope:session:{sessionId}:{stateKey}:list  -> Redis List (list state)
-agentscope:session:{sessionId}:_keys            -> Redis Set (state index)
+deepscope:session:{sessionId}:{stateKey}       -> JSON string (single state)
+deepscope:session:{sessionId}:{stateKey}:list  -> Redis List (list state)
+deepscope:session:{sessionId}:_keys            -> Redis Set (state index)
 ```
 
 **Migration Steps**:
 
 1. **Clear old data** (if not needed):
 ```bash
-redis-cli KEYS "agentscope:session:*" | xargs redis-cli DEL
+redis-cli KEYS "deepscope:session:*" | xargs redis-cli DEL
 ```
 
 2. New data will automatically use the new structure.
@@ -474,6 +474,6 @@ redis-cli KEYS "agentscope:session:*" | xargs redis-cli DEL
 
 ## More Resources
 
-- **Complete Example**: [SessionExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/SessionExample.java)
+- **Complete Example**: [SessionExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/SessionExample.java)
 - **State Documentation**: [state.md](/v1/en/docs/task/state)
 - **Agent Configuration**: [agent-config.md](/v1/en/docs/task/agent-config)

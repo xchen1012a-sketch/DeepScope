@@ -46,10 +46,10 @@
 
 - 前端运行与收尾：`technical-advisor-app/frontend/src/features/chat/useAdvisorConversation.ts`的`send`、`finalizeRunState`、`stop`、`interruptAndSend`。
 - 流读取与确认信号：同目录`aguiClient.ts`的`classifyAguiLine`、`runAdvisorStream`。
-- 服务端运行准入/取消：`agentscope-extensions/agentscope-spring-boot-starters/agentscope-agui-spring-boot-starter`下的`AguiMvcController`，以及协议模块的`AguiRequestProcessor`、`AguiResumeCoordinator`。
+- 服务端运行准入/取消：`deepscope-extensions/deepscope-spring-boot-starters/deepscope-agui-spring-boot-starter`下的`AguiMvcController`，以及协议模块的`AguiRequestProcessor`、`AguiResumeCoordinator`。
 - 权限、运行资源：应用`AdvisorConfiguration.advisorRuntimeContextResolver`当前同时执行权限校验、技能同步和租约获取。租约目前按sessionId记录，不能直接把整个resolver视为无副作用预检。
 - 保存与清空：应用的`AdvisorSessionController`、`AguiRoundPersister`、`TimelineStore`、`SessionCompactionService`、`CommandController`。
-- 回放与展示：前端`model/blocks.ts`、`ProcessPanel.tsx`、`processPresentation.ts`；真实文件工具返回来自`agentscope-harness`的`FilesystemTool`。
+- 回放与展示：前端`model/blocks.ts`、`ProcessPanel.tsx`、`processPresentation.ts`；真实文件工具返回来自`deepscope-harness`的`FilesystemTool`。
 
 此前审查运行了会话模块24个测试文件、297项测试，均通过；额外内存探针复现了C01、C05、C08、C09、C10、C11及C12的展示转换。后端问题按调用链确认，未在线中断用户运行进行复现。该证据属于审查记录，不是本方案实施后的验证结果。
 
@@ -264,7 +264,7 @@ SSE准入冲突应沿用已有AGUI_INTERRUPT_CONTRACT_ERROR错误事件形状及
 
 ### 阶段五：文件失败语义与整体验收
 
-文件：`agentscope-harness/.../FilesystemTool.java`及注册/适配调用点、`FilesystemToolTest`；应用工具状态转换测试；前端`processPresentation`、工具行/批次/整轮组件测试；docs/v2 EN/ZH。
+文件：`deepscope-harness/.../FilesystemTool.java`及注册/适配调用点、`FilesystemToolTest`；应用工具状态转换测试；前端`processPresentation`、工具行/批次/整轮组件测试；docs/v2 EN/ZH。
 
 - [ ] C12：不存在文件、权限错误、正常文件内容恰好以Error开头分别校验；只有真实失败显示失败。
 - [ ] C12：旧格式和新结构化状态都可读，模型可见原始结果与公开调用兼容性有测试。
@@ -281,9 +281,9 @@ SSE准入冲突应沿用已有AGUI_INTERRUPT_CONTRACT_ERROR错误事件形状及
 在仓库根目录，按本阶段涉及模块执行：
 
 - 应用：`mvn -T1 -pl technical-advisor-app/backend -am test`。
-- 协议：`mvn -T1 -pl agentscope-extensions/agentscope-extensions-protocol/agentscope-extensions-agui -am test`。
-- MVC starter：`mvn -T1 -pl agentscope-extensions/agentscope-spring-boot-starters/agentscope-agui-spring-boot-starter -am test`。
-- 文件工具：`mvn -T1 -pl agentscope-harness -am test`。
+- 协议：`mvn -T1 -pl deepscope-extensions/deepscope-extensions-protocol/deepscope-extensions-agui -am test`。
+- MVC starter：`mvn -T1 -pl deepscope-extensions/deepscope-spring-boot-starters/deepscope-agui-spring-boot-starter -am test`。
+- 文件工具：`mvn -T1 -pl deepscope-harness -am test`。
 - Java改动模块对应`spotless:check`；由于公共取消/恢复契约变更，最终执行`mvn -B -T1 clean verify`，不使用skipTests制造通过。
 - `git diff --check`只检查本任务增量；如其他并发修改阻塞门禁，记录具体失败，不能宣称整体通过。
 

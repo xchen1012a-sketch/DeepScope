@@ -200,7 +200,7 @@ When your application needs an **isolation backend other than Docker** (custom r
 ### 5.3 `SandboxState` and Jackson
 
 - **Design intent**: the subtype table is provided at runtime via Module / `registerSubtypes`, making it easy for the same application or downstream jars to **extend state** without modifying **`SandboxState.java`**.
-- **This repo**: in **`io.agentscope.harness.agent.sandbox.json.HarnessSandboxJacksonModule`**, add **`registerSubtypes(new NamedType(XxxSandboxState.class, "xxx"))`** for new official stores.
+- **This repo**: in **`io.deepscope.harness.agent.sandbox.json.HarnessSandboxJacksonModule`**, add **`registerSubtypes(new NamedType(XxxSandboxState.class, "xxx"))`** for new official stores.
 - **Application-private subclasses**: call **`mapper.registerSubtypes(new NamedType(MySandboxState.class, "acme"))`** on any **`ObjectMapper`** that holds sandbox JSON, and ensure **`SandboxManager` / `SandboxStateStore`** paths use **the same** mapper configuration as the **`SandboxClient`**.
 
 ### 5.4 Implementing `SandboxFilesystemSpec`
@@ -209,7 +209,7 @@ When your application needs an **isolation backend other than Docker** (custom r
 - **`clientOptions()`**: return the mutable configuration object.
 - **`snapshotSpec()`** / **`workspaceSpec()`**: can provide default **`NoopSnapshotSpec`** and **`new WorkspaceSpec()`**; callers can still override with **`SandboxFilesystemSpec#snapshotSpec(...)`** before building the agent.
 
-**Reference implementation**: **`InMemorySandboxFilesystemSpec`** in the repo (`agentscope-harness` test support, `harness-example-sandbox` example project) simulates a sandbox with a temp directory, requires no Docker, and is a good minimal skeleton to copy and modify.
+**Reference implementation**: **`InMemorySandboxFilesystemSpec`** in the repo (`deepscope-harness` test support, `harness-example-sandbox` example project) simulates a sandbox with a temp directory, requires no Docker, and is a good minimal skeleton to copy and modify.
 
 ### 5.5 Enabling
 
@@ -233,23 +233,23 @@ When distributed **`Session`** or OSS/Redis snapshots are needed, continue confi
 - [ ] All **`ObjectMapper`**s that do **`readValue(..., SandboxState.class)`** have the corresponding **`NamedType`** registered (including **`HarnessSandboxJacksonModule`** if Docker-compatible data must be read).
 - [ ] If using **`AbstractSandboxFilesystem`**, **`ShellExecuteTool`** and file APIs are routed to your **`Sandbox#exec`** and sandbox-internal path conventions.
 
-### 5.7 Optional Sandbox Backends: Kubernetes / Daytona / E2B (`agentscope-harness` subpackages)
+### 5.7 Optional Sandbox Backends: Kubernetes / Daytona / E2B (`deepscope-harness` subpackages)
 
-These three remote sandbox implementations are in **`agentscope-harness`**'s **`io.agentscope.harness.agent.sandbox.impl.*`** subpackages (alongside **`io.agentscope.harness.agent.sandbox.impl.docker`**), available within the same artifact; dependencies like **fabric8** and **protobuf-java** are declared in **`agentscope-harness`**'s `pom.xml`.
+These three remote sandbox implementations are in **`deepscope-harness`**'s **`io.deepscope.harness.agent.sandbox.impl.*`** subpackages (alongside **`io.deepscope.harness.agent.sandbox.impl.docker`**), available within the same artifact; dependencies like **fabric8** and **protobuf-java** are declared in **`deepscope-harness`**'s `pom.xml`.
 
 | Java Package | Description |
 |--------------|-------------|
-| **`io.agentscope.harness.agent.sandbox.impl.kubernetes`** | Uses Pod as remote host: fabric8 Exec + container-side `tar`; **`KubernetesFilesystemSpec`** / **`KubernetesSandboxClient`** / **`KubernetesHarnessSandboxJacksonModule`** (`NamedType`: `kubernetes`). Supports top-level **`BindMountEntry`** (node **HostPath** + `volumeMount`), see [§5.8](#58-workspace-bind-mount-bindmountentry). |
-| **`io.agentscope.harness.agent.sandbox.impl.daytona`** | Daytona HTTP API: **`DaytonaFilesystemSpec`**, **`DaytonaHarnessSandboxJacksonModule`** (`daytona`), timeouts with limited retries. Does **not** apply host bind mounts; **WARN** at startup if spec contains `bind_mount`. |
-| **`io.agentscope.harness.agent.sandbox.impl.e2b`** | E2B: `https://api.e2b.app` lifecycle + envd **`process.Process/Start`** (Connect+protobuf); **`E2bFilesystemSpec`**, **`E2bHarnessSandboxJacksonModule`** (`e2b`); **`E2bPersistenceMode#TAR`** and **`NATIVE_SNAPSHOT`** (platform snapshot API + **`E2bSnapshotRefs`** magic prefix). Does **not** apply host bind mounts; **WARN** at startup if spec contains `bind_mount`; TAR snapshots still add **`tar --exclude`** for bind paths (consistent with Docker/K8s). |
+| **`io.deepscope.harness.agent.sandbox.impl.kubernetes`** | Uses Pod as remote host: fabric8 Exec + container-side `tar`; **`KubernetesFilesystemSpec`** / **`KubernetesSandboxClient`** / **`KubernetesHarnessSandboxJacksonModule`** (`NamedType`: `kubernetes`). Supports top-level **`BindMountEntry`** (node **HostPath** + `volumeMount`), see [§5.8](#58-workspace-bind-mount-bindmountentry). |
+| **`io.deepscope.harness.agent.sandbox.impl.daytona`** | Daytona HTTP API: **`DaytonaFilesystemSpec`**, **`DaytonaHarnessSandboxJacksonModule`** (`daytona`), timeouts with limited retries. Does **not** apply host bind mounts; **WARN** at startup if spec contains `bind_mount`. |
+| **`io.deepscope.harness.agent.sandbox.impl.e2b`** | E2B: `https://api.e2b.app` lifecycle + envd **`process.Process/Start`** (Connect+protobuf); **`E2bFilesystemSpec`**, **`E2bHarnessSandboxJacksonModule`** (`e2b`); **`E2bPersistenceMode#TAR`** and **`NATIVE_SNAPSHOT`** (platform snapshot API + **`E2bSnapshotRefs`** magic prefix). Does **not** apply host bind mounts; **WARN** at startup if spec contains `bind_mount`; TAR snapshots still add **`tar --exclude`** for bind paths (consistent with Docker/K8s). |
 
 **Jackson assembly**: register at least **`HarnessSandboxJacksonModule`** on any `ObjectMapper` holding sandbox state JSON, then register each backend's `SimpleModule` as needed (e.g., **`new KubernetesHarnessSandboxJacksonModule()`**), consistent with [§5.3](#53-sandboxstate-and-jackson). **Do not** add **`@JsonSubTypes`** on core **`SandboxClientOptions`** for optional stores — this would cause harness to reverse-depend on optional modules creating Maven cycles; optional stores are wired on the application side via their own **`FilesystemSpec`** + **`SandboxClientOptions` subclass**.
 
-**Dependency coordinates**: depend only on **`agentscope-harness`** (or harness coordinates managed by **`agentscope`** / BOM); **`agentscope-all`** includes these implementation classes alongside harness.
+**Dependency coordinates**: depend only on **`deepscope-harness`** (or harness coordinates managed by **`deepscope`** / BOM); **`deepscope-all`** includes these implementation classes alongside harness.
 
 ### 5.8 Workspace Bind Mount (`BindMountEntry`)
 
-Place **`io.agentscope.harness.agent.sandbox.layout.BindMountEntry`** (Jackson polymorphic name **`bind_mount`**) in **`WorkspaceSpec#getEntries()`**: the **key (map key)** is the **relative mount point** under workspace root (POSIX style, e.g. `data` → `{root}/data`), **`hostPath`** is the absolute path on the host (Docker machine / K8s node), **`readOnly`** controls whether read-only.
+Place **`io.deepscope.harness.agent.sandbox.layout.BindMountEntry`** (Jackson polymorphic name **`bind_mount`**) in **`WorkspaceSpec#getEntries()`**: the **key (map key)** is the **relative mount point** under workspace root (POSIX style, e.g. `data` → `{root}/data`), **`hostPath`** is the absolute path on the host (Docker machine / K8s node), **`readOnly`** controls whether read-only.
 
 | Backend | Behavior |
 |---------|----------|

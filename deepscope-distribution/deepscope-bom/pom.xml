@@ -1,0 +1,663 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2024-2026 the original author or authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-bom</artifactId>
+    <version>${revision}</version>
+
+    <packaging>pom</packaging>
+    <name>DeepScope Java - Bom</name>
+    <description>Bill of Materials POM (BOM) for the DeepScope Java modules</description>
+    <url>https://github.com/xchen1012a-sketch/DeepScope</url>
+
+    <scm>
+        <connection>git@github.com:xchen1012a-sketch/DeepScope.git</connection>
+        <developerConnection>git@github.com:xchen1012a-sketch/DeepScope.git</developerConnection>
+        <url>https://github.com/xchen1012a-sketch/DeepScope</url>
+    </scm>
+
+    <organization>
+        <name>DeepScope</name>
+        <url>https://github.com/xchen1012a-sketch/DeepScope</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>Apache 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>DeepScopeTeam</id>
+            <name>DeepScopeTeam</name>
+            <email>deepscope.team@gmail.com</email>
+            <organization>Alibaba</organization>
+            <organizationUrl>https://github.com/xchen1012a-sketch/DeepScope</organizationUrl>
+        </developer>
+    </developers>
+
+    <properties>
+        <revision>2.0.5-SNAPSHOT</revision>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>17</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+
+        <spotless.version>3.4.0</spotless.version>
+        <google-java-format.version>1.28.0</google-java-format.version>
+
+        <flatten-maven-plugin.version>1.7.3</flatten-maven-plugin.version>
+        <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+        <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
+        <central.publishing.maven.version>0.10.0</central.publishing.maven.version>
+
+        <maven.deploy.skip>false</maven.deploy.skip>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Agent Core -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-harness</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope All -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions A2A Client -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-a2a-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions A2A Server -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-a2a-server</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions AGUI -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-agui</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Chat Completions Web -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-chat-completions-web</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Agent Protocol Tasks -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-agent-protocol</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Mem0 -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-mem0</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Reme -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-reme</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Bailian Long Term Memory -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-memory-bailian</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Rag Bailian -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-rag-bailian</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Rag Dify -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-rag-dify</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Rag RagFlow -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-rag-ragflow</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Rag HayStack -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-rag-haystack</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Rag Simple -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-rag-simple</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Scheduler Common -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-scheduler-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Scheduler XXL Job -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-scheduler-xxl-job</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Scheduler Quartz -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-scheduler-quartz</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Redis (AgentStateStore + BaseStore + Sandbox) -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-redis</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions MySQL (AgentStateStore + JdbcStore) -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-mysql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions OSS (AgentStateStore + BaseStore) -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-oss</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions COS (AgentStateStore + BaseStore) -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-cos</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions PostgreSql (AgentStateStore + BaseStore) -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-postgresql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions MongoDB (AgentStateStore) -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-mongodb</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions JDBC (shared dialect layer for MySQL/PostgreSQL stores) -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-jdbc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Sandbox -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-sandbox-kubernetes</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-sandbox-agentrun</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-sandbox-daytona</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-sandbox-e2b</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Extensions Studio -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-studio</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Higress Extension -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-higress</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Git Skill Repository Extension -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-skill-git-repository</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Channel Extensions -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-channel-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-channel-dingtalk</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-channel-feishu</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-channel-wecom</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-channel-github</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-channel-gitlab</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-channel-weixin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Training Extension -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-training</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Jev Extension -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-jev</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope OpenAI Model Extension -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-model-openai</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-model-openai-official</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-model-gemini</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-model-anthropic</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-model-dashscope</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-model-ollama</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Micronaut Extension -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-micronaut-extension</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Quarkus Extension -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-quarkus-extension</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Quarkus Extension Deployment -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-quarkus-extension-deployment</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Nacos Extension -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-nacos-a2a</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-nacos-prompt</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-nacos-skill</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Nacos Spring Boot Starter -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-nacos-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope A2A Spring Boot Starter -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-a2a-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-admin-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope AGUI Spring Boot Starter -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-agui-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Spring Boot Starter -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Jev Spring Boot Starter -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-jev-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope OpenAI Spring Boot Starter -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-openai-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope OpenAI Official Spring Boot Starter -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-openai-official-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope DashScope Spring Boot Starter -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-dashscope-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Gemini Spring Boot Starter -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-gemini-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Anthropic Spring Boot Starter -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-anthropic-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Ollama Spring Boot Starter -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-ollama-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Chat Completions Web Spring Boot Starter -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-chat-completions-web-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Skill MySQL Storage -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-skill-mysql-repository</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- DeepScope Skill PostgreSQL Storage -->
+            <dependency>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-extensions-skill-postgresql-repository</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <distributionManagement>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Nexus Release Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>compile</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <formats>
+                        <!-- you can define as many formats as you want, each is independent -->
+                        <format>
+                            <!-- define the files to apply to -->
+                            <includes>
+                                <include>.gitattributes</include>
+                                <include>.gitignore</include>
+                            </includes>
+                            <!-- define the steps to apply to those files -->
+                            <trimTrailingWhitespace/>
+                            <endWithNewline/>
+                            <indent>
+                                <tabs>true</tabs>
+                                <spacesPerTab>4</spacesPerTab>
+                            </indent>
+                        </format>
+                    </formats>
+                    <!-- define a language-specific format -->
+                    <java>
+                        <removeUnusedImports />
+                        <forbidWildcardImports />
+                        <importOrder />
+                        <!-- apply a specific flavor of google-java-format and reflow long strings -->
+                        <googleJavaFormat>
+                            <version>${google-java-format.version}</version>
+                            <style>AOSP</style>
+                            <reflowLongStrings>true</reflowLongStrings>
+                            <formatJavadoc>false</formatJavadoc>
+                        </googleJavaFormat>
+                    </java>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${flatten-maven-plugin.version}</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>bom</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <phase>clean</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven-deploy-plugin.version}</version>
+                <configuration>
+                    <skip>${maven.deploy.skip}</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven-gpg-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <phase>verify</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>${central.publishing.maven.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

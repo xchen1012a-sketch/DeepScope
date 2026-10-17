@@ -3,7 +3,7 @@ title: Subagents
 zh_link: /v1/zh/docs/multi-agent/subagent
 ---
 
-> **Note:** The former Spring Boot example module `agentscope-examples/multiagent-patterns/` was removed during the 2.0 package refactor. Use the code snippets on this page as the reference implementation. For other runnable samples, see `agentscope-examples/documentation/`.
+> **Note:** The former Spring Boot example module `deepscope-examples/multiagent-patterns/` was removed during the 2.0 package refactor. Use the code snippets on this page as the reference implementation. For other runnable samples, see `deepscope-examples/documentation/`.
 
 Subagents are **specialized agents** that a main **orchestrator** delegates work to. The orchestrator does not execute the work itself; it calls a **Task** tool with a sub-agent type and a task description. The system runs the chosen sub-agent in an **isolated context** (its own system prompt and tools), then returns the result to the orchestrator. This keeps the main conversation focused and avoids context bloat, while still allowing multiple domains (e.g. codebase exploration, web research, dependency analysis) to be handled by dedicated agents.
 
@@ -92,7 +92,7 @@ TaskToolsBuilder.builder()
 
 The orchestrator can then call the Task tool with `subagent_type="dependency-analyzer"` and a task description. Programmatic sub-agents can use custom tools and logic that are not in the default tools map.
 
-## Task tools builder (AgentScope example)
+## Task tools builder (DeepScope example)
 
 The example uses **TaskToolsBuilder** to create the **Task** and **TaskOutput** tools and to register all sub-agents:
 
@@ -115,7 +115,7 @@ The example uses **TaskToolsBuilder** to create the **Task** and **TaskOutput** 
 
 ## Example: Tech Due Diligence Assistant
 
-The AgentScope example implements a **Tech Due Diligence Assistant**: one orchestrator that delegates to four sub-agents.
+The DeepScope example implements a **Tech Due Diligence Assistant**: one orchestrator that delegates to four sub-agents.
 
 | Sub-agent | Definition | Tools | Use case |
 |-----------|------------|-------|----------|

@@ -200,7 +200,7 @@ sharedSandbox.shutdown();
 ### 5.3 `SandboxState` 与 Jackson
 
 - **设计意图**：子类型表由 **Module / `registerSubtypes`** 在运行时提供，便于同一应用或下游 jar **扩展 state**，而不改 **`SandboxState.java`**。  
-- **本仓库**：在 **`io.agentscope.harness.agent.sandbox.json.HarnessSandboxJacksonModule`** 中为新的官方后端追加 **`registerSubtypes(new NamedType(XxxSandboxState.class, "xxx"))`**。  
+- **本仓库**：在 **`io.deepscope.harness.agent.sandbox.json.HarnessSandboxJacksonModule`** 中为新的官方后端追加 **`registerSubtypes(new NamedType(XxxSandboxState.class, "xxx"))`**。  
 - **应用私有子类**：对持有沙箱 JSON 的 **`ObjectMapper`** 调用 **`mapper.registerSubtypes(new NamedType(MySandboxState.class, "acme"))`**，并保证 **`SandboxManager` / `SandboxStateStore`** 所走路径与 **`SandboxClient`** 使用**同一套** mapper 配置。
 
 ### 5.4 实现 `SandboxFilesystemSpec`
@@ -209,7 +209,7 @@ sharedSandbox.shutdown();
 - **`clientOptions()`**：返回可变配置对象。  
 - **`snapshotSpec()`** / **`workspaceSpec()`**：可提供默认 **`NoopSnapshotSpec`** 与 **`new WorkspaceSpec()`**；调用方仍可用 **`SandboxFilesystemSpec#snapshotSpec(...)`** 在构建 agent 前覆盖。
 
-**参考实现**：仓库中的 **`InMemorySandboxFilesystemSpec`**（`agentscope-harness` 测试 support、`harness-example-sandbox` 示例工程）用临时目录模拟沙箱、不依赖 Docker，适合作为最小骨架拷贝改造。
+**参考实现**：仓库中的 **`InMemorySandboxFilesystemSpec`**（`deepscope-harness` 测试 support、`harness-example-sandbox` 示例工程）用临时目录模拟沙箱、不依赖 Docker，适合作为最小骨架拷贝改造。
 
 ### 5.5 启用
 
@@ -233,23 +233,23 @@ HarnessAgent agent = HarnessAgent.builder()
 - [ ] 所有会对 **`SandboxState`** 做 **`readValue(..., SandboxState.class)`** 的 **`ObjectMapper`** 均已注册对应 **`NamedType`**（含 **`HarnessSandboxJacksonModule`** 若需读 Docker 兼容数据）。  
 - [ ] 若走 **`AbstractSandboxFilesystem`**，**`ShellExecuteTool`** 与文件 API 已路由到你的 **`Sandbox#exec`** 与沙箱内路径约定。
 
-### 5.7 可选沙箱后端：Kubernetes / Daytona / E2B（`agentscope-harness` 子包）
+### 5.7 可选沙箱后端：Kubernetes / Daytona / E2B（`deepscope-harness` 子包）
 
-上述三类远端沙箱实现位于 **`agentscope-harness`** 的 **`io.agentscope.harness.agent.sandbox.impl.*`** 子包中（与 **`io.agentscope.harness.agent.sandbox.impl.docker`** 并列），同一 artifact 内即可选用；**fabric8**、**protobuf-java** 等依赖已声明在 **`agentscope-harness`** 的 `pom.xml` 中。
+上述三类远端沙箱实现位于 **`deepscope-harness`** 的 **`io.deepscope.harness.agent.sandbox.impl.*`** 子包中（与 **`io.deepscope.harness.agent.sandbox.impl.docker`** 并列），同一 artifact 内即可选用；**fabric8**、**protobuf-java** 等依赖已声明在 **`deepscope-harness`** 的 `pom.xml` 中。
 
 | Java 包 | 说明 |
 |---------|------|
-| **`io.agentscope.harness.agent.sandbox.impl.kubernetes`** | 以 Pod 为远端主机：fabric8 Exec + 容器内 `tar`；**`KubernetesFilesystemSpec`** / **`KubernetesSandboxClient`** / **`KubernetesHarnessSandboxJacksonModule`**（`NamedType`：`kubernetes`）。支持顶层 **`BindMountEntry`**（节点 **HostPath** + `volumeMount`），见 [§5.8](#58-工作区-bind-mountbindmountentry)。 |
-| **`io.agentscope.harness.agent.sandbox.impl.daytona`** | Daytona HTTP API：**`DaytonaFilesystemSpec`**、**`DaytonaHarnessSandboxJacksonModule`**（`daytona`）、超时与有限重试。**不**应用宿主 bind mount；含 `bind_mount` 时启动会 **WARN**。 |
-| **`io.agentscope.harness.agent.sandbox.impl.e2b`** | E2B：`https://api.e2b.app` 生命周期 + envd **`process.Process/Start`**（Connect+protobuf）；**`E2bFilesystemSpec`**、**`E2bHarnessSandboxJacksonModule`**（`e2b`）；**`E2bPersistenceMode#TAR`** 与 **`NATIVE_SNAPSHOT`**（平台快照 API + **`E2bSnapshotRefs`** magic 前缀）。**不**应用宿主 bind mount；含 `bind_mount` 时启动会 **WARN**；TAR 快照仍会对 bind 路径做 **`tar --exclude`**（与 Docker/K8s 一致）。 |
+| **`io.deepscope.harness.agent.sandbox.impl.kubernetes`** | 以 Pod 为远端主机：fabric8 Exec + 容器内 `tar`；**`KubernetesFilesystemSpec`** / **`KubernetesSandboxClient`** / **`KubernetesHarnessSandboxJacksonModule`**（`NamedType`：`kubernetes`）。支持顶层 **`BindMountEntry`**（节点 **HostPath** + `volumeMount`），见 [§5.8](#58-工作区-bind-mountbindmountentry)。 |
+| **`io.deepscope.harness.agent.sandbox.impl.daytona`** | Daytona HTTP API：**`DaytonaFilesystemSpec`**、**`DaytonaHarnessSandboxJacksonModule`**（`daytona`）、超时与有限重试。**不**应用宿主 bind mount；含 `bind_mount` 时启动会 **WARN**。 |
+| **`io.deepscope.harness.agent.sandbox.impl.e2b`** | E2B：`https://api.e2b.app` 生命周期 + envd **`process.Process/Start`**（Connect+protobuf）；**`E2bFilesystemSpec`**、**`E2bHarnessSandboxJacksonModule`**（`e2b`）；**`E2bPersistenceMode#TAR`** 与 **`NATIVE_SNAPSHOT`**（平台快照 API + **`E2bSnapshotRefs`** magic 前缀）。**不**应用宿主 bind mount；含 `bind_mount` 时启动会 **WARN**；TAR 快照仍会对 bind 路径做 **`tar --exclude`**（与 Docker/K8s 一致）。 |
 
 **Jackson 组装**：对持有沙箱 state JSON 的 **`ObjectMapper`** 至少注册 **`HarnessSandboxJacksonModule`**，再按需注册各后端的 **`SimpleModule`**（例如 **`new KubernetesHarnessSandboxJacksonModule()`**），与 [§5.3](#53-sandboxstate-与-jackson) 一致。**不要**在核心 **`SandboxClientOptions`** 上为可选后端增加 **`@JsonSubTypes`**，否则 harness 会反向依赖可选模块并产生 Maven 环；可选后端通过各自的 **`FilesystemSpec`** + **`SandboxClientOptions` 子类** 在应用侧装配即可。
 
-**依赖坐标**：只需依赖 **`agentscope-harness`**（或 **`agentscope`** / BOM 管理的 harness 坐标）；**`agentscope-all`** 已随 harness 携带上述实现类。
+**依赖坐标**：只需依赖 **`deepscope-harness`**（或 **`deepscope`** / BOM 管理的 harness 坐标）；**`deepscope-all`** 已随 harness 携带上述实现类。
 
 ### 5.8 工作区 bind mount（`BindMountEntry`）
 
-在 **`WorkspaceSpec#getEntries()`** 中可放入 **`io.agentscope.harness.agent.sandbox.layout.BindMountEntry`**（Jackson 多态名 **`bind_mount`**）：**键（map key）** 表示工作区根下的**相对挂载点**（POSIX 风格，如 `data` → `{root}/data`），**`hostPath`** 为宿主（Docker 机 / K8s 节点）上的绝对路径，**`readOnly`** 控制是否只读。
+在 **`WorkspaceSpec#getEntries()`** 中可放入 **`io.deepscope.harness.agent.sandbox.layout.BindMountEntry`**（Jackson 多态名 **`bind_mount`**）：**键（map key）** 表示工作区根下的**相对挂载点**（POSIX 风格，如 `data` → `{root}/data`），**`hostPath`** 为宿主（Docker 机 / K8s 节点）上的绝对路径，**`readOnly`** 控制是否只读。
 
 | 后端 | 行为 |
 |------|------|
@@ -487,14 +487,14 @@ SandboxExecutionGuard jvmGuard = key -> {
 
 ## 13. 后端选型与详细文档
 
-`agentscope-harness` 内置多个 `SandboxFilesystemSpec` 实现，可按场景选择：
+`deepscope-harness` 内置多个 `SandboxFilesystemSpec` 实现，可按场景选择：
 
 | 后端 | 适用场景 | 详细文档 |
 |------|---------|---------|
 | Docker | 本地开发 / 单进程 / 信任 shell | — |
-| Kubernetes | 自建 K8s 集群、节点级 bind mount | [§5.7](#57-可选沙箱后端kubernetes--daytona--e2bagentscope-harness-子包) |
-| Daytona | 通用托管沙箱 HTTP API | [§5.7](#57-可选沙箱后端kubernetes--daytona--e2bagentscope-harness-子包) |
-| E2B | 通用托管沙箱 + 平台快照 | [§5.7](#57-可选沙箱后端kubernetes--daytona--e2bagentscope-harness-子包) |
+| Kubernetes | 自建 K8s 集群、节点级 bind mount | [§5.7](#57-可选沙箱后端kubernetes--daytona--e2bdeepscope-harness-子包) |
+| Daytona | 通用托管沙箱 HTTP API | [§5.7](#57-可选沙箱后端kubernetes--daytona--e2bdeepscope-harness-子包) |
+| E2B | 通用托管沙箱 + 平台快照 | [§5.7](#57-可选沙箱后端kubernetes--daytona--e2bdeepscope-harness-子包) |
 | **AgentRun**（阿里云 FC 3.0 Sandbox） | 已用阿里云、需要中国大陆区域低延迟、想要实例级 NAS/OSS 动态挂载 | **[AgentRun 后端](/v1/zh/docs/harness/sandbox/agentrun)** |
 
 ## 14. 延伸阅读

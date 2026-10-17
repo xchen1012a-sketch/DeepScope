@@ -8,7 +8,7 @@ en_link: /v1/en/docs/task/agent-as-tool
 **实验性功能**
 
 
-此功能目前处于实验阶段，API 可能会发生变化。如果您在使用过程中遇到问题，欢迎通过 [GitHub Issues](https://github.com/agentscope-ai/agentscope-java/issues) 反馈。
+此功能目前处于实验阶段，API 可能会发生变化。如果您在使用过程中遇到问题，欢迎通过 [GitHub Issues](https://github.com/xchen1012a-sketch/DeepScope/issues) 反馈。
 
 </Warning>
 
@@ -42,9 +42,9 @@ Agent as Tool 允许将一个智能体注册为工具，供其他智能体调用
 ## 快速开始
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
 
 // 创建模型
 DashScopeChatModel model = DashScopeChatModel.builder()
@@ -80,8 +80,8 @@ Msg response = mainAgent.call(userMsg).block();
 通过 `SubAgentConfig` 自定义子智能体工具的行为：
 
 ```java
-import io.agentscope.core.tool.subagent.SubAgentConfig;
-import io.agentscope.core.session.JsonSession;
+import io.deepscope.core.tool.subagent.SubAgentConfig;
+import io.deepscope.core.session.JsonSession;
 import java.nio.file.Path;
 
 SubAgentConfig config = SubAgentConfig.builder()
@@ -127,7 +127,7 @@ toolkit.registration()
 默认使用内存存储（`InMemorySession`），进程重启后状态丢失。使用 `JsonSession` 可将状态持久化到文件：
 
 ```java
-import io.agentscope.core.session.JsonSession;
+import io.deepscope.core.session.JsonSession;
 import java.nio.file.Path;
 
 SubAgentConfig config = SubAgentConfig.builder()

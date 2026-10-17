@@ -3,7 +3,7 @@ title: RAGFlow
 zh_link: /v2/zh/integration/rag/ragflow
 ---
 
-`agentscope-extensions-rag-ragflow` integrates with [RAGFlow](https://ragflow.io/). RAGFlow is strong on document parsing (OCR, table extraction, knowledge graph augmentation) and shines for unstructured-heavy KBs.
+`deepscope-extensions-rag-ragflow` integrates with [RAGFlow](https://ragflow.io/). RAGFlow is strong on document parsing (OCR, table extraction, knowledge graph augmentation) and shines for unstructured-heavy KBs.
 
 ## When to use
 
@@ -14,18 +14,18 @@ zh_link: /v2/zh/integration/rag/ragflow
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-rag-ragflow</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-rag-ragflow</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## Quickstart
 
 ```java
-import io.agentscope.core.rag.integration.ragflow.RAGFlowConfig;
-import io.agentscope.core.rag.integration.ragflow.RAGFlowKnowledge;
-import io.agentscope.core.rag.model.RetrieveConfig;
+import io.deepscope.core.rag.integration.ragflow.RAGFlowConfig;
+import io.deepscope.core.rag.integration.ragflow.RAGFlowKnowledge;
+import io.deepscope.core.rag.model.RetrieveConfig;
 
 RAGFlowConfig config = RAGFlowConfig.builder()
     .apiKey("ragflow-xxxxxxxx")

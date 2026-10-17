@@ -2,10 +2,10 @@
 
 与[执行前防护文档](../../../../docs/v2/zh/jev/guides/tool-guard-api.md)使用同一个场景：用户说“先查订单，如果还没发货就退款”，Agent 已经提出退款工具调用。这个用例测量 JEV 和 Qwen 是否判断当前证据足以支持执行，以及判断进入中间件后是否正确拦截或派发。
 
-- [运行程序](../../src/main/java/io/agentscope/examples/jev/JevToolGuardBenchmark.java)：直接调用现有 `JevAutoModeMiddleware`，接入真实 `PermissionEngine`，退款由本地计数器模拟。
+- [运行程序](../../src/main/java/io/deepscope/examples/jev/JevToolGuardBenchmark.java)：直接调用现有 `JevAutoModeMiddleware`，接入真实 `PermissionEngine`，退款由本地计数器模拟。
 - [固定数据](data/refund-v1.jsonl)：160 个会话快照、168 个受保护调用。
 - [数据生成脚本](generate_dataset.py)：可重新生成相同 JSONL；不访问模型。
-- [行为测试](../../src/test/java/io/agentscope/examples/jev/JevToolGuardBenchmarkTest.java)：离线检查执行边界、失败处理及 Harness 内的固定恢复流程。
+- [行为测试](../../src/test/java/io/deepscope/examples/jev/JevToolGuardBenchmarkTest.java)：离线检查执行边界、失败处理及 Harness 内的固定恢复流程。
 - [统计脚本](summarize.py)与[统计测试](test_summarize.py)：从逐条结果生成分场景指标与简表。
 
 ## 测试问题与数据
@@ -55,34 +55,34 @@
 
 ## 构建和运行
 
-下载包保留仓库相对路径，需在包含当前 JEV 能力的同版本 AgentScope 仓库中使用，不是独立 Maven 工程。
+下载包保留仓库相对路径，需在包含当前 JEV 能力的同版本 DeepScope 仓库中使用，不是独立 Maven 工程。
 
 从仓库根目录执行。依赖构建方式见[示例模块 README](../../README.md)。
 
 ```bash
-mvn -pl agentscope-dependencies-bom,agentscope-distribution/agentscope-bom,agentscope-examples/jev -am install -DskipTests
-mvn -pl agentscope-examples/jev dependency:build-classpath -Dmdep.outputFile=/tmp/jev-examples-cp.txt
-export JEV_CP="agentscope-examples/jev/target/classes:$(cat /tmp/jev-examples-cp.txt)"
-export GUARD_DATA=agentscope-examples/jev/benchmarks/tool-guard/data/refund-v1.jsonl
+mvn -pl deepscope-dependencies-bom,deepscope-distribution/deepscope-bom,deepscope-examples/jev -am install -DskipTests
+mvn -pl deepscope-examples/jev dependency:build-classpath -Dmdep.outputFile=/tmp/jev-examples-cp.txt
+export JEV_CP="deepscope-examples/jev/target/classes:$(cat /tmp/jev-examples-cp.txt)"
+export GUARD_DATA=deepscope-examples/jev/benchmarks/tool-guard/data/refund-v1.jsonl
 ```
 
 先运行离线回放，无需任何密钥。它按金标生成预设概率，只验证接线，不代表模型准确率：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevToolGuardBenchmark \
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevToolGuardBenchmark \
   --offline "$GUARD_DATA" /tmp/refund-guard-offline --split all
-python3 agentscope-examples/jev/benchmarks/tool-guard/summarize.py /tmp/refund-guard-offline
+python3 deepscope-examples/jev/benchmarks/tool-guard/summarize.py /tmp/refund-guard-offline
 ```
 
 真实对比需显式使用 `--compare`，并在当前 shell 配置 `TYPESAFE_API_KEY`、`DASHSCOPE_API_KEY`。密钥不会写入报告。模型名称和 Qwen 地址显式传入，以下是本次运行配置：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevToolGuardBenchmark \
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevToolGuardBenchmark \
   --compare "$GUARD_DATA" /tmp/refund-guard-60s \
   --split test --budget-ms 60000 --repeats 1 \
   --jev-model jev-latest --qwen-model qwen3.8-max \
   --qwen-endpoint https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions
-python3 agentscope-examples/jev/benchmarks/tool-guard/summarize.py /tmp/refund-guard-60s
+python3 deepscope-examples/jev/benchmarks/tool-guard/summarize.py /tmp/refund-guard-60s
 ```
 
 将预算改为 `--budget-ms 2000`、输出目录改为新目录，可以验证文档的 2 秒预算。它是新的实际运行，不是从宽预算结果事后推算。默认阈值 `.8`、预算 2000 ms、test 集、重复一轮；可通过 `--threshold`、`--split calibration|test|all`、`--repeats`、`--warmups` 和 `--seed` 修改。`--live-jev`、`--live-qwen` 可分别运行单后端；`--baseline` 完全不调用模型。输出目录必须不存在，防止覆盖已有记录。
@@ -115,8 +115,8 @@ P50/P95 使用 nearest-rank。多工具快照按调用计准确率、按请求�
 ## 离线行为验证
 
 ```bash
-mvn -pl agentscope-examples/jev test -Dtest=JevToolGuardBenchmarkTest
-python3 -m unittest discover -s agentscope-examples/jev/benchmarks/tool-guard -p 'test_*.py'
+mvn -pl deepscope-examples/jev test -Dtest=JevToolGuardBenchmarkTest
+python3 -m unittest discover -s deepscope-examples/jev/benchmarks/tool-guard -p 'test_*.py'
 ```
 
 测试覆盖全部 160 条数据在 OFF/SHADOW/ENFORCE 下的派发、工具结果配对、同批只读工具保留、阈值边界、权限拒绝覆盖语义允许，以及异常、空响应、缺答案、非法概率、超时、取消、观察器异常和并发快照隔离。统计测试验证接口错误不算模型答对，以及按调用和按请求使用不同分母。

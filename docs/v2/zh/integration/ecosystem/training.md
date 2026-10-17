@@ -3,7 +3,7 @@ title: 在线训练
 en_link: /v2/en/integration/ecosystem/training
 ---
 
-`agentscope-extensions-training` 在 AgentScope 之上接入 Trinity 训练后端：把生产流量按策略采样、收集 trace、计算奖励，再周期性提交训练，形成闭环。
+`deepscope-extensions-training` 在 DeepScope 之上接入 Trinity 训练后端：把生产流量按策略采样、收集 trace、计算奖励，再周期性提交训练，形成闭环。
 
 ## 何时使用
 
@@ -15,17 +15,17 @@ en_link: /v2/en/integration/ecosystem/training
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-training</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-training</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## 快速上手
 
 ```java
-import io.agentscope.core.training.runner.TrainingRunner;
-import io.agentscope.core.training.strategy.SamplingRateStrategy;
+import io.deepscope.core.training.runner.TrainingRunner;
+import io.deepscope.core.training.strategy.SamplingRateStrategy;
 
 TrainingRunner runner = TrainingRunner.builder()
     .trinityEndpoint("http://localhost:8080")

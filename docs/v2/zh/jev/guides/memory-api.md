@@ -13,7 +13,7 @@ JEV 分别判断“是否有持久价值”和“是否存在缺乏更新依据�
 ## 1. 构造带归属和来源的候选
 
 ```java
-import io.agentscope.extensions.judge.jev.application.JevMemoryGate;
+import io.deepscope.extensions.judge.jev.application.JevMemoryGate;
 import java.util.List;
 
 String owner = "user-42";
@@ -49,7 +49,7 @@ var observed = pending.doOnNext(result -> {
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后执行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios memory
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevApplicationScenarios memory
 ```
 
 用例演示无冲突时 PASS、预设高冲突时 FAIL，两个分支实际写入数都为 0。概率由离线夹具提供，不是模型效果测量。[JevApplicationScenarios 完整源码](/examples/jev/source/JevApplicationScenarios.java.txt)

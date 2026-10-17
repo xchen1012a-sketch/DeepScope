@@ -3,7 +3,7 @@ title: Mem0
 en_link: /v2/en/integration/memory/mem0
 ---
 
-`agentscope-extensions-mem0` 接入 [Mem0](https://mem0.ai/) 记忆服务，提供基于向量检索 + LLM 抽取的长期记忆能力，支持 Mem0 Platform、自托管以及本地部署三种模式。
+`deepscope-extensions-mem0` 接入 [Mem0](https://mem0.ai/) 记忆服务，提供基于向量检索 + LLM 抽取的长期记忆能力，支持 Mem0 Platform、自托管以及本地部署三种模式。
 
 ## 何时使用
 
@@ -15,17 +15,17 @@ en_link: /v2/en/integration/memory/mem0
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-mem0</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-mem0</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## 快速上手
 
 ```java
-import io.agentscope.core.memory.mem0.Mem0LongTermMemory;
-import io.agentscope.core.memory.mem0.Mem0ApiType;
+import io.deepscope.core.memory.mem0.Mem0LongTermMemory;
+import io.deepscope.core.memory.mem0.Mem0ApiType;
 
 // 1. 构造记忆实例（本地无鉴权部署）
 Mem0LongTermMemory memory = Mem0LongTermMemory.builder()

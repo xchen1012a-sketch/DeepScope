@@ -3,7 +3,7 @@ title: Chat Completions Web
 en_link: /v2/en/integration/ecosystem/chat-completions-web
 ---
 
-`agentscope-extensions-chat-completions-web` 把 AgentScope Agent 包装成 [OpenAI Chat Completions](https://platform.openai.com/docs/api-reference/chat) 兼容接口，让 OpenAI SDK、LangChain、LlamaIndex、ChatBox 等客户端"以为自己在调 OpenAI"。
+`deepscope-extensions-chat-completions-web` 把 DeepScope Agent 包装成 [OpenAI Chat Completions](https://platform.openai.com/docs/api-reference/chat) 兼容接口，让 OpenAI SDK、LangChain、LlamaIndex、ChatBox 等客户端"以为自己在调 OpenAI"。
 
 ## 何时使用
 
@@ -14,9 +14,9 @@ en_link: /v2/en/integration/ecosystem/chat-completions-web
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-chat-completions-web</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-chat-completions-web</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -25,9 +25,9 @@ en_link: /v2/en/integration/ecosystem/chat-completions-web
 ## 核心适配器
 
 ```java
-import io.agentscope.core.chat.completions.streaming.ChatCompletionsStreamingAdapter;
-import io.agentscope.core.chat.completions.model.ChatCompletionsRequest;
-import io.agentscope.core.chat.completions.model.ChatCompletionsChunk;
+import io.deepscope.core.chat.completions.streaming.ChatCompletionsStreamingAdapter;
+import io.deepscope.core.chat.completions.model.ChatCompletionsRequest;
+import io.deepscope.core.chat.completions.model.ChatCompletionsChunk;
 import reactor.core.publisher.Flux;
 
 ChatCompletionsStreamingAdapter adapter = new ChatCompletionsStreamingAdapter();
@@ -36,7 +36,7 @@ ChatCompletionsStreamingAdapter adapter = new ChatCompletionsStreamingAdapter();
 Flux<ChatCompletionsChunk> stream = adapter.stream(agent, request);
 ```
 
-适配器把 AgentScope 的 `Event` 流（含 `REASONING`、`TOOL_RESULT` 等）转成 OpenAI 兼容的 `ChatCompletionsChunk`，包括：
+适配器把 DeepScope 的 `Event` 流（含 `REASONING`、`TOOL_RESULT` 等）转成 OpenAI 兼容的 `ChatCompletionsChunk`，包括：
 
 - 文本增量 → `delta.content`
 - 工具调用 → `delta.tool_calls[]`

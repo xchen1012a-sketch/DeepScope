@@ -8,7 +8,7 @@ en_link: /v2/en/docs/harness/session-log
 
 这涉及两件事：**谁负责把任务继续执行下去，以及执行过程保存在哪里**。`AgentSession` 提供提交、引导、回复和恢复等会话操作；Session Log 保存输入、消息、工具执行和工作状态。前端读取这些记录，就能在重新连接后恢复页面，而不必重新发起任务。
 
-本文从这个聊天场景逐步介绍用法，再说明事件查询、存储配置和扩展方式。可以配合[可恢复聊天示例](/v2/zh/blogs/best-practices/session-chat)实际体验。通过 AgentScope Service 使用托管 Agent 的应用，直接接入 [Service Agent API](/v2/zh/service/session-event-log) 的 HTTP/SSE 接口即可。
+本文从这个聊天场景逐步介绍用法，再说明事件查询、存储配置和扩展方式。可以配合[可恢复聊天示例](/v2/zh/blogs/best-practices/session-chat)实际体验。通过 DeepScope Service 使用托管 Agent 的应用，直接接入 [Service Agent API](/v2/zh/service/session-event-log) 的 HTTP/SSE 接口即可。
 
 <span id="基本概念与-api" />
 
@@ -27,8 +27,8 @@ en_link: /v2/en/docs/harness/session-log
 假设要做一个“比较方案”的聊天助手。应用启动时配置共享 Builder，由会话管理器构建并持有运行实例，再用用户和会话身份取得 `AgentSession`。下面的 `model` 是已经配置好的[模型](/v2/zh/docs/building-blocks/model)：
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.harness.agent.HarnessAgent;
 import java.nio.file.Path;
 
 HarnessAgent.Builder agentBuilder = HarnessAgent.builder()
@@ -177,7 +177,7 @@ session.start(); // 应用启动时，重新开启已接收任务的调度。
 SDK 没有列出“结果未知的工具调用”的 API。需要自己读取已提交日志，判断哪些调用还没有结果，并读取已保存的工作状态：
 
 ```java
-import io.agentscope.core.session.log.StateSnapshot;
+import io.deepscope.core.session.log.StateSnapshot;
 
 StateSnapshot snapshot = agent.inspectSession(ctx);
 System.out.println(snapshot.asOfSeq()); // 这份状态读取到的已提交位置
@@ -187,9 +187,9 @@ System.out.println(snapshot.asOfSeq()); // 这份状态读取到的已提交位�
 核对完成后，写明依据并记录这些 callId：
 
 ```java
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.core.message.ToolResultBlock;
-import io.agentscope.core.message.ToolResultState;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.core.message.ToolResultBlock;
+import io.deepscope.core.message.ToolResultState;
 import java.util.Map;
 
 // ID 与名称来自日志中待核对的调用，结果来自对订单系统的实际查询。
@@ -237,7 +237,7 @@ var continued = session.resume(task.turnId());
 排查某次任务时，可以按 `turnId` 查看它跨多次执行的记录，再按 `executionRunId` 细看一次执行。下面读取全部已提交事件，不会触发模型或工具：
 
 ```java
-import io.agentscope.core.session.log.SessionEvent;
+import io.deepscope.core.session.log.SessionEvent;
 
 var log = session.log(); // 也可以使用 agent.sessionLog(ctx)。
 for (SessionEvent event : log.events()) {
@@ -300,12 +300,12 @@ for (SessionEvent event : log.events()) {
 
 | 配置 | 去哪里查找记录 |
 | --- | --- |
-| 本地 Filesystem | 当前身份解析后的 Filesystem 根目录下 `.agentscope-runtime/` |
-| RemoteFilesystem | 对应 BaseStore namespace 下的 `__agentscope_session_log_v1__` 分区 |
+| 本地 Filesystem | 当前身份解析后的 Filesystem 根目录下 `.deepscope-runtime/` |
+| RemoteFilesystem | 对应 BaseStore namespace 下的 `__deepscope_session_log_v1__` 分区 |
 | 单独配置日志后端 | `.sessionLogStore(store)` 指定的后端 |
-| AgentScope Service 托管 | 由服务配置原生日志和公共事件存储，见 [Service 会话日志](/v2/zh/service/session-event-log) |
+| DeepScope Service 托管 | 由服务配置原生日志和公共事件存储，见 [Service 会话日志](/v2/zh/service/session-event-log) |
 
-Linux 和 macOS 的本地存储会先同步临时文件，再通过原子替换提交记录，并同步父目录。Windows 的 Java 文件系统不能打开目录来执行这种同步，因此本地 Session 存储改用 `.agentscope-runtime/journal.sqlite3` 中的 SQLite 事务，启用回滚日志和 `synchronous=EXTRA`。写入仍需通过原子的版本比较，存储错误也会返回给调用方。应用继续通过 SDK 读取记录；备份 Windows 工作区时，应先暂停所有写入再复制数据库，或者使用 SQLite 的一致性备份。POSIX 文件和 Windows 数据库存放的是同一套逻辑对象，但物理格式不同，跨平台迁移历史时需要进行日志迁移，或者使用共享后端。
+Linux 和 macOS 的本地存储会先同步临时文件，再通过原子替换提交记录，并同步父目录。Windows 的 Java 文件系统不能打开目录来执行这种同步，因此本地 Session 存储改用 `.deepscope-runtime/journal.sqlite3` 中的 SQLite 事务，启用回滚日志和 `synchronous=EXTRA`。写入仍需通过原子的版本比较，存储错误也会返回给调用方。应用继续通过 SDK 读取记录；备份 Windows 工作区时，应先暂停所有写入再复制数据库，或者使用 SQLite 的一致性备份。POSIX 文件和 Windows 数据库存放的是同一套逻辑对象，但物理格式不同，跨平台迁移历史时需要进行日志迁移，或者使用共享后端。
 
 这里的“当前身份”由 `SessionKey(userId, agentId, sessionId)` 和 Filesystem 的 namespace 共同确定。开启用户或会话隔离后，实际根目录会随身份变化，因此不能把所有会话都理解为写入 Workspace 下同一个固定目录。多副本必须连接同一份日志存储，并使用一致的身份与 namespace；仅让每个副本使用同名的本地目录并不能共享会话。
 
@@ -314,8 +314,8 @@ Linux 和 macOS 的本地存储会先同步临时文件，再通过原子替换�
 如果工作文件放在本机或沙箱，但希望会话日志跨节点保存，可以单独配置日志后端。下面的 `sharedStore` 是应用已经配置好、支持原子版本写的 `BaseStore`：
 
 ```java
-import io.agentscope.harness.agent.filesystem.remote.RemoteFilesystem;
-import io.agentscope.harness.agent.session.WorkspaceSessionLogStore;
+import io.deepscope.harness.agent.filesystem.remote.RemoteFilesystem;
+import io.deepscope.harness.agent.session.WorkspaceSessionLogStore;
 import java.util.List;
 
 var logStore = new WorkspaceSessionLogStore(
@@ -364,10 +364,10 @@ sessions/
 如果要把执行历史送到审计系统或数据仓库，可以用 `SessionExport` 把已提交记录渲染成 JSONL。导出与后端无关：头一行标明格式版本和会话，之后每行是一个已提交事件，记录形式与存储相同，因此导出结果和存储内容描述的是同一批事实。导出只读取历史，不会重新运行 Agent。
 
 ```java
-import io.agentscope.core.session.log.LocalSessionStore;
-import io.agentscope.core.session.log.SessionExport;
-import io.agentscope.core.session.log.SessionQuery;
-import io.agentscope.core.session.log.SessionSeq;
+import io.deepscope.core.session.log.LocalSessionStore;
+import io.deepscope.core.session.log.SessionExport;
+import io.deepscope.core.session.log.SessionQuery;
+import io.deepscope.core.session.log.SessionSeq;
 import java.nio.file.Path;
 
 var query = new SessionQuery(new LocalSessionStore(Path.of("/data/session-logs")));
@@ -387,8 +387,8 @@ SessionSeq.Seq through = bounded.throughSeq();
 例如，人工复核或业务校验发生在工具或中间件中，希望它也出现在执行时间线上，可以从本次运行的 `RuntimeContext` 取得内核写入者 `DurableSession`，再追加这条事实：
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.session.log.DurableSession;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.session.log.DurableSession;
 import java.util.Map;
 import reactor.core.publisher.Mono;
 
@@ -406,8 +406,8 @@ static Mono<Void> recordReview(RuntimeContext context, String note) {
 需要从当前对话尝试另一条路线时，可以用内核的 `SessionFork` 构造子会话的起始事件（fork seed）。分支复制一段前缀、标记继承切点，只为前缀留下的未闭合尾部补上关闭事件；源日志不会被修改。
 
 ```java
-import io.agentscope.core.session.log.SessionFork;
-import io.agentscope.core.session.log.SessionSeq;
+import io.deepscope.core.session.log.SessionFork;
+import io.deepscope.core.session.log.SessionSeq;
 
 // sourceEvents 是源会话的已提交事件，boundary 是最后一条被复制的事件（含）。
 SessionFork.Seed seed =

@@ -3,10 +3,10 @@ title: A2A
 zh_link: /v2/zh/integration/protocol/a2a
 ---
 
-`agentscope-extensions-a2a` implements the [A2A protocol](https://a2aproject.github.io/A2A/) and ships two sub-modules:
+`deepscope-extensions-a2a` implements the [A2A protocol](https://a2aproject.github.io/A2A/) and ships two sub-modules:
 
-- `agentscope-extensions-a2a-client`: wraps a remote A2A Agent as a local `Agent` you can `call(...)` directly.
-- `agentscope-extensions-a2a-server`: exposes a local `ReActAgent` as an A2A Server.
+- `deepscope-extensions-a2a-client`: wraps a remote A2A Agent as a local `Agent` you can `call(...)` directly.
+- `deepscope-extensions-a2a-server`: exposes a local `ReActAgent` as an A2A Server.
 
 The two modules are independent — use either one alone.
 
@@ -16,9 +16,9 @@ The two modules are independent — use either one alone.
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-a2a-client</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-a2a-client</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -26,7 +26,7 @@ The two modules are independent — use either one alone.
 
 ```java
 import io.a2a.spec.AgentCard;
-import io.agentscope.core.a2a.agent.A2aAgent;
+import io.deepscope.core.a2a.agent.A2aAgent;
 
 AgentCard card = AgentCard.builder()
     .name("remote-translator")
@@ -45,7 +45,7 @@ Msg result = remote.call(new UserMessage("Translate to English: 你好")).block(
 ### Auto-discover via well-known
 
 ```java
-import io.agentscope.core.a2a.agent.card.WellKnownAgentCardResolver;
+import io.deepscope.core.a2a.agent.card.WellKnownAgentCardResolver;
 
 WellKnownAgentCardResolver resolver = new WellKnownAgentCardResolver(
     "http://127.0.0.1:8080",
@@ -67,23 +67,23 @@ A2aAgent remote = A2aAgent.builder()
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-a2a-server</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-a2a-server</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ### Build the server
 
 ```java
-import io.agentscope.core.a2a.server.AgentScopeA2aServer;
-import io.agentscope.core.a2a.server.transport.jsonrpc.JsonRpcTransportProperties;
+import io.deepscope.core.a2a.server.DeepScopeA2aServer;
+import io.deepscope.core.a2a.server.transport.jsonrpc.JsonRpcTransportProperties;
 
 ReActAgent.Builder agentBuilder = ReActAgent.builder()
     .name("backend-agent")
     .model(model);
 
-AgentScopeA2aServer server = AgentScopeA2aServer.builder()
+DeepScopeA2aServer server = DeepScopeA2aServer.builder()
     .agentBuilder(agentBuilder)
     .transportProperties(new JsonRpcTransportProperties())
     // .agentCard(customCard)
@@ -97,7 +97,7 @@ TransportWrapper wrapper = server.getTransportWrapper("JSONRPC");
 server.postEndpointReady();   // call after the web server is listening — triggers registration etc.
 ```
 
-`AgentScopeA2aServer` does not bind a port or expose endpoints itself; it only assembles components and the request-handling chain. You wire transport into Spring Boot, Quarkus, Vert.x, etc. as you prefer.
+`DeepScopeA2aServer` does not bind a port or expose endpoints itself; it only assembles components and the request-handling chain. You wire transport into Spring Boot, Quarkus, Vert.x, etc. as you prefer.
 
 ### Optional components
 
@@ -107,4 +107,4 @@ server.postEndpointReady();   // call after the web server is listening — trig
 
 ## Spring Boot Starter
 
-If you're on Spring Boot, prefer `agentscope-spring-boot-starter-a2a-server` — it auto-configures the server and controller. See [Quickstart](/v2/en/docs/quickstart).
+If you're on Spring Boot, prefer `deepscope-spring-boot-starter-a2a-server` — it auto-configures the server and controller. See [Quickstart](/v2/en/docs/quickstart).

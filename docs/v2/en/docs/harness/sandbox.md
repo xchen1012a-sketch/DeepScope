@@ -78,7 +78,7 @@ Where snapshots land is decided by `snapshotSpec`:
 ```java
 .filesystem(new DockerFilesystemSpec()
     .image("ubuntu:24.04")
-    .snapshotSpec(new OssSnapshotSpec(ossClient, "my-bucket", "agentscope/")))
+    .snapshotSpec(new OssSnapshotSpec(ossClient, "my-bucket", "deepscope/")))
 ```
 
 Host-side workspace files (`AGENTS.md` / `skills/` / `subagents/` / `knowledge/`) are synced into the sandbox at each start, content-hash-gated. So if you edit a script under `skills/`, the next `call()` has the new version inside the sandbox.
@@ -227,7 +227,7 @@ The agent-sandbox backend does not `kubectl exec` into the container; it talks t
 | `GET /download/{path}` | downloads file bytes by relative path |
 | `GET /list/{path}`, `GET /exists/{path}` | directory listing / existence check |
 
-**The file-API base directory must match the workspace root** (recommended: `/workspace` for both). Harness transfers two kinds of content through `/upload` / `/download`: workspace snapshot tarballs (temp files under `.agentscope-tmp/` inside that directory), and single-file bytes for `write_file` / file downloads when the path lies under the base directory (Linux caps a single command-line argument at about 128 KiB; native file-API transfer has no such limit). The base directory is configured via `KubernetesSandboxClientOptions.fileApiBaseDir` (default `/workspace`); setting it blank falls back to base64-over-exec transfer.
+**The file-API base directory must match the workspace root** (recommended: `/workspace` for both). Harness transfers two kinds of content through `/upload` / `/download`: workspace snapshot tarballs (temp files under `.deepscope-tmp/` inside that directory), and single-file bytes for `write_file` / file downloads when the path lies under the base directory (Linux caps a single command-line argument at about 128 KiB; native file-API transfer has no such limit). The base directory is configured via `KubernetesSandboxClientOptions.fileApiBaseDir` (default `/workspace`); setting it blank falls back to base64-over-exec transfer.
 
 > Note: the example runtime in the upstream agent-sandbox repo (`examples/python-runtime-sandbox`) runs commands via `shlex.split` + `subprocess.run` without a shell, and roots its file API at `/app` — it does **not** conform to this contract and should only be used as a reference for endpoint shapes. Upstream KEP-539.2 is standardizing the runtime interface (REST/gRPC spec + conformance tests); this contract can converge on the official spec once it lands.
 
@@ -292,7 +292,7 @@ File changes inside the sandbox don't sync back to the host — to retrieve sand
 
 ## Implementing your own sandbox store
 
-To integrate a non-Docker isolation environment (self-hosted remote executor, commercial sandbox API, local mock, etc.), no Harness source changes needed — implement a few contract interfaces and pass them to `filesystem(...)`. The `InMemorySandbox` family under `agentscope-harness` tests is the minimal skeleton to copy.
+To integrate a non-Docker isolation environment (self-hosted remote executor, commercial sandbox API, local mock, etc.), no Harness source changes needed — implement a few contract interfaces and pass them to `filesystem(...)`. The `InMemorySandbox` family under `deepscope-harness` tests is the minimal skeleton to copy.
 
 ## Related pages
 

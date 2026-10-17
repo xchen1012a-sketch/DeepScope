@@ -7,7 +7,7 @@ en_link: /v1/en/docs/harness/example/index
 
 仓库示例：
 
-- `agentscope-examples/agents/harness-examples/harness-quickstart`
+- `deepscope-examples/agents/harness-examples/harness-quickstart`
 
 推荐阅读顺序：
 

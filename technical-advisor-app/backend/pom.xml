@@ -27,14 +27,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.agentscope</groupId>
-        <artifactId>agentscope-parent</artifactId>
+        <groupId>io.deepscope</groupId>
+        <artifactId>deepscope-parent</artifactId>
         <version>${revision}</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>technical-advisor-backend</artifactId>
-    <name>AgentScope Java - Technical Advisor Backend</name>
+    <name>DeepScope Java - Technical Advisor Backend</name>
     <description>Demo app backend hosting the technical advisor agent with AG-UI chat and admin surfaces</description>
 
     <properties>
@@ -58,37 +58,37 @@
     <dependencies>
         <!-- Harness agent runtime: workspace, skills, subagents, sessions -->
         <dependency>
-            <groupId>io.agentscope</groupId>
-            <artifactId>agentscope-harness</artifactId>
+            <groupId>io.deepscope</groupId>
+            <artifactId>deepscope-harness</artifactId>
         </dependency>
 
         <!-- Chat surface: AG-UI streaming endpoints, auto-registers Agent beans -->
         <dependency>
-            <groupId>io.agentscope</groupId>
-            <artifactId>agentscope-agui-spring-boot-starter</artifactId>
+            <groupId>io.deepscope</groupId>
+            <artifactId>deepscope-agui-spring-boot-starter</artifactId>
         </dependency>
 
         <!-- Ops surface: agent inventory, session admin, subagent task views -->
         <dependency>
-            <groupId>io.agentscope</groupId>
-            <artifactId>agentscope-admin-spring-boot-starter</artifactId>
+            <groupId>io.deepscope</groupId>
+            <artifactId>deepscope-admin-spring-boot-starter</artifactId>
         </dependency>
 
         <!-- Document readers, embedding client, and the pgvector store. -->
         <dependency>
-            <groupId>io.agentscope</groupId>
-            <artifactId>agentscope-extensions-rag-simple</artifactId>
+            <groupId>io.deepscope</groupId>
+            <artifactId>deepscope-extensions-rag-simple</artifactId>
         </dependency>
 
-        <!-- Model provider: OpenAI-protocol model bean from agentscope.openai.* config -->
+        <!-- Model provider: OpenAI-protocol model bean from deepscope.openai.* config -->
         <dependency>
-            <groupId>io.agentscope</groupId>
-            <artifactId>agentscope-openai-spring-boot-starter</artifactId>
+            <groupId>io.deepscope</groupId>
+            <artifactId>deepscope-openai-spring-boot-starter</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>io.agentscope</groupId>
-            <artifactId>agentscope-extensions-model-anthropic</artifactId>
+            <groupId>io.deepscope</groupId>
+            <artifactId>deepscope-extensions-model-anthropic</artifactId>
         </dependency>
 
         <!-- Servlet web stack for the MVC-based starters -->

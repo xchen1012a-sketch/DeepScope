@@ -13,8 +13,8 @@ JEV 可以同时建议订单和账单队列，并检查草稿是否覆盖用户�
 ## 1. 将原请求、草稿和业务记录一起交给评审
 
 ```java
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.application.JevCustomerSupport;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.application.JevCustomerSupport;
 import java.util.Map;
 
 var support = new JevCustomerSupport(selector, judge);
@@ -49,7 +49,7 @@ var observed = pending.doOnNext(report -> {
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后执行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios support
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevApplicationScenarios support
 ```
 
 预设结果推荐订单和账单，草稿总状态 FAIL；退款次数和发送消息次数均为 0。用例验证报告与业务动作的边界，未测真实模型准确率。[JevApplicationScenarios 完整源码](/examples/jev/source/JevApplicationScenarios.java.txt)

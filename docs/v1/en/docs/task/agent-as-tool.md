@@ -8,7 +8,7 @@ zh_link: /v1/zh/docs/task/agent-as-tool
 **Experimental Feature**
 
 
-This feature is currently experimental and the API may change. If you encounter any issues, please provide feedback via [GitHub Issues](https://github.com/agentscope-ai/agentscope-java/issues).
+This feature is currently experimental and the API may change. If you encounter any issues, please provide feedback via [GitHub Issues](https://github.com/xchen1012a-sketch/DeepScope/issues).
 
 </Warning>
 
@@ -42,9 +42,9 @@ Parent Agent ──call──→ SubAgentTool ──create──→ Sub-agent
 ## Quick Start
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
 
 // Create model
 DashScopeChatModel model = DashScopeChatModel.builder()
@@ -80,8 +80,8 @@ Msg response = mainAgent.call(userMsg).block();
 Customize sub-agent tool behavior with `SubAgentConfig`:
 
 ```java
-import io.agentscope.core.tool.subagent.SubAgentConfig;
-import io.agentscope.core.session.JsonSession;
+import io.deepscope.core.tool.subagent.SubAgentConfig;
+import io.deepscope.core.session.JsonSession;
 import java.nio.file.Path;
 
 SubAgentConfig config = SubAgentConfig.builder()
@@ -127,7 +127,7 @@ The sub-agent tool exposes two parameters:
 By default, `InMemorySession` is used and state is lost on process restart. Use `JsonSession` to persist state to files:
 
 ```java
-import io.agentscope.core.session.JsonSession;
+import io.deepscope.core.session.JsonSession;
 import java.nio.file.Path;
 
 SubAgentConfig config = SubAgentConfig.builder()

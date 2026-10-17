@@ -6,13 +6,13 @@
 
 | 模块 | 职责 | 技术栈 | 适用规范 |
 |---|---|---|---|
-| `agentscope-core/` | Agent 核心 API、ReAct 循环、消息、事件、工具、中间件、状态 | Java 17 / Reactor（Spring 无关） | [backend/java.md](backend/java.md) |
-| `agentscope-harness/` | workspace、memory、subagents、channels、`HarnessAgent` | Java 17（Spring 无关） | [backend/java.md](backend/java.md) |
-| `agentscope-extensions/` | model / storage / protocol / channel / sandbox / 框架集成 + spring-boot-starters | Java 17（部分扩展基于 Spring，设计内） | [backend/java.md](backend/java.md) |
+| `deepscope-core/` | Agent 核心 API、ReAct 循环、消息、事件、工具、中间件、状态 | Java 17 / Reactor（Spring 无关） | [backend/java.md](backend/java.md) |
+| `deepscope-harness/` | workspace、memory、subagents、channels、`HarnessAgent` | Java 17（Spring 无关） | [backend/java.md](backend/java.md) |
+| `deepscope-extensions/` | model / storage / protocol / channel / sandbox / 框架集成 + spring-boot-starters | Java 17（部分扩展基于 Spring，设计内） | [backend/java.md](backend/java.md) |
 | `technical-advisor-app/` | 技术参谋演示应用（`frontend/` 为原平台控制台整体剥离的 React 底子） | React 18 / Vite 6 / Tailwind 4 | [frontend/spec.md](frontend/spec.md) |
-| `agentscope-examples/` | 可运行示例（不被任何库模块依赖） | Java | [backend/java.md](backend/java.md) |
-| `agentscope-dependencies-bom/` | 第三方依赖版本 | Maven BOM | [backend/java.md](backend/java.md) |
-| `agentscope-distribution/` | 发布用 BOM 与聚合分发 | Maven | [backend/java.md](backend/java.md) |
+| `deepscope-examples/` | 可运行示例（不被任何库模块依赖） | Java | [backend/java.md](backend/java.md) |
+| `deepscope-dependencies-bom/` | 第三方依赖版本 | Maven BOM | [backend/java.md](backend/java.md) |
+| `deepscope-distribution/` | 发布用 BOM 与聚合分发 | Maven | [backend/java.md](backend/java.md) |
 | `docs/` | Mintlify 文档站（EN/ZH 双语对齐） | Mintlify | [docs/README.md](../docs/README.md) |
 
 ## 按需阅读

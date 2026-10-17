@@ -1,4 +1,4 @@
-# AgentScope Java — AI 导航入口
+# DeepScope Java — AI 导航入口
 
 本文件是导航入口，全部规范与项目信息集中在 `.ai-spec/`（SSOT），不在本文件维护内容。
 

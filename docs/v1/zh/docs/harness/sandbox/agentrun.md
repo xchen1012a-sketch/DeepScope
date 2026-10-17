@@ -2,12 +2,12 @@
 title: AgentRun 后端
 ---
 
-[AgentRun](https://help.aliyun.com/zh/functioncompute/fc/developer-reference/api-agentrun-2025-09-10-createsandbox)（阿里云函数计算 FC 3.0 Sandbox API，版本 `2025-09-10`）是阿里云提供的托管沙箱服务。`agentscope-harness` 通过 `io.agentscope.harness.agent.sandbox.impl.agentrun.AgentRunFilesystemSpec` 接入该后端，与 Docker / Daytona / E2B / Kubernetes 并列，可在 `HarnessAgent#filesystem(...)` 中直接声明使用。
+[AgentRun](https://help.aliyun.com/zh/functioncompute/fc/developer-reference/api-agentrun-2025-09-10-createsandbox)（阿里云函数计算 FC 3.0 Sandbox API，版本 `2025-09-10`）是阿里云提供的托管沙箱服务。`deepscope-harness` 通过 `io.deepscope.harness.agent.sandbox.impl.agentrun.AgentRunFilesystemSpec` 接入该后端，与 Docker / Daytona / E2B / Kubernetes 并列，可在 `HarnessAgent#filesystem(...)` 中直接声明使用。
 
 实现要点：
 - **数据面优先**：调用 `https://{accountId}.agentrun-data.{region}.aliyuncs.com` + `X-API-Key` + `X-Acs-Parent-Id` 鉴权，不引入完整 Aliyun OpenAPI SDK；
 - **`sandboxId` 由 `sessionId` 派生**：使用 SHA-256 + Crockford Base32 输出 26 字符（ULID 形状）。利用 AgentRun 允许自定义 sandboxId 的特性，把「销毁后同 id 重建」等价于 resume；
-- **执行通道走 MCP**：复用 `io.agentscope.core.tool.mcp.McpClientBuilder.streamableHttpTransport(...)`，调用模板预先启用的 `process_exec_cmd` / `read_file` / `write_file`；
+- **执行通道走 MCP**：复用 `io.deepscope.core.tool.mcp.McpClientBuilder.streamableHttpTransport(...)`，调用模板预先启用的 `process_exec_cmd` / `read_file` / `write_file`；
 - **持久化默认 NAS-first**：`workspaceRoot` 指向 NAS 挂载时，`AbstractBaseSandbox` 的 4-分支起始命中 Branch A，`doPersist/Hydrate` 退化为 no-op；无 NAS 时回退到 tar-via-MCP（与 Daytona/E2B TAR 同形）。
 
 ## 1. 何时选用 AgentRun
@@ -35,9 +35,9 @@ AgentRun 的差异化优势在于**实例级 NAS/OSS 动态挂载**，让工作�
 NAS 模式下,工作区文件落到 NAS 实例,沙箱销毁/重建之间天然持久,**无需 Snapshot**。
 
 ```java
-import io.agentscope.harness.agent.sandbox.impl.agentrun.*;
-import io.agentscope.harness.agent.HarnessAgent;
-import io.agentscope.harness.agent.sandbox.IsolationScope;
+import io.deepscope.harness.agent.sandbox.impl.agentrun.*;
+import io.deepscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.sandbox.IsolationScope;
 
 AgentRunNasMountConfig nas = new AgentRunNasMountConfig()
     .setServerAddr("12345abc-xxx.cn-hangzhou.nas.aliyuncs.com")
@@ -49,7 +49,7 @@ AgentRunFilesystemSpec spec = new AgentRunFilesystemSpec()
     .setApiKey(System.getenv("AGENTRUN_API_KEY"))
     .setAccountId(System.getenv("ALIYUN_ACCOUNT_ID"))
     .setRegion("cn-hangzhou")
-    .setTemplateName("agentscope-default")
+    .setTemplateName("deepscope-default")
     .setMcpServerUrl(System.getenv("AGENTRUN_MCP_URL"))   // 必填,见 §8
     .setNasConfig(nas)
     .setWorkspaceRoot("/mnt/nas/workspace")               // ★ 工作区落在 NAS 内
@@ -78,15 +78,15 @@ AgentRunFilesystemSpec spec = new AgentRunFilesystemSpec()
     .setApiKey(...)
     .setAccountId(...)
     .setRegion("cn-hangzhou")
-    .setTemplateName("agentscope-default")
+    .setTemplateName("deepscope-default")
     .setMcpServerUrl(...)
-    .setWorkspaceRoot("/home/agentscope/workspace")
+    .setWorkspaceRoot("/home/deepscope/workspace")
     .snapshotSpec(new OssSnapshotSpec(...));     // ← 必须显式挂 SnapshotSpec
 ```
 
 退路模式的代价:
 - `doPersistWorkspace` 在 `stop()` 时通过 MCP 远程执行 `tar -cf - -C <root> . | base64 -w0`,再走 `OssSnapshotSpec` 上传——大工作区(>100MB)上耗时显著;
-- `doHydrateWorkspace` 在 `start()` 时分块 base64 写入 `/tmp/agentscope-ws.b64` 后再 `python3 -c "tar xf -"` 解压,链路较长。
+- `doHydrateWorkspace` 在 `start()` 时分块 base64 写入 `/tmp/deepscope-ws.b64` 后再 `python3 -c "tar xf -"` 解压,链路较长。
 
 > 仅在 NAS/OSS 挂载暂时不可用时使用,生产环境优先选 §3。
 
@@ -97,13 +97,13 @@ NAS 提供低延迟的实时读写,但备份/迁移/审计场景里仍可能希�
 ```java
 AgentRunFilesystemSpec spec = new AgentRunFilesystemSpec()
     .setApiKey(...).setAccountId(...).setRegion("cn-hangzhou")
-    .setTemplateName("agentscope-default")
+    .setTemplateName("deepscope-default")
     .setMcpServerUrl(...)
     .setNasConfig(nas)
     .setWorkspaceRoot("/mnt/nas/workspace")
     .snapshotSpec(new OssSnapshotSpec(                  // 与 NAS 不同的 bucket / key prefix
         ossClient,
-        "agentscope-snapshots",
+        "deepscope-snapshots",
         "agentrun/workspaces/"));
 ```
 

@@ -1,14 +1,14 @@
 ---
-title: What's AgentScope 2.0?
+title: What's DeepScope 2.0?
 description: Build agents that keep working with Harness, then connect them to business applications, execution environments, and service APIs.
 zh_link: /v2/zh/docs/index
 ---
 
-**AgentScope 2.0 is an open-source framework for building agents that use models, tools, and business data to carry out tasks.** You can build a conversational assistant or an agent that researches information, works with files, runs code, delegates subtasks, and waits for human confirmation before continuing.
+**DeepScope 2.0 is an open-source framework for building agents that use models, tools, and business data to carry out tasks.** You can build a conversational assistant or an agent that researches information, works with files, runs code, delegates subtasks, and waits for human confirmation before continuing.
 
 Configure a shared Builder at application startup, then create a new Agent with `builder.build()` for each request and close it after execution. Stable identities and persistent storage keep the conversation across instances. Start with the [Quickstart](/v2/en/docs/quickstart).
 
-This documentation covers the Java version. Embed an Agent in an existing Java or Spring Boot application, start with a single call, and add context management, workspaces, persistent sessions, and collaboration as needed. AgentScope Service provides centralized deployment and APIs for other applications.
+This documentation covers the Java version. Embed an Agent in an existing Java or Spring Boot application, start with a single call, and add context management, workspaces, persistent sessions, and collaboration as needed. DeepScope Service provides centralized deployment and APIs for other applications.
 
 ## What you can build
 
@@ -20,7 +20,7 @@ For example, an Agent that analyzes customer feedback could read team guidelines
 
 ## How Harness keeps an Agent working
 
-The ReAct loop—reason, execute tools, observe results—is the foundation of AgentScope Harness. `ReActAgent` provides reasoning, tools, permissions, and middleware. `HarnessAgent` combines workspace, context, and session management around the same loop, supporting continued execution in the three areas below. Start with `HarnessAgent` and configure the capabilities your application needs; see [Harness architecture](/v2/en/docs/harness/architecture).
+The ReAct loop—reason, execute tools, observe results—is the foundation of DeepScope Harness. `ReActAgent` provides reasoning, tools, permissions, and middleware. `HarnessAgent` combines workspace, context, and session management around the same loop, supporting continued execution in the three areas below. Start with `HarnessAgent` and configure the capabilities your application needs; see [Harness architecture](/v2/en/docs/harness/architecture).
 
 ### Keep track of long-running tasks
 
@@ -46,14 +46,14 @@ Model extensions connect different providers, with model selection, retries, and
 
 For multiple users and replicas, assign stable user and session identities, choose workspace isolation, and use persistent backends accessible to each replica. Workspace's Filesystem can connect to shared storage, and Session Log supports alternative backends. Native session writes use leases and writer fencing to control concurrency. Sandbox lifecycle and recovery depend on the selected execution backend. See [Going to production](/v2/en/docs/others/going-to-production) for deployment and storage choices.
 
-## Offer APIs through AgentScope Service
+## Offer APIs through DeepScope Service
 
-[AgentScope Service](/v2/en/service/index) provides Agent registration, hosting, orchestration, and service publishing. Configure a platform-run Managed Agent, connect an Agent you deploy yourself, or integrate an existing Coding Agent. Agents with the required task capabilities can also join a Team or participate in a Workflow.
+[DeepScope Service](/v2/en/service/index) provides Agent registration, hosting, orchestration, and service publishing. Configure a platform-run Managed Agent, connect an Agent you deploy yourself, or integrate an existing Coding Agent. Agents with the required task capabilities can also join a Team or participate in a Workflow.
 
 Publish an Agent, Team, or Workflow as an Endpoint. Applications use the unified Invocation API to submit work, retrieve results, receive SSE events, and handle pending actions. Frontends restore their view from snapshots and incremental events without depending on how a Team divides its work. For managed capabilities such as multi-turn sessions, files, child sessions, and checkpoints, use the Managed Agent API. See the [unified service API](/v2/en/service/service-api) and [Managed Agent API](/v2/en/service/session-event-log).
 
 <Note>
-AgentScope Service is currently a preview and has not reached a stable release. Building and running Agents with the Java SDK does not require deploying Service.
+DeepScope Service is currently a preview and has not reached a stable release. Building and running Agents with the Java SDK does not require deploying Service.
 </Note>
 
 ## Where to start

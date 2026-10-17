@@ -199,9 +199,9 @@ Continuation Package
 
 压缩器、摘要 Schema 和阈值都应版本化，并进入 Agent 版本的回归范围。
 
-### 3.2.2 AgentScope：让大结果退出窗口而不退出任务
+### 3.2.2 DeepScope：让大结果退出窗口而不退出任务
 
-Framework 路径下，应用团队可以根据场景定义压缩阈值与保留尾部，并把超大工具结果卸载到 Workspace。下面的 AgentScope 配置表示：历史达到 30 条消息时进行压缩，保留最近 10 条；过大的工具结果不继续内嵌，而是写入外部文件并在 Context 中留下引用。
+Framework 路径下，应用团队可以根据场景定义压缩阈值与保留尾部，并把超大工具结果卸载到 Workspace。下面的 DeepScope 配置表示：历史达到 30 条消息时进行压缩，保留最近 10 条；过大的工具结果不继续内嵌，而是写入外部文件并在 Context 中留下引用。
 
 ```java
 HarnessAgent agent = HarnessAgent.builder()
@@ -292,10 +292,10 @@ Draft → Validating → Ready → Published / Rejected → Archived / Deleted
 
 ### 3.3.5 案例：把任务世界放在模型窗口之外
 
-在 AgentScope 的 Workspace 约定中，指令、长期记忆、知识、Skill、Subagent、Plan 与任务状态可以形成可检查的文件结构。结合本章案例，可以组织为：
+在 DeepScope 的 Workspace 约定中，指令、长期记忆、知识、Skill、Subagent、Plan 与任务状态可以形成可检查的文件结构。结合本章案例，可以组织为：
 
 ```text
-.agentscope/workspace/
+.deepscope/workspace/
 ├── AGENTS.md                         # 项目级工作规则
 ├── MEMORY.md                         # 已整理的长期经验
 ├── knowledge/KNOWLEDGE.md            # 企业知识入口
@@ -382,9 +382,9 @@ Knowledge Evidence
 
 对实时经营数据或强一致事实，优先查询权威工具，而不是依赖离线索引；对稳定文档，可使用检索索引定位，再读取原始来源。任何检索结果在进入模型前都必须完成租户和用户权限过滤，权限不能仅靠向量库中的自然语言标签推断。
 
-### 3.4.4 AgentScope：用双层记忆保留经验
+### 3.4.4 DeepScope：用双层记忆保留经验
 
-一种实用实现是把“原始记忆流水”和“已整理长期记忆”分开。AgentScope 将当日抽取的事实追加到 memory/YYYY-MM-DD.md，再周期性合并、去重到 MEMORY.md；前者保留来源过程，后者在每轮按策略进入 System Context。对话压缩前还可以先 Flush 关键事实，避免摘要把可复用经验一起抹掉。
+一种实用实现是把“原始记忆流水”和“已整理长期记忆”分开。DeepScope 将当日抽取的事实追加到 memory/YYYY-MM-DD.md，再周期性合并、去重到 MEMORY.md；前者保留来源过程，后者在每轮按策略进入 System Context。对话压缩前还可以先 Flush 关键事实，避免摘要把可复用经验一起抹掉。
 
 在漏洞修复任务中，下面的内容适合写入不同位置：
 

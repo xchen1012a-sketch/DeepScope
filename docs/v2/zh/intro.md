@@ -1,36 +1,36 @@
 ---
-title: AgentScope Java v2
-description: 使用 AgentScope Harness SDK 开发自己的 Agent 应用，或直接通过 AgentScope Service 使用托管 Agent 服务，由平台统一管理运行时。
+title: DeepScope Java v2
+description: 使用 DeepScope Harness SDK 开发自己的 Agent 应用，或直接通过 DeepScope Service 使用托管 Agent 服务，由平台统一管理运行时。
 mode: custom
 toc: false
 en_link: /v2/en/intro
 ---
 
-<div className="agentscope-landing agentscope-home">
+<div className="deepscope-landing deepscope-home">
 
 <section className="hs-home-hero" aria-labelledby="home-title">
 <div className="hs-home-copy">
-<p className="hs-home-eyebrow">AGENTSCOPE 2.0 <span>JAVA</span></p>
+<p className="hs-home-eyebrow">DEEPSCOPE 2.0 <span>JAVA</span></p>
 <h1 id="home-title">让智能体持续工作，<br /><span>让能力成为服务。</span></h1>
 <p className="hs-home-lead">使用 Harness SDK 开发自己的 Agent 应用，或直接使用 Service 平台的托管 Agent 服务。由平台统一管理运行时，让业务应用通过 API 获取专业能力与交付物。</p>
 <div className="hs-hero__actions">
 <a href="/v2/zh/docs/quickstart" className="hs-btn hs-btn--primary">开始构建 Harness <span aria-hidden="true">→</span></a>
 <a href="/v2/zh/service/index" className="hs-btn hs-btn--secondary">探索 Service <span aria-hidden="true">→</span></a>
 </div>
-<a className="hs-home-source" href="https://github.com/agentscope-ai/agentscope-java">开源代码 <span aria-hidden="true">↗</span></a>
+<a className="hs-home-source" href="https://github.com/xchen1012a-sketch/DeepScope">开源代码 <span aria-hidden="true">↗</span></a>
 </div>
 
 <div className="hs-home-platforms">
 <a className="hs-home-platform hs-home-platform--harness" href="/v2/zh/docs/harness/architecture">
 <span className="hs-home-label">SDK · 自主开发</span>
-<h2>AgentScope Harness <span aria-hidden="true">↗</span></h2>
+<h2>DeepScope Harness <span aria-hidden="true">↗</span></h2>
 <p>将 SDK 嵌入自己的应用，组合上下文、工作区与工具执行，自主定制 Agent 逻辑并管理应用部署。</p>
 <div className="hs-home-tags"><span>上下文管理</span><span>工具与沙箱</span><span>持久会话</span></div>
 </a>
 <div className="hs-home-connector">两种使用方式，按需选择与组合</div>
 <a className="hs-home-platform hs-home-platform--service" href="/v2/zh/service/index">
 <span className="hs-home-label">平台 · 托管服务</span>
-<h2>AgentScope Service <span aria-hidden="true">↗</span></h2>
+<h2>DeepScope Service <span aria-hidden="true">↗</span></h2>
 <p>推荐先在自己的基础设施部署 Service，再配置基于 HarnessAgent 内核的托管 Agent，通过 API 接入业务。平台统一管理运行时，无需为每个 Agent 应用分别开发和维护运行服务。</p>
 <div className="hs-home-tags"><span>Agent as a Service</span><span>任务 · 交互 · 交付</span></div>
 </a>
@@ -40,12 +40,12 @@ en_link: /v2/en/intro
 <section className="hs-home-section" aria-labelledby="capabilities-title">
 <div className="hs-home-section-heading">
 <h2 id="capabilities-title">自主开发，还是使用托管服务？</h2>
-<p>需要在应用代码中深度定制 Agent，选择 Harness SDK；希望专注业务接入、由平台统一运行 Agent，选择 Service。Service 上的托管 Agent（Managed Agent）基于 AgentScope HarnessAgent 内核，两种方式共享同一执行内核。</p>
+<p>需要在应用代码中深度定制 Agent，选择 Harness SDK；希望专注业务接入、由平台统一运行 Agent，选择 Service。Service 上的托管 Agent（Managed Agent）基于 DeepScope HarnessAgent 内核，两种方式共享同一执行内核。</p>
 </div>
 <div className="hs-home-capabilities">
 <div className="hs-home-product">
 <span className="hs-home-label">HARNESS</span>
-<h2>AgentScope Harness</h2>
+<h2>DeepScope Harness</h2>
 <p>适合需要嵌入 Java 或 Spring Boot 应用、自定义运行逻辑的团队。HarnessAgent 提供推理与工具循环、工作区、上下文、技能和会话管理；你用代码组合这些能力，并负责应用的部署与运维。</p>
 <div className="hs-home-features"><a className="hs-home-feature" href="/v2/zh/docs/harness/context"><h3>上下文与工作区<span aria-hidden="true">↗</span></h3><p>按推理步骤构建上下文，压缩长任务历史，按需加载记忆、Skill 与工作文件。</p></a>
 <a className="hs-home-feature" href="/v2/zh/docs/harness/architecture"><h3>工具、沙箱与协作<span aria-hidden="true">↗</span></h3><p>接入 Java 工具和 MCP，在选定的执行环境中完成操作，并委派子 Agent 处理独立任务。</p></a>
@@ -53,7 +53,7 @@ en_link: /v2/en/intro
 </div>
 <div className="hs-home-product">
 <span className="hs-home-label">SERVICE</span>
-<h2>AgentScope Service</h2>
+<h2>DeepScope Service</h2>
 <p>适合希望通过 API 使用 Agent 能力、减少重复运行时建设的团队。配置指令、模型、工具和资源，直接通过 Session API 使用托管 Agent；平台承接运行、会话与任务管理，应用聚焦业务数据、用户体验和结果验收。</p>
 <div className="hs-home-features"><a className="hs-home-feature" href="/v2/zh/service/usecases"><h3>从业务场景开始<span aria-hidden="true">↗</span></h3><p>把 Agent 接入 SaaS 页面、业务流程或定时任务，围绕实际输入与交付设计服务。</p></a>
 <a className="hs-home-feature" href="/v2/zh/service/service-api"><h3>从调用到交付<span aria-hidden="true">↗</span></h3><p>提交后台任务或会话，通过快照与事件跟踪进度，处理人工交互并读取结果和文件。</p></a>
@@ -88,7 +88,7 @@ var builder = HarnessAgent.builder()
     .name("notes-assistant")
     .agentId("notes-assistant")
     .model("dashscope:qwen-plus")
-    .workspace(Path.of(".agentscope/workspace"));
+    .workspace(Path.of(".deepscope/workspace"));
 
 try (var agent = builder.build()) {
     var context = RuntimeContext.builder()
@@ -105,12 +105,12 @@ try (var agent = builder.build()) {
 
 ```bash
 SESSION_ID=$(curl --fail-with-body -sS "$BASE_URL/api/v1/agent-sessions" \
-  -H "X-API-Key: $AGENTSCOPE_API_KEY" -H 'Content-Type: application/json' \
+  -H "X-API-Key: $DEEPSCOPE_API_KEY" -H 'Content-Type: application/json' \
   -H 'Idempotency-Key: notes-session-001' \
   --data "$(jq -n --arg id "$AGENT_ID" '{target:{type:"agent",id:$id}}')" \
   | jq -er '.id')
 curl "$BASE_URL/api/v1/agent-sessions/$SESSION_ID/turns" \
-  -H "X-API-Key: $AGENTSCOPE_API_KEY" -H 'Content-Type: application/json' \
+  -H "X-API-Key: $DEEPSCOPE_API_KEY" -H 'Content-Type: application/json' \
   -H 'Idempotency-Key: notes-request-001' \
   --data '{"message":"Summarize the tasks and open questions."}'
 ```
@@ -168,7 +168,7 @@ curl "$BASE_URL/api/v1/agent-sessions/$SESSION_ID/turns" \
 <section className="hs-home-faq" aria-labelledby="faq-title">
 <h2 id="faq-title">开始前，你可能想了解</h2>
 <div><details className="hs-faq-item"><summary>HarnessAgent 与 ReActAgent 是什么关系？</summary><p>ReActAgent 提供推理、工具执行、消息、权限和中间件等基础能力。HarnessAgent 基于同一套 ReAct 循环，内置工作区、记忆、技能、子 Agent 与会话管理。推荐从 HarnessAgent 开始；需要自行组合运行层时，也可以直接使用 ReActAgent。</p></details>
-<details className="hs-faq-item"><summary>Harness 和 Service 必须一起使用吗？</summary><p>可以独立选择：用 Harness SDK 开发并运行自己的 Agent 应用，或直接在 Service 中配置 Managed Agent，无需先开发一个 SDK 应用。Service 的托管 Agent 基于 AgentScope HarnessAgent 内核，由平台统一管理 Agent 运行时。已有的 Harness 应用也可以作为 External Agent 接入 Service，保留自己的运行进程，同时使用平台的发布与调用能力。</p></details>
+<details className="hs-faq-item"><summary>Harness 和 Service 必须一起使用吗？</summary><p>可以独立选择：用 Harness SDK 开发并运行自己的 Agent 应用，或直接在 Service 中配置 Managed Agent，无需先开发一个 SDK 应用。Service 的托管 Agent 基于 DeepScope HarnessAgent 内核，由平台统一管理 Agent 运行时。已有的 Harness 应用也可以作为 External Agent 接入 Service，保留自己的运行进程，同时使用平台的发布与调用能力。</p></details>
 <details className="hs-faq-item"><summary>刷新页面后，任务会重新执行吗？</summary><p>页面恢复通过快照和事件游标补齐已有消息、工具结果和进度。它与继续执行是两件事：继续中断的任务需要相应的会话恢复操作，checkpoint 也不会撤销已经发生的外部操作。</p></details>
 <details className="hs-faq-item"><summary>需要哪些运行环境？</summary><p>Java Harness 需要 JDK 17 及以上，并配置所选模型的凭据。工具可在本地或配置的沙箱中执行。Service 当前主要推荐自托管部署；先启动平台、配置模型和工具环境，再运行第一个托管 Agent。</p></details></div>
 </section>

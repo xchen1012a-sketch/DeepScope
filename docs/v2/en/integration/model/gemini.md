@@ -3,15 +3,15 @@ title: Gemini
 zh_link: /v2/zh/integration/model/gemini
 ---
 
-`agentscope-extensions-model-gemini` integrates Google Gemini models through the Gemini API and supports the Vertex AI path through explicit configuration.
+`deepscope-extensions-model-gemini` integrates Google Gemini models through the Gemini API and supports the Vertex AI path through explicit configuration.
 
 ## Add the dependency
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-gemini</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-model-gemini</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -31,7 +31,7 @@ ReActAgent agent = ReActAgent.builder()
 Use the builder when you need custom API settings, Vertex AI credentials, formatter, transport, or generation options:
 
 ```java
-import io.agentscope.extensions.model.gemini.GeminiChatModel;
+import io.deepscope.extensions.model.gemini.GeminiChatModel;
 
 GeminiChatModel model = GeminiChatModel.builder()
     .apiKey(System.getenv("GEMINI_API_KEY"))
@@ -42,11 +42,11 @@ GeminiChatModel model = GeminiChatModel.builder()
 
 ## Server-side tools
 
-Gemini built-in tools run on the model provider instead of the local AgentScope toolkit. Build a
+Gemini built-in tools run on the model provider instead of the local DeepScope toolkit. Build a
 Google GenAI SDK `Tool` definition, then wrap it with `GeminiServerTool.of(...)`:
 
 ```java
-import io.agentscope.extensions.model.gemini.tool.GeminiServerTool;
+import io.deepscope.extensions.model.gemini.tool.GeminiServerTool;
 import com.google.genai.types.GoogleSearch;
 import com.google.genai.types.Tool;
 import com.google.genai.types.UrlContext;
@@ -65,7 +65,7 @@ GeminiChatModel model = GeminiChatModel.builder()
     .build();
 ```
 
-When at least one server-side tool is configured, AgentScope enables Gemini server-side invocation
+When at least one server-side tool is configured, DeepScope enables Gemini server-side invocation
 context automatically and preserves returned calls and results in conversation history. Server-side
 tools can be combined with local function tools. Do not use `GeminiServerTool.of(...)` for custom
 function tools; it rejects those definitions.
@@ -76,9 +76,9 @@ Spring Boot applications can use the Gemini starter:
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-gemini-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-gemini-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 

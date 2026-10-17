@@ -9,7 +9,7 @@ Technical articles, release highlights, and team notes. Below is the **article i
 
 | Article | Summary |
 |---------|---------|
-| [AgentScope Java 1.1 · Harness](/v1/en/blogs/agentscope-v1-harness) | English edition covering motivation, architecture, deployment patterns, and quick start for Harness in v1.1. |
+| [DeepScope Java 1.1 · Harness](/v1/en/blogs/deepscope-v1-harness) | English edition covering motivation, architecture, deployment patterns, and quick start for Harness in v1.1. |
 
 
 <Tip>

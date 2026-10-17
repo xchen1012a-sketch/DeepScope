@@ -3,13 +3,13 @@ title: 核心概念
 en_link: /v1/en/docs/quickstart/key-concepts
 ---
 
-本章从工程实践的角度介绍 AgentScope 中的核心概念，帮助你理解框架的设计理念。
+本章从工程实践的角度介绍 DeepScope 中的核心概念，帮助你理解框架的设计理念。
 
-> **注意**：本文的目标是阐明 AgentScope 在工程实践中解决的问题，以及为开发者提供的帮助，而非给出严谨的学术定义。
+> **注意**：本文的目标是阐明 DeepScope 在工程实践中解决的问题，以及为开发者提供的帮助，而非给出严谨的学术定义。
 
 ## 核心流程
 
-在深入各个概念之前，让我们先理解智能体是如何工作的。AgentScope 的核心是 **ReAct 循环**（Reasoning + Acting）：
+在深入各个概念之前，让我们先理解智能体是如何工作的。DeepScope 的核心是 **ReAct 循环**（Reasoning + Acting）：
 
 ```
                               User Input (Message)
@@ -69,7 +69,7 @@ en_link: /v1/en/docs/quickstart/key-concepts
 
 **解决的问题**：智能体需要一种统一的数据结构来承载各种类型的信息——文本、图像、工具调用等。
 
-Message 是 AgentScope 最核心的数据结构，用于：
+Message 是 DeepScope 最核心的数据结构，用于：
 - 在智能体之间交换信息
 - 在记忆中存储对话历史
 - 作为与 LLM API 交互的统一媒介
@@ -153,7 +153,7 @@ public interface Agent extends CallableAgent, StreamableAgent, ObservableAgent {
 
 ### 有状态设计
 
-AgentScope 中的 Agent 是**有状态的对象**。每个 Agent 实例持有自己的：
+DeepScope 中的 Agent 是**有状态的对象**。每个 Agent 实例持有自己的：
 - **Memory**：对话历史
 - **Toolkit**：工具集合及其状态
 - **配置**：系统提示、模型设置等
@@ -200,7 +200,7 @@ Msg response = agent.call(userMsg).block();
 
 **解决的问题**：LLM 本身只能生成文本，无法执行实际操作。工具让智能体能够查询数据库、调用 API、执行计算等。
 
-AgentScope 中的"工具"是带有 `@Tool` 注解的 Java 方法，支持：
+DeepScope 中的"工具"是带有 `@Tool` 注解的 Java 方法，支持：
 - 实例方法、静态方法、类方法
 - 同步或异步调用
 - 流式或非流式返回
@@ -244,7 +244,7 @@ Memory 管理对话历史，`ReActAgent` 会自动：
 
 **解决的问题**：不同的 LLM 提供商有不同的 API 格式，需要一个适配层来屏蔽差异。
 
-Formatter 负责将 AgentScope 的消息转换为特定 LLM API 所需的格式，包括：
+Formatter 负责将 DeepScope 的消息转换为特定 LLM API 所需的格式，包括：
 - 提示词工程（添加系统提示、格式化多轮对话）
 - 消息验证
 - 多智能体场景的身份处理
@@ -328,7 +328,7 @@ ReActAgent agent = ReActAgent.builder()
 
 **解决的问题**：智能体的对话历史、配置等状态需要能够保存和恢复，以支持会话持久化。
 
-AgentScope 将对象的"初始化"与"状态"分离，通过 `StateModule` 接口管理：
+DeepScope 将对象的"初始化"与"状态"分离，通过 `StateModule` 接口管理：
 - `saveTo(Session, SessionKey)` - 将当前状态保存到 Session
 - `loadFrom(Session, SessionKey)` - 从 Session 恢复状态
 - `loadIfExists(Session, SessionKey)` - 如果存在则恢复状态
@@ -355,7 +355,7 @@ SessionManager.forSessionId("user123")
 
 **解决的问题**：LLM 调用和工具执行通常涉及 I/O 操作，同步阻塞会浪费资源。
 
-AgentScope 基于 [Project Reactor](https://projectreactor.io/) 构建，使用：
+DeepScope 基于 [Project Reactor](https://projectreactor.io/) 构建，使用：
 - `Mono<T>` - 返回 0 或 1 个结果
 - `Flux<T>` - 返回 0 到 N 个结果（用于流式）
 

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package io.agentscope.examples.jev;
+package io.deepscope.examples.jev;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.agentscope.extensions.judge.jev.JevClient;
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.JevRetryPolicy;
-import io.agentscope.extensions.judge.jev.SystemOneRequest;
-import io.agentscope.extensions.judge.jev.SystemOneResult;
-import io.agentscope.extensions.judge.jev.evaluation.JevTextBackend;
-import io.agentscope.extensions.judge.jev.supervision.JevTaskSupervisor;
-import io.agentscope.extensions.judge.jev.supervision.SupervisionEvidence;
+import io.deepscope.extensions.judge.jev.JevClient;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.JevRetryPolicy;
+import io.deepscope.extensions.judge.jev.SystemOneRequest;
+import io.deepscope.extensions.judge.jev.SystemOneResult;
+import io.deepscope.extensions.judge.jev.evaluation.JevTextBackend;
+import io.deepscope.extensions.judge.jev.supervision.JevTaskSupervisor;
+import io.deepscope.extensions.judge.jev.supervision.SupervisionEvidence;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;

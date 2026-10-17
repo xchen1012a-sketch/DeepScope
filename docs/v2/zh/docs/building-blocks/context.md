@@ -40,7 +40,7 @@ Agent 实例仍持有执行门、状态缓存和后台资源，应在执行结�
 
 ## AgentState
 
-[`AgentStateStore`](/v2/zh/integration/session/index) 持久化的是一份 **`AgentState`**(`io.agentscope.core.state.AgentState`),它是 agent 当前"瞬时"运行状态的完整快照:
+[`AgentStateStore`](/v2/zh/integration/session/index) 持久化的是一份 **`AgentState`**(`io.deepscope.core.state.AgentState`),它是 agent 当前"瞬时"运行状态的完整快照:
 
 | `AgentState` 字段 | 内容 |
 |---|---|
@@ -106,14 +106,14 @@ call(msgs, RuntimeContext(userId, sessionId))
 
 ### 内置与扩展实现
 
-只要实现 `io.agentscope.core.state.AgentStateStore` 接口,任何后端都能接进来。选择哪一种,取决于你的部署形态:
+只要实现 `io.deepscope.core.state.AgentStateStore` 接口,任何后端都能接进来。选择哪一种,取决于你的部署形态:
 
 | 实现 | 模块 | 适用场景 |
 |---|---|---|
-| `InMemoryAgentStateStore` | `agentscope-core` | 单元测试 / 单进程演示;进程退出全部丢失 |
-| `JsonFileAgentStateStore` | `agentscope-core` | 单机开发、文件落盘即可恢复;不能跨节点共享。**`HarnessAgent` LEGACY 模式默认值**,落在 `~/.agentscope/state/<agentId>/`(可通过 `agentscope.state.home` 系统属性改根目录);**单机** |
-| `RedisAgentStateStore` | `agentscope-extensions-redis` | **生产首选**,多副本共享;支持 Jedis / Lettuce / Redisson(Standalone / Cluster / Sentinel) |
-| `MysqlAgentStateStore` | `agentscope-extensions-mysql` | 需要把状态沉淀进关系型库(审计、报表)时使用 |
+| `InMemoryAgentStateStore` | `deepscope-core` | 单元测试 / 单进程演示;进程退出全部丢失 |
+| `JsonFileAgentStateStore` | `deepscope-core` | 单机开发、文件落盘即可恢复;不能跨节点共享。**`HarnessAgent` LEGACY 模式默认值**,落在 `~/.deepscope/state/<agentId>/`(可通过 `deepscope.state.home` 系统属性改根目录);**单机** |
+| `RedisAgentStateStore` | `deepscope-extensions-redis` | **生产首选**,多副本共享;支持 Jedis / Lettuce / Redisson(Standalone / Cluster / Sentinel) |
+| `MysqlAgentStateStore` | `deepscope-extensions-mysql` | 需要把状态沉淀进关系型库(审计、报表)时使用 |
 
 切换非常简单——只在构造期 `.stateStore(...)` 一次:
 
@@ -206,7 +206,7 @@ agent.call(msg, RuntimeContext.builder()
 需要旁路读取（例如管理台、审计）时，可按身份取得状态。不要与正在执行的同会话调用并发修改；取得或修改对象不代表已经持久化，也不提供事务或授权校验：
 
 ```java
-import io.agentscope.core.state.AgentState;
+import io.deepscope.core.state.AgentState;
 
 AgentState state = agent.getAgentState("alice", "session-001");
 System.out.println("messages: " + state.getContext().size());
@@ -272,9 +272,9 @@ agent.interrupt("alice", "session-001", new UserMessage("请停止。"));
 以下 Builder 由应用启动时配置，分别为 Alice 和 Bob 的请求创建实例。这里的 `workspace` 应指向可持久保留的工作区；多副本部署还需共享原生日志后端。
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.message.Msg;
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.message.Msg;
+import io.deepscope.harness.agent.HarnessAgent;
 import reactor.core.publisher.Mono;
 
 HarnessAgent.Builder agentBuilder = HarnessAgent.builder()
@@ -303,10 +303,10 @@ Mono.zip(aliceCall, bobCall).block();
 
 ## `RuntimeContext` —— per-call 元数据
 
-`RuntimeContext`(位于 `io.agentscope.core.agent`)是一个轻量容器,在 `agent.call(msgs, ctx)` 中传入,hook 与 tool 在本次调用期间共享。其自由 / 类型属性**不自动持久化，也不自动注入模型消息**;而 `sessionId` / `userId` 字段决定本次调用状态存储读写哪个 `AgentState` 槽位。在 call 入口,框架会把 call-scoped 的 `AgentState` 注入到 `RuntimeContext` 上,中间件和工具通过 `ctx.getAgentState()` 获取正确的 per-call 状态。
+`RuntimeContext`(位于 `io.deepscope.core.agent`)是一个轻量容器,在 `agent.call(msgs, ctx)` 中传入,hook 与 tool 在本次调用期间共享。其自由 / 类型属性**不自动持久化，也不自动注入模型消息**;而 `sessionId` / `userId` 字段决定本次调用状态存储读写哪个 `AgentState` 槽位。在 call 入口,框架会把 call-scoped 的 `AgentState` 注入到 `RuntimeContext` 上,中间件和工具通过 `ctx.getAgentState()` 获取正确的 per-call 状态。
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
+import io.deepscope.core.agent.RuntimeContext;
 
 RuntimeContext ctx = RuntimeContext.builder()
         .userId("alice")

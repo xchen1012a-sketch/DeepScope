@@ -12,15 +12,15 @@ en_link: /v2/en/integration/session/redis
 
 # Redis 状态存储
 
-`agentscope-extensions-redis` 把 AgentScope 的 Agent 状态存到 Redis。统一抽象出 `RedisClientAdapter`，支持 **Jedis、Lettuce、Redisson** 三个客户端，覆盖 Standalone、Cluster、Sentinel 等部署模式。
+`deepscope-extensions-redis` 把 DeepScope 的 Agent 状态存到 Redis。统一抽象出 `RedisClientAdapter`，支持 **Jedis、Lettuce、Redisson** 三个客户端，覆盖 Standalone、Cluster、Sentinel 等部署模式。
 
 ## 添加依赖
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-redis</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-redis</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -30,8 +30,8 @@ en_link: /v2/en/integration/session/redis
 
 ```java
 import io.lettuce.core.RedisClient;
-import io.agentscope.core.state.AgentStateStore;
-import io.agentscope.extensions.redis.state.RedisAgentStateStore;
+import io.deepscope.core.state.AgentStateStore;
+import io.deepscope.extensions.redis.state.RedisAgentStateStore;
 
 RedisClient redisClient = RedisClient.create("redis://localhost:6379");
 
@@ -86,7 +86,7 @@ AgentStateStore stateStore = RedisAgentStateStore.builder()
 
 ## 自定义 key 前缀
 
-默认所有 key 形如 `agentscope:session:{userSegment}/{sessionId}:...`（`userSegment` 即 `userId`，匿名 session 用 `__anon__`）。多个项目共享同一个 Redis 时建议自定义：
+默认所有 key 形如 `deepscope:session:{userSegment}/{sessionId}:...`（`userSegment` 即 `userId`，匿名 session 用 `__anon__`）。多个项目共享同一个 Redis 时建议自定义：
 
 ```java
 AgentStateStore stateStore = RedisAgentStateStore.builder()
@@ -148,6 +148,6 @@ AgentStateStore stateStore = RedisAgentStateStore.builder()
 | `lettuceClusterClient(RedisClusterClient)` | Lettuce 集群 |
 | `redissonClient(RedissonClient)` | Redisson 任意部署模式 |
 | `clientAdapter(RedisClientAdapter)` | 自定义适配器 |
-| `keyPrefix(String)` | 默认 `agentscope:session:` |
+| `keyPrefix(String)` | 默认 `deepscope:session:` |
 
 > 上述客户端方法互斥，只设置一个。

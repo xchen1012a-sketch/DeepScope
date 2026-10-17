@@ -1,14 +1,14 @@
 ---
 title: 智能体
-description: 了解如何在 AgentScope Java 2.0 中定义和配置智能体
+description: 了解如何在 DeepScope Java 2.0 中定义和配置智能体
 en_link: /v2/en/docs/building-blocks/agent
 ---
 
 ## 概述
 
-AgentScope 通过 `Agent` 接口统一智能体的调用方式，提供底层的 `ReActAgent` 和在其基础上封装的 `HarnessAgent`。**业务 Agent 开发推荐优先使用 `HarnessAgent`**，也可以直接使用 `ReActAgent`，自行组合应用所需的能力。
+DeepScope 通过 `Agent` 接口统一智能体的调用方式，提供底层的 `ReActAgent` 和在其基础上封装的 `HarnessAgent`。**业务 Agent 开发推荐优先使用 `HarnessAgent`**，也可以直接使用 `ReActAgent`，自行组合应用所需的能力。
 
-**ReAct 是 AgentScope Harness 的执行基础。** `ReActAgent` 负责“模型推理 → 执行工具 → 将结果交回模型”的循环，直到返回结果或等待外部交互。权限检查、人机交互、上下文与状态管理、中间件、实时事件等基础能力都围绕这一循环工作。
+**ReAct 是 DeepScope Harness 的执行基础。** `ReActAgent` 负责“模型推理 → 执行工具 → 将结果交回模型”的循环，直到返回结果或等待外部交互。权限检查、人机交互、上下文与状态管理、中间件、实时事件等基础能力都围绕这一循环工作。
 
 `HarnessAgent` 内部封装 `ReActAgent`，沿用同一套推理与执行循环，并进一步内置工作区、长期记忆、上下文压缩、技能、子 Agent、沙箱以及会话日志与恢复等能力。因此，使用 Harness 后，**整体的推理、执行循环本质上没有变化**；更多运行能力由 Harness 统一装配，业务开发者可以直接配置使用。
 
@@ -92,8 +92,8 @@ flowchart TD
 <Tab title="字符串 model id（推荐）">
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tool.Toolkit;
 
 ReActAgent.Builder agentBuilder =
         ReActAgent.builder()
@@ -112,10 +112,10 @@ ReActAgent.Builder agentBuilder =
 <Tab title="显式 Model builder">
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.tool.Toolkit;
 
 ReActAgent.Builder agentBuilder =
         ReActAgent.builder()
@@ -137,11 +137,11 @@ ReActAgent.Builder agentBuilder =
 <Tab title="配置 Toolkit / MCP">
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.builtin.TodoTools;
-import io.agentscope.core.tool.mcp.McpClientBuilder;
-import io.agentscope.core.tool.mcp.McpClientWrapper;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.builtin.TodoTools;
+import io.deepscope.core.tool.mcp.McpClientBuilder;
+import io.deepscope.core.tool.mcp.McpClientWrapper;
 
 Toolkit toolkit = new Toolkit();
 toolkit.registerTool(new TodoTools());          // 通过反射注册带 @Tool 的方法
@@ -205,9 +205,9 @@ ReActAgent.Builder agentBuilder =
 `call` 在内部消费所有事件，当智能体完成或因外部交互暂停时返回最终 `Msg`。
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.UserMessage;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.UserMessage;
 import java.util.List;
 
 UserMessage msg = new UserMessage("当前目录有哪些文件？");
@@ -223,9 +223,9 @@ try (ReActAgent agent = agentBuilder.build()) {
 `streamEvents` 逐一产出 `AgentEvent` 对象，让你实时将文本输出、工具调用进度和生命周期事件流式传输给用户。按 `event.getType()` 分发即可针对每类事件做不同处理：
 
 ```java
-import io.agentscope.core.event.AgentEventType;
-import io.agentscope.core.event.TextBlockDeltaEvent;
-import io.agentscope.core.event.ToolCallStartEvent;
+import io.deepscope.core.event.AgentEventType;
+import io.deepscope.core.event.TextBlockDeltaEvent;
+import io.deepscope.core.event.ToolCallStartEvent;
 
 try (ReActAgent agent = agentBuilder.build()) {
     agent.streamEvents(new UserMessage("总结一下 README 的内容。"), ctx)
@@ -272,7 +272,7 @@ return Mono.using(
 
 不同会话可以并行。每请求创建实例后，单个实例内的执行门不会协调其他实例；同一会话由业务队列串行调度，或交给持有后台生命周期的 `AgentSession`。原生日志的写入隔离防止并发写入，但不提供跨实例 FIFO 排队；只配置旧 `stateStore` 也不会获得分布式执行锁。
 
-Spring Boot 完整示例见 `agentscope-examples/documentation/.../streaming/StreamingWebExample.java`。
+Spring Boot 完整示例见 `deepscope-examples/documentation/.../streaming/StreamingWebExample.java`。
 
 ## 会话应用的执行控制
 
@@ -309,7 +309,7 @@ run.cancel();
 下面针对通过 `call` / `streamEvents` 启动的执行。跨请求发起中断时，应用应保存并找到目标执行对应的 Agent 实例，执行结束后移除并关闭。需要从外部协作中断时，使用 `agent.interrupt`；通过 AgentSession 提交的任务使用 `session.interrupt()`，再按[会话指南](/v2/zh/docs/harness/session-log#中断后继续原任务)继续：
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
+import io.deepscope.core.agent.RuntimeContext;
 
 // 构造标识目标 session 的 RuntimeContext
 RuntimeContext target = RuntimeContext.builder()
@@ -340,7 +340,7 @@ agent.interrupt("alice", "session-001", interruptMsg);
 
 ## RuntimeContext (per-call 上下文)
 
-`RuntimeContext`（`io.agentscope.core.agent.RuntimeContext`）是 **per-call 元数据袋**。每次调用传入独立实例，工具和 middleware 通过参数接收上下文。Agent 不提供共享的当前上下文 getter，也不向共享 hook 字段注入上下文。技能仓库操作及 `HarnessAgent.promoteSkill(name, reviewerId, ctx)` 同样显式接收上下文；不带上下文的仓库操作使用默认命名空间。
+`RuntimeContext`（`io.deepscope.core.agent.RuntimeContext`）是 **per-call 元数据袋**。每次调用传入独立实例，工具和 middleware 通过参数接收上下文。Agent 不提供共享的当前上下文 getter，也不向共享 hook 字段注入上下文。技能仓库操作及 `HarnessAgent.promoteSkill(name, reviewerId, ctx)` 同样显式接收上下文；不带上下文的仓库操作使用默认命名空间。
 
 它**不是**持久化状态——`AgentState`（聊天上下文、压缩摘要、权限规则、tool state）才是。`RuntimeContext` 的作用是承载「当前这一次调用」相关的瞬态数据：tenant / userId / request-id、DB 连接、审计 logger、特性开关，等等。
 
@@ -359,9 +359,9 @@ agent.interrupt("alice", "session-001", interruptMsg);
 ### 构造并传入
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.UserMessage;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.UserMessage;
 import java.util.List;
 
 RuntimeContext ctx =
@@ -388,12 +388,12 @@ Msg result = agent.call(List.of(new UserMessage("Hi.")), ctx).block();
 - `RuntimeContext` 的自由 / 类型属性**不会**进 `AgentState`，也不会被 `AgentStateStore` 写回磁盘。
 - `sessionId` / `userId` 字段**会**驱动持久化：每次调用激活对应的 `(userId, sessionId)` 状态槽位，因此在 `RuntimeContext` 上传不同身份就会切换加载/保存的 `AgentState`。不传时回退到 builder 上配置的 `defaultSessionId`。
 
-完整示例：`agentscope-examples/documentation/.../context/RuntimeContextExample.java`、`tool/ToolExecutionContextExample.java`。
+完整示例：`deepscope-examples/documentation/.../context/RuntimeContextExample.java`、`tool/ToolExecutionContextExample.java`。
 
 
 <Note>
 
-存在一个旧的 `ToolExecutionContext`（`io.agentscope.core.tool`），已标记 `@Deprecated`，新代码统一使用 `RuntimeContext`。它在底层会被自动桥接到 `RuntimeContext.asToolExecutionContext()`，老代码不会立即失效。
+存在一个旧的 `ToolExecutionContext`（`io.deepscope.core.tool`），已标记 `@Deprecated`，新代码统一使用 `RuntimeContext`。它在底层会被自动桥接到 `RuntimeContext.asToolExecutionContext()`，老代码不会立即失效。
 
 </Note>
 
@@ -411,7 +411,7 @@ Msg result = agent.call(List.of(new UserMessage("Hi.")), ctx).block();
 **1. 接收 `RequireUserConfirmEvent`** —— 用 `streamEvents` 监听暂停。事件携带 `getReplyId()`（用于恢复）和 `getToolCalls()` —— 一组 `ToolUseBlock`，每个暴露 `getId()` / `getName()` / `getInput()`。
 
 ```java
-import io.agentscope.core.event.RequireUserConfirmEvent;
+import io.deepscope.core.event.RequireUserConfirmEvent;
 
 agent.streamEvents(msg, ctx)
         .doOnNext(event -> {
@@ -429,7 +429,7 @@ agent.streamEvents(msg, ctx)
 **2. 构建确认结果** —— 为每个待处理工具调用构造一个 `ConfirmResult`。可以在传回前修改工具输入；如果想让今后相同的调用自动放行，在 `rules` 参数里显式传入 `PermissionRule`（建议规则挂在权限引擎的 `PermissionDecision` 上，而不是工具调用上）：
 
 ```java
-import io.agentscope.core.event.ConfirmResult;
+import io.deepscope.core.event.ConfirmResult;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -445,8 +445,8 @@ for (var tc : confirmEvent.getToolCalls()) {
 **3. 恢复智能体** —— 将 `confirmResults` 通过 metadata 传给下一次 `call`：
 
 ```java
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.UserMessage;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.UserMessage;
 import java.util.Map;
 
 UserMessage resumeMsg =
@@ -469,7 +469,7 @@ Msg result = agent.call(List.of(resumeMsg), ctx).block();
 **1. 接收 `RequireExternalExecutionEvent`** —— 结构与用户确认一致：`getReplyId()` 加一组等待外部执行的 `getToolCalls()`。
 
 ```java
-import io.agentscope.core.event.RequireExternalExecutionEvent;
+import io.deepscope.core.event.RequireExternalExecutionEvent;
 
 agent.streamEvents(msg, ctx)
         .doOnNext(event -> {
@@ -484,9 +484,9 @@ agent.streamEvents(msg, ctx)
 **2. 外部执行并构建结果** —— 在智能体外部完成操作，把每个结果封装为 `ToolResultBlock`：
 
 ```java
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.core.message.ToolResultBlock;
-import io.agentscope.core.message.ToolResultState;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.core.message.ToolResultBlock;
+import io.deepscope.core.message.ToolResultState;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -508,7 +508,7 @@ for (var tc : externalEvent.getToolCalls()) {
 
 <Tip>
 
-构建交互式 UI 时使用 `streamEvents`——它可以实时检测暂停事件并立即提示用户。以编程方式处理事件的自动化流程则使用 `call`。完整可运行示例见 `agentscope-examples/documentation/.../hitl/PermissionHITLExample.java`。
+构建交互式 UI 时使用 `streamEvents`——它可以实时检测暂停事件并立即提示用户。以编程方式处理事件的自动化流程则使用 `call`。完整可运行示例见 `deepscope-examples/documentation/.../hitl/PermissionHITLExample.java`。
 
 </Tip>
 
@@ -522,8 +522,8 @@ for (var tc : externalEvent.getToolCalls()) {
 **只需在 builder 上配 `stateStore(...)`，agent 就会自动持久化与恢复**：每次 `call` 结束把 `AgentState` 写回，下次用同一 `(userId, sessionId)` 调用时自动加载。Agent 实例本身对 session 无状态——具体读写哪个槽位由该次调用的 `RuntimeContext` 决定（缺省回退到 `defaultSessionId`）。
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.state.JsonFileAgentStateStore;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.state.JsonFileAgentStateStore;
 import java.nio.file.Paths;
 
 ReActAgent agent = ReActAgent.builder()
@@ -532,7 +532,7 @@ ReActAgent agent = ReActAgent.builder()
         .model(model)
         .toolkit(new Toolkit())
         .stateStore(new JsonFileAgentStateStore(
-                Paths.get(System.getProperty("user.home"), ".agentscope/sessions")))
+                Paths.get(System.getProperty("user.home"), ".deepscope/sessions")))
         .build();
 
 // 选定本次会话的槽位；userId 可选（null 表示匿名）
@@ -549,10 +549,10 @@ agent.call(List.of(new UserMessage("继续之前的任务。")), rc).block();
 
 | 实现 | 模块 | 适用 |
 |------|------|------|
-| `InMemoryAgentStateStore` | `agentscope-core` | 单元测试 / 单进程 demo |
-| `JsonFileAgentStateStore` | `agentscope-core` | 单机开发，按 `(userId, sessionId)` 分目录落 JSON |
-| `RedisAgentStateStore` | `agentscope-extensions-redis` | 多副本生产，跨进程跨机器共享 |
-| `MysqlAgentStateStore` | `agentscope-extensions-mysql` | 需要落关系型库（审计 / 报表） |
+| `InMemoryAgentStateStore` | `deepscope-core` | 单元测试 / 单进程 demo |
+| `JsonFileAgentStateStore` | `deepscope-core` | 单机开发，按 `(userId, sessionId)` 分目录落 JSON |
+| `RedisAgentStateStore` | `deepscope-extensions-redis` | 多副本生产，跨进程跨机器共享 |
+| `MysqlAgentStateStore` | `deepscope-extensions-mysql` | 需要落关系型库（审计 / 报表） |
 
 大多数场景只用一个 `sessionId` 就够；要按用户分桶就在 `RuntimeContext` 上同时设置 `userId`，存储会按 `(userId, sessionId)` 二元组寻址每个槽位。
 
@@ -575,8 +575,8 @@ String json = state.toJson();               // 序列化为 JSON
 传一个 Java 类（或 `JsonNode` schema）给 `call` 即可：
 
 ```java
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.UserMessage;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.UserMessage;
 
 // 定义输出结构
 public record WeatherResponse(String location, String temperature, String condition) {}

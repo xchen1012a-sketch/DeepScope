@@ -10,7 +10,7 @@
 | 单个测试类 | `mvn -T1 -pl <module> -am test -Dtest=<TestClass>`（执行后确认确实运行） |
 | 格式检查 | `mvn -T1 -pl <module> -am spotless:check` |
 | 全量校验 | `mvn -B -T1 clean verify`（跨模块、公共契约、发布前必跑） |
-| 扩展模块结构同步 | `.github/scripts/check-shade-and-bom-sync.sh`（新增/调整 `agentscope-extensions/*` 后） |
+| 扩展模块结构同步 | `.github/scripts/check-shade-and-bom-sync.sh`（新增/调整 `deepscope-extensions/*` 后） |
 
 CI 额外强制：Apache License 头与第三方依赖 license 检查（skywalking-eyes，配置 `.licenserc.yaml`）；Ubuntu + Windows 双平台 `clean verify`。
 

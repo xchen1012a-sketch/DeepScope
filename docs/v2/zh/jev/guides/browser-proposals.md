@@ -13,7 +13,7 @@ title: "只生成浏览器动作建议"
 ## 1. 把可见目标转换为候选
 
 ```java
-import io.agentscope.extensions.judge.jev.application.JevBrowserPlanner;
+import io.deepscope.extensions.judge.jev.application.JevBrowserPlanner;
 import java.util.List;
 
 var actions = List.of(new JevBrowserPlanner.Action(
@@ -51,7 +51,7 @@ var observed = pending.doOnNext(proposal -> {
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后执行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios browser
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevApplicationScenarios browser
 ```
 
 离线用例依次演示：当前页面推荐 `policy`；页面变更后 STALE_PAGE；没有独立完成证据时 COMPLETION_NOT_VERIFIED。没有启动浏览器或执行动作，因此不能据此计算浏览器任务成功率。[JevApplicationScenarios 完整源码](/examples/jev/source/JevApplicationScenarios.java.txt)
@@ -60,4 +60,4 @@ java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios browser
 
 无选中候选、存在不确定项或判断失败时返回 ABSTAIN。重复动作 ID 或空页面版本为参数错误。预算和运行模式由 selector 提供，取消终止订阅。
 
-希望由 AgentScope 驱动只读导航循环、记录实际动作并独立验证结果时，使用[浏览器执行工具](/v2/zh/jev/guides/browser-execution-api)。
+希望由 DeepScope 驱动只读导航循环、记录实际动作并独立验证结果时，使用[浏览器执行工具](/v2/zh/jev/guides/browser-execution-api)。

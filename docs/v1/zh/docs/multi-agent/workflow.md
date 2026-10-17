@@ -3,7 +3,7 @@ title: 自定义工作流
 en_link: /v1/en/docs/multi-agent/workflow
 ---
 
-> **说明：** 原先的 Spring Boot 示例模块 `agentscope-examples/multiagent-patterns/` 已在 2.0 包重构中移除。请以本文中的代码片段作为参考实现。其他可运行示例见 `agentscope-examples/documentation/`。
+> **说明：** 原先的 Spring Boot 示例模块 `deepscope-examples/multiagent-patterns/` 已在 2.0 包重构中移除。请以本文中的代码片段作为参考实现。其他可运行示例见 `deepscope-examples/documentation/`。
 
 在**自定义工作流**模式中，你使用 **Spring AI Alibaba StateGraph** 定义自己的执行流程。你可以完全控制图结构——顺序步骤、条件分支、循环与并行执行。节点可以是**确定性**的（如向量检索、数据库查询）、**基于 LLM** 的（如改写、分类）或**智能体**（带工具的 Agent）。节点之间通过共享状态 Map 传递数据，并可为每个 key 配置策略（覆盖或追加）。
 
@@ -14,7 +14,7 @@ en_link: /v1/en/docs/multi-agent/workflow
 - **图结构完全自定**：节点与边由你定义，框架不固定拓扑。
 - **混合确定性与智能体步骤**：部分节点不调用 LLM（如 retrieve、list_tables），部分节点调用模型或带工具的 Agent。
 - **显式状态**：每个节点读写状态（如 `question`、`rewritten_query`、`documents`、`messages`）；通过 Key 策略（replace / append）控制合并方式。
-- **可组合**：可将其他模式作为节点嵌入，例如将 AgentScopeAgent 或 Pipeline 作为图中的单个节点。
+- **可组合**：可将其他模式作为节点嵌入，例如将 DeepScopeAgent 或 Pipeline 作为图中的单个节点。
 
 ## 何时使用
 
@@ -31,7 +31,7 @@ en_link: /v1/en/docs/multi-agent/workflow
 1. **定义状态与策略**：创建 `StateGraph`，指定名称与 `Map<String, KeyStrategy>` 的提供者。对单值 key（如 `question`、`rewritten_query`）使用 `ReplaceStrategy`，对列表或消息历史（如 `messages`）使用 `AppendStrategy`。
 2. **添加节点**：节点可以是：
    - **函数节点**：实现 `NodeAction`（同步或通过 `node_async(...)` 异步）。接收 `OverAllState`，返回 `Map<String, Object>` 作为状态更新。可以是纯逻辑（如向量检索）或一次 LLM 调用（如改写）。
-   - **智能体节点**：`AgentScopeAgent.asNode()`。智能体从状态获取输入（如通过 `instruction` 的 `{input}` 或 state 内容），并返回更新（如 `messages`）。
+   - **智能体节点**：`DeepScopeAgent.asNode()`。智能体从状态获取输入（如通过 `instruction` 的 `{input}` 或 state 内容），并返回更新（如 `messages`）。
 3. **添加边**：`addEdge(START, "first_node")`、`addEdge("node_a", "node_b")`、`addEdge("last_node", END)`。若需条件路由，可使用条件边（下文示例未展开）。
 4. **编译与调用**：`graph.compile()` 得到 `CompiledGraph`；传入初始状态 Map 调用，从返回结果中读取最终状态（如 `messages`、`answer`）。
 
@@ -44,7 +44,7 @@ START → rewrite → retrieve → prepare_agent → rag_agent → END
 - **rewrite**：LLM 改写查询以提升检索效果（使用 Model 的函数节点）。
 - **retrieve**：向量相似度检索，无 LLM（使用 Knowledge 的函数节点）。
 - **prepare_agent**：将上下文与问题格式化为 prompt（确定性函数节点）。
-- **rag_agent**：AgentScopeAgent（ReActAgent），带上下文与可选工具（如 `get_latest_news`）。
+- **rag_agent**：DeepScopeAgent（ReActAgent），带上下文与可选工具（如 `get_latest_news`）。
 
 **示例：SQL 工作流（概念）**
 
@@ -55,14 +55,14 @@ START → list_tables → call_get_schema → get_schema → generate_query → 
 - **list_tables**：列出数据库表（使用 SqlTools 的函数节点）。
 - **call_get_schema**：LLM 决定获取哪些表的 schema（函数节点）。
 - **get_schema**：执行 schema 查询（函数节点）。
-- **generate_query**：AgentScopeAgent，具备 `sql_db_list_tables`、`sql_db_schema`、`sql_db_query` 工具，生成并执行 SELECT。
+- **generate_query**：DeepScopeAgent，具备 `sql_db_list_tables`、`sql_db_schema`、`sql_db_query` 工具，生成并执行 SELECT。
 
 ## 示例项目
 
 | 包名       | 流程 | 说明 |
 |------------|------|------|
-| **ragagent** | Query → Rewrite → Retrieve → Prepare → Agent → Response | RAG：改写查询、向量检索，再由 ReActAgent 结合上下文与 `get_latest_news` 工具回答。使用 AgentScope Model、Knowledge（embedding + store）与 AgentScopeAgent。 |
-| **sqlagent** | START → list_tables → get_schema → generate_query → END | SQL：列出表、获取相关表 schema，再由 ReActAgent 使用 SQL 工具（list_tables、schema、query）生成并执行查询。使用 H2 内存库与 AgentScopeAgent。 |
+| **ragagent** | Query → Rewrite → Retrieve → Prepare → Agent → Response | RAG：改写查询、向量检索，再由 ReActAgent 结合上下文与 `get_latest_news` 工具回答。使用 DeepScope Model、Knowledge（embedding + store）与 DeepScopeAgent。 |
+| **sqlagent** | START → list_tables → get_schema → generate_query → END | SQL：列出表、获取相关表 schema，再由 ReActAgent 使用 SQL 工具（list_tables、schema、query）生成并执行查询。使用 H2 内存库与 DeepScopeAgent。 |
 
 **配置**：
 

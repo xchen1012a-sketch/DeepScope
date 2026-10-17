@@ -320,7 +320,7 @@ gw.stop();    // calls stop() on all channels
 
 ## Built-in channel adapters
 
-AgentScope provides ready-to-use Channel adapters for popular messaging platforms as extension modules:
+DeepScope provides ready-to-use Channel adapters for popular messaging platforms as extension modules:
 
 - [DingTalk](/v2/en/integration/channel/dingtalk) — Stream protocol (persistent WebSocket)
 - [Feishu / Lark](/v2/en/integration/channel/feishu) — Event subscription callback

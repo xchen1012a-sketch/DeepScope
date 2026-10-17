@@ -44,7 +44,7 @@ For multi-turn dialogues or complex task flows (such as book flight → select s
 
 This solution uses Trinity-RFT as the training store. Trinity-RFT is a general-purpose, flexible, and user-friendly Large Language Model (LLM) Reinforcement Fine-Tuning (RFT) framework.
 
-Github: https://github.com/agentscope-ai/Trinity-RFT
+Github: https://github.com/deepscope-ai/Trinity-RFT
 
 Version requirement: v0.4.0 and above
 
@@ -61,7 +61,7 @@ Agent Runner, Explorer, and Trainer can be deployed on different servers. Among 
 
 ### Core Features
 
-This solution provides **end-to-end online training** support natively in AgentScope Java, aiming to establish a complete loop from production to model optimization with the following goals:
+This solution provides **end-to-end online training** support natively in DeepScope Java, aiming to establish a complete loop from production to model optimization with the following goals:
 
 - **Leverage Real Online Interaction Data**: Agent developers can directly train using real request invocations and tool states from production Agent environments
 - **Minimal Setup Experience**: Agent developers only need to provide key training configurations (such as reward functions in RL) to automatically complete execution, data collection, and the entire training process
@@ -75,9 +75,9 @@ This solution provides **end-to-end online training** support natively in AgentS
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-training</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-training</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 ### Define Request Selection Logic
@@ -116,7 +116,7 @@ Before installation, ensure your system meets the following requirements. Source
 - **GPU**: At least 2 GPUs
 
 ```bash
-git clone https://github.com/agentscope-ai/Trinity-RFT
+git clone https://github.com/deepscope-ai/Trinity-RFT
 cd Trinity-RFT
 pip install -e ".[dev]"
 pip install flash-attn==2.8.1
@@ -239,8 +239,8 @@ trainingRunner.start();
 #### Complete Example
 
 ```java
-import io.agentscope.core.training.runner.TrainingRunner;
-import io.agentscope.core.training.strategy.SamplingRateStrategy;
+import io.deepscope.core.training.runner.TrainingRunner;
+import io.deepscope.core.training.strategy.SamplingRateStrategy;
 
 // 1. Start training runner (no Task ID/Run ID needed!)
 TrainingRunner runner = TrainingRunner.builder()

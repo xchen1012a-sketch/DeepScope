@@ -45,7 +45,7 @@ public class WeatherService {
 }
 ```
 
-When strict mode is configured, AgentScope preserves and propagates it consistently through:
+When strict mode is configured, DeepScope preserves and propagates it consistently through:
 
 - `@Tool(..., strict = true)` annotation-based registration
 - `AgentTool` interface implementations (via `getStrict()`)
@@ -209,8 +209,8 @@ public String query(
 ### File Tools
 
 ```java
-import io.agentscope.core.tool.file.ReadFileTool;
-import io.agentscope.core.tool.file.WriteFileTool;
+import io.deepscope.core.tool.file.ReadFileTool;
+import io.deepscope.core.tool.file.WriteFileTool;
 
 // Basic registration
 toolkit.registerTool(new ReadFileTool());
@@ -237,7 +237,7 @@ toolkit.registerTool(new WriteFileTool("/safe/workspace"));
 **Quick Start:**
 
 ```java
-import io.agentscope.core.tool.coding.ShellCommandTool;
+import io.deepscope.core.tool.coding.ShellCommandTool;
 
 Function<String, Boolean> callback = cmd -> askUserForApproval(cmd);
 toolkit.registerTool(new ShellCommandTool(allowedCommands, callback));
@@ -246,8 +246,8 @@ toolkit.registerTool(new ShellCommandTool(allowedCommands, callback));
 ### Multimodal Tools
 
 ```java
-import io.agentscope.core.tool.multimodal.DashScopeMultiModalTool;
-import io.agentscope.extensions.model.openai.tool.OpenAIMultiModalTool;
+import io.deepscope.core.tool.multimodal.DashScopeMultiModalTool;
+import io.deepscope.extensions.model.openai.tool.OpenAIMultiModalTool;
 
 toolkit.registerTool(new DashScopeMultiModalTool(System.getenv("DASHSCOPE_API_KEY")));
 toolkit.registerTool(new OpenAIMultiModalTool(System.getenv("OPENAI_API_KEY")));
@@ -404,6 +404,6 @@ The call flow is the same as Tool Suspend: LLM calls → returns `TOOL_SUSPENDED
 
 ## Complete Examples
 
-- **Tool Call Example**: [ToolCallingExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/ToolCallingExample.java)
-- **Tool Group Example**: [ToolGroupExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/ToolGroupExample.java)
-- **MultiModal Tool Example**: [MultiModalToolExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/MultiModalToolExample.java)
+- **Tool Call Example**: [ToolCallingExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/ToolCallingExample.java)
+- **Tool Group Example**: [ToolGroupExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/ToolGroupExample.java)
+- **MultiModal Tool Example**: [MultiModalToolExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/MultiModalToolExample.java)

@@ -21,7 +21,7 @@
 | 后端 | Java 17+、Spring Boot、Maven |
 | 前端 | React、TypeScript、Vite、Tailwind CSS |
 | 数据存储 | PostgreSQL、pgvector |
-| 智能体运行时 | AgentScope Java、AG-UI、MCP |
+| 智能体运行时 | DeepScope Java、AG-UI、MCP |
 
 ## 项目目录
 
@@ -30,9 +30,9 @@ technical-advisor-app/
   backend/                 应用后端
   frontend/                Web 工作台
   docs/                    应用设计与验证记录
-agentscope-core/           智能体基础能力
-agentscope-harness/        工作空间与任务运行能力
-agentscope-extensions/     模型、工具、协议与框架扩展
+deepscope-core/           智能体基础能力
+deepscope-harness/        工作空间与任务运行能力
+deepscope-extensions/     模型、工具、协议与框架扩展
 docs/                     技术文档与设计方案
 .ai-spec/                 工程规范
 ```
@@ -94,4 +94,4 @@ npm run dev
 
 ## 许可证与基础组件
 
-DeepScope 在 AgentScope Java 基础上开发，保留底层组件的版权声明。许可证见 [Apache License 2.0](LICENSE)。
+DeepScope 在 DeepScope Java 基础上开发，保留底层组件的版权声明。许可证见 [Apache License 2.0](LICENSE)。

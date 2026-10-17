@@ -3,7 +3,7 @@ title: Simple
 zh_link: /v2/zh/integration/rag/simple
 ---
 
-`agentscope-extensions-rag-simple` is the "DIY end-to-end" RAG implementation: it bundles document readers, chunking strategies, embedding adapters, and five out-of-the-box vector store adapters.
+`deepscope-extensions-rag-simple` is the "DIY end-to-end" RAG implementation: it bundles document readers, chunking strategies, embedding adapters, and five out-of-the-box vector store adapters.
 
 Use it when: you're happy to run embeddings + vector store yourself and don't want a third-party RAG platform.
 
@@ -11,19 +11,19 @@ Use it when: you're happy to run embeddings + vector store yourself and don't wa
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-rag-simple</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-rag-simple</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## Quickstart
 
 ```java
-import io.agentscope.core.embedding.dashscope.DashScopeTextEmbedding;
-import io.agentscope.core.rag.knowledge.SimpleKnowledge;
-import io.agentscope.core.rag.store.InMemoryStore;
-import io.agentscope.core.rag.model.RetrieveConfig;
+import io.deepscope.core.embedding.dashscope.DashScopeTextEmbedding;
+import io.deepscope.core.rag.knowledge.SimpleKnowledge;
+import io.deepscope.core.rag.store.InMemoryStore;
+import io.deepscope.core.rag.model.RetrieveConfig;
 
 // 1) Embedding model
 EmbeddingModel embeddings = DashScopeTextEmbedding.builder()
@@ -47,14 +47,14 @@ knowledge.addDocuments(docs).block();
 
 // 5) Retrieve
 List<Document> hits = knowledge.retrieve(
-    "What is AgentScope?",
+    "What is DeepScope?",
     RetrieveConfig.builder().limit(5).scoreThreshold(0.5).build()
 ).block();
 ```
 
 ## Built-in document readers
 
-The `io.agentscope.core.rag.reader` package contains readers for common formats; each produces `List<Document>`:
+The `io.deepscope.core.rag.reader` package contains readers for common formats; each produces `List<Document>`:
 
 | Reader | Input |
 | --- | --- |

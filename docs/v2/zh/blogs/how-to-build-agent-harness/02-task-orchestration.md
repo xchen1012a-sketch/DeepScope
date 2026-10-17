@@ -141,7 +141,7 @@ Planning 的价值不是展示模型隐藏的思考过程，而是把任务结�
 
 ### 2.2.3 将探索、计划和执行分开
 
-在 Framework 路径中，应用团队可以直接把计划能力组合进 Harness。下面的 AgentScope 示例为修复 Agent 启用 Plan Mode 与任务列表：
+在 Framework 路径中，应用团队可以直接把计划能力组合进 Harness。下面的 DeepScope 示例为修复 Agent 启用 Plan Mode 与任务列表：
 
 ```java
 HarnessAgent agent = HarnessAgent.builder()
@@ -206,7 +206,7 @@ flowchart TB
 
 分析与代码库探索可以并行，但代码修改需要基于已确认目标版本；评审必须读取固定的差异和测试结果，而不能与执行者共享未经提交的中间判断。多个执行者若同时修改同一工作区，应使用隔离分支、对象级锁或补丁合并，不能依赖“大家小心不要冲突”。
 
-AgentScope 支持把子代理声明为工作区中的版本化规格。例如：
+DeepScope 支持把子代理声明为工作区中的版本化规格。例如：
 
 ```text
 ---
@@ -318,7 +318,7 @@ flowchart LR
 
 扩展本身也需要顺序、读写范围、冲突规则、失败语义和可观测性。最好让扩展返回结构化 Decision 或 Patch，由核心 Loop 统一提交，而不是任意修改共享对象。
 
-AgentScope 的 HarnessAgent 采用能力组合方式，将工作区、状态存储、计划、Subagent、Memory、压缩、Skill、Sandbox 与 Channel 叠加到统一运行上下文中。Framework 路径因此具有最大的业务调优空间，也意味着应用团队要为能力组合、生命周期顺序和最终效果负责。
+DeepScope 的 HarnessAgent 采用能力组合方式，将工作区、状态存储、计划、Subagent、Memory、压缩、Skill、Sandbox 与 Channel 叠加到统一运行上下文中。Framework 路径因此具有最大的业务调优空间，也意味着应用团队要为能力组合、生命周期顺序和最终效果负责。
 
 ### 2.5.2 对确定性部分做契约测试
 

@@ -30,10 +30,10 @@ flowchart TD
 下面以修复问题的助手为例。应用启动时配置共享 Builder，每次请求创建一个 Agent；保持稳定的用户、Agent 和会话身份，才能延续同一段对话。`model` 是已经配置好的[模型](/v2/zh/docs/building-blocks/model)。
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.harness.agent.HarnessAgent;
 import java.nio.file.Path;
 
 HarnessAgent.Builder builder = HarnessAgent.builder()
@@ -96,7 +96,7 @@ builder.instruction("test-policy", "修改代码后运行相关测试；无法�
 例如，修复助手需要在每次推理时了解当前构建状态。可以注册一个 `contextSource`；下面先用固定值演示返回结构，实际应用中将它替换为按当前用户和会话查询业务服务的逻辑：
 
 ```java
-import io.agentscope.harness.agent.context.ContextBlock;
+import io.deepscope.harness.agent.context.ContextBlock;
 import java.util.List;
 import reactor.core.publisher.Mono;
 
@@ -128,7 +128,7 @@ builder.contextSource("project-guide", request -> Mono.just(List.of(
 如果构建状态是作出决定的必要依据，查询失败就应停止准备请求。动态来源默认采用这一行为，超时为 5 秒。对于可有可无的推荐材料，可以允许失败时跳过：
 
 ```java
-import io.agentscope.harness.agent.context.SourceFailurePolicy;
+import io.deepscope.harness.agent.context.SourceFailurePolicy;
 import java.time.Duration;
 
 builder.contextSource("related-notes", request -> Mono.just(List.of(
@@ -167,7 +167,7 @@ Todo 保存在结构化任务状态中。最新的完整 Todo 工具回执仍在
 业务对完成标准有更严格要求时，还可以展示任务目标、已确认要求和验证结果：
 
 ```java
-import io.agentscope.harness.agent.context.TaskContextOptions;
+import io.deepscope.harness.agent.context.TaskContextOptions;
 
 builder.taskContext(TaskContextOptions.builder()
         .includeRequirements()
@@ -193,7 +193,7 @@ builder.taskContext(TaskContextOptions.builder()
 默认阈值为 80,000 字符，预览保留首尾各 2,000 字符，文件位于工作区逻辑路径 `large_tool_results/` 下。需要更小的预览时，可以调整：
 
 ```java
-import io.agentscope.harness.agent.memory.compaction.ToolResultEvictionConfig;
+import io.deepscope.harness.agent.memory.compaction.ToolResultEvictionConfig;
 
 builder.toolResultEviction(ToolResultEvictionConfig.builder()
         .maxResultChars(40000)
@@ -212,8 +212,8 @@ builder.toolResultEviction(ToolResultEvictionConfig.builder()
 默认预算根据模型报告的窗口大小，为输出和安全余量预留空间；模型没有报告窗口时，输入预算回退到 64,000 token。估算不是供应商的精确计数，尤其是包含图片等内容时，应给实际请求留有余量。若希望主动限制输入成本，可以配置：
 
 ```java
-import io.agentscope.harness.agent.context.ContextPolicy;
-import io.agentscope.harness.agent.context.ContextTokenEstimator;
+import io.deepscope.harness.agent.context.ContextPolicy;
+import io.deepscope.harness.agent.context.ContextTokenEstimator;
 
 builder.contextPolicy(new ContextPolicy(
         24000,  // 最大输入预算
@@ -236,7 +236,7 @@ builder.contextPolicy(new ContextPolicy(
 默认在对话达到 50 条消息，或达到当前可用的对话 token 预算时触发摘要检查；近期保留范围按对话预算动态计算。若希望更早压缩，并按消息条数保留近期内容，可以这样配置：
 
 ```java
-import io.agentscope.harness.agent.memory.compaction.CompactionConfig;
+import io.deepscope.harness.agent.memory.compaction.CompactionConfig;
 
 builder.compaction(CompactionConfig.builder()
         .triggerMessages(30)
@@ -256,7 +256,7 @@ builder.compaction(CompactionConfig.builder()
 对于 `write_file` 等参数很长的工具，还可以在摘要前开启参数截断：
 
 ```java
-import io.agentscope.harness.agent.memory.compaction.CompactionConfig.TruncateArgsConfig;
+import io.deepscope.harness.agent.memory.compaction.CompactionConfig.TruncateArgsConfig;
 
 builder.compaction(CompactionConfig.builder()
         .truncateArgs(TruncateArgsConfig.builder()
@@ -318,9 +318,9 @@ builder.compaction(CompactionConfig.builder()
 最直接的方式是在构建 Agent 前，为 `ContextPolicy` 配置观察回调。下面沿用前文的预算，打印每轮结果、保留的材料以及处理记录；用该 `builder.build()` 创建 Agent 后，正常调用 `call` 或消费 `streamEvents` 即会触发回调。
 
 ```java
-import io.agentscope.harness.agent.context.ContextManifest;
-import io.agentscope.harness.agent.context.ContextPolicy;
-import io.agentscope.harness.agent.context.ContextTokenEstimator;
+import io.deepscope.harness.agent.context.ContextManifest;
+import io.deepscope.harness.agent.context.ContextPolicy;
+import io.deepscope.harness.agent.context.ContextTokenEstimator;
 
 builder.contextPolicy(new ContextPolicy(
         24000, 4096, 1024,
@@ -361,11 +361,11 @@ builder.contextPolicy(new ContextPolicy(
 如果应用已经消费 `streamEvents`，也可以直接在现有流中处理 `context_build` 自定义事件，无需额外发起一次 Agent 调用。下面展示一次完整的订阅；业务中的文本、工具等事件仍按原来的方式处理。
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.event.CustomEvent;
-import io.agentscope.core.message.UserMessage;
-import io.agentscope.harness.agent.HarnessAgent;
-import io.agentscope.harness.agent.context.ContextManifest;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.event.CustomEvent;
+import io.deepscope.core.message.UserMessage;
+import io.deepscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.context.ContextManifest;
 
 RuntimeContext ctx = RuntimeContext.builder()
         .userId("alice").sessionId("fix-login-001").build();

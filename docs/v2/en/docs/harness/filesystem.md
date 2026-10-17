@@ -101,9 +101,9 @@ This mode **does not provide shell** — on purpose: for shell, use mode 2 (sand
 
 | Implementation | Description |
 |---------------|-------------|
-| `RedisStore` | Jedis-based, for low-latency high-concurrency | `agentscope-extensions-redis` |
-| `JdbcStore` | JDBC-based, for MySQL / PostgreSQL / H2 | `agentscope-extensions-mysql` |
-| `InMemoryStore` | In-memory, for testing | `agentscope-harness` |
+| `RedisStore` | Jedis-based, for low-latency high-concurrency | `deepscope-extensions-redis` |
+| `JdbcStore` | JDBC-based, for MySQL / PostgreSQL / H2 | `deepscope-extensions-mysql` |
+| `InMemoryStore` | In-memory, for testing | `deepscope-harness` |
 
 ---
 
@@ -259,7 +259,7 @@ Snapshots let the next `call()` restore the previous sandbox state (installed de
 HarnessAgent codingAgent = HarnessAgent.builder()
     .name("coder")
     .model(model)
-    .workspace(Paths.get(".agentscope/workspace"))
+    .workspace(Paths.get(".deepscope/workspace"))
     .filesystem(new DockerFilesystemSpec()
         .image("node:20-slim")
         .isolationScope(IsolationScope.USER)
@@ -295,7 +295,7 @@ Projection compares content by SHA-256; unchanged files skip hydration. Customiz
 
 ### Mode 3: local + shell (default)
 
-What you get with no `filesystem(...)` call: workspace lives at `${cwd}/.agentscope/workspace/`, shell runs on the host:
+What you get with no `filesystem(...)` call: workspace lives at `${cwd}/.deepscope/workspace/`, shell runs on the host:
 
 ```java
 HarnessAgent agent = HarnessAgent.builder()
@@ -350,7 +350,7 @@ Reads check workspace first, then fall back to project (copy-on-write semantics)
 
 #### Project-writable mode (`projectWritable`)
 
-By default all writes land in the workspace — fine for read/analyze scenarios, but if the agent's job is to **generate code** (e.g. scaffold a microservice), files end up in `.agentscope/workspace/` instead of the project directory.
+By default all writes land in the workspace — fine for read/analyze scenarios, but if the agent's job is to **generate code** (e.g. scaffold a microservice), files end up in `.deepscope/workspace/` instead of the project directory.
 
 Enable `projectWritable(true)` and the framework routes writes by path:
 
@@ -373,7 +373,7 @@ Read behavior is unchanged — workspace first, project fallback.
 HarnessAgent devHelper = HarnessAgent.builder()
     .name("dev-helper")
     .model(model)
-    .workspace(Paths.get(".agentscope/workspace"))
+    .workspace(Paths.get(".deepscope/workspace"))
     .filesystem(new LocalFilesystemSpec()
         .project(Paths.get("/Users/alice/my-project"))
         .addRoot(Paths.get("/Users/alice/.config"))

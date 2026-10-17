@@ -3,9 +3,9 @@ title: Supervisor
 zh_link: /v1/zh/docs/multi-agent/supervisor
 ---
 
-> **Note:** The former Spring Boot example module `agentscope-examples/multiagent-patterns/` was removed during the 2.0 package refactor. Use the code snippets on this page as the reference implementation. For other runnable samples, see `agentscope-examples/documentation/`.
+> **Note:** The former Spring Boot example module `deepscope-examples/multiagent-patterns/` was removed during the 2.0 package refactor. Use the code snippets on this page as the reference implementation. For other runnable samples, see `deepscope-examples/documentation/`.
 
-In the **supervisor** pattern, a central **supervisor** (main agent) coordinates specialized agents by calling them as **tools**. The supervisor receives user requests, decides which specialist(s) to call (e.g. calendar, email), and synthesizes their results into one reply. Specialized agents are **stateless** from the user’s perspective; the supervisor keeps the conversation and delegates one-off tasks. This pattern is implemented in AgentScope via **Agent as Tool** ([agent-as-tool.md](/v1/en/docs/task/agent-as-tool)): `Toolkit.registration().subAgent()`.
+In the **supervisor** pattern, a central **supervisor** (main agent) coordinates specialized agents by calling them as **tools**. The supervisor receives user requests, decides which specialist(s) to call (e.g. calendar, email), and synthesizes their results into one reply. Specialized agents are **stateless** from the user’s perspective; the supervisor keeps the conversation and delegates one-off tasks. This pattern is implemented in DeepScope via **Agent as Tool** ([agent-as-tool.md](/v1/en/docs/task/agent-as-tool)): `Toolkit.registration().subAgent()`.
 
 ## Overview
 
@@ -35,7 +35,7 @@ In the example, calendar and email “APIs” are **stubbed** (`CalendarStubTool
 
 ## Implementation
 
-1. **Model**: All agents use the same **DashScopeChatModel** (or other AgentScope `Model`); API key from `spring.ai.dashscope.api-key` or `AI_DASHSCOPE_API_KEY`.
+1. **Model**: All agents use the same **DashScopeChatModel** (or other DeepScope `Model`); API key from `spring.ai.dashscope.api-key` or `AI_DASHSCOPE_API_KEY`.
 2. **Specialist agents**: Build one ReActAgent per domain (calendar, email) with its own sysPrompt and Toolkit (stub or real tools). Register each with the supervisor’s Toolkit: `toolkit.registration().subAgent(() -> calendarAgent).apply()` and similarly for email. Optionally use **SubAgentConfig** to set `toolName` and `description`.
 3. **Supervisor**: Build a ReActAgent with the same model and the Toolkit that contains the subAgent registrations. The supervisor’s system prompt should describe when to use `schedule_event` and `manage_email`.
 4. **Invocation**: Inject the supervisor ReActAgent and call `supervisorAgent.call(userMsg).block()`. For multi-domain requests (e.g. “schedule a meeting and send an email”), the supervisor will call both tools and combine the results.

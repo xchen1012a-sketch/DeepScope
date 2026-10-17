@@ -3,7 +3,7 @@ title: AG-UI 协议
 en_link: /v1/en/docs/task/agui
 ---
 
-AG-UI 是一个前后端通信协议，用于将智能体暴露给 Web 前端。通过 AG-UI，你可以快速将 AgentScope 智能体接入支持该协议的前端框架。
+AG-UI 是一个前后端通信协议，用于将智能体暴露给 Web 前端。通过 AG-UI，你可以快速将 DeepScope 智能体接入支持该协议的前端框架。
 
 ---
 
@@ -13,8 +13,8 @@ AG-UI 是一个前后端通信协议，用于将智能体暴露给 Web 前端。
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-agui-spring-boot-starter</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-agui-spring-boot-starter</artifactId>
 </dependency>
 
 <dependency>
@@ -76,7 +76,7 @@ public class AgentConfiguration {
 
 ```yaml
 # application.yml
-agentscope:
+deepscope:
   agui:
     path-prefix: /agui
     cors-enabled: true
@@ -152,12 +152,12 @@ function App() {
 
 ## 示例项目
 
-完整示例见 [agentscope-examples/documentation](https://github.com/agentscope-ai/agentscope-java/tree/main/agentscope-examples/documentation)：
+完整示例见 [deepscope-examples/documentation](https://github.com/xchen1012a-sketch/DeepScope/tree/main/deepscope-examples/documentation)：
 
 ```bash
 export DASHSCOPE_API_KEY=your-key
-cd agentscope-examples/documentation
-mvn spring-boot:run -Dspring-boot.run.mainClass=io.agentscope.examples.documentation2.agui.AguiExampleApplication
+cd deepscope-examples/documentation
+mvn spring-boot:run -Dspring-boot.run.mainClass=io.deepscope.examples.documentation2.agui.AguiExampleApplication
 ```
 
 访问 http://localhost:8080 查看演示。

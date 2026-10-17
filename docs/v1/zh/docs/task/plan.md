@@ -85,7 +85,7 @@ Msg response = agent.call(task).block();
 
 ## 完整示例
 
-参考 [PlanNotebookExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/PlanNotebookExample.java)
+参考 [PlanNotebookExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/PlanNotebookExample.java)
 
 ## 配置选项
 

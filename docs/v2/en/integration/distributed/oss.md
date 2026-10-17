@@ -3,25 +3,25 @@ title: Alibaba Cloud OSS
 zh_link: /v2/zh/integration/distributed/oss
 ---
 
-`agentscope-extensions-oss` provides distributed storage backed by Alibaba Cloud Object Storage Service (OSS), ideal for large-capacity data and Alibaba Cloud ecosystems.
+`deepscope-extensions-oss` provides distributed storage backed by Alibaba Cloud Object Storage Service (OSS), ideal for large-capacity data and Alibaba Cloud ecosystems.
 
 ## Dependency
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-oss</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-oss</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## One-Line Setup
 
 ```java
-import io.agentscope.extensions.oss.OssDistributedStore;
+import io.deepscope.extensions.oss.OssDistributedStore;
 
 OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
-DistributedStore store = OssDistributedStore.create(ossClient, "my-bucket", "agentscope/");
+DistributedStore store = OssDistributedStore.create(ossClient, "my-bucket", "deepscope/");
 
 HarnessAgent agent = HarnessAgent.builder()
     .distributedStore(store)
@@ -49,7 +49,7 @@ Sandbox snapshots to OSS — the best choice for large workspace archives.
 Object storage is unsuitable for distributed locking. Mix in a Redis guard:
 
 ```java
-DistributedStore ossStore = OssDistributedStore.create(ossClient, "my-bucket", "agentscope/");
+DistributedStore ossStore = OssDistributedStore.create(ossClient, "my-bucket", "deepscope/");
 
 DistributedStore mixed = DistributedStore.builder()
     .agentStateStore(ossStore.agentStateStore())

@@ -9,28 +9,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.agentscope.examples.jev;
+package io.deepscope.examples.jev;
 
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.extensions.judge.jev.Answer;
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.JevJudge;
-import io.agentscope.extensions.judge.jev.NoulAnswer;
-import io.agentscope.extensions.judge.jev.NoulQuestion;
-import io.agentscope.extensions.judge.jev.SystemOneRequest;
-import io.agentscope.extensions.judge.jev.SystemOneResult;
-import io.agentscope.extensions.judge.jev.application.JevBrowserPlanner;
-import io.agentscope.extensions.judge.jev.application.JevCandidateSelector;
-import io.agentscope.extensions.judge.jev.application.JevContextPlanner;
-import io.agentscope.extensions.judge.jev.application.JevCustomerSupport;
-import io.agentscope.extensions.judge.jev.application.JevDraftPipeline;
-import io.agentscope.extensions.judge.jev.application.JevMemoryGate;
-import io.agentscope.extensions.judge.jev.application.JevRag;
-import io.agentscope.extensions.judge.jev.application.JevSupervisor;
-import io.agentscope.extensions.judge.jev.application.JevTeamPlanner;
-import io.agentscope.extensions.judge.jev.evaluation.Evaluator;
-import io.agentscope.extensions.judge.jev.evaluation.JevEvaluationRunner;
-import io.agentscope.extensions.judge.jev.evaluation.JevEvaluator;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.extensions.judge.jev.Answer;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.JevJudge;
+import io.deepscope.extensions.judge.jev.NoulAnswer;
+import io.deepscope.extensions.judge.jev.NoulQuestion;
+import io.deepscope.extensions.judge.jev.SystemOneRequest;
+import io.deepscope.extensions.judge.jev.SystemOneResult;
+import io.deepscope.extensions.judge.jev.application.JevBrowserPlanner;
+import io.deepscope.extensions.judge.jev.application.JevCandidateSelector;
+import io.deepscope.extensions.judge.jev.application.JevContextPlanner;
+import io.deepscope.extensions.judge.jev.application.JevCustomerSupport;
+import io.deepscope.extensions.judge.jev.application.JevDraftPipeline;
+import io.deepscope.extensions.judge.jev.application.JevMemoryGate;
+import io.deepscope.extensions.judge.jev.application.JevRag;
+import io.deepscope.extensions.judge.jev.application.JevSupervisor;
+import io.deepscope.extensions.judge.jev.application.JevTeamPlanner;
+import io.deepscope.extensions.judge.jev.evaluation.Evaluator;
+import io.deepscope.extensions.judge.jev.evaluation.JevEvaluationRunner;
+import io.deepscope.extensions.judge.jev.evaluation.JevEvaluator;
 import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.List;

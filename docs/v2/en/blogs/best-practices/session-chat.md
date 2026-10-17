@@ -1,10 +1,10 @@
 ---
 title: Recoverable chat example
-description: Run agentscope-chat to explore history, SSE replay, user input and checkpoint continuation.
+description: Run deepscope-chat to explore history, SSE replay, user input and checkpoint continuation.
 zh_link: /v2/zh/blogs/best-practices/session-chat
 ---
 
-Full source is in [agentscope-chat](https://github.com/agentscope-ai/agentscope-java/tree/main/agentscope-examples/agents/agentscope-chat).
+Full source is in [deepscope-chat](https://github.com/xchen1012a-sketch/DeepScope/tree/main/deepscope-examples/agents/deepscope-chat).
 
 A runnable HarnessAgent Web Chat demonstrating durable conversations, live events, SSE replay and checkpoint continuation. The page includes chat, pending input and a committed event timeline.
 
@@ -14,20 +14,20 @@ The default deterministic offline model needs no API key, database or Node.js. R
 
 ## Run
 
-From the agentscope-java repository root:
+From the deepscope-java repository root:
 
 ```bash
-mvn -pl agentscope-examples/agents/agentscope-chat -am package -DskipTests
-java -jar agentscope-examples/agents/agentscope-chat/target/agentscope-chat.jar
+mvn -pl deepscope-examples/agents/deepscope-chat -am package -DskipTests
+java -jar deepscope-examples/agents/deepscope-chat/target/deepscope-chat.jar
 ```
 
-Open [http://127.0.0.1:8087](http://127.0.0.1:8087). The server listens on loopback only. The default Workspace is ~/.agentscope/session-chat; its .agentscope-runtime/ directory contains native history. Preserve the directory across restarts.
+Open [http://127.0.0.1:8087](http://127.0.0.1:8087). The server listens on loopback only. The default Workspace is ~/.deepscope/session-chat; its .deepscope-runtime/ directory contains native history. Preserve the directory across restarts.
 
 Use another data directory or port:
 
 ```bash
 CHAT_WORKSPACE=/absolute/path/to/chat-workspace CHAT_PORT=8088 \
-  java -jar agentscope-examples/agents/agentscope-chat/target/agentscope-chat.jar
+  java -jar deepscope-examples/agents/deepscope-chat/target/deepscope-chat.jar
 ```
 
 ## Walkthrough
@@ -84,7 +84,7 @@ Set these variables and restart:
 ```bash
 export DASHSCOPE_API_KEY=your_api_key
 export CHAT_MODEL=qwen-plus
-java -jar agentscope-examples/agents/agentscope-chat/target/agentscope-chat.jar
+java -jar deepscope-examples/agents/deepscope-chat/target/deepscope-chat.jar
 ```
 
 Chat naturally with the real model; /slow and /ask are offline demo commands. Ask the model to collect a preference through ask_user to exercise suspension. Set CHAT_MODEL=demo to switch back. Model selection does not change storage; start a new conversation if you want separate history.
@@ -122,6 +122,6 @@ This is a local single-process, single-user SDK example. POST acknowledges durab
 ## Verify
 
 ```bash
-mvn -pl agentscope-examples/agents/agentscope-chat -am test \
+mvn -pl deepscope-examples/agents/deepscope-chat -am test \
   -Dtest=ChatSessionsTest,ChatItemsTest -Dsurefire.failIfNoSpecifiedTests=false
 ```

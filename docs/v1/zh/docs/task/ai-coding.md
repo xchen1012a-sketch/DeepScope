@@ -3,20 +3,20 @@ title: 使用 AI 编程
 en_link: /v1/en/docs/task/ai-coding
 ---
 
-AgentScope Java 文档支持 [`llms.txt` 标准](https://llmstxt.org/)，让 AI 编程助手能够理解框架文档并生成准确的代码。
+DeepScope Java 文档支持 [`llms.txt` 标准](https://llmstxt.org/)，让 AI 编程助手能够理解框架文档并生成准确的代码。
 
 ## 什么是 llms.txt？
 
 `llms.txt` 是一个专为大模型设计的文档索引文件，包含文档结构和关键页面说明，方便 AI 工具快速定位所需内容。
 
-AgentScope Java 现在按版本提供文档入口：
+DeepScope Java 现在按版本提供文档入口：
 
 | 文件 | 说明 | URL |
 |------|------|-----|
-| `v2/llms.txt` | AgentScope Java 2.0 文档索引 | `https://java.agentscope.io/v2/llms.txt` |
-| `v2/llms-full.txt` | AgentScope Java 2.0 单文件完整上下文 | `https://java.agentscope.io/v2/llms-full.txt` |
-| `v1/llms.txt` | AgentScope Java 1.x 文档索引 | `https://java.agentscope.io/v1/llms.txt` |
-| `v1/llms-full.txt` | AgentScope Java 1.x 单文件完整上下文 | `https://java.agentscope.io/v1/llms-full.txt` |
+| `v2/llms.txt` | DeepScope Java 2.0 文档索引 | `https://github.com/xchen1012a-sketch/DeepScope/v2/llms.txt` |
+| `v2/llms-full.txt` | DeepScope Java 2.0 单文件完整上下文 | `https://github.com/xchen1012a-sketch/DeepScope/v2/llms-full.txt` |
+| `v1/llms.txt` | DeepScope Java 1.x 文档索引 | `https://github.com/xchen1012a-sketch/DeepScope/v1/llms.txt` |
+| `v1/llms-full.txt` | DeepScope Java 1.x 单文件完整上下文 | `https://github.com/xchen1012a-sketch/DeepScope/v1/llms-full.txt` |
 
 ## 配置指南
 
@@ -27,14 +27,14 @@ AgentScope Java 现在按版本提供文档入口：
 **安装：**
 
 ```bash
-claude mcp add agentscope-docs -- uvx --from mcpdoc mcpdoc --urls AgentScopeJava:https://java.agentscope.io/v2/llms.txt
+claude mcp add deepscope-docs -- uvx --from mcpdoc mcpdoc --urls DeepScopeJava:https://github.com/xchen1012a-sketch/DeepScope/v2/llms.txt
 ```
 
 **示例：**
 
 安装后可以直接提问：
 
-> 如何用 AgentScope Java 创建一个工具？
+> 如何用 DeepScope Java 创建一个工具？
 
 ### Cursor
 
@@ -44,7 +44,7 @@ claude mcp add agentscope-docs -- uvx --from mcpdoc mcpdoc --urls AgentScopeJava
 
 1. 打开 **Cursor Settings** -> **Features** -> **Docs**
 2. 点击 **+ Add new Doc**
-3. 填入：`https://java.agentscope.io/v2/llms-full.txt`
+3. 填入：`https://github.com/xchen1012a-sketch/DeepScope/v2/llms-full.txt`
 
 **方式二：MCP 服务**
 
@@ -55,11 +55,11 @@ claude mcp add agentscope-docs -- uvx --from mcpdoc mcpdoc --urls AgentScopeJava
 ```json
 {
   "mcpServers": {
-    "agentscope-docs": {
+    "deepscope-docs": {
       "command": "uvx",
       "args": [
         "--from", "mcpdoc", "mcpdoc",
-        "--urls", "AgentScopeJava:https://java.agentscope.io/v2/llms.txt"
+        "--urls", "DeepScopeJava:https://github.com/xchen1012a-sketch/DeepScope/v2/llms.txt"
       ]
     }
   }
@@ -68,7 +68,7 @@ claude mcp add agentscope-docs -- uvx --from mcpdoc mcpdoc --urls AgentScopeJava
 
 **示例：**
 
-> 参考 AgentScope 文档，写一个带天气查询工具的 ReActAgent。
+> 参考 DeepScope 文档，写一个带天气查询工具的 ReActAgent。
 
 ### Windsurf
 
@@ -80,11 +80,11 @@ claude mcp add agentscope-docs -- uvx --from mcpdoc mcpdoc --urls AgentScopeJava
 ```json
 {
   "mcpServers": {
-    "agentscope-docs": {
+    "deepscope-docs": {
       "command": "uvx",
       "args": [
         "--from", "mcpdoc", "mcpdoc",
-        "--urls", "AgentScopeJava:https://java.agentscope.io/v2/llms.txt"
+        "--urls", "DeepScopeJava:https://github.com/xchen1012a-sketch/DeepScope/v2/llms.txt"
       ]
     }
   }
@@ -95,18 +95,18 @@ claude mcp add agentscope-docs -- uvx --from mcpdoc mcpdoc --urls AgentScopeJava
 
 **支持文档/知识库的工具：**
 
-直接添加 `https://java.agentscope.io/v2/llms-full.txt`。
+直接添加 `https://github.com/xchen1012a-sketch/DeepScope/v2/llms-full.txt`。
 
 **支持 MCP 的工具：**
 
 参考上面的 MCP 配置模板。
 
-**使用 AgentScope Java 1.x：**
+**使用 DeepScope Java 1.x：**
 
 如果项目仍在使用 1.x，请改用：
 
-- `https://java.agentscope.io/v1/llms.txt`
-- `https://java.agentscope.io/v1/llms-full.txt`
+- `https://github.com/xchen1012a-sketch/DeepScope/v1/llms.txt`
+- `https://github.com/xchen1012a-sketch/DeepScope/v1/llms-full.txt`
 
 **环境要求：**
 

@@ -70,7 +70,7 @@ en_link: /v2/en/docs/harness/workspace
 ## 工作区目录布局
 
 ```
-.agentscope/workspace/
+.deepscope/workspace/
 ├── AGENTS.md                    ← 静态：人格 + 行为约定
 ├── MEMORY.md                    ← 长期记忆：策划后的长期事实
 ├── tools.json                   ← 静态：MCP server + 工具白名单（可选）
@@ -90,7 +90,7 @@ en_link: /v2/en/docs/harness/workspace
         └── <sessionId>.json
 ```
 
-> **这棵树是*逻辑*布局，不是固定的磁盘路径。** 它画成 `.agentscope/workspace/...`，但那只是默认的本机落点。同一份布局可以物理上落在**本机磁盘**、落在**远端分布式存储**（Redis / JDBC / OSS，通过 `RemoteFilesystemSpec`），或**映射进沙箱容器**（`SandboxFilesystemSpec`）——下面这些相对路径在三种模式下完全一致，变的只是后端存储，你的 agent 代码不用动。用 [filesystem](/v2/zh/docs/harness/filesystem) 选后端；本文其余内容都是按这套逻辑布局来写的。
+> **这棵树是*逻辑*布局，不是固定的磁盘路径。** 它画成 `.deepscope/workspace/...`，但那只是默认的本机落点。同一份布局可以物理上落在**本机磁盘**、落在**远端分布式存储**（Redis / JDBC / OSS，通过 `RemoteFilesystemSpec`），或**映射进沙箱容器**（`SandboxFilesystemSpec`）——下面这些相对路径在三种模式下完全一致，变的只是后端存储，你的 agent 代码不用动。用 [filesystem](/v2/zh/docs/harness/filesystem) 选后端；本文其余内容都是按这套逻辑布局来写的。
 
 **唯一你真正需要写的是 `AGENTS.md`**（不写也能跑，只是少一段人格注入）。其他目录在你启用对应能力时自动出现：
 
@@ -106,7 +106,7 @@ en_link: /v2/en/docs/harness/workspace
 HarnessAgent agent = HarnessAgent.builder()
     .name("MyAgent")
     .model(model)
-    .workspace(Paths.get(".agentscope/workspace"))   // 不传则走下面的默认解析顺序
+    .workspace(Paths.get(".deepscope/workspace"))   // 不传则走下面的默认解析顺序
     .additionalContextFile("SOUL.md")                // 任意 workspace 相对路径，全文注入
     .additionalContextFile("PREFERENCES.md")
     .maxContextTokens(8000)                          // MEMORY 注入预算
@@ -120,20 +120,20 @@ HarnessAgent agent = HarnessAgent.builder()
 | 优先级 | 来源 | 说明 |
 |-------|------|------|
 | 1 | `workspace(Path)` / `workspace(String)` | Builder 显式设置，覆盖一切 |
-| 2 | `agentscope.workspace` 系统属性 | `-Dagentscope.workspace=/data/workspace` |
-| 3 | `AGENTSCOPE_WORKSPACE` 环境变量 | `export AGENTSCOPE_WORKSPACE=/data/workspace` |
-| 4 | 默认值 | `${user.dir}/.agentscope/workspace` |
+| 2 | `deepscope.workspace` 系统属性 | `-Ddeepscope.workspace=/data/workspace` |
+| 3 | `DEEPSCOPE_WORKSPACE` 环境变量 | `export DEEPSCOPE_WORKSPACE=/data/workspace` |
+| 4 | 默认值 | `${user.dir}/.deepscope/workspace` |
 
 系统属性和环境变量主要服务于**镜像打包 / 容器部署**：应用代码里不写死路径，构建镜像或启动容器时通过环境变量灵活注入。例如：
 
 ```dockerfile
-ENV AGENTSCOPE_WORKSPACE=/data/agent-workspace
+ENV DEEPSCOPE_WORKSPACE=/data/agent-workspace
 ```
 
 ```yaml
 # k8s / docker-compose
 env:
-  - name: AGENTSCOPE_WORKSPACE
+  - name: DEEPSCOPE_WORKSPACE
     value: /data/agent-workspace
 ```
 
@@ -299,8 +299,8 @@ HarnessAgent agent = HarnessAgent.builder()
 
 | 数据 | 存储与恢复 |
 | --- | --- |
-| 原生执行历史、AgentState checkpoint | Filesystem 的 `.agentscope-runtime/` / 远端保留分区，或显式 SessionLogStore；通过 API 读取 |
-| AgentStateStore | LEGACY 恢复来源和显式迁移来源；默认本地根 `~/.agentscope/state/<agentId>/`，可用 stateStore 替换 |
+| 原生执行历史、AgentState checkpoint | Filesystem 的 `.deepscope-runtime/` / 远端保留分区，或显式 SessionLogStore；通过 API 读取 |
+| AgentStateStore | LEGACY 恢复来源和显式迁移来源；默认本地根 `~/.deepscope/state/<agentId>/`，可用 stateStore 替换 |
 | 任务、计划、记忆和工作文件 | Workspace / TaskRepository / sandbox 等对应后端；日志 checkpoint 不复制它们的全部内容 |
 
 ### Agent 状态与原生日志
@@ -375,7 +375,7 @@ skills/code-reviewer/
 
 注册路径有四层（低 → 高优先级）：
 
-1. `projectGlobalSkillsDir(Path)` —— 项目全局，例如 `~/.agentscope/skills/`
+1. `projectGlobalSkillsDir(Path)` —— 项目全局，例如 `~/.deepscope/skills/`
 2. `skillRepository(...)` —— 市场后端（Git / Nacos / MySQL / classpath）
 3. `workspace/skills/` —— 工作区共用
 4. `<userId>/skills/` —— 用户隔离（覆盖以上所有）
@@ -456,7 +456,7 @@ agents/<agentId>/
     └── <sessionId>.json       ← 子 agent 后台任务记录（taskId → TaskRecord）
 ```
 
-> 上图仅展示任务记录。原生 Session Log 位于 Filesystem 保留分区：本地为 `.agentscope-runtime/`，远端为 `__agentscope_session_log_v1__`。通过 `sessionTranscript()`、`session_history` 和 `session_list` 读取历史；不再写旧 JSONL、sessions.json 或分段 transcript。
+> 上图仅展示任务记录。原生 Session Log 位于 Filesystem 保留分区：本地为 `.deepscope-runtime/`，远端为 `__deepscope_session_log_v1__`。通过 `sessionTranscript()`、`session_history` 和 `session_list` 读取历史；不再写旧 JSONL、sessions.json 或分段 transcript。
 
 跨节点恢复时，原生日志、任务/文件产物、sandbox 元数据等都应使用适合的共享后端；仅配置共享 AgentStateStore 不会自动共享本地 Session Log。见 [会话日志](/v2/zh/docs/harness/session-log) 与 [Filesystem](/v2/zh/docs/harness/filesystem)。
 

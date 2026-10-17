@@ -3,7 +3,7 @@ title: GitLab Channel
 zh_link: /v2/zh/integration/channel/gitlab
 ---
 
-`agentscope-extensions-channel-gitlab` connects your Agent to GitLab note (comment) hooks. When someone comments on an issue or merge request, the Agent replies as a new note.
+`deepscope-extensions-channel-gitlab` connects your Agent to GitLab note (comment) hooks. When someone comments on an issue or merge request, the Agent replies as a new note.
 
 ## When to use
 
@@ -14,9 +14,9 @@ zh_link: /v2/zh/integration/channel/gitlab
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-channel-gitlab</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-channel-gitlab</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 

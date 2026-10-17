@@ -6,41 +6,41 @@ en_link: /v2/en/docs/quickstart
 
 ## 安装
 
-AgentScope Java 需要 JDK 17 及以上版本，构建工具推荐 Maven 3.9+。
+DeepScope Java 需要 JDK 17 及以上版本，构建工具推荐 Maven 3.9+。
 
 ### Maven 依赖
 
-`HarnessAgent` 是推荐的入口，把工作区、长期记忆、会话持久化、子 agent、沙箱等工程能力打包在一个 builder 里；依赖 `agentscope-harness` 会自动把核心 `agentscope-core` 一并拉进来：
+`HarnessAgent` 是推荐的入口，把工作区、长期记忆、会话持久化、子 agent、沙箱等工程能力打包在一个 builder 里；依赖 `deepscope-harness` 会自动把核心 `deepscope-core` 一并拉进来：
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-harness</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-harness</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 
 <Note>
 
-把 `${agentscope.version}` 替换为最新版本号即可，最新版本请参考 [Release Notes](/v2/zh/docs/others/release-notes)。
+把 `${deepscope.version}` 替换为最新版本号即可，最新版本请参考 [Release Notes](/v2/zh/docs/others/release-notes)。
 
 </Note>
 
 
-如果只需要 `ReActAgent` 的推理、工具和上下文 API，并自行组合应用所需能力，`agentscope-core` 足够提供 agent 本身。具体模型提供商是独立的：特定模型提供商的 Chat Model 与 formatter 位于独立的 `agentscope-extensions-model-*` 模型扩展模块中。`ReActAgent` 与 `HarnessAgent` 的区别详见 [Harness 架构](/v2/zh/docs/harness/architecture)。
+如果只需要 `ReActAgent` 的推理、工具和上下文 API，并自行组合应用所需能力，`deepscope-core` 足够提供 agent 本身。具体模型提供商是独立的：特定模型提供商的 Chat Model 与 formatter 位于独立的 `deepscope-extensions-model-*` 模型扩展模块中。`ReActAgent` 与 `HarnessAgent` 的区别详见 [Harness 架构](/v2/zh/docs/harness/architecture)。
 
 下面的 quickstart 通过 `.model("dashscope:qwen-plus")` 使用 DashScope，因此还需要引入对应模型扩展：
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-dashscope</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-model-dashscope</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
-MCP 集成需要官方 MCP SDK，参考 `agentscope-examples/documentation/pom.xml`。
+MCP 集成需要官方 MCP SDK，参考 `deepscope-examples/documentation/pom.xml`。
 
 ## 第一个智能体
 
@@ -51,10 +51,10 @@ export DASHSCOPE_API_KEY=your_api_key
 ```
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.UserMessage;
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.UserMessage;
+import io.deepscope.harness.agent.HarnessAgent;
 import java.nio.file.Path;
 
 public class FirstAgent {
@@ -64,7 +64,7 @@ public class FirstAgent {
             .agentId("note-taker")
             .sysPrompt("你是一个帮助用户做笔记的助手。")
             .model("dashscope:qwen-plus")
-            .workspace(Path.of(".agentscope/workspace"));
+            .workspace(Path.of(".deepscope/workspace"));
 
     public static void main(String[] args) {
         try (HarnessAgent agent = AGENT_BUILDER.build()) {
@@ -88,16 +88,16 @@ public class FirstAgent {
 
 默认情况下，Harness 会自动保存执行日志和用于继续对话的状态快照（checkpoint）。重启时保留相同的 `agentId`、用户、会话身份和存储配置，即可继续对话；这不需要额外创建 `AgentSession`。
 
-这个本地示例的原生日志位于 Workspace Filesystem 为当前身份解析的根目录下 `.agentscope-runtime/`。配置隔离目录或分布式 Filesystem 后，实际位置跟随对应根目录或 namespace。需要查看记录、更换后端时，再查阅[日志存储参考](/v2/zh/docs/harness/session-log#存储位置与后端配置)。
+这个本地示例的原生日志位于 Workspace Filesystem 为当前身份解析的根目录下 `.deepscope-runtime/`。配置隔离目录或分布式 Filesystem 后，实际位置跟随对应根目录或 namespace。需要查看记录、更换后端时，再查阅[日志存储参考](/v2/zh/docs/harness/session-log#存储位置与后端配置)。
 
 ### 流式查看推理与工具调用
 
 需要边生成边显示时，用 `streamEvents` 发起这次请求。把下面的 import 加到文件顶部，在 `main` 中为这次请求创建新实例：
 
 ```java
-import io.agentscope.core.event.AgentEventType;
-import io.agentscope.core.event.TextBlockDeltaEvent;
-import io.agentscope.core.event.ToolCallStartEvent;
+import io.deepscope.core.event.AgentEventType;
+import io.deepscope.core.event.TextBlockDeltaEvent;
+import io.deepscope.core.event.ToolCallStartEvent;
 
 try (HarnessAgent agent = AGENT_BUILDER.build()) {
     RuntimeContext ctx = RuntimeContext.builder()

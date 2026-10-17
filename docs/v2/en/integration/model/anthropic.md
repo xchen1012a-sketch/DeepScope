@@ -3,15 +3,15 @@ title: Anthropic
 zh_link: /v2/zh/integration/model/anthropic
 ---
 
-`agentscope-extensions-model-anthropic` integrates Anthropic Claude models, including Anthropic-specific formatter and request DTO support.
+`deepscope-extensions-model-anthropic` integrates Anthropic Claude models, including Anthropic-specific formatter and request DTO support.
 
 ## Add the dependency
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-anthropic</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-model-anthropic</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -31,7 +31,7 @@ ReActAgent agent = ReActAgent.builder()
 Use the builder when you need a custom endpoint, formatter, transport, prompt caching, thinking, or generation options:
 
 ```java
-import io.agentscope.extensions.model.anthropic.AnthropicChatModel;
+import io.deepscope.extensions.model.anthropic.AnthropicChatModel;
 
 AnthropicChatModel model = AnthropicChatModel.builder()
     .apiKey(System.getenv("ANTHROPIC_API_KEY"))
@@ -42,14 +42,14 @@ AnthropicChatModel model = AnthropicChatModel.builder()
 
 ## Server-side tools
 
-Anthropic built-in tools run on Anthropic's infrastructure instead of the local AgentScope toolkit.
+Anthropic built-in tools run on Anthropic's infrastructure instead of the local DeepScope toolkit.
 Build a strongly typed SDK tool definition, then wrap the resulting `ToolUnion` with
 `AnthropicServerTool.of(...)`:
 
 ```java
 import com.anthropic.models.messages.ToolUnion;
 import com.anthropic.models.messages.WebSearchTool20250305;
-import io.agentscope.extensions.model.anthropic.tool.AnthropicServerTool;
+import io.deepscope.extensions.model.anthropic.tool.AnthropicServerTool;
 
 AnthropicChatModel model = AnthropicChatModel.builder()
     .apiKey(System.getenv("ANTHROPIC_API_KEY"))
@@ -88,16 +88,16 @@ Spring Boot applications can use the Anthropic starter:
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-anthropic-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-anthropic-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 To use a gateway with bearer token authentication:
 
 ```yaml
-agentscope:
+deepscope:
   model:
     provider: anthropic
   anthropic:
@@ -106,8 +106,8 @@ agentscope:
     model-name: claude-sonnet-4.5
 ```
 
-`agentscope.anthropic.auth-token` is optional. An unset or blank value leaves bearer
-authentication disabled. Existing `agentscope.anthropic.api-key` configuration remains supported,
+`deepscope.anthropic.auth-token` is optional. An unset or blank value leaves bearer
+authentication disabled. Existing `deepscope.anthropic.api-key` configuration remains supported,
 but configuring both nonblank credentials causes startup to fail. Builder customizers run before
 validation and can clear a credential with `apiKey(null)` or `authToken(null)`.
 

@@ -12,15 +12,15 @@ This page has been superseded by [Distributed Storage — JDBC](/v2/en/integrati
 
 # MySQL State Store
 
-`agentscope-extensions-mysql` persists AgentScope agent state into MySQL. A good fit when you already have a MySQL infrastructure or need transactional / SQL-based access to state data.
+`deepscope-extensions-mysql` persists DeepScope agent state into MySQL. A good fit when you already have a MySQL infrastructure or need transactional / SQL-based access to state data.
 
 ## Add the dependency
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-mysql</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-mysql</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -30,11 +30,11 @@ Bring the matching JDBC driver yourself (e.g. `mysql:mysql-connector-j`).
 
 ```java
 import com.zaxxer.hikari.HikariDataSource;
-import io.agentscope.core.state.AgentStateStore;
-import io.agentscope.extensions.mysql.state.MysqlAgentStateStore;
+import io.deepscope.core.state.AgentStateStore;
+import io.deepscope.extensions.mysql.state.MysqlAgentStateStore;
 
 HikariDataSource ds = new HikariDataSource();
-ds.setJdbcUrl("jdbc:mysql://localhost:3306/agentscope?serverTimezone=UTC");
+ds.setJdbcUrl("jdbc:mysql://localhost:3306/deepscope?serverTimezone=UTC");
 ds.setUsername("root");
 ds.setPassword("***");
 
@@ -60,7 +60,7 @@ AgentStateStore stateStore = new MysqlAgentStateStore(ds, false);   // explicit
 ```java
 AgentStateStore stateStore = new MysqlAgentStateStore(
     ds,
-    "agentscope_prod",        // database name
+    "deepscope_prod",        // database name
     "session_state",          // table name
     true                      // auto-create
 );
@@ -73,7 +73,7 @@ Database and table names must match `[a-zA-Z_][a-zA-Z0-9_-]*` and be ≤ 64 char
 When `createIfNotExist=true`, the table is created automatically:
 
 ```sql
-CREATE TABLE IF NOT EXISTS agentscope_sessions (
+CREATE TABLE IF NOT EXISTS deepscope_sessions (
     session_id VARCHAR(255) COLLATE utf8mb4_bin NOT NULL,
     state_key  VARCHAR(255) COLLATE utf8mb4_bin NOT NULL,
     item_index INT NOT NULL DEFAULT 0,
@@ -88,22 +88,22 @@ The two key columns pin `utf8mb4_bin` while the table default stays `utf8mb4_uni
 
 ### Migrating tables created before this change
 
-`CREATE TABLE IF NOT EXISTS` does not alter a table that already exists, so a deployment created earlier keeps the case-insensitive default and needs an operator to migrate it. `agentscope_store`, `agentscope_sessions` and `agentscope_snapshots` all key on a caller-supplied identifier, so the same reasoning applies to each:
+`CREATE TABLE IF NOT EXISTS` does not alter a table that already exists, so a deployment created earlier keeps the case-insensitive default and needs an operator to migrate it. `deepscope_store`, `deepscope_sessions` and `deepscope_snapshots` all key on a caller-supplied identifier, so the same reasoning applies to each:
 
 ```sql
-ALTER TABLE agentscope_store
+ALTER TABLE deepscope_store
     MODIFY namespace_path VARCHAR(512) COLLATE utf8mb4_bin NOT NULL,
     MODIFY item_key       VARCHAR(255) COLLATE utf8mb4_bin NOT NULL;
 
-ALTER TABLE agentscope_sessions
+ALTER TABLE deepscope_sessions
     MODIFY session_id VARCHAR(255) COLLATE utf8mb4_bin NOT NULL,
     MODIFY state_key  VARCHAR(255) COLLATE utf8mb4_bin NOT NULL;
 
-ALTER TABLE agentscope_snapshots
+ALTER TABLE deepscope_snapshots
     MODIFY snapshot_id VARCHAR(512) COLLATE utf8mb4_bin NOT NULL;
 ```
 
-Adjust the table names if a prefix or per-table name override was configured. Both paths that create `agentscope_snapshots` — the `agentscope-extensions-jdbc` dialect and the legacy `agentscope-extensions-mysql` snapshot client — now pin the same collation, so the statement above is the only thing a deployment created earlier needs.
+Adjust the table names if a prefix or per-table name override was configured. Both paths that create `deepscope_snapshots` — the `deepscope-extensions-jdbc` dialect and the legacy `deepscope-extensions-mysql` snapshot client — now pin the same collation, so the statement above is the only thing a deployment created earlier needs.
 
 Two things to plan for:
 
@@ -141,8 +141,8 @@ stateStore.truncateAllSessions();
 | Constructor / parameter | Notes |
 | --- | --- |
 | `dataSource` | Required. Recommended: HikariCP / Druid pool |
-| `databaseName` | Default `agentscope` |
-| `tableName` | Default `agentscope_sessions` |
+| `databaseName` | Default `deepscope` |
+| `tableName` | Default `deepscope_sessions` |
 | `createIfNotExist` | If `true`, run `CREATE DATABASE` + `CREATE TABLE` automatically |
 
 > `truncateAllSessions()` issues `TRUNCATE TABLE` and requires DROP privilege; DDL is non-rollbackable, so reserve it for tests or ops cleanup.

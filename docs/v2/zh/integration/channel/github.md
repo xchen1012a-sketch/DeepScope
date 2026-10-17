@@ -3,7 +3,7 @@ title: GitHub Channel
 en_link: /v2/en/integration/channel/github
 ---
 
-`agentscope-extensions-channel-github` 将你的 Agent 接入 GitHub issue 和 PR 评论线程。当有人在 issue 或 pull request 中评论时，Agent 以新评论的形式回复。
+`deepscope-extensions-channel-github` 将你的 Agent 接入 GitHub issue 和 PR 评论线程。当有人在 issue 或 pull request 中评论时，Agent 以新评论的形式回复。
 
 ## 适用场景
 
@@ -14,9 +14,9 @@ en_link: /v2/en/integration/channel/github
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-channel-github</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-channel-github</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 

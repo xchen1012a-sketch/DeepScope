@@ -3,8 +3,8 @@ import { listPageFixture } from './listPageFixture';
 
 test('searches tools and MCP on submission and shows a connection example', async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('claw_token', 'local-ui-test');
-    localStorage.setItem('controlplane.console.locale', 'zh-CN');
+    localStorage.setItem('deepscope_token', 'local-ui-test');
+    localStorage.setItem('deepscope.locale', 'zh-CN');
   });
   await page.route('http://127.0.0.1:5190/api/**', async (route) => {
     const path = new URL(route.request().url()).pathname;

@@ -4,7 +4,7 @@ description: 智能体通信，与前端流式数据传输
 en_link: /v2/en/docs/building-blocks/message-and-event
 ---
 
-消息（Message）与事件（Event）是 AgentScope 中两种基础数据结构。
+消息（Message）与事件（Event）是 DeepScope 中两种基础数据结构。
 
 - **消息** — 智能体间通信与持久化的基本单元。每个 `Msg` 代表一个完整的对话轮次，存储在上下文中并在智能体之间传递。
 - **事件** — 前端交互与流式传输的基本单元。事件携带增量进度更新（文本 token、工具调用片段、权限请求等），驱动实时界面和人工介入工作流。
@@ -13,7 +13,7 @@ en_link: /v2/en/docs/building-blocks/message-and-event
 
 ## 消息
 
-`Msg`（位于 `io.agentscope.core.message`）代表对话中的一个轮次——用户输入、智能体回复或系统指令，内容以有序的类型化块（`ContentBlock`）列表表示。
+`Msg`（位于 `io.deepscope.core.message`）代表对话中的一个轮次——用户输入、智能体回复或系统指令，内容以有序的类型化块（`ContentBlock`）列表表示。
 
 
 <Tip>
@@ -40,7 +40,7 @@ en_link: /v2/en/docs/building-blocks/message-and-event
 
 ### 内容块
 
-消息内容由类型化的块组成，每种块代表一类独立信息。块类位于 `io.agentscope.core.message`：
+消息内容由类型化的块组成，每种块代表一类独立信息。块类位于 `io.deepscope.core.message`：
 
 | 块类型 | 说明 | 允许出现在 |
 |--------|------|-----------|
@@ -62,15 +62,15 @@ en_link: /v2/en/docs/building-blocks/message-and-event
 
 ### 创建消息
 
-按 role 固定的子类提供便捷构造（`io.agentscope.core.message.UserMessage` / `AssistantMessage` / `SystemMessage` / `ToolResultMessage`）。当 content 是普通字符串时，会自动包装为 `TextBlock`。
+按 role 固定的子类提供便捷构造（`io.deepscope.core.message.UserMessage` / `AssistantMessage` / `SystemMessage` / `ToolResultMessage`）。当 content 是普通字符串时，会自动包装为 `TextBlock`。
 
 ```java
-import io.agentscope.core.message.AssistantMessage;
-import io.agentscope.core.message.Base64Source;
-import io.agentscope.core.message.DataBlock;
-import io.agentscope.core.message.SystemMessage;
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.core.message.UserMessage;
+import io.deepscope.core.message.AssistantMessage;
+import io.deepscope.core.message.Base64Source;
+import io.deepscope.core.message.DataBlock;
+import io.deepscope.core.message.SystemMessage;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.core.message.UserMessage;
 
 // 用户消息 —— 文本
 UserMessage userText = new UserMessage("user", "这张图片里有什么？");
@@ -116,8 +116,8 @@ UserMessage msg =
 | `hasContentBlocks(Class<T>)` | 若存在指定类型的块则返回 `true` |
 
 ```java
-import io.agentscope.core.message.ToolUseBlock;
-import io.agentscope.core.message.ToolResultBlock;
+import io.deepscope.core.message.ToolUseBlock;
+import io.deepscope.core.message.ToolResultBlock;
 
 // 获取所有文本内容
 String text = msg.getTextContent();
@@ -133,7 +133,7 @@ if (msg.hasContentBlocks(ToolResultBlock.class)) {
 
 ## 事件
 
-事件是消息的流式对应物。智能体执行过程中会持续产出一系列 `AgentEvent` 对象（位于 `io.agentscope.core.event`），表示增量进度——文本 token 到达、工具调用逐步构建、结果流式返回。每个事件都是轻量且自包含的。
+事件是消息的流式对应物。智能体执行过程中会持续产出一系列 `AgentEvent` 对象（位于 `io.deepscope.core.event`），表示增量进度——文本 token 到达、工具调用逐步构建、结果流式返回。每个事件都是轻量且自包含的。
 
 ### 事件生命周期
 
@@ -188,7 +188,7 @@ sequenceDiagram
 
 ### 事件类型
 
-所有事件继承自 `AgentEvent`（位于 `io.agentscope.core.event`），提供以下公共方法：
+所有事件继承自 `AgentEvent`（位于 `io.deepscope.core.event`），提供以下公共方法：
 
 | 方法 | 类型 | 说明 |
 |------|------|------|
@@ -389,15 +389,15 @@ sequenceDiagram
 
 事件与消息并非相互独立，而是同一数据的两种视图。`streamEvents` 产出的事件流可以按 `replyId` / `blockId` / `toolCallId` 聚合还原成完整的 `AssistantMessage`。这保证了最终消息状态可以仅凭事件流完整还原。
 
-可以参考 `agentscope-core` 中的 `agent/StreamingHook.java` 与 `agentscope-examples/documentation/.../streaming/AgentEventStreamExample.java`，它们演示了用 Reactor 算子按 block 分组并累积内容的标准做法。
+可以参考 `deepscope-core` 中的 `agent/StreamingHook.java` 与 `deepscope-examples/documentation/.../streaming/AgentEventStreamExample.java`，它们演示了用 Reactor 算子按 block 分组并累积内容的标准做法。
 
 ```java
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.event.AgentStartEvent;
-import io.agentscope.core.event.AgentEndEvent;
-import io.agentscope.core.event.TextBlockDeltaEvent;
-import io.agentscope.core.event.ToolCallStartEvent;
-import io.agentscope.core.event.ToolResultEndEvent;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.event.AgentStartEvent;
+import io.deepscope.core.event.AgentEndEvent;
+import io.deepscope.core.event.TextBlockDeltaEvent;
+import io.deepscope.core.event.ToolCallStartEvent;
+import io.deepscope.core.event.ToolResultEndEvent;
 
 StringBuilder accumulated = new StringBuilder();
 
@@ -431,12 +431,12 @@ agent.streamEvents(userMsg)
 构建流式界面的典型模式（Spring WebFlux SSE 形态可参考 `streaming/StreamingWebExample.java`）：
 
 ```java
-import io.agentscope.core.event.AgentEndEvent;
-import io.agentscope.core.event.AgentStartEvent;
-import io.agentscope.core.event.TextBlockDeltaEvent;
-import io.agentscope.core.event.ToolCallStartEvent;
-import io.agentscope.core.event.ToolResultEndEvent;
-import io.agentscope.core.message.UserMessage;
+import io.deepscope.core.event.AgentEndEvent;
+import io.deepscope.core.event.AgentStartEvent;
+import io.deepscope.core.event.TextBlockDeltaEvent;
+import io.deepscope.core.event.ToolCallStartEvent;
+import io.deepscope.core.event.ToolResultEndEvent;
+import io.deepscope.core.message.UserMessage;
 
 agent.streamEvents(new UserMessage("user", "帮我修复这个 bug"))
         .doOnNext(event -> {

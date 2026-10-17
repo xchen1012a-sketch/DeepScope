@@ -5,15 +5,15 @@ en_link: /v2/en/integration/model/openai-official
 
 # OpenAI Official 模型
 
-`agentscope-extensions-model-openai-official` 通过官方 OpenAI Java SDK 集成 OpenAI 模型。暂时只支持 Responses API，未来会考虑支持 Chat Completions API。
+`deepscope-extensions-model-openai-official` 通过官方 OpenAI Java SDK 集成 OpenAI 模型。暂时只支持 Responses API，未来会考虑支持 Chat Completions API。
 
 ## 添加依赖
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-openai-official</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-model-openai-official</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -33,7 +33,7 @@ ReActAgent agent = ReActAgent.builder()
 需要自定义 base URL、多 Agent formatter 时使用 Builder：
 
 ```java
-import io.agentscope.extensions.model.openaiofficial.OpenAIResponsesChatModel;
+import io.deepscope.extensions.model.openaiofficial.OpenAIResponsesChatModel;
 
 OpenAIResponsesChatModel model = OpenAIResponsesChatModel.builder()
     .apiKey(System.getenv("OPENAI_API_KEY"))
@@ -51,7 +51,7 @@ Responses API 的 provider-executed built-in tools 可通过 `serverTools` 启�
 ```java
 import com.openai.models.responses.Tool;
 import com.openai.models.responses.WebSearchTool;
-import io.agentscope.extensions.model.openaiofficial.tool.OpenAIServerTool;
+import io.deepscope.extensions.model.openaiofficial.tool.OpenAIServerTool;
 
 OpenAIResponsesChatModel model = OpenAIResponsesChatModel.builder()
     .apiKey(System.getenv("OPENAI_API_KEY"))
@@ -79,14 +79,14 @@ Spring Boot 应用可以使用 OpenAI Official starter：
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-openai-official-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-openai-official-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ```yaml
-agentscope:
+deepscope:
   model:
     provider: openai-official
   openai-official:
@@ -115,4 +115,4 @@ Responses 专有参数通过 `GenerateOptions.additionalBodyParams` 白名单键
 
 `store` 控制服务端响应存储，默认为 `false`。如需使用 OpenAI 服务端会话续链，先存储第一轮响应，从响应 metadata 的 `openai.response.id` 读取 ID，并在后续请求中传入 `previous_response_id`。使用 `previous_response_id` 时应只发送本轮新增 input，不要重复完整会话历史。
 
-原生结构化输出默认开启（`supportsNativeStructuredOutput()` 返回 `true`）。SDK 重试已禁用（`maxRetries=0`），重试由 AgentScope 管理。
+原生结构化输出默认开启（`supportsNativeStructuredOutput()` 返回 `true`）。SDK 重试已禁用（`maxRetries=0`），重试由 DeepScope 管理。

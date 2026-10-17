@@ -3,7 +3,7 @@ title: Online Training
 zh_link: /v2/zh/integration/ecosystem/training
 ---
 
-`agentscope-extensions-training` plugs a Trinity-style training backend into AgentScope: it samples production traffic, collects traces, computes rewards, and periodically commits training jobs — closing the loop.
+`deepscope-extensions-training` plugs a Trinity-style training backend into DeepScope: it samples production traffic, collects traces, computes rewards, and periodically commits training jobs — closing the loop.
 
 ## When to use
 
@@ -15,17 +15,17 @@ zh_link: /v2/zh/integration/ecosystem/training
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-training</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-training</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## Quickstart
 
 ```java
-import io.agentscope.core.training.runner.TrainingRunner;
-import io.agentscope.core.training.strategy.SamplingRateStrategy;
+import io.deepscope.core.training.runner.TrainingRunner;
+import io.deepscope.core.training.strategy.SamplingRateStrategy;
 
 TrainingRunner runner = TrainingRunner.builder()
     .trinityEndpoint("http://localhost:8080")

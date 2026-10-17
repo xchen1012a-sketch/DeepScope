@@ -12,15 +12,15 @@ This page has been superseded by [Distributed Storage — OSS](/v2/en/integratio
 
 # OSS State Store
 
-`agentscope-extensions-oss` persists AgentScope agent state in Alibaba Cloud Object Storage Service (OSS). Ideal for large-capacity data and Alibaba Cloud ecosystems.
+`deepscope-extensions-oss` persists DeepScope agent state in Alibaba Cloud Object Storage Service (OSS). Ideal for large-capacity data and Alibaba Cloud ecosystems.
 
 ## Add the dependency
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-oss</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-oss</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -29,15 +29,15 @@ This page has been superseded by [Distributed Storage — OSS](/v2/en/integratio
 ```java
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
-import io.agentscope.core.state.AgentStateStore;
-import io.agentscope.extensions.oss.OssAgentStateStore;
+import io.deepscope.core.state.AgentStateStore;
+import io.deepscope.extensions.oss.OssAgentStateStore;
 
 OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
 
 AgentStateStore stateStore = OssAgentStateStore.builder()
     .ossClient(ossClient)
-    .bucketName("my-agentscope-bucket")
-    .keyPrefix("agentscope/state/")
+    .bucketName("my-deepscope-bucket")
+    .keyPrefix("deepscope/state/")
     .build();
 
 ReActAgent agent = ReActAgent.builder()
@@ -65,7 +65,7 @@ Anonymous sessions (`userId` is null) use `__anon__` as the user segment.
 | --- | --- |
 | `ossClient(OSS)` | Required. Alibaba Cloud OSS client |
 | `bucketName(String)` | Required. OSS bucket name |
-| `keyPrefix(String)` | Default `agentscope/state/` |
+| `keyPrefix(String)` | Default `deepscope/state/` |
 
 ## Security
 

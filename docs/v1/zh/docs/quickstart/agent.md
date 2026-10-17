@@ -3,7 +3,7 @@ title: 智能体
 en_link: /v1/en/docs/quickstart/agent
 ---
 
-AgentScope 提供了开箱即用的 ReAct 智能体 `ReActAgent` 供开发者使用。
+DeepScope 提供了开箱即用的 ReAct 智能体 `ReActAgent` 供开发者使用。
 
 它同时支持以下功能：
 
@@ -47,12 +47,12 @@ AgentScope 提供了开箱即用的 ReAct 智能体 `ReActAgent` 供开发者使
 以 DashScope API 为例，我们创建一个智能体对象如下：
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.message.Msg;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.Tool;
-import io.agentscope.core.tool.ToolParam;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.message.Msg;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.Tool;
+import io.deepscope.core.tool.ToolParam;
 
 public class QuickStart {
     public static void main(String[] args) {

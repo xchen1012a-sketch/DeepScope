@@ -4,7 +4,7 @@ description: The core data abstractions for agent communication and streaming
 zh_link: /v2/zh/docs/building-blocks/message-and-event
 ---
 
-Message and event are the two fundamental data structures in AgentScope.
+Message and event are the two fundamental data structures in DeepScope.
 
 - **Message** — the primitive of agent-to-agent communication and persistence. Each `Msg` is a complete conversation turn, stored in the context and passed between agents.
 - **Event** — the primitive of frontend interaction and streaming. Events carry incremental progress updates (text tokens, tool-call fragments, permission requests, …) and drive real-time UIs and human-in-the-loop flows.
@@ -13,7 +13,7 @@ The event sequence emitted by a single `call` always condenses into exactly one 
 
 ## Message
 
-`Msg` (`io.agentscope.core.message`) represents one turn of conversation — a user input, an agent reply, or a system instruction — with content modelled as an ordered list of typed `ContentBlock`s.
+`Msg` (`io.deepscope.core.message`) represents one turn of conversation — a user input, an agent reply, or a system instruction — with content modelled as an ordered list of typed `ContentBlock`s.
 
 
 <Tip>
@@ -40,7 +40,7 @@ The core fields on `Msg` (via getters):
 
 ### Content blocks
 
-Message content is composed of typed blocks, each representing one type of information. Block classes live in `io.agentscope.core.message`:
+Message content is composed of typed blocks, each representing one type of information. Block classes live in `io.deepscope.core.message`:
 
 | Block | Description | Allowed in |
 |-------|-------------|-----------|
@@ -62,15 +62,15 @@ Role constraints are enforced at construction: `USER` only allows text/data/imag
 
 ### Creating a message
 
-The role-pinned subclasses (`io.agentscope.core.message.UserMessage` / `AssistantMessage` / `SystemMessage` / `ToolResultMessage`) provide convenient constructors. When `content` is a plain string, it is wrapped in a `TextBlock` automatically.
+The role-pinned subclasses (`io.deepscope.core.message.UserMessage` / `AssistantMessage` / `SystemMessage` / `ToolResultMessage`) provide convenient constructors. When `content` is a plain string, it is wrapped in a `TextBlock` automatically.
 
 ```java
-import io.agentscope.core.message.AssistantMessage;
-import io.agentscope.core.message.Base64Source;
-import io.agentscope.core.message.DataBlock;
-import io.agentscope.core.message.SystemMessage;
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.core.message.UserMessage;
+import io.deepscope.core.message.AssistantMessage;
+import io.deepscope.core.message.Base64Source;
+import io.deepscope.core.message.DataBlock;
+import io.deepscope.core.message.SystemMessage;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.core.message.UserMessage;
 
 // User message — text only
 UserMessage userText = new UserMessage("user", "What's in this image?");
@@ -116,8 +116,8 @@ UserMessage msg =
 | `hasContentBlocks(Class<T>)` | `true` if a block of the given type exists |
 
 ```java
-import io.agentscope.core.message.ToolUseBlock;
-import io.agentscope.core.message.ToolResultBlock;
+import io.deepscope.core.message.ToolUseBlock;
+import io.deepscope.core.message.ToolResultBlock;
 
 // All text content
 String text = msg.getTextContent();
@@ -133,7 +133,7 @@ if (msg.hasContentBlocks(ToolResultBlock.class)) {
 
 ## Event
 
-Events are the streaming counterpart of messages. While the agent runs, it emits a sequence of `AgentEvent`s (`io.agentscope.core.event`) representing incremental progress — text tokens arriving, tool calls being assembled, results streaming back. Each event is lightweight and self-contained.
+Events are the streaming counterpart of messages. While the agent runs, it emits a sequence of `AgentEvent`s (`io.deepscope.core.event`) representing incremental progress — text tokens arriving, tool calls being assembled, results streaming back. Each event is lightweight and self-contained.
 
 ### Event lifecycle
 
@@ -188,7 +188,7 @@ All events in one reply share the same `replyId`. Within a reply, `blockId` ties
 
 ### Event types
 
-All events extend `AgentEvent` (`io.agentscope.core.event`), which exposes the common methods:
+All events extend `AgentEvent` (`io.deepscope.core.event`), which exposes the common methods:
 
 | Method | Type | Description |
 |--------|------|-------------|
@@ -385,15 +385,15 @@ Events are grouped below; unless noted otherwise, every event also carries `getR
 
 Events and messages are not separate worlds — they are two views of the same data. The event stream from `streamEvents` can be aggregated by `replyId` / `blockId` / `toolCallId` to reconstruct a complete `AssistantMessage`, ensuring the final message state is fully recoverable from events alone.
 
-See `agentscope-core`'s `agent/StreamingHook.java` and `agentscope-examples/documentation/.../streaming/AgentEventStreamExample.java` for the standard pattern of grouping by block ID and accumulating content with Reactor operators.
+See `deepscope-core`'s `agent/StreamingHook.java` and `deepscope-examples/documentation/.../streaming/AgentEventStreamExample.java` for the standard pattern of grouping by block ID and accumulating content with Reactor operators.
 
 ```java
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.event.AgentStartEvent;
-import io.agentscope.core.event.AgentEndEvent;
-import io.agentscope.core.event.TextBlockDeltaEvent;
-import io.agentscope.core.event.ToolCallStartEvent;
-import io.agentscope.core.event.ToolResultEndEvent;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.event.AgentStartEvent;
+import io.deepscope.core.event.AgentEndEvent;
+import io.deepscope.core.event.TextBlockDeltaEvent;
+import io.deepscope.core.event.ToolCallStartEvent;
+import io.deepscope.core.event.ToolResultEndEvent;
 
 StringBuilder accumulated = new StringBuilder();
 
@@ -427,12 +427,12 @@ For live output within the current request, adapt AgentEvent to SSE. `streamEven
 A typical streaming UI loop (a Spring WebFlux SSE form is shown in `streaming/StreamingWebExample.java`):
 
 ```java
-import io.agentscope.core.event.AgentEndEvent;
-import io.agentscope.core.event.AgentStartEvent;
-import io.agentscope.core.event.TextBlockDeltaEvent;
-import io.agentscope.core.event.ToolCallStartEvent;
-import io.agentscope.core.event.ToolResultEndEvent;
-import io.agentscope.core.message.UserMessage;
+import io.deepscope.core.event.AgentEndEvent;
+import io.deepscope.core.event.AgentStartEvent;
+import io.deepscope.core.event.TextBlockDeltaEvent;
+import io.deepscope.core.event.ToolCallStartEvent;
+import io.deepscope.core.event.ToolResultEndEvent;
+import io.deepscope.core.message.UserMessage;
 
 agent.streamEvents(new UserMessage("user", "Help me fix this bug"))
         .doOnNext(event -> {

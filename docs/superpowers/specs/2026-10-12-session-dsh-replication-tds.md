@@ -5,7 +5,7 @@
 | 文档版本 | v1.1 |
 | 编制日期 | 2026-10-12 |
 | 文档状态 | 待评审 |
-| 依据 | 现有 `agentscope-core/session` + `agentscope-harness/agent/session` 实现；现有会话页实现（`technical-advisor-app/frontend/src/features/chat`，4871 行）；DeepSeek Harness 会话与对话数据面（`packages/core/session`、`packages/session/*`、`packages/session-query/*`）与对话界面层（`packages/client/ui-chat`、`ui-conversation`、`ui-tool`、`ui-subagent`、`ui-primitives`）；`2026-10-11-conversation-stream-design.md` 已确认的会话页交互 |
+| 依据 | 现有 `deepscope-core/session` + `deepscope-harness/agent/session` 实现；现有会话页实现（`technical-advisor-app/frontend/src/features/chat`，4871 行）；DeepSeek Harness 会话与对话数据面（`packages/core/session`、`packages/session/*`、`packages/session-query/*`）与对话界面层（`packages/client/ui-chat`、`ui-conversation`、`ui-tool`、`ui-subagent`、`ui-primitives`）；`2026-10-11-conversation-stream-design.md` 已确认的会话页交互 |
 | 改动等级 | 高级（公共 API、序列化格式、事件载荷、前端数据契约均变更） |
 | 文档性质 | 架构、机制、取舍与落地安排。不含实现步骤、不含代码与字段定义 |
 | 变更记录 | v1.0 初稿（10 章）；v1.1 纳入会话页界面复刻，新增第 5 章，原 5–10 章顺延为 6–11 章 |
@@ -18,8 +18,8 @@
 
 把「会话」模块与会话页按 DeepSeek Harness 重建。允许推翻既有设计。三项一起换：
 
-1. `agentscope-core` 的日志内核；
-2. `agentscope-harness` 的会话编排（`AgentSession`）；
+1. `deepscope-core` 的日志内核；
+2. `deepscope-harness` 的会话编排（`AgentSession`）；
 3. 会话页界面（对话流、深度思考行、工具行、输入区）——**界面也在复刻范围内**（见第 5 章）。
 
 既有消息模型（`Msg` 与内容块体系）保持不变，只对齐其上的投影与派生层。
@@ -89,20 +89,20 @@ DeepSeek Harness 的做法正好逐条对治：日志是唯一权威，其余全
 ### 3.1 分层
 
 ```
-agentscope-core（纯内核：无 IO、无 Spring、不依赖任何后端）
+deepscope-core（纯内核：无 IO、无 Spring、不依赖任何后端）
     事件日志与追加校验
     表面投影（对话节点列表）
     消息派生（模型输入）
     请求信封折取
     工具调用修复与收尾
     └── 只暴露两个动作：追加、派生
-agentscope-harness / agentscope-extensions（数据面：各部件可替换）
+deepscope-harness / deepscope-extensions（数据面：各部件可替换）
     持久化接缝 + 本地文件后端
     投影注册表（+ 缓存）
     标题
     查询 / 检索 / 导出
     工作目录
-agentscope-harness（会话编排）
+deepscope-harness（会话编排）
     AgentSession：提交 / 引导 / 注入 / 应答 / 中断 / 继续
 ```
 
@@ -369,12 +369,12 @@ agentscope-harness（会话编排）
 
 | 区域 | 影响 |
 | --- | --- |
-| `agentscope-core/session/*` | 整体重写：日志、事件、编解码注册、记录器、投影、恢复、迁移、导出 |
-| `agentscope-core/message/*` | 不变；但助手消息必须实际承载思考内容块（D10） |
-| `agentscope-core` 的 `ReActAgent` | 接线改造集中在"取得执行上下文"与"每次推理迭代"两处；模型调用边界改为写请求信封 |
-| `agentscope-harness/agent/session/*` | `AgentSession` 保留对外操作形状，内部换实现；四个存储实现合并为新的后端 |
-| `agentscope-harness` 记忆与压缩 | 压缩改为"遮蔽不删除"；长期记忆与记忆刷写改为投影 + 扩展事件（D2） |
-| `agentscope-harness` 网关、子智能体 | 会话标识与生命周期适配到新回合模型 |
+| `deepscope-core/session/*` | 整体重写：日志、事件、编解码注册、记录器、投影、恢复、迁移、导出 |
+| `deepscope-core/message/*` | 不变；但助手消息必须实际承载思考内容块（D10） |
+| `deepscope-core` 的 `ReActAgent` | 接线改造集中在"取得执行上下文"与"每次推理迭代"两处；模型调用边界改为写请求信封 |
+| `deepscope-harness/agent/session/*` | `AgentSession` 保留对外操作形状，内部换实现；四个存储实现合并为新的后端 |
+| `deepscope-harness` 记忆与压缩 | 压缩改为"遮蔽不删除"；长期记忆与记忆刷写改为投影 + 扩展事件（D2） |
+| `deepscope-harness` 网关、子智能体 | 会话标识与生命周期适配到新回合模型 |
 | spring-boot-starters 的 admin | 迁移到统一查询服务（D1） |
 | `technical-advisor-app` 后端 | 自有的会话表与时间线表并入新内核，成为唯一数据源；新增按水位取快照的读取接口 |
 | `technical-advisor-app` 前端 | 会话页装配层重写（增量装配，见 D9）；思考行、工具行、回合折叠、输入区按第 5 章重做；传输协议不变 |

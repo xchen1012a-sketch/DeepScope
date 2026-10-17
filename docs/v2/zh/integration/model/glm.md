@@ -3,15 +3,15 @@ title: GLM
 en_link: /v2/en/integration/model/glm
 ---
 
-`agentscope-extensions-model-openai` 通过 OpenAI 兼容模型栈提供 GLM（智谱 / Z.AI）的一等支持。引入 OpenAI 模型扩展模块后，可以通过 `ModelRegistry` 使用 `glm:<model>`。
+`deepscope-extensions-model-openai` 通过 OpenAI 兼容模型栈提供 GLM（智谱 / Z.AI）的一等支持。引入 OpenAI 模型扩展模块后，可以通过 `ModelRegistry` 使用 `glm:<model>`。
 
 ## 添加依赖
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-openai</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-model-openai</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -26,17 +26,17 @@ ReActAgent agent = ReActAgent.builder()
     .build();
 ```
 
-Provider 默认使用 `https://open.bigmodel.cn/api/paas/v4` ，发送请求前会去掉 `glm:` 前缀，并使用 `io.agentscope.extensions.model.openai.compat.glm` 下的 GLM formatter。
+Provider 默认使用 `https://open.bigmodel.cn/api/paas/v4` ，发送请求前会去掉 `glm:` 前缀，并使用 `io.deepscope.extensions.model.openai.compat.glm` 下的 GLM formatter。
 
 ## 思考模式
 
 通过 `ModelCreationContext` 解析模型时，可以用 `GenerateOptions` 传入 GLM 思考相关参数：
 
 ```java
-import io.agentscope.core.model.GenerateOptions;
-import io.agentscope.core.model.Model;
-import io.agentscope.core.model.ModelCreationContext;
-import io.agentscope.core.model.ModelRegistry;
+import io.deepscope.core.model.GenerateOptions;
+import io.deepscope.core.model.Model;
+import io.deepscope.core.model.ModelCreationContext;
+import io.deepscope.core.model.ModelRegistry;
 import java.util.Map;
 
 Model model = ModelRegistry.resolve(
@@ -61,6 +61,6 @@ GLM 只支持 `max_tokens`，因此当只设置了 `max_completion_tokens` 且�
 
 GLM 只接受 `tool_choice=auto`。强制工具选择会降级为 `auto`；`ToolChoice.None` 会从请求中移除 tools，以保留“不调用工具”的语义。
 
-结构化输出默认使用 AgentScope 的 fallback 行为，因为 GLM 的 `response_format` 仅支持 `json_object`。只有在你明确确认目标端点支持所需行为时，才需要手动开启 native structured output。
+结构化输出默认使用 DeepScope 的 fallback 行为，因为 GLM 的 `response_format` 仅支持 `json_object`。只有在你明确确认目标端点支持所需行为时，才需要手动开启 native structured output。
 
 使用兼容端点或自托管端点时，可以通过 `ModelCreationContext` 传入 `baseUrl`、`endpointPath`、生成参数或 formatter 覆盖。

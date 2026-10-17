@@ -10,7 +10,7 @@ zh_link: /v2/zh/integration/session/overview
 </Note>
 
 
-`io.agentscope.core.state.AgentStateStore` is the interface AgentScope uses to persist agent state — Memory, Workspace, Plan, and other components are serialized as `State` objects and stored via `AgentStateStore`, enabling restart recovery and cross-node sharing.
+`io.deepscope.core.state.AgentStateStore` is the interface DeepScope uses to persist agent state — Memory, Workspace, Plan, and other components are serialized as `State` objects and stored via `AgentStateStore`, enabling restart recovery and cross-node sharing.
 
 State is addressed by `(userId, sessionId)`:
 
@@ -25,11 +25,11 @@ This page covers AgentStateStore. HarnessAgent defaults to EVENT_LOG recovery th
 
 | Implementation | Module | When to use |
 | --- | --- | --- |
-| `InMemoryAgentStateStore` | `agentscope-core` | Unit tests |
-| `JsonFileAgentStateStore` | `agentscope-core` | Single-node dev (**HarnessAgent default**) |
-| `RedisAgentStateStore` | `agentscope-extensions-redis` | [Multi-replica production default](/v2/en/integration/distributed/redis) |
-| `JdbcAgentStateStore` | `agentscope-extensions-jdbc` | [Existing database infrastructure](/v2/en/integration/distributed/jdbc) |
-| `OssAgentStateStore` | `agentscope-extensions-oss` | [Alibaba Cloud ecosystem](/v2/en/integration/distributed/oss) |
+| `InMemoryAgentStateStore` | `deepscope-core` | Unit tests |
+| `JsonFileAgentStateStore` | `deepscope-core` | Single-node dev (**HarnessAgent default**) |
+| `RedisAgentStateStore` | `deepscope-extensions-redis` | [Multi-replica production default](/v2/en/integration/distributed/redis) |
+| `JdbcAgentStateStore` | `deepscope-extensions-jdbc` | [Existing database infrastructure](/v2/en/integration/distributed/jdbc) |
+| `OssAgentStateStore` | `deepscope-extensions-oss` | [Alibaba Cloud ecosystem](/v2/en/integration/distributed/oss) |
 
 ## Standalone Configuration
 

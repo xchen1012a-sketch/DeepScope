@@ -1,6 +1,6 @@
-## AgentScope-Java Version
+## DeepScope-Java Version
 
-[The version of AgentScope-Java you are working on, e.g. 1.0.12, check your pom.xml dependency version or run `mvn dependency:tree | grep agentscope-parent:pom`(only mac/linux)]
+[The version of DeepScope-Java you are working on, e.g. 1.0.12, check your pom.xml dependency version or run `mvn dependency:tree | grep deepscope-parent:pom`(only mac/linux)]
 
 ## Description
 

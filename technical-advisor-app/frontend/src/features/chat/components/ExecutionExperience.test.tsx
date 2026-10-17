@@ -54,7 +54,7 @@ it('shows a clear failure without deleting the displayed history', async () => {
 
 it('collects explicit decisions for every permission request before resuming', () => {
  const onResolve = vi.fn();
- const interrupts = ['one', 'two'].map(id => ({ id, reason: 'tool_call', metadata: { toolName: id, 'agentscope.interruptKind': 'permission_confirm', toolInput: { path: 'file.txt' } } }));
+ const interrupts = ['one', 'two'].map(id => ({ id, reason: 'tool_call', metadata: { toolName: id, 'deepscope.interruptKind': 'permission_confirm', toolInput: { path: 'file.txt' } } }));
  render(<I18nextProvider i18n={i18n}><ToolConfirmationCard interrupts={interrupts} busy={false} onResolve={onResolve} /></I18nextProvider>);
  expect((screen.getByRole('button', {name: '提交确认'}) as HTMLButtonElement).disabled).toBe(true);
  fireEvent.click(screen.getByRole('button', {name: '允许 one'}));

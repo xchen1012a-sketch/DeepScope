@@ -2,7 +2,7 @@
 
 日期：2026-10-14（Asia/Shanghai）\
 状态：**以下保留2026-10-14暂停快照。2026-10-15已按用户要求续做，会话专项已完成，最新结果以[实施结果](conversation-collapse-results-2026-10-15.md)为准。**\
-仓库：`/Users/agent/agentscope-java`\
+仓库：`/Users/agent/deepscope-java`\
 分支：`develop`，暂停时 HEAD：`5b11499`。本任务未 commit、未 push，未部署或重启业务服务。
 
 ## 1. 已确认的需求与执行口径
@@ -15,8 +15,8 @@
 
 依据：
 
-- [技术方案](/Users/agent/agentscope-java/docs/superpowers/specs/2026-10-14-conversation-process-collapse-design.md)
-- [实施计划](/Users/agent/agentscope-java/docs/superpowers/plans/2026-10-14-conversation-process-collapse.md)
+- [技术方案](/Users/agent/deepscope-java/docs/superpowers/specs/2026-10-14-conversation-process-collapse-design.md)
+- [实施计划](/Users/agent/deepscope-java/docs/superpowers/plans/2026-10-14-conversation-process-collapse.md)
 
 ## 2. 已做的实现
 
@@ -83,7 +83,7 @@ Java 相关定向运行没有使用 `-DskipTests`。Maven 的测试运行包含�
 第一次运行失败于 Playwright 自带浏览器未安装。随后使用已安装 Chrome：
 
 ```bash
-# cwd: /Users/agent/agentscope-java/technical-advisor-app/frontend
+# cwd: /Users/agent/deepscope-java/technical-advisor-app/frontend
 PLAYWRIGHT_CHROMIUM_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' npm run test:e2e -- e2e/conversation-collapse.e2e.ts
 ```
 
@@ -115,7 +115,7 @@ PLAYWRIGHT_CHROMIUM_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/G
 - 前端：`src/api/advisor.ts`、`features/chat/aguiClient.ts`、`useAdvisorConversation.ts`、`model/blocks.ts`、`components/TurnGroup.tsx`、`ConversationPanel.tsx`、`conversationModel.ts`、`conversationScroll.ts`（新）及 `i18n/locales/{en,zh-CN}/app.json`。
 - 新测试：`model/processCollapse.test.ts`、`components/ProcessCollapse.test.tsx`、`conversationScroll.test.ts`、`e2e/conversation-collapse.e2e.ts`；调整 `aguiClient.test.ts`、`ProcessActivity.test.tsx`、`ProcessViews.test.tsx`。
 
-上述后端与前端路径分别相对 `technical-advisor-app/backend/src/main/java/io/agentscope/advisor/` 与 `technical-advisor-app/frontend/`。旧设计文件在基线副本之外，续做时按本次已添加的 2026-10-14 补充段区分。
+上述后端与前端路径分别相对 `technical-advisor-app/backend/src/main/java/io/deepscope/advisor/` 与 `technical-advisor-app/frontend/`。旧设计文件在基线副本之外，续做时按本次已添加的 2026-10-14 补充段区分。
 
 暂停时进程检查未发现本任务的 Maven、会话 Playwright、5190 测试 Vite 或文档校验进程仍在运行。既有业务服务未操作。
 

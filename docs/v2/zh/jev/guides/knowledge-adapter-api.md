@@ -15,11 +15,11 @@ title: "Knowledge 与检索工具适配"
 下面的 `existingKnowledge` 是应用已有实现，`client` 见[客户端接入](/v2/zh/jev/guides/client)。`canRead` 是应用提供的 `BiPredicate<RuntimeContext, Document>`，必须根据当前用户、租户和文档权限做确定性检查。
 
 ```java
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.application.JevCandidateSelector;
-import io.agentscope.extensions.judge.jev.integration.JevKnowledge;
-import io.agentscope.extensions.judge.jev.integration.JevKnowledgeTool;
-import io.agentscope.core.rag.model.RetrieveConfig;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.application.JevCandidateSelector;
+import io.deepscope.extensions.judge.jev.integration.JevKnowledge;
+import io.deepscope.extensions.judge.jev.integration.JevKnowledgeTool;
+import io.deepscope.core.rag.model.RetrieveConfig;
 import java.time.Duration;
 
 var options = new JevExecution.Options(JevExecution.Mode.SHADOW,
@@ -59,7 +59,7 @@ ENFORCE 下只有明确相关的授权文档进入结果。不确定或调用失
 [JevIntegrationExample](/examples/jev/source/JevIntegrationExample.java.txt)包含一个固定 Knowledge 后端，返回“未使用且七天内”的退款政策，并把相关证据提供给 Agent。按[构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP`：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevIntegrationExample
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevIntegrationExample
 ```
 
 案例检查第二轮模型确实收到工具返回的政策，并把无条件退款草稿修订为保留条件的回答。它验证工具接入和证据传递，判断均为预设，不代表真实检索召回率或模型准确率。

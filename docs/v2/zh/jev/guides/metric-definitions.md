@@ -2,7 +2,7 @@
 title: "复用与扩展评估定义"
 ---
 
-当多个 Agent 需要采用相同的质量标准时，把标准定义成带版本的对象，在线观察和离线评估共用它。AgentScope 提供两种定义层次。
+当多个 Agent 需要采用相同的质量标准时，把标准定义成带版本的对象，在线观察和离线评估共用它。DeepScope 提供两种定义层次。
 
 ## 示例场景：在线审核与离线回归采用同一套退款标准
 
@@ -15,11 +15,11 @@ title: "复用与扩展评估定义"
 `JevJudge.Definition` 适用于所有条件都必须满足的草稿审核。本例在 `JevJudge`、`JevEvaluator` 与 `JevResponseMiddleware` 之间复用相同字段约定。`JevDraftPipeline` 也使用 Definition，但输出状态字段是 `request/evidence/draft`，不能直接套用本例的字段名；应建立对应定义或在自有工作流中统一输入。
 
 ```java
-import io.agentscope.extensions.judge.jev.JevJudge;
-import io.agentscope.extensions.judge.jev.NoulQuestion;
-import io.agentscope.extensions.judge.jev.evaluation.JevEvaluator;
-import io.agentscope.extensions.judge.jev.evaluation.JevTraceEvaluator;
-import io.agentscope.extensions.judge.jev.evaluation.JevTraceMetrics;
+import io.deepscope.extensions.judge.jev.JevJudge;
+import io.deepscope.extensions.judge.jev.NoulQuestion;
+import io.deepscope.extensions.judge.jev.evaluation.JevEvaluator;
+import io.deepscope.extensions.judge.jev.evaluation.JevTraceEvaluator;
+import io.deepscope.extensions.judge.jev.evaluation.JevTraceMetrics;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,8 +70,8 @@ var traceEvaluator = new JevTraceEvaluator(client, metrics,
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后运行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios judge
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios evaluation
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevApplicationScenarios judge
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevApplicationScenarios evaluation
 ```
 
 两个入口复用源码中的 `answerDefinition()`：单条调用展示状态边界，批量调用回放一正一反样本。它们用预设概率验证定义复用，不以离线匹配数宣称模型准确率。[完整源码](/examples/jev/source/JevApplicationScenarios.java.txt)

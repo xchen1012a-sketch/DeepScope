@@ -13,11 +13,11 @@ title: "批量评估问题、证据与回答"
 ## 1. 复用草稿评审定义
 
 ```java
-import io.agentscope.extensions.judge.jev.JevJudge;
-import io.agentscope.extensions.judge.jev.NoulQuestion;
-import io.agentscope.extensions.judge.jev.evaluation.Evaluator;
-import io.agentscope.extensions.judge.jev.evaluation.JevEvaluator;
-import io.agentscope.extensions.judge.jev.evaluation.JevEvaluationRunner;
+import io.deepscope.extensions.judge.jev.JevJudge;
+import io.deepscope.extensions.judge.jev.NoulQuestion;
+import io.deepscope.extensions.judge.jev.evaluation.Evaluator;
+import io.deepscope.extensions.judge.jev.evaluation.JevEvaluator;
+import io.deepscope.extensions.judge.jev.evaluation.JevEvaluationRunner;
 import java.time.Duration;
 import java.util.List;
 
@@ -69,7 +69,7 @@ var observed = pending.doOnNext(report -> {
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后执行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios evaluation
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevApplicationScenarios evaluation
 ```
 
 离线夹具对两条样本分别返回 PASS、FAIL，报告显示 2 条匹配。它验证标签隔离与统计口径，不是“模型准确率 100%”的证据。[完整用例](/examples/jev/source/JevApplicationScenarios.java.txt)

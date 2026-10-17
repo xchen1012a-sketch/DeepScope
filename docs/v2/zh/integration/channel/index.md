@@ -20,7 +20,7 @@ en_link: /v2/en/integration/channel/index
 1. **入站** — 从平台接收消息（通过 webhook、WebSocket 等），解析为统一的 `InboundMessage`，去重、防循环，然后通过 Gateway 分发。
 2. **出站** — 通过平台的发送 API 把 Agent 回复投递回去。
 
-所有适配器共享 `agentscope-extensions-channel-common` 中的三个通用组件：
+所有适配器共享 `deepscope-extensions-channel-common` 中的三个通用组件：
 
 - **IdempotencyStore** — 按消息 id 去重，防止 webhook 重试导致重复处理。
 - **BotLoopGuard** — 按 peer 限速，防止 bot 之间的消息死循环。
@@ -39,4 +39,4 @@ FeishuChannel.fromProperties(channelId, routing, rawProperties, deduplicator, to
 
 ## 共享依赖
 
-每个 channel 适配器都依赖 `agentscope-extensions-channel-common`（传递依赖自动引入）和 `agentscope-harness`（由你的应用在运行时提供）。
+每个 channel 适配器都依赖 `deepscope-extensions-channel-common`（传递依赖自动引入）和 `deepscope-harness`（由你的应用在运行时提供）。

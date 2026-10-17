@@ -3,7 +3,7 @@ title: ReMe
 en_link: /v2/en/integration/memory/reme
 ---
 
-`agentscope-extensions-reme` 接入自托管的 ReMe 记忆服务，特点是基于 **trajectory（对话轨迹）** 抽取长期记忆，并按 **workspace** 隔离。
+`deepscope-extensions-reme` 接入自托管的 ReMe 记忆服务，特点是基于 **trajectory（对话轨迹）** 抽取长期记忆，并按 **workspace** 隔离。
 
 ## 何时使用
 
@@ -15,16 +15,16 @@ en_link: /v2/en/integration/memory/reme
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-reme</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-reme</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## 快速上手
 
 ```java
-import io.agentscope.core.memory.reme.ReMeLongTermMemory;
+import io.deepscope.core.memory.reme.ReMeLongTermMemory;
 
 ReMeLongTermMemory memory = ReMeLongTermMemory.builder()
     .userId("task_workspace")            // 映射到 ReMe 的 workspace_id

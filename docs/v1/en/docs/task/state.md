@@ -53,7 +53,7 @@ public interface State {
 For most scenarios, call the state management methods directly on Agent:
 
 ```java
-import io.agentscope.core.session.JsonSession;
+import io.deepscope.core.session.JsonSession;
 
 // Create Session
 Session session = new JsonSession(Path.of("sessions"));
@@ -73,10 +73,10 @@ agent.loadFrom(session, "user123");
 Session provides type-safe state storage API:
 
 ```java
-import io.agentscope.core.session.Session;
-import io.agentscope.core.state.SessionKey;
-import io.agentscope.core.state.SimpleSessionKey;
-import io.agentscope.core.state.State;
+import io.deepscope.core.session.Session;
+import io.deepscope.core.state.SessionKey;
+import io.deepscope.core.state.SimpleSessionKey;
+import io.deepscope.core.state.State;
 
 // Define state class
 public record UserPreferences(String theme, String language) implements State {}
@@ -101,10 +101,10 @@ List<MsgState> history = session.getList(sessionKey, "history", MsgState.class);
 Implement `StateModule` to enable persistence for custom components:
 
 ```java
-import io.agentscope.core.session.Session;
-import io.agentscope.core.state.SessionKey;
-import io.agentscope.core.state.State;
-import io.agentscope.core.state.StateModule;
+import io.deepscope.core.session.Session;
+import io.deepscope.core.state.SessionKey;
+import io.deepscope.core.state.State;
+import io.deepscope.core.state.StateModule;
 
 public class MyComponent implements StateModule {
     private String data;
@@ -136,8 +136,8 @@ public class MyComponent implements StateModule {
 `SessionKey` identifies a session. `SimpleSessionKey` is the common implementation:
 
 ```java
-import io.agentscope.core.state.SimpleSessionKey;
-import io.agentscope.core.state.SessionKey;
+import io.deepscope.core.state.SimpleSessionKey;
+import io.deepscope.core.state.SessionKey;
 
 // Create SessionKey
 SessionKey key = SimpleSessionKey.of("user123");

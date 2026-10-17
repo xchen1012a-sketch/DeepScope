@@ -13,8 +13,8 @@ title: "筛选适用工具并限制候选数量"
 ## 1. 设置可选数量和必要工具
 
 ```java
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.example.JevToolSelectionMiddleware;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.example.JevToolSelectionMiddleware;
 import java.time.Duration;
 import java.util.Set;
 
@@ -45,7 +45,7 @@ var selector = JevToolSelectionMiddleware.builder(client)
 ## 2. 注册到现有 Harness
 
 ```java
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.HarnessAgent;
 
 var agent = HarnessAgent.builder()
     .name("order-support")
@@ -75,7 +75,7 @@ var agent = HarnessAgent.builder()
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP`：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevHarnessScenarios selection
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevHarnessScenarios selection
 ```
 
 用例运行上表的查询、条件退款、闲聊、不确定与后端失败分支，并额外验证 SHADOW 始终保留原目录。预设概率经过真实中间件，不调用模型；因此没有模型准确率或延迟比较。[完整源码](/examples/jev/source/JevHarnessScenarios.java.txt)

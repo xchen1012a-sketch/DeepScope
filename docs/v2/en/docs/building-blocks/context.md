@@ -41,7 +41,7 @@ Tools and middleware access the current session through the injected `RuntimeCon
 
 ## AgentState
 
-An [`AgentStateStore`](/v2/en/integration/session/index) persists an **`AgentState`** (`io.agentscope.core.state.AgentState`) — a complete snapshot of everything that makes the agent restartable:
+An [`AgentStateStore`](/v2/en/integration/session/index) persists an **`AgentState`** (`io.deepscope.core.state.AgentState`) — a complete snapshot of everything that makes the agent restartable:
 
 | `AgentState` field | Content |
 |---|---|
@@ -109,14 +109,14 @@ This wiring lives in `ReActAgent` itself; `HarnessAgent` inherits it for free. T
 
 ### Built-in and extension implementations
 
-Anything implementing `io.agentscope.core.state.AgentStateStore` works. Pick by deployment shape:
+Anything implementing `io.deepscope.core.state.AgentStateStore` works. Pick by deployment shape:
 
 | Implementation | Module | Use case |
 |---|---|---|
-| `InMemoryAgentStateStore` | `agentscope-core` | Unit tests / single-process demos; lost on exit |
-| `JsonFileAgentStateStore` | `agentscope-core` | Local dev with file persistence; not cross-node. **`HarnessAgent` LEGACY default**, rooted at `~/.agentscope/state/<agentId>/` (override the base via the `agentscope.state.home` system property); **single-host** |
-| `RedisAgentStateStore` | `agentscope-extensions-redis` | **Production default** for multi-replica deployments; supports Jedis / Lettuce / Redisson (Standalone / Cluster / Sentinel) |
-| `MysqlAgentStateStore` | `agentscope-extensions-mysql` | When state needs to flow into a relational store (audit, reporting) |
+| `InMemoryAgentStateStore` | `deepscope-core` | Unit tests / single-process demos; lost on exit |
+| `JsonFileAgentStateStore` | `deepscope-core` | Local dev with file persistence; not cross-node. **`HarnessAgent` LEGACY default**, rooted at `~/.deepscope/state/<agentId>/` (override the base via the `deepscope.state.home` system property); **single-host** |
+| `RedisAgentStateStore` | `deepscope-extensions-redis` | **Production default** for multi-replica deployments; supports Jedis / Lettuce / Redisson (Standalone / Cluster / Sentinel) |
+| `MysqlAgentStateStore` | `deepscope-extensions-mysql` | When state needs to flow into a relational store (audit, reporting) |
 
 Switching is one call at builder time:
 
@@ -209,7 +209,7 @@ Different identity pairs select different state slots; filesystem sharing separa
 For out-of-loop reads such as administration or auditing, address state by identity. Do not mutate it concurrently with an active call. Obtaining or changing the object does not itself persist it or provide a transaction or authorization check:
 
 ```java
-import io.agentscope.core.state.AgentState;
+import io.deepscope.core.state.AgentState;
 
 AgentState state = agent.getAgentState("alice", "session-001");
 System.out.println("messages: " + state.getContext().size());
@@ -276,9 +276,9 @@ The reasoning loop checks its execution's signal at cooperative checkpoints. A u
 Configure this Builder at startup, then build separate instances for Alice and Bob. The workspace must persist between requests; replicas also need access to the same native log backend.
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.message.Msg;
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.message.Msg;
+import io.deepscope.harness.agent.HarnessAgent;
 import reactor.core.publisher.Mono;
 
 HarnessAgent.Builder agentBuilder = HarnessAgent.builder()
@@ -307,10 +307,10 @@ Interrupting from another request requires the currently executing instance; a n
 
 ## `RuntimeContext` — per-call metadata
 
-`RuntimeContext` (in `io.agentscope.core.agent`) is a lightweight per-call carrier passed to `agent.call(msgs, ctx)`; hooks and tools share it for the duration of one call. Its free-form / typed attributes are **not automatically persisted or included in model messages**; its `sessionId` / `userId` fields select which `AgentState` slot the state store loads and saves for this call. At call entry, the framework injects the call-scoped `AgentState` onto the `RuntimeContext` so that middleware, tools, and hooks can access the correct per-call state via `ctx.getAgentState()`.
+`RuntimeContext` (in `io.deepscope.core.agent`) is a lightweight per-call carrier passed to `agent.call(msgs, ctx)`; hooks and tools share it for the duration of one call. Its free-form / typed attributes are **not automatically persisted or included in model messages**; its `sessionId` / `userId` fields select which `AgentState` slot the state store loads and saves for this call. At call entry, the framework injects the call-scoped `AgentState` onto the `RuntimeContext` so that middleware, tools, and hooks can access the correct per-call state via `ctx.getAgentState()`.
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
+import io.deepscope.core.agent.RuntimeContext;
 
 RuntimeContext ctx = RuntimeContext.builder()
         .userId("alice")

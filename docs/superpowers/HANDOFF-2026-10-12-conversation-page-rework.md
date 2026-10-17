@@ -54,7 +54,7 @@
 
 ## 4. 下一步该怎么做
 
-1. **确认口径**（计划书「执行口径（已定）」一节，不要重新决策）：设计文档即验收标准；上下文窗口取**应用层**（不改 `agentscope-extensions-agui`）；每阶段一个提交；门禁每阶段跑一次。
+1. **确认口径**（计划书「执行口径（已定）」一节，不要重新决策）：设计文档即验收标准；上下文窗口取**应用层**（不改 `deepscope-extensions-agui`）；每阶段一个提交；门禁每阶段跑一次。
 2. **处理 stash**：按上面第 2 节二选一。
 3. **按计划书阶段三开工**：五步（块模型与可见性 → 主对话渲染块 → 时间线倒序卡片 → 子智能体列表与只读详情 → 门禁）。每步先写失败测试再实现；**必须同步修改** `conversationModel.test.ts:136-227` 里断言 kind 序列与 label 序列的用例——那是设计可见性变更的直接后果，不是为了让测试变绿。
 4. **阶段门禁**（在 `technical-advisor-app/frontend`）：
@@ -72,7 +72,7 @@
 
 | 项 | 事实 | 怎么处理 |
 | --- | --- | --- |
-| `WaitAsyncResultsToolTest.timeoutClampedToMax` | `agentscope-harness` 的计时型既有失败：断言 `elapsed < 130_000ms`，隔离实测 **148571ms**，重负载下 **714109ms** | **既有，与本改造无因果关系**（我们没碰 core/harness）。按规范**不放宽它的阈值**；跑 `-am` 门禁时按用例名分类，只有它计入既有失败 |
+| `WaitAsyncResultsToolTest.timeoutClampedToMax` | `deepscope-harness` 的计时型既有失败：断言 `elapsed < 130_000ms`，隔离实测 **148571ms**，重负载下 **714109ms** | **既有，与本改造无因果关系**（我们没碰 core/harness）。按规范**不放宽它的阈值**；跑 `-am` 门禁时按用例名分类，只有它计入既有失败 |
 | `npm run test:e2e` | 无 Playwright 配置，浏览器未下载 | 本轮**不新建 e2e 套件**（属独立立项）。关键流程靠组件交互测试（jsdom）+ `acceptance/stage4.test.mjs` 覆盖，并在阶段五如实记录这条缺口，**不声称 e2e 通过** |
 | `docs/docs.json` | `docs/v2` 那对技术参谋页面未登记进导航，`docs` 的 `npm run check` 现在就会红 | 阶段五补 en/zh 导航项；**不要**默默跳过校验 |
 | `npm audit` | 前端装测试依赖后报 10 个既有依赖漏洞 | 不在本轮范围；**不要**跑 `npm audit fix`（会改动依赖树） |
@@ -80,7 +80,7 @@
 
 ## 6. 不要做的事
 
-- 不改 `agentscope-core`（内核会话日志、`SessionEventCodec`、投影）与 `agentscope-extensions`（尤其 `agentscope-extensions-agui`）。
+- 不改 `deepscope-core`（内核会话日志、`SessionEventCodec`、投影）与 `deepscope-extensions`（尤其 `deepscope-extensions-agui`）。
 - 不把 advisor 改成读内核会话日志——那需要新的跨系统契约，属独立立项。
 - 不改 `advisor_deliverables` 结构、提案裁决契约、会话列表行为。
 - 不改 `frontend/package.json` 的 `build`/`test` 脚本名（`acceptance/stage4.test.mjs` 以它们为真值）。

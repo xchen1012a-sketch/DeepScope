@@ -38,7 +38,7 @@ GLM缺项修正：用户确认指智谱GLM。已确认旧预设缺失智谱，�
 后端命令在仓库根目录，未与本任务其他Maven并行：
 
 ```sh
-mvn -T1 -pl technical-advisor-app/backend -am test '-Dtest=io.agentscope.advisor.model.**' -Dsurefire.failIfNoSpecifiedTests=false '-DspotlessFiles=.*(AdvisorModelController|ModelProviderPresets|DiscoveredModelCache|ModelManagementTest|DiscoveredModelCacheTest)\.java'
+mvn -T1 -pl technical-advisor-app/backend -am test '-Dtest=io.deepscope.advisor.model.**' -Dsurefire.failIfNoSpecifiedTests=false '-DspotlessFiles=.*(AdvisorModelController|ModelProviderPresets|DiscoveredModelCache|ModelManagementTest|DiscoveredModelCacheTest)\.java'
 ```
 
 已做独立只读审查，修复已保存兼容供应商的密钥链接误指向OpenAI、长列表键盘高亮移出视野两项P2。前端用真实抽屉和选择器组件验证后端查询参数及选择生效；结果故意包含不匹配输入的服务端条目，用以证明前端没有再次筛选。

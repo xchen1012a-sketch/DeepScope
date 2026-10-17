@@ -44,7 +44,7 @@ PDF 按物理页解析、保存文字块与来源区域。扫描、图文与复�
 
 打开前端 `/login` 页面登录。`POST /api/auth/login` 接收凭据；`/api/auth/me` 和 `/api/v1/me/scope` 返回真实身份与单空间信息。登录会话默认有效 12 小时，可通过 `advisor.auth.session-ttl` 调整。退出登录时，`POST /api/auth/logout` 撤销当前令牌。
 
-`agentscope.admin.base-path`（默认 `/v1/admin`）下的框架管理接口需要管理员 bearer 令牌；AG-UI 对话入口也需要登录，并检查智能体可见性、会话归属与锁定对象。本轮最小登录不包含注册、用户管理或旧平台业务接口迁移。
+`deepscope.admin.base-path`（默认 `/v1/admin`）下的框架管理接口需要管理员 bearer 令牌；AG-UI 对话入口也需要登录，并检查智能体可见性、会话归属与锁定对象。本轮最小登录不包含注册、用户管理或旧平台业务接口迁移。
 
 ## 智能体管理
 

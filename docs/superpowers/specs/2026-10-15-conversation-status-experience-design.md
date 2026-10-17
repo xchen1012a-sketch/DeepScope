@@ -34,7 +34,7 @@ OpenAI的[延迟优化指南](https://developers.openai.com/api/docs/guides/late
 | `ThinkingLine`使用思考文本中的一行做摘要 | 内部英文思考、技术片段可能直接挤入主界面 |
 | `ProcessStateIcon`主要使用旋转圆环，工具、思考和批次可分别出现动画 | 反馈偏工具化，多项同时动时不够安静统一 |
 
-源码依据：[ToolLine.tsx](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/components/ToolLine.tsx:55)、[toolPresentation.ts](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/toolPresentation.ts)、[ActionBatch.tsx](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/components/ActionBatch.tsx:31)、[ThinkingLine.tsx](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/components/ThinkingLine.tsx:38)、[ProcessStateIcon.tsx](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/components/ProcessStateIcon.tsx:20)。
+源码依据：[ToolLine.tsx](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/components/ToolLine.tsx:55)、[toolPresentation.ts](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/toolPresentation.ts)、[ActionBatch.tsx](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/components/ActionBatch.tsx:31)、[ThinkingLine.tsx](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/components/ThinkingLine.tsx:38)、[ProcessStateIcon.tsx](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/components/ProcessStateIcon.tsx:20)。
 
 ## 3. 主界面先展示“动作”，不直接展示命令
 

@@ -233,7 +233,7 @@ skillBox.codeExecution()
 **配置说明**:
 
 - **工具选择**: 按需组合 `withShell()`、`withRead()`、`withWrite()`,仅注册显式启用的工具
-- **`workDir`**: 所有工具共享的工作目录。指定时自动创建;未指定时延迟创建临时目录 `agentscope-code-execution-*`,JVM 退出自动清理
+- **`workDir`**: 所有工具共享的工作目录。指定时自动创建;未指定时延迟创建临时目录 `deepscope-code-execution-*`,JVM 退出自动清理
 - **`uploadDir`**: Skill 资源文件的上传位置,默认为 `workDir/skills`
 - **文件过滤**: 控制允许上传的资源文件类型,默认接受 `scripts/`、`assets/` 目录及 `.py`、`.js`、`.sh` 扩展名。可通过 `includeFolders()`/`includeExtensions()` 调整,或用 `fileFilter()` 完全自定义(两种方式互斥)
 - **自定义 Shell**: `withShell(customShellTool)` 支持传入自定义工具,其 `baseDir` 会被自动覆盖为 `workDir`,安全策略保持不变
@@ -348,7 +348,7 @@ try (NacosSkillRepository repository = new NacosSkillRepository(aiService, "name
 } catch //...
 ```
 
-> 注意: 需引入 `agentscope-extensions-nacos-skill` 依赖
+> 注意: 需引入 `deepscope-extensions-nacos-skill` 依赖
 
 ### 功能 4: 自定义 Skill 提示词
 

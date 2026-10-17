@@ -6,7 +6,7 @@ import test from 'node:test';
 import { checkSite, inspectPage, navigationPages } from '../check-docs.mjs';
 
 function fixture(t, options = {}) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'agentscope-docs-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'deepscope-docs-'));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   fs.mkdirSync(path.join(dir, 'v2/en'), { recursive: true });
   fs.writeFileSync(path.join(dir, 'v2/en/intro.md'), '---\ntitle: Home\n---\n\n## Setup\n' + (options.body || ''));

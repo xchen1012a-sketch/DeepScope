@@ -320,7 +320,7 @@ gw.stop();    // 调用所有 channel 的 stop()
 
 ## 内置 Channel 适配器
 
-AgentScope 提供了多个开箱即用的 Channel 适配器作为扩展模块：
+DeepScope 提供了多个开箱即用的 Channel 适配器作为扩展模块：
 
 - [钉钉](/v2/zh/integration/channel/dingtalk) — Stream 协议（持久 WebSocket）
 - [飞书 / Lark](/v2/zh/integration/channel/feishu) — 事件订阅回调

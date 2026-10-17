@@ -3,7 +3,7 @@ title: Handoffs
 zh_link: /v1/zh/docs/multi-agent/handoffs
 ---
 
-> **Note:** The former Spring Boot example module `agentscope-examples/multiagent-patterns/` was removed during the 2.0 package refactor. Use the code snippets on this page as the reference implementation. For other runnable samples, see `agentscope-examples/documentation/`.
+> **Note:** The former Spring Boot example module `deepscope-examples/multiagent-patterns/` was removed during the 2.0 package refactor. Use the code snippets on this page as the reference implementation. For other runnable samples, see `deepscope-examples/documentation/`.
 
 In the **handoffs** pattern, behavior changes dynamically based on state. Tools update a state variable (e.g. `active_agent`) that persists across turns; the graph reads this variable to route to different agents. This pattern is well-suited to customer support and sales flows where control transfers between specialized agents (e.g. sales vs. support) via tool calls.
 
@@ -22,9 +22,9 @@ Use the handoffs pattern when you need to enforce sequential or role-based routi
 
 ## Architecture
 
-With AgentScope and Spring AI Graph, the implementation uses:
+With DeepScope and Spring AI Graph, the implementation uses:
 
-- **Separate agents as graph nodes**: e.g. a sales agent and a support agent, each implemented as an `AgentScopeAgent` (ReActAgent + Toolkit).
+- **Separate agents as graph nodes**: e.g. a sales agent and a support agent, each implemented as an `DeepScopeAgent` (ReActAgent + Toolkit).
 - **Handoff tools**: Registered on each agent’s Toolkit. When the model calls a handoff tool, the tool uses `ToolContextHelper.getStateForUpdate(toolContext)` to set `active_agent` (or similar). The graph declares that key with a strategy (e.g. `ReplaceStrategy`) so the update is merged when the node completes.
 - **Conditional edges**: After each agent node, a routing action reads `active_agent` and either goes to another agent node or to `END`.
 
@@ -51,31 +51,31 @@ Define constants for state keys and agent node names, and create a `StateGraph` 
 
 ```java
 // State keys and agent names
-public final class AgentScopeStateConstants {
+public final class DeepScopeStateConstants {
     public static final String ACTIVE_AGENT = "active_agent";
     public static final String SALES_AGENT = "sales_agent";
     public static final String SUPPORT_AGENT = "support_agent";
 }
 
 // In your config: build the graph with key strategies
-StateGraph graph = new StateGraph("agent_scope_handoffs", () -> {
+StateGraph graph = new StateGraph("deep_scope_handoffs", () -> {
     Map<String, KeyStrategy> strategies = new HashMap<>();
     strategies.put("messages", new AppendStrategy(false));
-    strategies.put(AgentScopeStateConstants.ACTIVE_AGENT, new ReplaceStrategy());
+    strategies.put(DeepScopeStateConstants.ACTIVE_AGENT, new ReplaceStrategy());
     return strategies;
 });
 ```
 
 ### Step 2: Create handoff tools
 
-Each handoff tool is an AgentScope `@Tool` with `ToolContext` auto-injected. The tool updates the graph state via `ToolContextHelper.getStateForUpdate(toolContext)` so that when the node completes, the graph’s conditional edges see the new `active_agent` and route accordingly.
+Each handoff tool is an DeepScope `@Tool` with `ToolContext` auto-injected. The tool updates the graph state via `ToolContextHelper.getStateForUpdate(toolContext)` so that when the node completes, the graph’s conditional edges see the new `active_agent` and route accordingly.
 
 **Transfer to support (used by the sales agent):**
 
 ```java
 import com.alibaba.cloud.ai.graph.agent.tools.ToolContextHelper;
-import io.agentscope.core.tool.Tool;
-import io.agentscope.core.tool.ToolParam;
+import io.deepscope.core.tool.Tool;
+import io.deepscope.core.tool.ToolParam;
 import org.springframework.ai.chat.model.ToolContext;
 
 @Tool(
@@ -83,7 +83,7 @@ import org.springframework.ai.chat.model.ToolContext;
     description = "Transfer the conversation to the support agent. Use when the customer asks about technical issues, troubleshooting, or account problems.")
 public String transferToSupport(ToolContext toolContext) {
     ToolContextHelper.getStateForUpdate(toolContext).ifPresent(update ->
-            update.put(AgentScopeStateConstants.ACTIVE_AGENT, AgentScopeStateConstants.SUPPORT_AGENT));
+            update.put(DeepScopeStateConstants.ACTIVE_AGENT, DeepScopeStateConstants.SUPPORT_AGENT));
     return "Transferred to support agent from sales agent.";
 }
 ```
@@ -98,30 +98,30 @@ public String transferToSales(
         @ToolParam(name = "reason", description = "Brief reason for the transfer") String reason,
         ToolContext toolContext) {
     ToolContextHelper.getStateForUpdate(toolContext).ifPresent(update ->
-            update.put(AgentScopeStateConstants.ACTIVE_AGENT, AgentScopeStateConstants.SALES_AGENT));
+            update.put(DeepScopeStateConstants.ACTIVE_AGENT, DeepScopeStateConstants.SALES_AGENT));
     return "Transferred to sales agent from support agent. Reason: " + (reason != null ? reason : "customer needs sales");
 }
 ```
 
 Register each tool on the corresponding agent’s Toolkit via `toolkit.registerTool(TransferToSupportTool.create())` and `toolkit.registerTool(TransferToSalesTool.create())`.
 
-### Step 3: Build the agents (AgentScopeAgent + Toolkit)
+### Step 3: Build the agents (DeepScopeAgent + Toolkit)
 
-Create a sales and a support agent as `AgentScopeAgent`, each with its own ReActAgent, system prompt, and Toolkit that includes the appropriate handoff tool.
+Create a sales and a support agent as `DeepScopeAgent`, each with its own ReActAgent, system prompt, and Toolkit that includes the appropriate handoff tool.
 
 ```java
-import com.alibaba.cloud.ai.agent.agentscope.AgentScopeAgent;
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.tool.Toolkit;
+import com.alibaba.cloud.ai.agent.deepscope.DeepScopeAgent;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.tool.Toolkit;
 
 // Sales agent: has transfer_to_support
 Toolkit salesToolkit = new Toolkit();
 salesToolkit.registerTool(TransferToSupportTool.create());
 
 ReActAgent.Builder salesReActBuilder = ReActAgent.builder()
-        .name(AgentScopeStateConstants.SALES_AGENT)
+        .name(DeepScopeStateConstants.SALES_AGENT)
         .description("Sales agent for pricing, product availability, and sales inquiries")
         .sysPrompt("""
             You are a sales agent. Help with sales inquiries, pricing, and product availability.
@@ -132,8 +132,8 @@ ReActAgent.Builder salesReActBuilder = ReActAgent.builder()
         .toolkit(salesToolkit)
         .memory(new InMemoryMemory());
 
-AgentScopeAgent salesAgent = AgentScopeAgent.fromBuilder(salesReActBuilder)
-        .name(AgentScopeStateConstants.SALES_AGENT)
+DeepScopeAgent salesAgent = DeepScopeAgent.fromBuilder(salesReActBuilder)
+        .name(DeepScopeStateConstants.SALES_AGENT)
         .description("Sales agent for pricing, product availability, and sales inquiries")
         .instruction("please assist the customer with their sales inquiry: {input}.")
         .includeContents(true)
@@ -145,7 +145,7 @@ Toolkit supportToolkit = new Toolkit();
 supportToolkit.registerTool(TransferToSalesTool.create());
 
 ReActAgent.Builder supportReActBuilder = ReActAgent.builder()
-        .name(AgentScopeStateConstants.SUPPORT_AGENT)
+        .name(DeepScopeStateConstants.SUPPORT_AGENT)
         .description("Support agent for technical issues and troubleshooting")
         .sysPrompt("""
             You are a support agent. Help with technical issues, troubleshooting, and account problems.
@@ -156,8 +156,8 @@ ReActAgent.Builder supportReActBuilder = ReActAgent.builder()
         .toolkit(supportToolkit)
         .memory(new InMemoryMemory());
 
-AgentScopeAgent supportAgent = AgentScopeAgent.fromBuilder(supportReActBuilder)
-        .name(AgentScopeStateConstants.SUPPORT_AGENT)
+DeepScopeAgent supportAgent = DeepScopeAgent.fromBuilder(supportReActBuilder)
+        .name(DeepScopeStateConstants.SUPPORT_AGENT)
         .description("Support agent for technical issues and troubleshooting")
         .instruction("please assist the customer with their product technical inquiry: {input}.")
         .includeContents(true)
@@ -174,21 +174,21 @@ Add both agents as nodes, then wire START and post-node routing based on `active
 - **After support**: From `support_agent`, if `active_agent` is `sales_agent` go to `sales_agent`, else go to `END`.
 
 ```java
-graph.addNode(AgentScopeStateConstants.SALES_AGENT, salesAgent.asNode());
-graph.addNode(AgentScopeStateConstants.SUPPORT_AGENT, supportAgent.asNode());
+graph.addNode(DeepScopeStateConstants.SALES_AGENT, salesAgent.asNode());
+graph.addNode(DeepScopeStateConstants.SUPPORT_AGENT, supportAgent.asNode());
 
 // START → sales_agent or support_agent (default: sales)
 graph.addConditionalEdges(START, new RouteInitialAction(), Map.of(
-        AgentScopeStateConstants.SALES_AGENT, AgentScopeStateConstants.SALES_AGENT,
-        AgentScopeStateConstants.SUPPORT_AGENT, AgentScopeStateConstants.SUPPORT_AGENT));
+        DeepScopeStateConstants.SALES_AGENT, DeepScopeStateConstants.SALES_AGENT,
+        DeepScopeStateConstants.SUPPORT_AGENT, DeepScopeStateConstants.SUPPORT_AGENT));
 
 // sales_agent → support_agent or END
-graph.addConditionalEdges(AgentScopeStateConstants.SALES_AGENT, new RouteAfterSalesAction(),
-        Map.of(AgentScopeStateConstants.SUPPORT_AGENT, AgentScopeStateConstants.SUPPORT_AGENT, "__end__", END));
+graph.addConditionalEdges(DeepScopeStateConstants.SALES_AGENT, new RouteAfterSalesAction(),
+        Map.of(DeepScopeStateConstants.SUPPORT_AGENT, DeepScopeStateConstants.SUPPORT_AGENT, "__end__", END));
 
 // support_agent → sales_agent or END
-graph.addConditionalEdges(AgentScopeStateConstants.SUPPORT_AGENT, new RouteAfterSupportAction(),
-        Map.of(AgentScopeStateConstants.SALES_AGENT, AgentScopeStateConstants.SALES_AGENT, "__end__", END));
+graph.addConditionalEdges(DeepScopeStateConstants.SUPPORT_AGENT, new RouteAfterSupportAction(),
+        Map.of(DeepScopeStateConstants.SALES_AGENT, DeepScopeStateConstants.SALES_AGENT, "__end__", END));
 
 CompiledGraph compiledGraph = graph.compile();
 ```
@@ -198,11 +198,11 @@ CompiledGraph compiledGraph = graph.compile();
 ```java
 @Override
 public CompletableFuture<Command> apply(OverAllState state, RunnableConfig config) {
-    String active = state.value(AgentScopeStateConstants.ACTIVE_AGENT)
+    String active = state.value(DeepScopeStateConstants.ACTIVE_AGENT)
             .map(Object::toString)
             .orElse("");
-    String target = AgentScopeStateConstants.SUPPORT_AGENT.equals(active)
-            ? AgentScopeStateConstants.SUPPORT_AGENT
+    String target = DeepScopeStateConstants.SUPPORT_AGENT.equals(active)
+            ? DeepScopeStateConstants.SUPPORT_AGENT
             : "__end__";
     return CompletableFuture.completedFuture(new Command(target));
 }
@@ -224,7 +224,7 @@ resultOpt.ifPresent(state -> {
 
 ## Reading and updating state in tools
 
-AgentScope tools that participate in a graph receive `ToolContext` (auto-injected). Use it to read or update graph state:
+DeepScope tools that participate in a graph receive `ToolContext` (auto-injected). Use it to read or update graph state:
 
 - **Update state (for routing):** Put keys into the map returned by `ToolContextHelper.getStateForUpdate(toolContext)`. The graph merges this when the node completes. The graph must declare those keys with a key strategy (e.g. `ReplaceStrategy` for `active_agent`).
 
@@ -234,24 +234,24 @@ Any key you update via `getStateForUpdate` must be declared in the graph’s key
 
 ## Design choices
 
-1. **AgentScope Toolkit for both agents**  
-   Sales and support agents both use `io.agentscope.core.tool.Toolkit` and ReActAgent; handoff tools are standard AgentScope `@Tool` implementations with `ToolContext` for state updates.
+1. **DeepScope Toolkit for both agents**  
+   Sales and support agents both use `io.deepscope.core.tool.Toolkit` and ReActAgent; handoff tools are standard DeepScope `@Tool` implementations with `ToolContext` for state updates.
 
 2. **State update at node completion**  
    Tools do not redirect the graph immediately; they only update state. When the current agent node finishes, the graph’s conditional edges run and use the updated `active_agent` to choose the next node or end.
 
 3. **ToolContext in tools**  
-   Handoff tools use `io.agentscope.core.tool.Tool` and optional `@ToolParam`; `ToolContext` is auto-injected so tools can call `ToolContextHelper.getStateForUpdate(toolContext)` (and optionally `getState(toolContext)`).
+   Handoff tools use `io.deepscope.core.tool.Tool` and optional `@ToolParam`; `ToolContext` is auto-injected so tools can call `ToolContextHelper.getStateForUpdate(toolContext)` (and optionally `getState(toolContext)`).
 
 ## Example project
 
 The handoffs pattern (sales + support with handoff tools) is illustrated by the snippets below:
 
-- **Highlights**: `AgentScopeHandoffsConfig` (graph, agents, routing), `TransferToSalesTool`, `TransferToSupportTool`, `RouteInitialAction`, `RouteAfterSalesAction`, `RouteAfterSupportAction`, and `AgentScopeHandoffsService` to invoke the graph.
+- **Highlights**: `DeepScopeHandoffsConfig` (graph, agents, routing), `TransferToSalesTool`, `TransferToSupportTool`, `RouteInitialAction`, `RouteAfterSalesAction`, `RouteAfterSupportAction`, and `DeepScopeHandoffsService` to invoke the graph.
 
 Build and run (from repo root):
 
-Set `agentscope.runner.enabled=true` in `application.yml` to run the demo on startup. Default port is 8089.
+Set `deepscope.runner.enabled=true` in `application.yml` to run the demo on startup. Default port is 8089.
 
 ## Related Documentation
 
@@ -260,4 +260,4 @@ Set `agentscope.runner.enabled=true` in `application.yml` to run the demo on sta
 - [Supervisor](/v1/en/docs/multi-agent/supervisor) - Central supervisor with specialized agents as tools
 - [MsgHub](/v1/en/docs/task/msghub) - Message broadcasting for multi-agent conversations
 - [Agent as Tool](/v1/en/docs/task/agent-as-tool) - Registering an agent as a tool for another agent
-- [Tool System](/v1/en/docs/task/tool) - AgentScope tools and Toolkit
+- [Tool System](/v1/en/docs/task/tool) - DeepScope tools and Toolkit

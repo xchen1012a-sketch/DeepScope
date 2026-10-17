@@ -3,7 +3,7 @@ title: 钉钉 Channel
 en_link: /v2/en/integration/channel/dingtalk
 ---
 
-`agentscope-extensions-channel-dingtalk` 将你的 Agent 接入钉钉，支持两种接收模式：**Stream**（默认）——持久 WebSocket 实时接收机器人消息，无需暴露公网 webhook 端点；**HTTP 回调**——钉钉将消息以 App Secret 加签后 POST 到你的 Spring 应用。
+`deepscope-extensions-channel-dingtalk` 将你的 Agent 接入钉钉，支持两种接收模式：**Stream**（默认）——持久 WebSocket 实时接收机器人消息，无需暴露公网 webhook 端点；**HTTP 回调**——钉钉将消息以 App Secret 加签后 POST 到你的 Spring 应用。
 
 ## 适用场景
 
@@ -15,9 +15,9 @@ en_link: /v2/en/integration/channel/dingtalk
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-channel-dingtalk</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-channel-dingtalk</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 

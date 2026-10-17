@@ -44,7 +44,7 @@ The application stores accounts and login sessions in the configured PostgreSQL 
 
 Open the frontend's `/login` page. Login uses `POST /api/auth/login`; identity and the single namespace are returned by `/api/auth/me` and `/api/v1/me/scope`. Sessions expire after 12 hours, configurable through `advisor.auth.session-ttl`. Logout revokes the current token through `POST /api/auth/logout`.
 
-Framework administration under `agentscope.admin.base-path` (default `/v1/admin`) requires the administrator's bearer token. AG-UI chat also requires authentication and checks agent visibility, conversation ownership, and its locked agent. This minimal login does not implement registration, user administration or migrate the old platform's business APIs.
+Framework administration under `deepscope.admin.base-path` (default `/v1/admin`) requires the administrator's bearer token. AG-UI chat also requires authentication and checks agent visibility, conversation ownership, and its locked agent. This minimal login does not implement registration, user administration or migrate the old platform's business APIs.
 
 ## Agent management
 

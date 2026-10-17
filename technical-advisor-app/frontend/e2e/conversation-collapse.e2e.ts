@@ -23,7 +23,7 @@ for (const scenario of ['completed', 'failed', 'long-process'] as const) {
   test(longProcess ? 'manual expansion keeps a long process entry in the viewport' : failed ? 'failed run leaves process visible without successful elapsed entry' : 'confirmed run folds every process, replays elapsed time and locates folded content', async ({ page }) => {
     const session = { sessionId: 'collapse', title: 'Conversation test', agentId: 'agent', status: 'idle', createdAt: 0, updatedAt: 0 };
     const entries: EventEntry[] = [];
-    await page.addInitScript(() => { localStorage.setItem('claw_token', 'fixture'); localStorage.setItem('controlplane.console.locale', 'zh-CN'); });
+    await page.addInitScript(() => { localStorage.setItem('deepscope_token', 'fixture'); localStorage.setItem('deepscope.locale', 'zh-CN'); });
     await page.route(/^http:\/\/127\.0\.0\.1:5190\/api\//, async route => {
       const request = route.request(); const path = new URL(request.url()).pathname;
       const json = (body: unknown, status = 200) => route.fulfill({ status, json: body });

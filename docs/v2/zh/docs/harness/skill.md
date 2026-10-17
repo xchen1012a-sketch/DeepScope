@@ -64,9 +64,9 @@ HarnessAgent agent = HarnessAgent.builder()
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-skill-git-repository</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-skill-git-repository</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -80,9 +80,9 @@ HarnessAgent agent = HarnessAgent.builder()
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-nacos-skill</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-nacos-skill</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -99,7 +99,7 @@ HarnessAgent.builder()
 
 ```java
 MysqlSkillRepository registry = MysqlSkillRepository.builder(dataSource)
-        .databaseName("agentscope")
+        .databaseName("deepscope")
         .skillsTableName("skills")
         .createIfNotExist(true)
         .writeable(true)
@@ -187,7 +187,7 @@ workspace/
 
 | 优先级 | 来源 | 怎么配 |
 |--------|------|--------|
-| 1（最低） | 项目全局目录 | `projectGlobalSkillsDir(Path)`，如 `~/.agentscope/skills/` |
+| 1（最低） | 项目全局目录 | `projectGlobalSkillsDir(Path)`，如 `~/.deepscope/skills/` |
 | 2 | 市场 | `skillRepository(...)`，后注册的覆盖先注册的 |
 | 3 | 工作区共用 | `workspace/skills/` |
 | 4（最高） | 用户隔离 | `<userId>/skills/` |
@@ -389,7 +389,7 @@ execute("python3 /workspace/skills/code-reviewer/scripts/run-checks.sh <目标�
 
 这条命令在容器里跑，读到的就是投影进来的那份文件。agent 不用知道 skill 来自哪一层，前缀由框架算好。
 
-> 如果沙箱后端把工作区挂在非默认位置（比如 AgentRun 是 `/home/agentscope/workspace`），`<files-root>` 前缀会跟着换，agent 拿到的依然是正确的绝对路径。
+> 如果沙箱后端把工作区挂在非默认位置（比如 AgentRun 是 `/home/deepscope/workspace`），`<files-root>` 前缀会跟着换，agent 拿到的依然是正确的绝对路径。
 
 ### 跨调用保留脚本副作用
 

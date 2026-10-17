@@ -3,13 +3,13 @@ title: Key Concepts
 zh_link: /v1/zh/docs/quickstart/key-concepts
 ---
 
-This chapter introduces the core concepts in AgentScope from an engineering perspective to help you understand the framework's design philosophy.
+This chapter introduces the core concepts in DeepScope from an engineering perspective to help you understand the framework's design philosophy.
 
-> **Note**: The goal of this document is to clarify the problems AgentScope solves in engineering practice and the help it provides to developers, rather than providing rigorous academic definitions.
+> **Note**: The goal of this document is to clarify the problems DeepScope solves in engineering practice and the help it provides to developers, rather than providing rigorous academic definitions.
 
 ## Core Flow
 
-Before diving into each concept, let's understand how an agent works. The core of AgentScope is the **ReAct Loop** (Reasoning + Acting):
+Before diving into each concept, let's understand how an agent works. The core of DeepScope is the **ReAct Loop** (Reasoning + Acting):
 
 ```
                             User Input (Message)
@@ -66,7 +66,7 @@ Now let's explore each concept in detail.
 
 **Problem solved**: Agents need a unified data structure to carry various types of information—text, images, tool calls, etc.
 
-Message is the most fundamental data structure in AgentScope, used for:
+Message is the most fundamental data structure in DeepScope, used for:
 - Exchanging information between agents
 - Storing conversation history in memory
 - Serving as a unified medium for LLM API interactions
@@ -150,7 +150,7 @@ public interface Agent extends CallableAgent, StreamableAgent, ObservableAgent {
 
 ### Stateful Design
 
-Agents in AgentScope are **stateful objects**. Each Agent instance holds its own:
+Agents in DeepScope are **stateful objects**. Each Agent instance holds its own:
 - **Memory**: Conversation history
 - **Toolkit**: Tool collection and their state
 - **Configuration**: System prompt, model settings, etc.
@@ -197,7 +197,7 @@ Msg response = agent.call(userMsg).block();
 
 **Problem solved**: LLMs can only generate text and cannot perform actual operations. Tools enable agents to query databases, call APIs, perform calculations, etc.
 
-In AgentScope, a "tool" is a Java method annotated with `@Tool`, supporting:
+In DeepScope, a "tool" is a Java method annotated with `@Tool`, supporting:
 - Instance methods, static methods, class methods
 - Synchronous or asynchronous calls
 - Streaming or non-streaming returns
@@ -241,7 +241,7 @@ Uses `InMemoryMemory` (in-memory storage) by default. For cross-session persiste
 
 **Problem solved**: Different LLM providers have different API formats, requiring an adapter layer to abstract away differences.
 
-Formatter is responsible for converting AgentScope messages to the format required by specific LLM APIs, including:
+Formatter is responsible for converting DeepScope messages to the format required by specific LLM APIs, including:
 - Prompt engineering (adding system prompts, formatting multi-turn conversations)
 - Message validation
 - Identity handling in multi-agent scenarios
@@ -325,7 +325,7 @@ ReActAgent agent = ReActAgent.builder()
 
 **Problem solved**: Agent state such as conversation history and configuration needs to be saved and restored to support session persistence.
 
-AgentScope separates "initialization" from "state" through the `StateModule` interface:
+DeepScope separates "initialization" from "state" through the `StateModule` interface:
 - `saveTo(Session, SessionKey)` - Save current state to Session
 - `loadFrom(Session, SessionKey)` - Restore state from Session
 - `loadIfExists(Session, SessionKey)` - Restore state from Session if it exists
@@ -352,7 +352,7 @@ SessionManager.forSessionId("user123")
 
 **Problem solved**: LLM calls and tool execution typically involve I/O operations; synchronous blocking wastes resources.
 
-AgentScope is built on [Project Reactor](https://projectreactor.io/), using:
+DeepScope is built on [Project Reactor](https://projectreactor.io/), using:
 - `Mono<T>` - Returns 0 or 1 result
 - `Flux<T>` - Returns 0 to N results (for streaming)
 

@@ -5,7 +5,7 @@ en_link: /v2/en/integration/protocol/agui
 
 ## 兼容性说明
 
-`agentscope-extensions-agui` 把 AgentScope v2 的 `AgentEvent` 流转换为 [AG-UI Protocol](https://github.com/ag-ui-protocol/ag-ui) 事件，让前端 UI 可以实时渲染 agent 的运行过程，包括文本、推理内容、工具调用、状态、自定义事件、token usage 和 HITL interrupt。
+`deepscope-extensions-agui` 把 DeepScope v2 的 `AgentEvent` 流转换为 [AG-UI Protocol](https://github.com/ag-ui-protocol/ag-ui) 事件，让前端 UI 可以实时渲染 agent 的运行过程，包括文本、推理内容、工具调用、状态、自定义事件、token usage 和 HITL interrupt。
 
 `RUN_ERROR` 和 `RUN_FINISHED` 是互斥终态事件。只有还需要旧版 `RUN_ERROR` + `RUN_FINISHED` 序列时，才开启 `emitRunFinishedAfterError=true`。
 
@@ -17,7 +17,7 @@ en_link: /v2/en/integration/protocol/agui
 
 ## 何时使用
 
-- 需要把 AgentScope agent 接入 AG-UI 兼容前端或自研 Chat UI。
+- 需要把 DeepScope agent 接入 AG-UI 兼容前端或自研 Chat UI。
 - 需要以 SSE 流式输出 `RUN_*`、`TEXT_MESSAGE_*`、`TOOL_CALL_*`、`CUSTOM` 等 AG-UI 事件。
 - 需要前端工具、用户审批中断、运行上下文或自定义事件转换扩展。
 
@@ -27,9 +27,9 @@ en_link: /v2/en/integration/protocol/agui
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-agui</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-agui</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -37,9 +37,9 @@ Spring Boot 应用直接使用 starter：
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-agui-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-agui-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -48,11 +48,11 @@ Spring Boot 应用直接使用 starter：
 先按[快速开始](/v2/zh/docs/quickstart)配置共享的 `HarnessAgent.Builder agentBuilder`。每次请求创建一个 Agent，SSE 流结束或取消时关闭：
 
 ```java
-import io.agentscope.core.agui.adapter.AguiAdapterConfig;
-import io.agentscope.core.agui.adapter.AguiAgentAdapter;
-import io.agentscope.core.agui.event.AguiEvent;
-import io.agentscope.core.agui.model.RunAgentInput;
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.core.agui.adapter.AguiAdapterConfig;
+import io.deepscope.core.agui.adapter.AguiAgentAdapter;
+import io.deepscope.core.agui.event.AguiEvent;
+import io.deepscope.core.agui.model.RunAgentInput;
+import io.deepscope.harness.agent.HarnessAgent;
 import java.time.Duration;
 import reactor.core.publisher.Flux;
 
@@ -74,7 +74,7 @@ Flux<AguiEvent> events = Flux.using(
 
 v2 正常链路以 `AgentEvent` 为输入，内置 converter 负责语义映射，未映射事件会回退为官方 `RAW` 事件。
 
-| AgentScope 事件 / 内容               | AG-UI 事件 |
+| DeepScope 事件 / 内容               | AG-UI 事件 |
 |----------------------------------| --- |
 | `AgentStartEvent`                | `RUN_STARTED` |
 | `AgentEndEvent`                  | `RUN_FINISHED` |
@@ -86,7 +86,7 @@ v2 正常链路以 `AgentEvent` 为输入，内置 converter 负责语义映射�
 | token usage（`emitTokenUsage=true`） | `CUSTOM`，`name=token_usage` |
 | 未映射 `AgentEvent`                 | `RAW`，包含官方 `event` 和 `source` 字段 |
 
-正常运行的 `RUN_STARTED` 和 `RUN_FINISHED` 由上游 `AgentStartEvent` / `AgentEndEvent` 决定。正常流结束但上游没有发 `AgentEndEvent` 时，adapter 不会额外补 `RUN_FINISHED`。异常路径会输出带 `timestamp` 的 `RUN_ERROR`。 `RUN_ERROR` 和 `RUN_FINISHED` 是互斥终态事件。只有旧客户端仍依赖错误后补发完成事件时，才设置 `emitRunFinishedAfterError=true`（Spring Boot 配置为 `agentscope.agui.emit-run-finished-after-error=true`）。
+正常运行的 `RUN_STARTED` 和 `RUN_FINISHED` 由上游 `AgentStartEvent` / `AgentEndEvent` 决定。正常流结束但上游没有发 `AgentEndEvent` 时，adapter 不会额外补 `RUN_FINISHED`。异常路径会输出带 `timestamp` 的 `RUN_ERROR`。 `RUN_ERROR` 和 `RUN_FINISHED` 是互斥终态事件。只有旧客户端仍依赖错误后补发完成事件时，才设置 `emitRunFinishedAfterError=true`（Spring Boot 配置为 `deepscope.agui.emit-run-finished-after-error=true`）。
 
 ## 子 agent 事件
 
@@ -182,7 +182,7 @@ AguiAdapterConfig config = AguiAdapterConfig.builder()
 Spring Boot 配置：
 
 ```yaml
-agentscope:
+deepscope:
   agui:
     emit-token-usage: true
 ```
@@ -213,7 +213,7 @@ agentscope:
 starter 会自动注册 MVC 或 WebFlux 入口。常用配置如下：
 
 ```yaml
-agentscope:
+deepscope:
   agui:
     path-prefix: /agui
     cors-enabled: true
@@ -265,14 +265,14 @@ AG-UI 前端可以在 `RunAgentInput.tools` 中传入工具 schema。adapter 将
 | `AGENT_ONLY` | 忽略前端传入工具，只使用 agent toolkit |
 | `MERGE_EXTERNAL_PRIORITY` | 合并两侧工具；同名时前端工具优先 |
 
-默认值是 `MERGE_EXTERNAL_PRIORITY`。枚举位于 `io.agentscope.core.tool.ToolMergeMode`。`EXTERNAL_ONLY` 在外部工具为空时不暴露任何工具，且不受 Toolkit 的删除开关影响；它只控制请求可见性。
+默认值是 `MERGE_EXTERNAL_PRIORITY`。枚举位于 `io.deepscope.core.tool.ToolMergeMode`。`EXTERNAL_ONLY` 在外部工具为空时不暴露任何工具，且不受 Toolkit 的删除开关影响；它只控制请求可见性。
 
 ## HITL Interrupt
 
-当一次 run 因工具决策暂停时，AG-UI adapter 会在 `RUN_FINISHED` 上输出官方 interrupt outcome。AgentScope Java 内置了两类 tool-call interrupt 路径：
+当一次 run 因工具决策暂停时，AG-UI adapter 会在 `RUN_FINISHED` 上输出官方 interrupt outcome。DeepScope Java 内置了两类 tool-call interrupt 路径：
 
 - **工具挂起 / 外部执行**：挂起的 `ToolResultBlock` 会转换成 `tool_call` interrupt，恢复时桥接回 `ToolResultBlock`。
-- **权限确认**：`RequireUserConfirmEvent` 会转换成带 AgentScope metadata 的 `tool_call` interrupt，恢复时桥接为 `ConfirmResult`。
+- **权限确认**：`RequireUserConfirmEvent` 会转换成带 DeepScope metadata 的 `tool_call` interrupt，恢复时桥接为 `ConfirmResult`。
 
 这两类场景都使用官方 AG-UI `reason: "tool_call"`，因为 interrupt 绑定到具体 `toolCallId`。不要把这类工具审批写成 `reason: "confirmation"`。
 
@@ -303,7 +303,7 @@ AG-UI 前端可以在 `RunAgentInput.tools` 中传入工具 schema。adapter 将
           "required": ["approved"]
         },
         "metadata": {
-          "agentscope.interruptKind": "permission_confirm",
+          "deepscope.interruptKind": "permission_confirm",
           "toolName": "request_approval",
           "toolInput": { "path": "/tmp/report.txt" },
           "toolContent": "{\"path\":\"/tmp/report.txt\"}",
@@ -339,20 +339,20 @@ AG-UI 前端可以在 `RunAgentInput.tools` 中传入工具 schema。adapter 将
 
 `status` 支持官方的 `resolved` 和 `cancelled`。对于用户拒绝某个工具请求的常见审批场景，建议仍使用 `resolved`，并在 `payload` 中表达业务决策，例如 `{ "approved": false }`；`cancelled` 更适合表示该 interrupt 本身被取消。
 
-对于权限确认，只有 `payload.approved` 是布尔值 `true` 时才会批准工具；缺失、非布尔值或 `false` 都会视为拒绝。`payload.editedArgs` 如果存在，必须是 JSON object，并且是对原始工具参数的**完整替换**，不是局部 merge。AgentScope Java 会根据 `editedArgs` 同时重建 `ToolUseBlock.input` 和原始 JSON `ToolUseBlock.content`，因此被批准的工具会使用修改后的参数执行。
+对于权限确认，只有 `payload.approved` 是布尔值 `true` 时才会批准工具；缺失、非布尔值或 `false` 都会视为拒绝。`payload.editedArgs` 如果存在，必须是 JSON object，并且是对原始工具参数的**完整替换**，不是局部 merge。DeepScope Java 会根据 `editedArgs` 同时重建 `ToolUseBlock.input` 和原始 JSON `ToolUseBlock.content`，因此被批准的工具会使用修改后的参数执行。
 
-`payload.reason` 是可选字符串。拒绝时会写入 `ConfirmResult.reason`，并作为 DENIED tool-result 文本返回给模型；缺失或为空白时，AgentScope 保持默认的 `Permission denied by user` 文案。
+`payload.reason` 是可选字符串。拒绝时会写入 `ConfirmResult.reason`，并作为 DENIED tool-result 文本返回给模型；缺失或为空白时，DeepScope 保持默认的 `Permission denied by user` 文案。
 
-前端不需要在 `resume[]` 中回传 `metadata`；只需要发送 `interruptId`、`status` 和 `payload`。通过 Spring `AguiRequestProcessor` 入口时，AgentScope Java 会在服务端记录最近一次 `RUN_FINISHED.outcome.interrupts[]`，校验下一次 `resume[]` 是否覆盖所有 open interrupts，并把原始 interrupt 传给 adapter 做恢复转换。
+前端不需要在 `resume[]` 中回传 `metadata`；只需要发送 `interruptId`、`status` 和 `payload`。通过 Spring `AguiRequestProcessor` 入口时，DeepScope Java 会在服务端记录最近一次 `RUN_FINISHED.outcome.interrupts[]`，校验下一次 `resume[]` 是否覆盖所有 open interrupts，并把原始 interrupt 传给 adapter 做恢复转换。
 
 ## 示例项目
 
-完整示例见 [agentscope-examples/documentation](https://github.com/agentscope-ai/agentscope-java/tree/main/agentscope-examples/documentation)：
+完整示例见 [deepscope-examples/documentation](https://github.com/xchen1012a-sketch/DeepScope/tree/main/deepscope-examples/documentation)：
 
 ```bash
 export DASHSCOPE_API_KEY=your-key
-cd agentscope-examples/documentation
-mvn spring-boot:run -Dspring-boot.run.mainClass=io.agentscope.examples.documentation2.agui.AguiExampleApplication
+cd deepscope-examples/documentation
+mvn spring-boot:run -Dspring-boot.run.mainClass=io.deepscope.examples.documentation2.agui.AguiExampleApplication
 ```
 
 启动后访问 http://localhost:8080 查看默认前端示例。该示例展示了多 agent 路由、自定义 converter、自定义 enricher、token usage 和 HITL interrupt。

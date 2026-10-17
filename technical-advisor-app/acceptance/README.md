@@ -8,7 +8,7 @@
 mvn -T1 -pl technical-advisor-app/backend -am package
 ```
 
-从 `technical-advisor-app/backend` 启动该包，加载本地 `config/application.yaml`，使用 `ADVISOR_DATABASE_USERNAME=juvon`。为保持原运行数据，明确设置 `--advisor.data-dir=/Users/agent/agentscope-java/technical-advisor-app/data`。其他环境需按实际工作区调整该绝对路径。
+从 `technical-advisor-app/backend` 启动该包，加载本地 `config/application.yaml`，使用 `ADVISOR_DATABASE_USERNAME=juvon`。为保持原运行数据，明确设置 `--advisor.data-dir=/Users/agent/deepscope-java/technical-advisor-app/data`。其他环境需按实际工作区调整该绝对路径。
 
 在本模块设置环境变量后运行 `npm test`：
 

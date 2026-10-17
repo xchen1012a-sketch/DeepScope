@@ -53,7 +53,7 @@ public interface State {
 大多数场景建议直接调用 Agent 的状态管理方法：
 
 ```java
-import io.agentscope.core.session.JsonSession;
+import io.deepscope.core.session.JsonSession;
 
 // 创建 Session
 Session session = new JsonSession(Path.of("sessions"));
@@ -73,10 +73,10 @@ agent.loadFrom(session, "user123");
 Session 提供类型安全的状态存储 API：
 
 ```java
-import io.agentscope.core.session.Session;
-import io.agentscope.core.state.SessionKey;
-import io.agentscope.core.state.SimpleSessionKey;
-import io.agentscope.core.state.State;
+import io.deepscope.core.session.Session;
+import io.deepscope.core.state.SessionKey;
+import io.deepscope.core.state.SimpleSessionKey;
+import io.deepscope.core.state.State;
 
 // 定义状态类
 public record UserPreferences(String theme, String language) implements State {}
@@ -101,10 +101,10 @@ List<MsgState> history = session.getList(sessionKey, "history", MsgState.class);
 实现 `StateModule` 接口使自定义组件支持持久化：
 
 ```java
-import io.agentscope.core.session.Session;
-import io.agentscope.core.state.SessionKey;
-import io.agentscope.core.state.State;
-import io.agentscope.core.state.StateModule;
+import io.deepscope.core.session.Session;
+import io.deepscope.core.state.SessionKey;
+import io.deepscope.core.state.State;
+import io.deepscope.core.state.StateModule;
 
 public class MyComponent implements StateModule {
     private String data;
@@ -136,8 +136,8 @@ public class MyComponent implements StateModule {
 `SessionKey` 用于标识会话，`SimpleSessionKey` 是常用的实现：
 
 ```java
-import io.agentscope.core.state.SimpleSessionKey;
-import io.agentscope.core.state.SessionKey;
+import io.deepscope.core.state.SimpleSessionKey;
+import io.deepscope.core.state.SessionKey;
 
 // 创建 SessionKey
 SessionKey key = SimpleSessionKey.of("user123");

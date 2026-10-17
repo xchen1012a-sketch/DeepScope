@@ -20,7 +20,7 @@ en_link: /v1/en/docs/task/multimodal
 
 ### ContentBlock 架构
 
-AgentScope 使用统一的 ContentBlock 体系处理所有类型的内容：
+DeepScope 使用统一的 ContentBlock 体系处理所有类型的内容：
 
 ```
 ContentBlock (基类)
@@ -46,7 +46,7 @@ ContentBlock (基类)
 ### 步骤 1：创建媒体内容块
 
 ```java
-import io.agentscope.core.message.*;
+import io.deepscope.core.message.*;
 import java.util.Base64;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -116,9 +116,9 @@ Msg multiImageMsg = Msg.builder()
 ### 步骤 3：配置 Vision Agent
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
 
 ReActAgent agent = ReActAgent.builder()
     .name("VisionAssistant")
@@ -145,14 +145,14 @@ System.out.println(response.getTextContent());
 ## 完整示例
 
 ```java
-package io.agentscope.examples;
+package io.deepscope.examples;
 
-import io.agentscope.core.ReActAgent;
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.message.*;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.message.*;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.tool.Toolkit;
 import java.util.List;
 
 public class VisionExample {
@@ -232,6 +232,6 @@ DashScopeChatModel.builder()
 
 ## 更多资源
 
-- **完整示例代码**: [VisionExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/VisionExample.java)
+- **完整示例代码**: [VisionExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/VisionExample.java)
 - **消息机制**: [message.md](/v1/zh/docs/quickstart/key-concepts) - 了解消息结构
 - **模型配置**: [model.md](/v1/zh/docs/task/model) - 了解模型配置选项

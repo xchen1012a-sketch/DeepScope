@@ -3,7 +3,7 @@ title: Git Skill Repository
 zh_link: /v2/zh/integration/skill/git-repository
 ---
 
-`agentscope-extensions-skill-git-repository` treats a remote Git repo as a skill repository. It runs a lightweight remote-ref check on each read and only pulls when the remote HEAD changes — near-zero overhead at idle.
+`deepscope-extensions-skill-git-repository` treats a remote Git repo as a skill repository. It runs a lightweight remote-ref check on each read and only pulls when the remote HEAD changes — near-zero overhead at idle.
 
 ## When to use
 
@@ -15,9 +15,9 @@ zh_link: /v2/zh/integration/skill/git-repository
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-skill-git-repository</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-skill-git-repository</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -26,12 +26,12 @@ It uses JGit under the hood and supports both HTTPS and SSH.
 ## Quickstart
 
 ```java
-import io.agentscope.core.skill.repository.GitSkillRepository;
-import io.agentscope.core.skill.AgentSkill;
+import io.deepscope.core.skill.repository.GitSkillRepository;
+import io.deepscope.core.skill.AgentSkill;
 
 // Public repo + default branch, temporary local directory
 GitSkillRepository repo = new GitSkillRepository(
-    "https://github.com/agentscope/skills.git"
+    "https://github.com/deepscope/skills.git"
 );
 
 // Register all skills into a Toolkit
@@ -46,10 +46,10 @@ Runtime.getRuntime().addShutdownHook(new Thread(repo::close));
 
 ```java
 GitSkillRepository repo = new GitSkillRepository(
-    "https://github.com/agentscope/skills.git",
+    "https://github.com/deepscope/skills.git",
     "develop",                   // branch
     Path.of("/var/skills/repo"), // local path (null = temp dir)
-    "agentscope-public",         // source label (visible in Toolkit)
+    "deepscope-public",         // source label (visible in Toolkit)
     true                         // autoSync
 );
 ```

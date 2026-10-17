@@ -18,8 +18,8 @@
 
 相对 `technical-advisor-app/`：
 
-- 新增 `backend/src/main/java/io/agentscope/advisor/model/KnowledgeModelHttp.java`、`KnowledgeEmbeddingModel.java`、`KnowledgeChatClient.java`；修改 `ModelCatalog.java`、`ModelProbe.java`、`AdvisorModelController.java`、`OpenAiEndpointClient.java`。
-- 修改 `backend/src/main/java/io/agentscope/advisor/knowledge/` 内 DocumentIngest、DocumentStructureStore、PgChunkIndex、ChunkIndex、KnowledgeCatalog、DocumentTexts、ConfiguredVectorModelSource、PdfModelReader、PdfParser、PdfDocumentController、AdvisorKnowledgeController；新增 KnowledgeModelController。
+- 新增 `backend/src/main/java/io/deepscope/advisor/model/KnowledgeModelHttp.java`、`KnowledgeEmbeddingModel.java`、`KnowledgeChatClient.java`；修改 `ModelCatalog.java`、`ModelProbe.java`、`AdvisorModelController.java`、`OpenAiEndpointClient.java`。
+- 修改 `backend/src/main/java/io/deepscope/advisor/knowledge/` 内 DocumentIngest、DocumentStructureStore、PgChunkIndex、ChunkIndex、KnowledgeCatalog、DocumentTexts、ConfiguredVectorModelSource、PdfModelReader、PdfParser、PdfDocumentController、AdvisorKnowledgeController；新增 KnowledgeModelController。
 - 修改 AdvisorConfiguration、AdvisorSchema、application.yaml，复用现有增量建表机制。
 - 前端修改 `api/model.ts`、模型抽屉、知识库文档管理与PDF预览、EN/ZH词典和相关测试。
 - 并行工作区“思考强度”变更导致构建类型不一致：仅将 `api/account.ts` 的 reasoningEffort 从宽泛string收敛到已有5档联合类型，并补齐 ChatPage 两个测试fixture的high默认值；没有重写该任务的产品逻辑。

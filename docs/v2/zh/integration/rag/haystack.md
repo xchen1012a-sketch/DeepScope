@@ -3,7 +3,7 @@ title: HayStack
 en_link: /v2/en/integration/rag/haystack
 ---
 
-`agentscope-extensions-rag-haystack` 把 [HayStack](https://haystack.deepset.ai/) RAG 服务接进 AgentScope。文档管理和索引由 HayStack 那边负责，AgentScope 只负责调用其检索接口。
+`deepscope-extensions-rag-haystack` 把 [HayStack](https://haystack.deepset.ai/) RAG 服务接进 DeepScope。文档管理和索引由 HayStack 那边负责，DeepScope 只负责调用其检索接口。
 
 ## 何时使用
 
@@ -14,18 +14,18 @@ en_link: /v2/en/integration/rag/haystack
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-rag-haystack</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-rag-haystack</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## 快速上手
 
 ```java
-import io.agentscope.core.rag.integration.haystack.HayStackConfig;
-import io.agentscope.core.rag.integration.haystack.HayStackKnowledge;
-import io.agentscope.core.rag.model.RetrieveConfig;
+import io.deepscope.core.rag.integration.haystack.HayStackConfig;
+import io.deepscope.core.rag.integration.haystack.HayStackKnowledge;
+import io.deepscope.core.rag.model.RetrieveConfig;
 
 HayStackConfig config = HayStackConfig.builder()
     .baseUrl("http://localhost:8080")  // 你的 HayStack 服务

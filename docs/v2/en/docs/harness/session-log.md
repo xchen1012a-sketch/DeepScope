@@ -8,7 +8,7 @@ If you followed the [Quick Start](/v2/en/docs/quickstart), keep using `agent.cal
 
 Use `AgentSession` when your application accepts a task now and lets it run in the background: the user can close the page, submit more work, add guidance, answer a question or continue after interruption. The application submits commands; the frontend independently reads committed progress. This guide follows a cost-comparison assistant through those interactions.
 
-If AgentScope Service hosts your Agent, use its [Service Agent API](/v2/en/service/session-event-log). For a complete SDK application, see the [recoverable chat example](/v2/en/blogs/best-practices/session-chat).
+If DeepScope Service hosts your Agent, use its [Service Agent API](/v2/en/service/session-event-log). For a complete SDK application, see the [recoverable chat example](/v2/en/blogs/best-practices/session-chat).
 
 <span id="concepts-and-basic-apis" />
 
@@ -19,8 +19,8 @@ If AgentScope Service hosts your Agent, use its [Service Agent API](/v2/en/servi
 Configure a shared Builder, then let your application's session manager build and retain the runtime that owns the conversation. The following assumes `model` is configured as described in [Models](/v2/en/docs/building-blocks/model):
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.harness.agent.HarnessAgent;
 import java.nio.file.Path;
 
 HarnessAgent.Builder chatBuilder = HarnessAgent.builder()
@@ -83,7 +83,7 @@ Build the frontend around a snapshot and a stream of subsequent committed events
 The SDK provides the records from which your application builds that view:
 
 ```java
-import io.agentscope.core.session.log.SessionEvent;
+import io.deepscope.core.session.log.SessionEvent;
 
 var log = session.log(); // or agent.sessionLog(ctx)
 var committed = log.events(); // every committed event, in sequence order
@@ -159,7 +159,7 @@ Suppose `create_order` created an order, but the process stopped before committi
 The SDK has no API that lists uncertain tool calls. Read the committed log and decide which calls still have no result, then read the saved state:
 
 ```java
-import io.agentscope.core.session.log.StateSnapshot;
+import io.deepscope.core.session.log.StateSnapshot;
 
 StateSnapshot snapshot = agent.inspectSession(ctx);
 System.out.println(snapshot.asOfSeq()); // the committed position this state was read from
@@ -169,9 +169,9 @@ System.out.println(snapshot.asOfSeq()); // the committed position this state was
 Record what you actually verified, naming those call IDs and the reason:
 
 ```java
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.core.message.ToolResultBlock;
-import io.agentscope.core.message.ToolResultState;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.core.message.ToolResultBlock;
+import io.deepscope.core.message.ToolResultState;
 import java.util.Map;
 
 var result = ToolResultBlock.builder()
@@ -210,7 +210,7 @@ The `sessionId` remains `S1`. Submission idempotency keys, interaction request I
 Use `session.log()` or `agent.sessionLog(ctx)` to inspect a request across its runs. Group by `turnId`, then examine the model, tool and state events within each `executionRunId`:
 
 ```java
-import io.agentscope.core.session.log.SessionEvent;
+import io.deepscope.core.session.log.SessionEvent;
 
 var log = session.log(); // or agent.sessionLog(ctx)
 for (SessionEvent event : log.events()) {
@@ -269,9 +269,9 @@ Events are immutable, with payloads frozen as JSON when accepted.
 
 ## Storage and backend configuration
 
-Harness uses `WorkspaceSessionLogStore` by default, so storage follows the Workspace Filesystem. With `LocalFilesystem`, records live in `.agentscope-runtime/` under the root resolved for the current identity. With `RemoteFilesystem`, they occupy the `__agentscope_session_log_v1__` partition in the corresponding `BaseStore` namespace.
+Harness uses `WorkspaceSessionLogStore` by default, so storage follows the Workspace Filesystem. With `LocalFilesystem`, records live in `.deepscope-runtime/` under the root resolved for the current identity. With `RemoteFilesystem`, they occupy the `__deepscope_session_log_v1__` partition in the corresponding `BaseStore` namespace.
 
-On Linux and macOS, local storage commits forced temporary files through atomic replacement and syncs their parent directories. On Windows, the Java filesystem provider cannot open directories for this sync, so local Session storage uses SQLite transactions in `.agentscope-runtime/journal.sqlite3`, with a rollback journal and `synchronous=EXTRA`. Writers still perform an atomic version comparison, and storage errors propagate to the caller. Read records through the SDK; when backing up a Windows workspace, pause all writers before copying the database, or use a consistent SQLite backup. The POSIX file layout and the Windows database hold the same logical objects but are different physical formats, so moving history between them requires a log migration or a shared backend.
+On Linux and macOS, local storage commits forced temporary files through atomic replacement and syncs their parent directories. On Windows, the Java filesystem provider cannot open directories for this sync, so local Session storage uses SQLite transactions in `.deepscope-runtime/journal.sqlite3`, with a rollback journal and `synchronous=EXTRA`. Writers still perform an atomic version comparison, and storage errors propagate to the caller. Read records through the SDK; when backing up a Windows workspace, pause all writers before copying the database, or use a consistent SQLite backup. The POSIX file layout and the Windows database hold the same logical objects but are different physical formats, so moving history between them requires a log migration or a shared backend.
 
 `SessionKey(userId, agentId, sessionId)` identifies a conversation inside that backend. Preserve both the key and namespace across restarts. Within one Agent, the same identity reuses an `AgentSession` with a copy of its initial `RuntimeContext`; establish stable session-level configuration when first obtaining the session.
 
@@ -280,8 +280,8 @@ On Linux and macOS, local storage commits forced temporary files through atomic 
 Working files and session records can use separate backends. For example, keep files local while storing logs and accepted commands in an application-configured `sharedStore` with atomic versioned writes:
 
 ```java
-import io.agentscope.harness.agent.filesystem.remote.RemoteFilesystem;
-import io.agentscope.harness.agent.session.WorkspaceSessionLogStore;
+import io.deepscope.harness.agent.filesystem.remote.RemoteFilesystem;
+import io.deepscope.harness.agent.session.WorkspaceSessionLogStore;
 import java.util.List;
 
 var logStore = new WorkspaceSessionLogStore(
@@ -322,10 +322,10 @@ Back up the session header and every event object it covers, using a consistent 
 To feed an audit database or application event view, render committed records with `SessionExport`. The export is backend-neutral: a header line names the format version and the session, and every committed event follows on its own line in the same record form the store uses, so an exported session and a stored one describe the same facts. Export only reads; it never re-executes the Agent.
 
 ```java
-import io.agentscope.core.session.log.LocalSessionStore;
-import io.agentscope.core.session.log.SessionExport;
-import io.agentscope.core.session.log.SessionQuery;
-import io.agentscope.core.session.log.SessionSeq;
+import io.deepscope.core.session.log.LocalSessionStore;
+import io.deepscope.core.session.log.SessionExport;
+import io.deepscope.core.session.log.SessionQuery;
+import io.deepscope.core.session.log.SessionSeq;
 import java.nio.file.Path;
 
 var query = new SessionQuery(new LocalSessionStore(Path.of("/data/session-logs")));
@@ -347,8 +347,8 @@ SessionSeq.Seq through = bounded.throughSeq();
 A business tool or middleware may want to record a review note alongside Agent events. Obtain the invocation's kernel writer from its `RuntimeContext` and append the fact:
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.session.log.DurableSession;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.session.log.DurableSession;
 import java.util.Map;
 import reactor.core.publisher.Mono;
 
@@ -368,8 +368,8 @@ Await the returned `Mono` as part of the tool or middleware pipeline, or use `ap
 To try another route from the current conversation, build the child session's starting events with the kernel's `SessionFork`. A fork copies an inclusive prefix, marks the inherited cut, and closes only the tail the prefix left open; the source log is never modified.
 
 ```java
-import io.agentscope.core.session.log.SessionFork;
-import io.agentscope.core.session.log.SessionSeq;
+import io.deepscope.core.session.log.SessionFork;
+import io.deepscope.core.session.log.SessionSeq;
 
 // sourceEvents are the source session's committed events; the boundary is the last copied event.
 SessionFork.Seed seed =
@@ -386,4 +386,4 @@ Stop source execution before building the seed. The child starts from the copied
 
 ## Complete example: recoverable Web Chat
 
-The [agentscope-chat walkthrough](/v2/en/blogs/best-practices/session-chat) connects these operations to HTTP handlers and a browser: submit a background task, restore partial messages and tools, reconnect SSE, answer pending input and continue after interruption or restart. It runs offline by default and can also use a real model. Follow its source to adapt the application projection and runtime ownership to your own chat or task UI.
+The [deepscope-chat walkthrough](/v2/en/blogs/best-practices/session-chat) connects these operations to HTTP handlers and a browser: submit a background task, restore partial messages and tools, reconnect SSE, answer pending input and continue after interruption or restart. It runs offline by default and can also use a real model. Follow its source to adapt the application projection and runtime ownership to your own chat or task UI.

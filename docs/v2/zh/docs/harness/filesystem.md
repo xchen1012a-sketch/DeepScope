@@ -100,9 +100,9 @@ HarnessAgent agent = HarnessAgent.builder()
 
 | 实现 | 说明 |
 |------|------|
-| `RedisStore` | 基于 Jedis，适合低延迟高并发 | `agentscope-extensions-redis` |
-| `JdbcStore` | 基于 JDBC，适合 MySQL / PostgreSQL / H2 | `agentscope-extensions-mysql` |
-| `InMemoryStore` | 内存实现，适合测试 | `agentscope-harness` |
+| `RedisStore` | 基于 Jedis，适合低延迟高并发 | `deepscope-extensions-redis` |
+| `JdbcStore` | 基于 JDBC，适合 MySQL / PostgreSQL / H2 | `deepscope-extensions-mysql` |
+| `InMemoryStore` | 内存实现，适合测试 | `deepscope-harness` |
 
 ---
 
@@ -258,7 +258,7 @@ HarnessAgent agent = HarnessAgent.builder()
 HarnessAgent codingAgent = HarnessAgent.builder()
     .name("coder")
     .model(model)
-    .workspace(Paths.get(".agentscope/workspace"))
+    .workspace(Paths.get(".deepscope/workspace"))
     .filesystem(new DockerFilesystemSpec()
         .image("node:20-slim")
         .isolationScope(IsolationScope.USER)
@@ -294,7 +294,7 @@ agent.call(Msg.user("npm run build"), rc).block();
 
 ### 模式 3：本机 + shell（默认）
 
-什么都不写就是这个：工作区落到 `${cwd}/.agentscope/workspace/`，shell 在宿主上跑：
+什么都不写就是这个：工作区落到 `${cwd}/.deepscope/workspace/`，shell 在宿主上跑：
 
 ```java
 HarnessAgent agent = HarnessAgent.builder()
@@ -349,7 +349,7 @@ HarnessAgent agent = HarnessAgent.builder()
 
 #### 项目可写模式（`projectWritable`）
 
-默认情况下，所有写入都落到 workspace——这对阅读/分析类场景足够，但如果 agent 的核心任务是**生成代码**（如写一个微服务），你会发现文件全写到了 `.agentscope/workspace/` 而不是项目目录。
+默认情况下，所有写入都落到 workspace——这对阅读/分析类场景足够，但如果 agent 的核心任务是**生成代码**（如写一个微服务），你会发现文件全写到了 `.deepscope/workspace/` 而不是项目目录。
 
 开启 `projectWritable(true)` 后，框架会根据路径自动路由写入目标：
 
@@ -372,7 +372,7 @@ HarnessAgent agent = HarnessAgent.builder()
 HarnessAgent devHelper = HarnessAgent.builder()
     .name("dev-helper")
     .model(model)
-    .workspace(Paths.get(".agentscope/workspace"))
+    .workspace(Paths.get(".deepscope/workspace"))
     .filesystem(new LocalFilesystemSpec()
         .project(Paths.get("/Users/alice/my-project"))
         .addRoot(Paths.get("/Users/alice/.config"))

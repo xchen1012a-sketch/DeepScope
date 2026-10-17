@@ -3,7 +3,7 @@ title: 百炼知识库
 en_link: /v2/en/integration/rag/bailian
 ---
 
-`agentscope-extensions-rag-bailian` 接入阿里云百炼知识库，所有 embedding、索引、检索都由百炼托管。Agent 这边只负责把 query 抛过去、把文档拿回来。
+`deepscope-extensions-rag-bailian` 接入阿里云百炼知识库，所有 embedding、索引、检索都由百炼托管。Agent 这边只负责把 query 抛过去、把文档拿回来。
 
 ## 何时使用
 
@@ -15,18 +15,18 @@ en_link: /v2/en/integration/rag/bailian
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-rag-bailian</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-rag-bailian</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## 快速上手
 
 ```java
-import io.agentscope.core.rag.integration.bailian.BailianConfig;
-import io.agentscope.core.rag.integration.bailian.BailianKnowledge;
-import io.agentscope.core.rag.model.RetrieveConfig;
+import io.deepscope.core.rag.integration.bailian.BailianConfig;
+import io.deepscope.core.rag.integration.bailian.BailianKnowledge;
+import io.deepscope.core.rag.model.RetrieveConfig;
 
 BailianConfig config = BailianConfig.builder()
     .accessKeyId(System.getenv("ALIBABA_CLOUD_ACCESS_KEY_ID"))

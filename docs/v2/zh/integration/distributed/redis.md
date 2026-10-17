@@ -3,15 +3,15 @@ title: Redis
 en_link: /v2/en/integration/distributed/redis
 ---
 
-`agentscope-extensions-redis` 提供全链路的 Redis 分布式存储实现，是多副本生产部署的首选后端。
+`deepscope-extensions-redis` 提供全链路的 Redis 分布式存储实现，是多副本生产部署的首选后端。
 
 ## 添加依赖
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-redis</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-redis</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -20,7 +20,7 @@ en_link: /v2/en/integration/distributed/redis
 ## 一键配置
 
 ```java
-import io.agentscope.extensions.redis.RedisDistributedStore;
+import io.deepscope.extensions.redis.RedisDistributedStore;
 
 JedisPooled jedis = new JedisPooled("redis://localhost:6379");
 DistributedStore store = RedisDistributedStore.fromJedis(jedis);
@@ -45,7 +45,7 @@ DistributedStore store = RedisDistributedStore.fromJedis(jedis, "prod:");
 Agent 状态持久化到 Redis。支持 Jedis / Lettuce / Redisson 三种客户端。
 
 ```java
-import io.agentscope.extensions.redis.state.RedisAgentStateStore;
+import io.deepscope.extensions.redis.state.RedisAgentStateStore;
 
 // Jedis
 AgentStateStore store = RedisAgentStateStore.builder()
@@ -76,7 +76,7 @@ AgentStateStore store = RedisAgentStateStore.builder()
 工作区文件系统 KV 存储，供 `RemoteFilesystemSpec` 使用。
 
 ```java
-import io.agentscope.extensions.redis.store.RedisStore;
+import io.deepscope.extensions.redis.store.RedisStore;
 
 BaseStore store = new RedisStore(jedis);
 BaseStore store = new RedisStore(jedis, "myapp:store:");
@@ -89,7 +89,7 @@ BaseStore store = new RedisStore(jedis, "myapp:store:");
 沙箱快照存储到 Redis 二进制 key。适合小工作区 + 短 TTL 场景。
 
 ```java
-import io.agentscope.extensions.redis.snapshot.RedisSnapshotSpec;
+import io.deepscope.extensions.redis.snapshot.RedisSnapshotSpec;
 
 SandboxSnapshotSpec spec = new RedisSnapshotSpec(jedis, "myapp:snapshot:", 3600);
 ```
@@ -101,7 +101,7 @@ SandboxSnapshotSpec spec = new RedisSnapshotSpec(jedis, "myapp:snapshot:", 3600)
 基于 Redis `SET NX PX` 租约的分布式锁，用于 `AGENT` / `GLOBAL` 隔离范围下的多副本并发控制。
 
 ```java
-import io.agentscope.extensions.redis.sandbox.RedisSandboxExecutionGuard;
+import io.deepscope.extensions.redis.sandbox.RedisSandboxExecutionGuard;
 
 SandboxExecutionGuard guard = RedisSandboxExecutionGuard.builder(jedis)
     .keyPrefix("myapp:guard:")

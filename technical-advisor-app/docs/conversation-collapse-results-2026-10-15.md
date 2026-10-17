@@ -2,7 +2,7 @@
 
 状态：**会话专项实现、审查修复与验收已完成；仓库全量检查仍有范围外失败，未宣称全仓门禁通过。**
 
-依据：[技术方案](/Users/agent/agentscope-java/docs/superpowers/specs/2026-10-14-conversation-process-collapse-design.md)、[实施计划](/Users/agent/agentscope-java/docs/superpowers/plans/2026-10-14-conversation-process-collapse.md)。
+依据：[技术方案](/Users/agent/deepscope-java/docs/superpowers/specs/2026-10-14-conversation-process-collapse-design.md)、[实施计划](/Users/agent/deepscope-java/docs/superpowers/plans/2026-10-14-conversation-process-collapse.md)。
 
 ## 已交付的行为
 
@@ -29,16 +29,16 @@
 
 后端核心：
 
-- [ConversationPresentation.java](/Users/agent/agentscope-java/technical-advisor-app/backend/src/main/java/io/agentscope/advisor/session/ConversationPresentation.java)：服务端最终身份、时间采样与校验。
-- [AguiRoundPersister.java](/Users/agent/agentscope-java/technical-advisor-app/backend/src/main/java/io/agentscope/advisor/session/AguiRoundPersister.java)：展示事件、按运行隔离与断线兜底。
-- [AdvisorSessionController.java](/Users/agent/agentscope-java/technical-advisor-app/backend/src/main/java/io/agentscope/advisor/session/AdvisorSessionController.java)、[TimelineStore.java](/Users/agent/agentscope-java/technical-advisor-app/backend/src/main/java/io/agentscope/advisor/session/TimelineStore.java)：校验和保存元数据；客户端不能覆盖已采样的服务端时间。
+- [ConversationPresentation.java](/Users/agent/deepscope-java/technical-advisor-app/backend/src/main/java/io/deepscope/advisor/session/ConversationPresentation.java)：服务端最终身份、时间采样与校验。
+- [AguiRoundPersister.java](/Users/agent/deepscope-java/technical-advisor-app/backend/src/main/java/io/deepscope/advisor/session/AguiRoundPersister.java)：展示事件、按运行隔离与断线兜底。
+- [AdvisorSessionController.java](/Users/agent/deepscope-java/technical-advisor-app/backend/src/main/java/io/deepscope/advisor/session/AdvisorSessionController.java)、[TimelineStore.java](/Users/agent/deepscope-java/technical-advisor-app/backend/src/main/java/io/deepscope/advisor/session/TimelineStore.java)：校验和保存元数据；客户端不能覆盖已采样的服务端时间。
 
 前端核心：
 
-- [aguiClient.ts](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/aguiClient.ts)、[useAdvisorConversation.ts](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/useAdvisorConversation.ts)：生命周期、运行身份及实时/保存数据。
-- [blocks.ts](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/model/blocks.ts)、[TurnGroup.tsx](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/components/TurnGroup.tsx)：统一过程投影、最终多块正文和整轮折叠。
-- [ConversationPanel.tsx](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/ConversationPanel.tsx)、[conversationScroll.ts](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/conversationScroll.ts)：流式跟随、阅读锚定与手动展开。
-- `src/api/advisor.ts`、`conversationModel.ts`、中英文词典和相应测试；[会话浏览器测试](/Users/agent/agentscope-java/technical-advisor-app/frontend/e2e/conversation-collapse.e2e.ts)。
+- [aguiClient.ts](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/aguiClient.ts)、[useAdvisorConversation.ts](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/useAdvisorConversation.ts)：生命周期、运行身份及实时/保存数据。
+- [blocks.ts](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/model/blocks.ts)、[TurnGroup.tsx](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/components/TurnGroup.tsx)：统一过程投影、最终多块正文和整轮折叠。
+- [ConversationPanel.tsx](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/ConversationPanel.tsx)、[conversationScroll.ts](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/conversationScroll.ts)：流式跟随、阅读锚定与手动展开。
+- `src/api/advisor.ts`、`conversationModel.ts`、中英文词典和相应测试；[会话浏览器测试](/Users/agent/deepscope-java/technical-advisor-app/frontend/e2e/conversation-collapse.e2e.ts)。
 
 同步了中英文会话使用说明及旧会话设计条款。新增数据写入既有JSON payload，无数据库表迁移、无新依赖、无core/harness/AG-UI扩展公共源码修改。
 
@@ -78,7 +78,7 @@ E2E使用本机已安装Chrome、真实React页面和本地确定性API/SSE fixt
 
 保留混合工作区，未commit、未push。任务开始前相关文件副本仍在`/tmp/advisor-conversation-collapse-baseline`，核心任务增量diff在`/tmp/advisor-collapse-final-task.diff`；它们与测试日志均为本机临时证据，不是永久归档。
 
-[2026-10-14暂停交接](/Users/agent/agentscope-java/technical-advisor-app/docs/handoff-2026-10-14-conversation-collapse.md)保留历史快照，最新状态以本文为准。
+[2026-10-14暂停交接](/Users/agent/deepscope-java/technical-advisor-app/docs/handoff-2026-10-14-conversation-collapse.md)保留历史快照，最新状态以本文为准。
 
 
 ## 真实会话回归修复（2026-10-15）

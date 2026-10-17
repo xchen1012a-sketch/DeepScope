@@ -236,7 +236,7 @@ skillBox.codeExecution()
 **Configuration Reference**:
 
 - **Tool Selection**: Combine `withShell()`, `withRead()`, `withWrite()` as needed — only explicitly enabled tools are registered
-- **`workDir`**: Shared working directory for all tools. Created automatically when specified; if omitted, a temporary directory `agentscope-code-execution-*` is created lazily and cleaned up on JVM exit
+- **`workDir`**: Shared working directory for all tools. Created automatically when specified; if omitted, a temporary directory `deepscope-code-execution-*` is created lazily and cleaned up on JVM exit
 - **`uploadDir`**: Upload location for Skill resource files; defaults to `workDir/skills`
 - **File Filtering**: Controls which resource files are allowed to upload. Defaults to `scripts/`, `assets/` folders and `.py`, `.js`, `.sh` extensions. Adjust with `includeFolders()`/`includeExtensions()`, or fully customize with `fileFilter()` (the two approaches are mutually exclusive)
 - **Custom Shell**: `withShell(customShellTool)` accepts a custom tool whose `baseDir` is automatically overridden with `workDir` while preserving its security policy
@@ -354,7 +354,7 @@ try (NacosSkillRepository repository = new NacosSkillRepository(aiService, "name
 } catch //...
 ```
 
-> Note: Add the `agentscope-extensions-nacos-skill` dependency.
+> Note: Add the `deepscope-extensions-nacos-skill` dependency.
 
 ### Feature 4: Custom Skill Prompts
 

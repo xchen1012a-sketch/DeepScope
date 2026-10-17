@@ -5,7 +5,7 @@ zh_link: /v1/zh/docs/task/memory
 
 ## Overview
 
-Memory manages conversation history and context for agents in AgentScope. AgentScope provides two types of memory:
+Memory manages conversation history and context for agents in DeepScope. DeepScope provides two types of memory:
 
 - **Short-term Memory**: Stores conversation history for the current session, requires Session for persistence and recovery
 - **Long-term Memory**: Stores user preferences and knowledge across sessions, automatically persisted by external memory components (e.g., Mem0, ReMe)
@@ -65,8 +65,8 @@ The default short-term memory implementation, stores messages in memory.
 **Usage Example**:
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.InMemoryMemory;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.InMemoryMemory;
 
 ReActAgent agent = ReActAgent.builder()
         .name("Assistant")
@@ -88,8 +88,8 @@ System.out.println("Total messages: " + history.size());
 Short-term memory requires `SessionManager` for persistence to support session recovery after restart.
 
 ```java
-import io.agentscope.core.session.JsonSession;
-import io.agentscope.core.session.SessionManager;
+import io.deepscope.core.session.JsonSession;
+import io.deepscope.core.session.SessionManager;
 
 // Create Agent and Memory
 InMemoryMemory memory = new InMemoryMemory();
@@ -114,7 +114,7 @@ sessionManager.loadIfExists();
 sessionManager.saveSession();
 ```
 
-**Complete Example**: `agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/SessionExample.java`
+**Complete Example**: `deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/SessionExample.java`
 
 ## Long-term Memory
 
@@ -155,9 +155,9 @@ The OpenAPI interfaces provided by self-hosted Mem0 and Platform Mem0 are incons
 **Platform Mem0 (default)**:
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.LongTermMemoryMode;
-import io.agentscope.core.memory.mem0.Mem0LongTermMemory;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.LongTermMemoryMode;
+import io.deepscope.core.memory.mem0.Mem0LongTermMemory;
 
 // Using Platform Mem0 (default, no need to specify apiType)
 Mem0LongTermMemory longTermMemory = Mem0LongTermMemory.builder()
@@ -178,10 +178,10 @@ ReActAgent agent = ReActAgent.builder()
 **Self-hosted Mem0**:
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.LongTermMemoryMode;
-import io.agentscope.core.memory.mem0.Mem0ApiType;
-import io.agentscope.core.memory.mem0.Mem0LongTermMemory;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.LongTermMemoryMode;
+import io.deepscope.core.memory.mem0.Mem0ApiType;
+import io.deepscope.core.memory.mem0.Mem0LongTermMemory;
 
 // Using self-hosted Mem0, need to specify apiType as Mem0ApiType.SELF_HOSTED
 Mem0LongTermMemory selfHostedMemory = Mem0LongTermMemory.builder()
@@ -212,7 +212,7 @@ ReActAgent agent = ReActAgent.builder()
   - Platform Mem0: Required
   - Self-hosted Mem0: Depends on your service configuration, may not be needed
 
-**Complete Example**: `agentscope-examples/documentation/advanced/src/main/java/io/agentscope/examples/advanced/Mem0Example.java`
+**Complete Example**: `deepscope-examples/documentation/advanced/src/main/java/io/deepscope/examples/advanced/Mem0Example.java`
 
 **Run Example**:
 
@@ -220,27 +220,27 @@ ReActAgent agent = ReActAgent.builder()
 # Platform Mem0 (default)
 export MEM0_API_KEY=your_api_key
 export MEM0_API_BASE_URL=https://api.mem0.ai  # Optional, defaults to this value
-cd agentscope-examples/documentation/advanced
-mvn exec:java -Dexec.mainClass="io.agentscope.examples.advanced.Mem0Example"
+cd deepscope-examples/documentation/advanced
+mvn exec:java -Dexec.mainClass="io.deepscope.examples.advanced.Mem0Example"
 
 # Self-hosted Mem0
 export MEM0_API_KEY=your_api_key  # Optional, depends on service configuration
 export MEM0_API_BASE_URL=http://localhost:8000
 export MEM0_API_TYPE=self-hosted
-cd agentscope-examples/documentation/advanced
-mvn exec:java -Dexec.mainClass="io.agentscope.examples.advanced.Mem0Example"
+cd deepscope-examples/documentation/advanced
+mvn exec:java -Dexec.mainClass="io.deepscope.examples.advanced.Mem0Example"
 ```
 
 ### ReMeLongTermMemory
 
-Long-term memory implementation based on [ReMe](https://github.com/agentscope-ai/ReMe).
+Long-term memory implementation based on [ReMe](https://github.com/deepscope-ai/ReMe).
 
 **Usage Example**:
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.LongTermMemoryMode;
-import io.agentscope.core.memory.reme.ReMeLongTermMemory;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.LongTermMemoryMode;
+import io.deepscope.core.memory.reme.ReMeLongTermMemory;
 
 ReMeLongTermMemory longTermMemory = ReMeLongTermMemory.builder()
         .userId("example_user")
@@ -255,14 +255,14 @@ ReActAgent agent = ReActAgent.builder()
         .build();
 ```
 
-**Complete Example**: `agentscope-examples/documentation/advanced/src/main/java/io/agentscope/examples/advanced/ReMeExample.java`
+**Complete Example**: `deepscope-examples/documentation/advanced/src/main/java/io/deepscope/examples/advanced/ReMeExample.java`
 
 **Run Example**:
 
 ```bash
 # Requires REME_API_BASE_URL environment variable (optional, defaults to http://localhost:8002)
 cd examples/advanced
-mvn exec:java -Dexec.mainClass="io.agentscope.examples.advanced.ReMeExample"
+mvn exec:java -Dexec.mainClass="io.deepscope.examples.advanced.ReMeExample"
 ```
 
 ### BailianLongTermMemory
@@ -272,9 +272,9 @@ Long-term memory implementation based on [Bailian Memory Library](https://help.a
 **Usage Example**:
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.LongTermMemoryMode;
-import io.agentscope.core.memory.bailian.BailianLongTermMemory;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.LongTermMemoryMode;
+import io.deepscope.core.memory.bailian.BailianLongTermMemory;
 
 BailianLongTermMemory longTermMemory = BailianLongTermMemory.builder()
         .apiKey(System.getenv("DASHSCOPE_API_KEY"))
@@ -300,7 +300,7 @@ ReActAgent agent = ReActAgent.builder()
 - `projectId`: Bailian project ID (optional)
 - `profileSchema`: Bailian configuration Schema ID (optional)
 
-**Complete Example**: `agentscope-examples/documentation/advanced/src/main/java/io/agentscope/examples/advanced/BailianMemoryExample.java`
+**Complete Example**: `deepscope-examples/documentation/advanced/src/main/java/io/deepscope/examples/advanced/BailianMemoryExample.java`
 
 **Run Example**:
 
@@ -311,8 +311,8 @@ export BAILIAN_MEMORY_LIBRARY_ID=your_library_id
 export BAILIAN_PROJECT_ID=your_project_id
 export BAILIAN_PROFILE_SCHEMA=your_profile_schema
 
-cd agentscope-examples/documentation/advanced
-mvn exec:java -Dexec.mainClass="io.agentscope.examples.advanced.BailianMemoryExample"
+cd deepscope-examples/documentation/advanced
+mvn exec:java -Dexec.mainClass="io.deepscope.examples.advanced.BailianMemoryExample"
 ```
 
 ## Related Documentation

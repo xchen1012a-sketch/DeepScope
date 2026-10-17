@@ -3,15 +3,15 @@ title: Anthropic
 en_link: /v2/en/integration/model/anthropic
 ---
 
-`agentscope-extensions-model-anthropic` 接入 Anthropic Claude Model，并提供 Anthropic 专属 formatter 和请求 DTO 支持。
+`deepscope-extensions-model-anthropic` 接入 Anthropic Claude Model，并提供 Anthropic 专属 formatter 和请求 DTO 支持。
 
 ## 添加依赖
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-anthropic</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-model-anthropic</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -31,7 +31,7 @@ ReActAgent agent = ReActAgent.builder()
 需要自定义 endpoint、formatter、transport、prompt caching、thinking 或生成参数时，使用 builder：
 
 ```java
-import io.agentscope.extensions.model.anthropic.AnthropicChatModel;
+import io.deepscope.extensions.model.anthropic.AnthropicChatModel;
 
 AnthropicChatModel model = AnthropicChatModel.builder()
     .apiKey(System.getenv("ANTHROPIC_API_KEY"))
@@ -42,13 +42,13 @@ AnthropicChatModel model = AnthropicChatModel.builder()
 
 ## 服务端工具
 
-Anthropic 内置工具由 Anthropic 在模型服务端执行，不会进入 AgentScope 本地 Toolkit。使用 SDK
+Anthropic 内置工具由 Anthropic 在模型服务端执行，不会进入 DeepScope 本地 Toolkit。使用 SDK
 的强类型工具定义构造 `ToolUnion`，再交给 `AnthropicServerTool.of(...)` 包装：
 
 ```java
 import com.anthropic.models.messages.ToolUnion;
 import com.anthropic.models.messages.WebSearchTool20250305;
-import io.agentscope.extensions.model.anthropic.tool.AnthropicServerTool;
+import io.deepscope.extensions.model.anthropic.tool.AnthropicServerTool;
 
 AnthropicChatModel model = AnthropicChatModel.builder()
     .apiKey(System.getenv("ANTHROPIC_API_KEY"))
@@ -85,16 +85,16 @@ Spring Boot 应用可以使用 Anthropic starter：
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-anthropic-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-anthropic-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 通过 Bearer Token 接入网关的配置示例：
 
 ```yaml
-agentscope:
+deepscope:
   model:
     provider: anthropic
   anthropic:
@@ -103,8 +103,8 @@ agentscope:
     model-name: claude-sonnet-4.5
 ```
 
-`agentscope.anthropic.auth-token` 为可选配置，未设置或为空白时不启用 Bearer 鉴权。
-原有的 `agentscope.anthropic.api-key` 配置仍然可用，但同时配置两个非空白凭据会导致启动失败。
+`deepscope.anthropic.auth-token` 为可选配置，未设置或为空白时不启用 Bearer 鉴权。
+原有的 `deepscope.anthropic.api-key` 配置仍然可用，但同时配置两个非空白凭据会导致启动失败。
 Builder customizer 在校验前执行，可以通过 `apiKey(null)` 或 `authToken(null)` 清除其中一种凭据。
 
 完整 builder 选项、formatter、credential 和 registry context 细节见 [模型](/v2/zh/docs/building-blocks/model)。

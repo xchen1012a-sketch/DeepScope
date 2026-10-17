@@ -9,24 +9,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.agentscope.examples.jev;
+package io.deepscope.examples.jev;
 
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.UserMessage;
-import io.agentscope.core.middleware.AgentInput;
-import io.agentscope.core.middleware.ModelCallInput;
-import io.agentscope.core.middleware.ReasoningInput;
-import io.agentscope.core.model.ChatResponse;
-import io.agentscope.core.model.GenerateOptions;
-import io.agentscope.core.model.Model;
-import io.agentscope.core.model.ToolSchema;
-import io.agentscope.extensions.judge.jev.ChoiceAnswer;
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.NoulAnswer;
-import io.agentscope.extensions.judge.jev.SystemOneResult;
-import io.agentscope.extensions.judge.jev.example.JevModelRouterMiddleware;
-import io.agentscope.extensions.judge.jev.example.JevToolSelectionMiddleware;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.UserMessage;
+import io.deepscope.core.middleware.AgentInput;
+import io.deepscope.core.middleware.ModelCallInput;
+import io.deepscope.core.middleware.ReasoningInput;
+import io.deepscope.core.model.ChatResponse;
+import io.deepscope.core.model.GenerateOptions;
+import io.deepscope.core.model.Model;
+import io.deepscope.core.model.ToolSchema;
+import io.deepscope.extensions.judge.jev.ChoiceAnswer;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.NoulAnswer;
+import io.deepscope.extensions.judge.jev.SystemOneResult;
+import io.deepscope.extensions.judge.jev.example.JevModelRouterMiddleware;
+import io.deepscope.extensions.judge.jev.example.JevToolSelectionMiddleware;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;

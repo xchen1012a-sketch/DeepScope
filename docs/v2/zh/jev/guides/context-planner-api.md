@@ -13,7 +13,7 @@ title: "显式规划工具交换对的保留与卸载"
 ## 1. 准备完整交换对
 
 ```java
-import io.agentscope.extensions.judge.jev.application.JevContextPlanner;
+import io.deepscope.extensions.judge.jev.application.JevContextPlanner;
 import java.util.List;
 
 var exchanges = List.of(
@@ -52,7 +52,7 @@ var observed = pending.doOnNext(plan -> {
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后执行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios context
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevApplicationScenarios context
 ```
 
 离线预设把 `old-search` 放入内存归档，保留 `current-test`，恢复后顺序仍为旧搜索、当前测试；没有重新执行任何工具。[JevApplicationScenarios 完整源码](/examples/jev/source/JevApplicationScenarios.java.txt)

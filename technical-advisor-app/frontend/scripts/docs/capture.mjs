@@ -8,7 +8,7 @@ import { installFixtures, timestamp } from './fixtures.mjs';
 
 const frontend = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const output = resolve(frontend, '../../docs/imgs/service');
-const staging = await mkdtemp(join(tmpdir(), 'agentscope-docs-capture-'));
+const staging = await mkdtemp(join(tmpdir(), 'deepscope-docs-capture-'));
 const server = await createServer({ root: frontend, server: { host: '127.0.0.1', port: 5188, strictPort: true, open: false } });
 let browser;
 const shots = [];

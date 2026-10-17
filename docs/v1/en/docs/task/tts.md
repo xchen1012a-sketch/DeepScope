@@ -3,7 +3,7 @@ title: Text-to-Speech (TTS)
 zh_link: /v1/zh/docs/task/tts
 ---
 
-AgentScope Java provides comprehensive TTS capabilities, enabling Agents not only to think and respond, but also to speak. Compared to text-only scenarios, voice is a more natural interaction method, suitable for intelligent customer service, in-car assistants, and real-time conversation scenarios that generate and speak simultaneously.
+DeepScope Java provides comprehensive TTS capabilities, enabling Agents not only to think and respond, but also to speak. Compared to text-only scenarios, voice is a more natural interaction method, suitable for intelligent customer service, in-car assistants, and real-time conversation scenarios that generate and speak simultaneously.
 
 ## Choosing the Right Model
 
@@ -13,7 +13,7 @@ AgentScope Java provides comprehensive TTS capabilities, enabling Agents not onl
 
 ## Usage Methods
 
-AgentScope provides three ways to use TTS:
+DeepScope provides three ways to use TTS:
 
 **ReActAgent Integration**: By adding TTSHook to ReActAgent, you can achieve automatic speech for all Agent responses. Simply adding TTSHook enables the speak-while-generating effect.
 
@@ -69,7 +69,7 @@ Msg response = agent.call(Msg.builder().textContent("你好，今天天气怎么
 
 ### Server Mode (Web/SSE)
 
-In web applications, audio needs to be sent to the frontend for playback. You can send audio to the frontend via SSE or use reactive streams. Complete code can be found in the `agentscope-examples/documentation/chat-tts` module, which includes frontend and backend interaction.
+In web applications, audio needs to be sent to the frontend for playback. You can send audio to the frontend via SSE or use reactive streams. Complete code can be found in the `deepscope-examples/documentation/chat-tts` module, which includes frontend and backend interaction.
 
 ---
 
@@ -171,8 +171,8 @@ Msg response = agent.call(Msg.builder().textContent("请用语音说一句'欢�
 
 ## Complete Examples
 
-- Quick Start: `agentscope-examples/documentation/quickstart/TTSExample.java`
-- Complete Example: `agentscope-examples/documentation/chat-tts` module, includes frontend and backend interaction
+- Quick Start: `deepscope-examples/documentation/quickstart/TTSExample.java`
+- Complete Example: `deepscope-examples/documentation/chat-tts` module, includes frontend and backend interaction
 
 ---
 

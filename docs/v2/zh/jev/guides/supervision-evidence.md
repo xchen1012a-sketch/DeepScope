@@ -13,8 +13,8 @@ title: "为交付监督提供可信验证证据"
 ## 1. 接入应用自己的证据读取流程
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.extensions.judge.jev.supervision.JevSupervisionMiddleware;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.extensions.judge.jev.supervision.JevSupervisionMiddleware;
 
 var source = new JevSupervisionMiddleware.EvidenceSource(request ->
     evidenceRepository.readAuthorizedSnapshot(request));
@@ -55,7 +55,7 @@ REVIEW_COMPLETION 表示可以进入复核，不意味着监督器已替你完�
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP`：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevSupervisionExample
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevSupervisionExample
 ```
 
 用例在本地记录订单工具恰好执行一次，然后由宿主提供 `order-42-v1` 的验证收据，使用当前 request.scope 中的身份与运行 UUID。预设 JEV 判断通过后输出 REVIEW_COMPLETION，`verified revision` 为 true。[完整源码](/examples/jev/source/JevSupervisionExample.java.txt)

@@ -3,7 +3,7 @@ title: Simple
 en_link: /v2/en/integration/rag/simple
 ---
 
-`agentscope-extensions-rag-simple` 提供一个"自己掌控全部链路"的 RAG 实现：自带文档读取器、分块策略、Embedding 模型适配、以及 5 个开箱即用的向量库适配器。
+`deepscope-extensions-rag-simple` 提供一个"自己掌控全部链路"的 RAG 实现：自带文档读取器、分块策略、Embedding 模型适配、以及 5 个开箱即用的向量库适配器。
 
 适合：你愿意自己跑 embedding + 向量库，不想接入第三方 RAG 平台。
 
@@ -11,19 +11,19 @@ en_link: /v2/en/integration/rag/simple
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-rag-simple</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-rag-simple</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## 快速上手
 
 ```java
-import io.agentscope.core.embedding.dashscope.DashScopeTextEmbedding;
-import io.agentscope.core.rag.knowledge.SimpleKnowledge;
-import io.agentscope.core.rag.store.InMemoryStore;
-import io.agentscope.core.rag.model.RetrieveConfig;
+import io.deepscope.core.embedding.dashscope.DashScopeTextEmbedding;
+import io.deepscope.core.rag.knowledge.SimpleKnowledge;
+import io.deepscope.core.rag.store.InMemoryStore;
+import io.deepscope.core.rag.model.RetrieveConfig;
 
 // 1) Embedding 模型
 EmbeddingModel embeddings = DashScopeTextEmbedding.builder()
@@ -47,14 +47,14 @@ knowledge.addDocuments(docs).block();
 
 // 5) 检索
 List<Document> hits = knowledge.retrieve(
-    "什么是 AgentScope？",
+    "什么是 DeepScope？",
     RetrieveConfig.builder().limit(5).scoreThreshold(0.5).build()
 ).block();
 ```
 
 ## 内置文档读取器
 
-`io.agentscope.core.rag.reader` 包提供了一组常见格式的 Reader，全部产出 `List<Document>`：
+`io.deepscope.core.rag.reader` 包提供了一组常见格式的 Reader，全部产出 `List<Document>`：
 
 | Reader | 输入 |
 | --- | --- |

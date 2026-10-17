@@ -18,7 +18,7 @@ import { test, expect } from '@playwright/test';
 import { listPageFixture } from './listPageFixture';
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => { localStorage.setItem('claw_token', 'local-ui-test'); localStorage.setItem('controlplane.console.locale', 'en'); });
+  await page.addInitScript(() => { localStorage.setItem('deepscope_token', 'local-ui-test'); localStorage.setItem('deepscope.locale', 'en'); });
   const agents = [{ agentId: 'a', name: 'Alpha', description: 'Review code', origin: 'personal', mine: true, canEdit: true, counts: { skills: 0, subagents: 0 } }, { agentId: 'b', name: 'Beta', description: 'Meeting notes', origin: 'personal', mine: true, canEdit: true, counts: { skills: 0, subagents: 0 } }];
   const files: Record<string, string> = { a: 'Alpha instructions', b: 'Beta instructions' };
   await page.route('http://127.0.0.1:5190/api/**', async route => {

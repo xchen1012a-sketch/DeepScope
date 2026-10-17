@@ -3,7 +3,7 @@ title: Overview
 zh_link: /v2/zh/integration/memory/overview
 ---
 
-`LongTermMemory` is the AgentScope interface for persisting user preferences, facts, and key takeaways across multiple turns and sessions. The `agentscope-extensions-*` repository ships ready-to-use implementations for the major memory stores:
+`LongTermMemory` is the DeepScope interface for persisting user preferences, facts, and key takeaways across multiple turns and sessions. The `deepscope-extensions-*` repository ships ready-to-use implementations for the major memory stores:
 
 | Extension | Backend | Best for |
 | --- | --- | --- |
@@ -11,7 +11,7 @@ zh_link: /v2/zh/integration/memory/overview
 | [Bailian](/v2/en/integration/memory/bailian) | Alibaba Cloud Bailian memory service | Cloud-managed memory with rerank / judge / rewrite features |
 | [ReMe](/v2/en/integration/memory/reme) | Self-hosted ReMe service | Workspace-level memory with trajectory summarization |
 
-All three implement the same `io.agentscope.core.memory.LongTermMemory` interface and are wired into an Agent the same way:
+All three implement the same `io.deepscope.core.memory.LongTermMemory` interface and are wired into an Agent the same way:
 
 ```java
 ReActAgent agent = ReActAgent.builder()

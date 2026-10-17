@@ -3,7 +3,7 @@ title: Build Agent Harnesses with JEV
 zh_link: /v2/zh/jev/index
 ---
 
-JEV adds typed semantic decisions to your Harness: tool selection, response review, context retention, routing and task supervision. Use components directly, register middleware or tools, or configure supported capabilities through AgentScope Service.
+JEV adds typed semantic decisions to your Harness: tool selection, response review, context retention, routing and task supervision. Use components directly, register middleware or tools, or configure supported capabilities through DeepScope Service.
 
 For example, a support agent can select order tools, check a conditional refund before dispatch, review its final reply against policy evidence, and evaluate the completed trace. Enable each step independently; a semantic approval never proves that the refund was executed.
 
@@ -25,12 +25,12 @@ Detailed guides are currently available in Chinese. Each explains the supported 
 ## Start with an offline example
 
 ```bash
-mvn -pl agentscope-dependencies-bom,agentscope-distribution/agentscope-bom,agentscope-examples/jev -am install -DskipTests
-mvn -pl agentscope-examples/jev dependency:build-classpath -Dmdep.outputFile=/tmp/jev-examples-cp.txt
-java -cp "agentscope-examples/jev/target/classes:$(cat /tmp/jev-examples-cp.txt)" io.agentscope.examples.jev.JevIntegrationExample
+mvn -pl deepscope-dependencies-bom,deepscope-distribution/deepscope-bom,deepscope-examples/jev -am install -DskipTests
+mvn -pl deepscope-examples/jev dependency:build-classpath -Dmdep.outputFile=/tmp/jev-examples-cp.txt
+java -cp "deepscope-examples/jev/target/classes:$(cat /tmp/jev-examples-cp.txt)" io.deepscope.examples.jev.JevIntegrationExample
 ```
 
-This example uses scripted generation and judgment responses; no API key is required. The final reply retains the unused-order and seven-day conditions. The example checks that revision uses no tools. See the [scenario catalog](/v2/zh/jev/guides/agent-integration-example) for focused examples and their API guides. Runnable examples live in `agentscope-examples/jev`. Add `agentscope-extensions-jev` to your application and the same-version `agentscope-harness` dependency when using Harness integrations.
+This example uses scripted generation and judgment responses; no API key is required. The final reply retains the unused-order and seven-day conditions. The example checks that revision uses no tools. See the [scenario catalog](/v2/zh/jev/guides/agent-integration-example) for focused examples and their API guides. Runnable examples live in `deepscope-examples/jev`. Add `deepscope-extensions-jev` to your application and the same-version `deepscope-harness` dependency when using Harness integrations.
 
 ## Adopt decisions explicitly
 

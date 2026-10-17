@@ -15,13 +15,13 @@ title: "按能力、配额与显式阶段路由"
 `client` 初始化见[客户端接入](/v2/zh/jev/guides/client)。以下先用 SHADOW 观察建议，不改变实际模型：
 
 ```java
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.routing.JevPhaseRouting;
-import io.agentscope.extensions.judge.jev.routing.JevRouteCatalog.*;
-import io.agentscope.extensions.judge.jev.example.JevModelRouterMiddleware;
-import io.agentscope.extensions.judge.jev.application.JevStageRouter;
-import io.agentscope.harness.agent.HarnessAgent;
-import io.agentscope.core.middleware.ModelCallInput;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.routing.JevPhaseRouting;
+import io.deepscope.extensions.judge.jev.routing.JevRouteCatalog.*;
+import io.deepscope.extensions.judge.jev.example.JevModelRouterMiddleware;
+import io.deepscope.extensions.judge.jev.application.JevStageRouter;
+import io.deepscope.harness.agent.HarnessAgent;
+import io.deepscope.core.middleware.ModelCallInput;
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
@@ -112,7 +112,7 @@ CallRecord.dispatchedModel 是框架配置的 Model.getModelName，requestedEffo
 
 可由宿主提供 Price(version,input,output,cached,creation)，单位为 USD / 百万 token。估算按 SDK 的 cached / cacheCreation 为 input 子集计算，输出独立计费；缺价格、缺用量、非法计数或溢出时成本为 null。价格版本与估算分开保存，不用零冒充未知，不把合成案例价格当真实资费。不内建跨会话缓存收益推断或配额探测。
 
-## AgentScope Service
+## DeepScope Service
 
 使用现有 overrides 配置：
 
@@ -143,7 +143,7 @@ CallRecord.dispatchedModel 是框架配置的 Model.getModelName，requestedEffo
 [JevPhaseRoutingExample](/examples/jev/source/JevPhaseRoutingExample.java.txt)包含自动判断、显式规划、显式执行三个独立调用。按[构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后运行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevPhaseRoutingExample
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevPhaseRoutingExample
 ```
 
 无需密钥。真实 ReActAgent 依次执行 auto、plan、execute 三次独立调用；每次一次只读工具、两次模型调用。实际结果：judgeRequests=1、strongCalls=4、fastCalls=2、originalCalls=0、toolCalls=3、usageRecords=6。模型与 JEV 返回均为脚本，只证明路由/执行一致性。

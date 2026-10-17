@@ -24,10 +24,10 @@
 !**/.env.example
 **/test-results
 **/playwright-report
-agentscope-service/docs/test-reports
-agentscope-service/release/dist
-agentscope-service/service-controlplane/bin
-agentscope-service/service-controlplane/ui
+deepscope-service/docs/test-reports
+deepscope-service/release/dist
+deepscope-service/service-controlplane/bin
+deepscope-service/service-controlplane/ui
 docs/_build
 **/*.ppt
 **/*.pptx
@@ -40,7 +40,7 @@ docs/_build
 **/.cursor
 **/.qoder
 **/.omc
-**/.agentscope
+**/.deepscope
 **/.pytest_cache
 **/coverage
 **/*.db

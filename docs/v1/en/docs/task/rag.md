@@ -3,18 +3,18 @@ title: RAG
 zh_link: /v1/zh/docs/task/rag
 ---
 
-AgentScope provides built-in RAG support, enabling Agents to access external knowledge bases.
+DeepScope provides built-in RAG support, enabling Agents to access external knowledge bases.
 
 ## Overview
 ### Core Components
-The RAG module in AgentScope consists of two core components:
+The RAG module in DeepScope consists of two core components:
 
 - **Reader**: Responsible for reading and chunking input documents, converting them into processable units
 - **Knowledge**: Responsible for storing documents, generating embeddings, and retrieving relevant information
 
 ### Scope of Support
 
-AgentScope supports multiple types of knowledge base implementations:
+DeepScope supports multiple types of knowledge base implementations:
 
 | Type | Implementation | Supported Features | Document Management | Use Cases |
 |------|----------------|-------------------|---------------------|-----------|
@@ -26,7 +26,7 @@ AgentScope supports multiple types of knowledge base implementations:
 
 ### Integration Modes
 
-AgentScope supports two RAG integration modes:
+DeepScope supports two RAG integration modes:
 
 | Mode | Description | Pros | Cons |
 |------|-------------|------|------|
@@ -120,7 +120,7 @@ List<Document> results = knowledge.retrieve("query",
 ```
 
 ### Reader Configuration
-AgentScope provides multiple built-in Readers for SimpleKnowledge:
+DeepScope provides multiple built-in Readers for SimpleKnowledge:
 
 Split strategies: `CHARACTER`, `PARAGRAPH`, `SENTENCE`, `TOKEN`
 
@@ -490,7 +490,7 @@ RAGFlowConfig config = RAGFlowConfig.builder()
 
 ## Custom RAG Components
 
-AgentScope encourages custom RAG components. You can extend the following base classes:
+DeepScope encourages custom RAG components. You can extend the following base classes:
 
 | Base Class | Description | Abstract Methods |
 |------------|-------------|------------------|
@@ -546,10 +546,10 @@ public class CustomReader implements Reader {
 
 ## Complete Examples
 
-- **Local Knowledge Base Example**: [RAGExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/advanced/src/main/java/io/agentscope/examples/advanced/RAGExample.java)
-- **Bailian Knowledge Base Example**: [BailianRAGExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/advanced/src/main/java/io/agentscope/examples/advanced/BailianRAGExample.java)
-- **Dify Knowledge Base Example**: [DifyRAGExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/DifyRAGExample.java)
-- **RAGFlow Knowledge Base Example**: [RAGFlowRAGExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/RAGFlowRAGExample.java)
-- **Elasticsearch Knowledge Base Example**: [ElasticsearchRAGExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/advanced/src/main/java/io/agentscope/examples/advanced/ElasticsearchRAGExample.java)
-- **PgVector Knowledge Base Example**: [PgVectorRAGExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/PgVectorRAGExample.java)
+- **Local Knowledge Base Example**: [RAGExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/advanced/src/main/java/io/deepscope/examples/advanced/RAGExample.java)
+- **Bailian Knowledge Base Example**: [BailianRAGExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/advanced/src/main/java/io/deepscope/examples/advanced/BailianRAGExample.java)
+- **Dify Knowledge Base Example**: [DifyRAGExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/DifyRAGExample.java)
+- **RAGFlow Knowledge Base Example**: [RAGFlowRAGExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/RAGFlowRAGExample.java)
+- **Elasticsearch Knowledge Base Example**: [ElasticsearchRAGExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/advanced/src/main/java/io/deepscope/examples/advanced/ElasticsearchRAGExample.java)
+- **PgVector Knowledge Base Example**: [PgVectorRAGExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/PgVectorRAGExample.java)
 -

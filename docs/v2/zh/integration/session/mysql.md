@@ -12,15 +12,15 @@ en_link: /v2/en/integration/session/mysql
 
 # MySQL 状态存储
 
-`agentscope-extensions-mysql` 把 AgentScope 的 Agent 状态持久化到 MySQL。适合已有 MySQL 基础设施、需要事务和 SQL 查询能力的场景。
+`deepscope-extensions-mysql` 把 DeepScope 的 Agent 状态持久化到 MySQL。适合已有 MySQL 基础设施、需要事务和 SQL 查询能力的场景。
 
 ## 添加依赖
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-mysql</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-mysql</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -30,11 +30,11 @@ en_link: /v2/en/integration/session/mysql
 
 ```java
 import com.zaxxer.hikari.HikariDataSource;
-import io.agentscope.core.state.AgentStateStore;
-import io.agentscope.extensions.mysql.state.MysqlAgentStateStore;
+import io.deepscope.core.state.AgentStateStore;
+import io.deepscope.extensions.mysql.state.MysqlAgentStateStore;
 
 HikariDataSource ds = new HikariDataSource();
-ds.setJdbcUrl("jdbc:mysql://localhost:3306/agentscope?serverTimezone=UTC");
+ds.setJdbcUrl("jdbc:mysql://localhost:3306/deepscope?serverTimezone=UTC");
 ds.setUsername("root");
 ds.setPassword("***");
 
@@ -60,7 +60,7 @@ AgentStateStore stateStore = new MysqlAgentStateStore(ds, false);   // 同上，
 ```java
 AgentStateStore stateStore = new MysqlAgentStateStore(
     ds,
-    "agentscope_prod",        // 库名
+    "deepscope_prod",        // 库名
     "session_state",          // 表名
     true                      // 是否自动创建
 );
@@ -73,7 +73,7 @@ AgentStateStore stateStore = new MysqlAgentStateStore(
 `createIfNotExist=true` 时会自动建表：
 
 ```sql
-CREATE TABLE IF NOT EXISTS agentscope_sessions (
+CREATE TABLE IF NOT EXISTS deepscope_sessions (
     session_id VARCHAR(255) COLLATE utf8mb4_bin NOT NULL,
     state_key  VARCHAR(255) COLLATE utf8mb4_bin NOT NULL,
     item_index INT NOT NULL DEFAULT 0,
@@ -88,22 +88,22 @@ CREATE TABLE IF NOT EXISTS agentscope_sessions (
 
 ### 迁移在此改动之前创建的表
 
-`CREATE TABLE IF NOT EXISTS` 不会修改已存在的表，因此更早部署的实例仍保持大小写不敏感，需要由运维执行迁移。`agentscope_store`、`agentscope_sessions`、`agentscope_snapshots` 三张表的主键都是调用方提供的标识符，道理相同：
+`CREATE TABLE IF NOT EXISTS` 不会修改已存在的表，因此更早部署的实例仍保持大小写不敏感，需要由运维执行迁移。`deepscope_store`、`deepscope_sessions`、`deepscope_snapshots` 三张表的主键都是调用方提供的标识符，道理相同：
 
 ```sql
-ALTER TABLE agentscope_store
+ALTER TABLE deepscope_store
     MODIFY namespace_path VARCHAR(512) COLLATE utf8mb4_bin NOT NULL,
     MODIFY item_key       VARCHAR(255) COLLATE utf8mb4_bin NOT NULL;
 
-ALTER TABLE agentscope_sessions
+ALTER TABLE deepscope_sessions
     MODIFY session_id VARCHAR(255) COLLATE utf8mb4_bin NOT NULL,
     MODIFY state_key  VARCHAR(255) COLLATE utf8mb4_bin NOT NULL;
 
-ALTER TABLE agentscope_snapshots
+ALTER TABLE deepscope_snapshots
     MODIFY snapshot_id VARCHAR(512) COLLATE utf8mb4_bin NOT NULL;
 ```
 
-若配置过表前缀或逐表名称覆盖，请相应替换表名。创建 `agentscope_snapshots` 的两条路径——`agentscope-extensions-jdbc` 方言与 legacy 的 `agentscope-extensions-mysql` 快照客户端——现在钉的是同一个排序规则，因此更早部署的实例只需执行上面的语句。
+若配置过表前缀或逐表名称覆盖，请相应替换表名。创建 `deepscope_snapshots` 的两条路径——`deepscope-extensions-jdbc` 方言与 legacy 的 `deepscope-extensions-mysql` 快照客户端——现在钉的是同一个排序规则，因此更早部署的实例只需执行上面的语句。
 
 有两点需要提前考虑：
 
@@ -141,8 +141,8 @@ stateStore.truncateAllSessions();
 | 构造参数 / 方法 | 说明 |
 | --- | --- |
 | `dataSource` | 必填。建议用 HikariCP / Druid 等连接池 |
-| `databaseName` | 默认 `agentscope` |
-| `tableName` | 默认 `agentscope_sessions` |
+| `databaseName` | 默认 `deepscope` |
+| `tableName` | 默认 `deepscope_sessions` |
 | `createIfNotExist` | `true` 时自动 `CREATE DATABASE` + `CREATE TABLE` |
 
 > `truncateAllSessions()` 使用 `TRUNCATE TABLE`，需要 DROP 权限；DDL 不可回滚，仅用于测试或运维清理。

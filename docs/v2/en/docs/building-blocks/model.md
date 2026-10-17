@@ -1,14 +1,14 @@
 ---
 title: Model
-description: Configure and connect LLM model providers in AgentScope Java
+description: Configure and connect LLM model providers in DeepScope Java
 zh_link: /v2/zh/docs/building-blocks/model
 ---
 
 ## Overview
 
-The model layer separates shared contracts from provider implementations. `agentscope-core` keeps the common APIs (`Model`, `ChatModelBase`, `Formatter`, `ModelRegistry`, and the `ModelProvider` SPI). OpenAI, DashScope, Gemini, Anthropic, and Ollama implementations live in their own model extension modules.
+The model layer separates shared contracts from provider implementations. `deepscope-core` keeps the common APIs (`Model`, `ChatModelBase`, `Formatter`, `ModelRegistry`, and the `ModelProvider` SPI). OpenAI, DashScope, Gemini, Anthropic, and Ollama implementations live in their own model extension modules.
 
-At runtime, the model layer is two-tiered: at the top sit **Credentials** (based on `io.agentscope.core.credential`), which carry a provider's API auth fields; below them sit **Chat Models**, the concrete inference implementations attached to a credential.
+At runtime, the model layer is two-tiered: at the top sit **Credentials** (based on `io.deepscope.core.credential`), which carry a provider's API auth fields; below them sit **Chat Models**, the concrete inference implementations attached to a credential.
 
 ```text
 CredentialBase/
@@ -26,16 +26,16 @@ This layering matches the natural UX in a frontend — register the credential f
 
 ## Model extension modules
 
-Provider-specific model implementations have been moved out of `agentscope-core` into independent extension modules. Each provider module owns its chat model, credential, formatter, DTO, exception, and SDK/API client, etc.
+Provider-specific model implementations have been moved out of `deepscope-core` into independent extension modules. Each provider module owns its chat model, credential, formatter, DTO, exception, and SDK/API client, etc.
 
 | Provider | Maven artifact | Main package |
 |----------|----------------|--------------|
-| OpenAI | `agentscope-extensions-model-openai` | `io.agentscope.extensions.model.openai` |
-| OpenAI Official | `agentscope-extensions-model-openai-official` | `io.agentscope.extensions.model.openaiofficial` |
-| DashScope | `agentscope-extensions-model-dashscope` | `io.agentscope.extensions.model.dashscope` |
-| Gemini | `agentscope-extensions-model-gemini` | `io.agentscope.extensions.model.gemini` |
-| Anthropic | `agentscope-extensions-model-anthropic` | `io.agentscope.extensions.model.anthropic` |
-| Ollama | `agentscope-extensions-model-ollama` | `io.agentscope.extensions.model.ollama` |
+| OpenAI | `deepscope-extensions-model-openai` | `io.deepscope.extensions.model.openai` |
+| OpenAI Official | `deepscope-extensions-model-openai-official` | `io.deepscope.extensions.model.openaiofficial` |
+| DashScope | `deepscope-extensions-model-dashscope` | `io.deepscope.extensions.model.dashscope` |
+| Gemini | `deepscope-extensions-model-gemini` | `io.deepscope.extensions.model.gemini` |
+| Anthropic | `deepscope-extensions-model-anthropic` | `io.deepscope.extensions.model.anthropic` |
+| Ollama | `deepscope-extensions-model-ollama` | `io.deepscope.extensions.model.ollama` |
 
 ### Migration checklist
 
@@ -43,21 +43,21 @@ Provider-specific model implementations have been moved out of `agentscope-core`
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-dashscope</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-model-dashscope</artifactId>
 </dependency>
 ```
 
-Other provider artifacts follow the same pattern: `agentscope-extensions-model-openai`, `agentscope-extensions-model-openai-official`, `agentscope-extensions-model-gemini`, `agentscope-extensions-model-anthropic`, and `agentscope-extensions-model-ollama`.
+Other provider artifacts follow the same pattern: `deepscope-extensions-model-openai`, `deepscope-extensions-model-openai-official`, `deepscope-extensions-model-gemini`, `deepscope-extensions-model-anthropic`, and `deepscope-extensions-model-ollama`.
 
-2. Replace provider imports from `io.agentscope.core.model.*` with `io.agentscope.extensions.model.<provider>.*`.
-3. Replace provider formatter imports from `io.agentscope.core.formatter.<provider>.*` with `io.agentscope.extensions.model.<provider>.formatter.*`.
-4. For Spring Boot applications, replace the generic model creation path with the matching provider-specific starter and its `agentscope.<provider>.*` properties.
+2. Replace provider imports from `io.deepscope.core.model.*` with `io.deepscope.extensions.model.<provider>.*`.
+3. Replace provider formatter imports from `io.deepscope.core.formatter.<provider>.*` with `io.deepscope.extensions.model.<provider>.formatter.*`.
+4. For Spring Boot applications, replace the generic model creation path with the matching provider-specific starter and its `deepscope.<provider>.*` properties.
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-dashscope-spring-boot-starter</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-dashscope-spring-boot-starter</artifactId>
 </dependency>
 ```
 
@@ -82,8 +82,8 @@ The extension module is discovered through Java SPI. The model provider reads it
 When you need a custom API key, base URL, formatter, transport, timeout, generation options, or other provider-specific configuration, build the model explicitly and pass the `Model` instance to the agent:
 
 ```java
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
 
 DashScopeChatModel model =
         DashScopeChatModel.builder()
@@ -102,12 +102,12 @@ ReActAgent agent =
 
 ### Spring Boot applications
 
-For Spring Boot, prefer provider-specific starters such as `agentscope-openai-spring-boot-starter`, `agentscope-openai-official-spring-boot-starter`, `agentscope-dashscope-spring-boot-starter`, `agentscope-gemini-spring-boot-starter`, `agentscope-anthropic-spring-boot-starter`, and `agentscope-ollama-spring-boot-starter`. These starters directly depend on the matching model extension, create Spring-managed `Model` beans, and leave the generic starter focused on common AgentScope infrastructure. They do not create models through the static `ModelRegistry`; advanced users can always provide their own `Model` bean.
+For Spring Boot, prefer provider-specific starters such as `deepscope-openai-spring-boot-starter`, `deepscope-openai-official-spring-boot-starter`, `deepscope-dashscope-spring-boot-starter`, `deepscope-gemini-spring-boot-starter`, `deepscope-anthropic-spring-boot-starter`, and `deepscope-ollama-spring-boot-starter`. These starters directly depend on the matching model extension, create Spring-managed `Model` beans, and leave the generic starter focused on common DeepScope infrastructure. They do not create models through the static `ModelRegistry`; advanced users can always provide their own `Model` bean.
 
 OpenAI example:
 
 ```yaml
-agentscope:
+deepscope:
   model:
     provider: openai
   openai:
@@ -125,20 +125,20 @@ default generation options, proxy/client settings, or provider-specific flags.
 
 | Starter | Customizer type |
 |---------|-----------------|
-| `agentscope-openai-spring-boot-starter` | `OpenAIChatModelBuilderCustomizer` |
-| `agentscope-openai-official-spring-boot-starter` | `OpenAIResponsesChatModelBuilderCustomizer` |
-| `agentscope-dashscope-spring-boot-starter` | `DashScopeChatModelBuilderCustomizer` |
-| `agentscope-gemini-spring-boot-starter` | `GeminiChatModelBuilderCustomizer` |
-| `agentscope-anthropic-spring-boot-starter` | `AnthropicChatModelBuilderCustomizer` |
-| `agentscope-ollama-spring-boot-starter` | `OllamaChatModelBuilderCustomizer` |
+| `deepscope-openai-spring-boot-starter` | `OpenAIChatModelBuilderCustomizer` |
+| `deepscope-openai-official-spring-boot-starter` | `OpenAIResponsesChatModelBuilderCustomizer` |
+| `deepscope-dashscope-spring-boot-starter` | `DashScopeChatModelBuilderCustomizer` |
+| `deepscope-gemini-spring-boot-starter` | `GeminiChatModelBuilderCustomizer` |
+| `deepscope-anthropic-spring-boot-starter` | `AnthropicChatModelBuilderCustomizer` |
+| `deepscope-ollama-spring-boot-starter` | `OllamaChatModelBuilderCustomizer` |
 
 Customizer beans are applied after starter properties are bound and before
 `builder.build()` is called. Multiple customizers are supported and follow Spring's
 `@Order` / `Ordered` ordering.
 
 ```java
-import io.agentscope.core.model.GenerateOptions;
-import io.agentscope.spring.boot.openai.OpenAIChatModelBuilderCustomizer;
+import io.deepscope.core.model.GenerateOptions;
+import io.deepscope.spring.boot.openai.OpenAIChatModelBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -170,10 +170,10 @@ For simple scenarios, prefer a string id in the `provider:model` format together
 `ModelCreationContext` is for integration layers that must create models dynamically without importing a concrete provider builder, such as multi-tenant gateways, plugin systems, or framework adapters. It can pass common values such as API key, base URL, endpoint path, stream mode, and extension-defined options/components to the SPI provider:
 
 ```java
-import io.agentscope.core.model.GenerateOptions;
-import io.agentscope.core.model.Model;
-import io.agentscope.core.model.ModelCreationContext;
-import io.agentscope.core.model.ModelRegistry;
+import io.deepscope.core.model.GenerateOptions;
+import io.deepscope.core.model.Model;
+import io.deepscope.core.model.ModelCreationContext;
+import io.deepscope.core.model.ModelRegistry;
 
 ModelCreationContext context =
         ModelCreationContext.builder()
@@ -207,11 +207,11 @@ If `CachePolicy.ENABLED` is used with `option(...)` or `component(...)`, the use
 
 ### ModelProvider SPI
 
-Provider extension modules are discovered with Java SPI through `META-INF/services/io.agentscope.core.model.spi.ModelProvider`. A provider can implement `supports(String, ModelCreationContext)` and `create(String, ModelCreationContext)` to consume context values. Simple providers can keep implementing the original `supports(String)` and `create(String)` methods because the context-aware methods have compatible defaults.
+Provider extension modules are discovered with Java SPI through `META-INF/services/io.deepscope.core.model.spi.ModelProvider`. A provider can implement `supports(String, ModelCreationContext)` and `create(String, ModelCreationContext)` to consume context values. Simple providers can keep implementing the original `supports(String)` and `create(String)` methods because the context-aware methods have compatible defaults.
 
 ## Chat model
 
-A **Chat Model** is the LLM driving conversation and tool calling, with input and output potentially spanning multiple modalities. AgentScope Java currently ships:
+A **Chat Model** is the LLM driving conversation and tool calling, with input and output potentially spanning multiple modalities. DeepScope Java currently ships:
 
 | Provider | Class | Notes |
 |----------|-------|-------|
@@ -235,8 +235,8 @@ Each chat model is built with a builder. The most common fields are `apiKey`, `m
 <Tab title="Streaming">
 
 ```java
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
 
 DashScopeChatModel model =
         DashScopeChatModel.builder()
@@ -253,9 +253,9 @@ DashScopeChatModel model =
 <Tab title="Tools">
 
 ```java
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.model.GenerateOptions;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.model.GenerateOptions;
 
 DashScopeChatModel model =
         DashScopeChatModel.builder()
@@ -276,9 +276,9 @@ DashScopeChatModel model =
 <Tab title="Reasoning">
 
 ```java
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.model.GenerateOptions;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.model.GenerateOptions;
 
 DashScopeChatModel model =
         DashScopeChatModel.builder()
@@ -316,11 +316,11 @@ Common builder fields:
 The `Model` interface exposes a unified `stream(messages, tools, options)` returning `Flux<ChatResponse>`:
 
 ```java
-import io.agentscope.core.message.UserMessage;
-import io.agentscope.core.model.ChatResponse;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.model.GenerateOptions;
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
+import io.deepscope.core.message.UserMessage;
+import io.deepscope.core.model.ChatResponse;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.model.GenerateOptions;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
 import java.util.List;
 
 DashScopeChatModel model =
@@ -342,17 +342,17 @@ model.stream(
 
 A `ChatResponse` carries a list of content blocks (`TextBlock`, `ThinkingBlock`, `ToolUseBlock`, `DataBlock`) and a `ChatUsage` recording token counts and timing.
 
-In practice you usually call models indirectly via `ReActAgent`. For lightweight direct invocation, see `agentscope-examples/documentation/.../model/ModelRegistryExample.java`.
+In practice you usually call models indirectly via `ReActAgent`. For lightweight direct invocation, see `deepscope-examples/documentation/.../model/ModelRegistryExample.java`.
 
 ### Generating structured output
 
 The agent layer offers a convenience overload for binding the model output to a Java POJO via `ReActAgent.call(msgs, structuredOutputClass, runtimeContext)`:
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.UserMessage;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.UserMessage;
 import java.util.List;
 
 public class WeatherInfo {
@@ -371,7 +371,7 @@ Msg msg =
 WeatherInfo info = msg.getStructuredData(WeatherInfo.class);
 ```
 
-How it works: the framework synthesizes a forced structured tool call from the target class, validates and repairs the model output, and writes the result into `Msg.metadata` under the `_structured_output` key, so `getStructuredData(Class)` can deserialize it directly. Complete example: `agentscope-examples/documentation/.../structuredoutput/StructuredOutputExample.java`.
+How it works: the framework synthesizes a forced structured tool call from the target class, validates and repairs the model output, and writes the result into `Msg.metadata` under the `_structured_output` key, so `getStructuredData(Class)` can deserialize it directly. Complete example: `deepscope-examples/documentation/.../structuredoutput/StructuredOutputExample.java`.
 
 #### Structured output path selection
 
@@ -425,7 +425,7 @@ OpenAIChatModel model = OpenAIChatModel.builder()
 
 ### Formatter
 
-A **Formatter** converts AgentScope `Msg` objects into the request payload each provider's API expects. It is configured via the chat model builder's `formatter(...)`. Each provider ships two formatters:
+A **Formatter** converts DeepScope `Msg` objects into the request payload each provider's API expects. It is configured via the chat model builder's `formatter(...)`. Each provider ships two formatters:
 
 | Type | Use case |
 |------|----------|
@@ -435,8 +435,8 @@ A **Formatter** converts AgentScope `Msg` objects into the request payload each 
 To switch to multi-agent mode, just pass the MultiAgent variant — no agent code changes:
 
 ```java
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeMultiAgentFormatter;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeMultiAgentFormatter;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
 
 DashScopeChatModel model =
         DashScopeChatModel.builder()
@@ -458,7 +458,7 @@ Per-provider formatters now live with their provider extension modules:
 | Gemini | `GeminiChatFormatter` | `GeminiMultiAgentFormatter` |
 | Ollama | `OllamaChatFormatter` | `OllamaMultiAgentFormatter` |
 
-If your provider's payload doesn't fit any of these, implement the `Formatter<TReq, TResp, TParams>` interface (`io.agentscope.core.formatter`) and pass it through the same `formatter(...)` builder.
+If your provider's payload doesn't fit any of these, implement the `Formatter<TReq, TResp, TParams>` interface (`io.deepscope.core.formatter`) and pass it through the same `formatter(...)` builder.
 
 ### Custom provider
 
@@ -469,8 +469,8 @@ The minimal path to a new provider: implement a `CredentialBase` subclass and a 
 Extend `CredentialBase` and implement `getChatModelClass()`:
 
 ```java
-import io.agentscope.core.credential.CredentialBase;
-import io.agentscope.core.model.ChatModelBase;
+import io.deepscope.core.credential.CredentialBase;
+import io.deepscope.core.model.ChatModelBase;
 
 public class MyProviderCredential extends CredentialBase {
 
@@ -503,11 +503,11 @@ public class MyProviderCredential extends CredentialBase {
 Extend `ChatModelBase` and implement `doStream`:
 
 ```java
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.model.ChatModelBase;
-import io.agentscope.core.model.ChatResponse;
-import io.agentscope.core.model.GenerateOptions;
-import io.agentscope.core.model.ToolSchema;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.model.ChatModelBase;
+import io.deepscope.core.model.ChatResponse;
+import io.deepscope.core.model.GenerateOptions;
+import io.deepscope.core.model.ToolSchema;
 import java.util.List;
 import reactor.core.publisher.Flux;
 
@@ -535,7 +535,7 @@ public class MyProviderChatModel extends ChatModelBase {
 `ModelRegistry` lets `ReActAgent.builder().model("provider:model-name")` resolve models from a string:
 
 ```java
-import io.agentscope.core.model.ModelRegistry;
+import io.deepscope.core.model.ModelRegistry;
 
 ModelRegistry.registerFactory(
         "myprov:.*",
@@ -574,8 +574,8 @@ The `ModelCard` schema is intentionally minimal at this stage; capability flags 
 Call `CredentialBase#listModels()`, returning `Mono<List<ModelCard>>`:
 
 ```java
-import io.agentscope.core.credential.ModelCard;
-import io.agentscope.extensions.model.anthropic.credential.AnthropicCredential;
+import io.deepscope.core.credential.ModelCard;
+import io.deepscope.extensions.model.anthropic.credential.AnthropicCredential;
 import java.util.List;
 
 AnthropicCredential cred = new AnthropicCredential(System.getenv("ANTHROPIC_API_KEY"));
@@ -590,7 +590,7 @@ for (ModelCard card : cards) {
 `getChatModelClass()` returns the matching `ChatModelBase` subclass — useful for reflectively building a default model:
 
 ```java
-Class<? extends io.agentscope.core.model.ChatModelBase> modelCls = cred.getChatModelClass();
+Class<? extends io.deepscope.core.model.ChatModelBase> modelCls = cred.getChatModelClass();
 ```
 
 This design lets frontends discover every model available under a provider with just one credential — no hard-coded provider logic.

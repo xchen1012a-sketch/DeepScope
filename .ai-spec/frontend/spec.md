@@ -21,7 +21,7 @@
 ### 国际化
 
 - **【人工】文案零硬编码**：所有用户可见文案必须经 `t()` 输出，禁止在组件中硬编码中英文字符串。
-- **【人工】词典结构**：词条统一维护在 `src/i18n/locales/{en,zh-CN}/` 下，按 `app` / `common` 两个命名空间分文件（默认命名空间 `app`）；默认语言 zh-CN，回退 en；语言偏好持久化于 localStorage key `controlplane.console.locale`。新增文案必须同时补齐 en 与 zh-CN 词典。
+- **【人工】词典结构**：词条统一维护在 `src/i18n/locales/{en,zh-CN}/` 下，按 `app` / `common` 两个命名空间分文件（默认命名空间 `app`）；默认语言 zh-CN，回退 en；语言偏好持久化于 localStorage key `deepscope.locale`。新增文案必须同时补齐 en 与 zh-CN 词典。
 
 ### 状态与数据
 

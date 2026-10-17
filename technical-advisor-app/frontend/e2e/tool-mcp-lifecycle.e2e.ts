@@ -19,8 +19,8 @@ import { listPageFixture } from './listPageFixture';
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('claw_token', 'local-ui-test');
-    localStorage.setItem('controlplane.console.locale', 'en');
+    localStorage.setItem('deepscope_token', 'local-ui-test');
+    localStorage.setItem('deepscope.locale', 'en');
   });
 });
 

@@ -39,10 +39,10 @@ en_link: /v1/en/docs/multi-agent/multiagent-debate
 ### 步骤 1：创建辩论者智能体
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeMultiAgentFormatter;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeMultiAgentFormatter;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
 
 // 定义辩论主题
 String topic = """
@@ -128,10 +128,10 @@ public class JudgeResult {
 ### 步骤 4：实现辩论循环
 
 ```java
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.core.pipeline.MsgHub;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.core.pipeline.MsgHub;
 
 public void runDebate() {
     int maxRounds = 5;
@@ -202,16 +202,16 @@ public void runDebate() {
 以下是一个完整的可运行示例：
 
 ```java
-package io.agentscope.examples;
+package io.deepscope.examples;
 
-import io.agentscope.core.ReActAgent;
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeMultiAgentFormatter;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.pipeline.MsgHub;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeMultiAgentFormatter;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.pipeline.MsgHub;
 
 public class MultiAgentDebateExample {
 

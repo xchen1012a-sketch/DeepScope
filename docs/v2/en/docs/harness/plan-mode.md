@@ -144,7 +144,7 @@ agent.exitPlanMode(ctx);     // equivalent to plan_exit; programmatic entry does
 agent.isPlanModeActive(ctx);
 ```
 
-If you use `agentscope-admin-spring-boot-starter`, the admin HTTP API also exposes Plan Mode controls (`POST /v1/admin/sessions/{id}:enter-plan-mode` / `:exit-plan-mode` / `GET /v1/admin/sessions/{id}/plan`).
+If you use `deepscope-admin-spring-boot-starter`, the admin HTTP API also exposes Plan Mode controls (`POST /v1/admin/sessions/{id}:enter-plan-mode` / `:exit-plan-mode` / `GET /v1/admin/sessions/{id}/plan`).
 
 ## Interaction with subagents
 
@@ -178,7 +178,7 @@ for (Task t : tasks) {
 }
 ```
 
-If you use `agentscope-admin-spring-boot-starter`, the admin REST API provides a ready-made endpoint:
+If you use `deepscope-admin-spring-boot-starter`, the admin REST API provides a ready-made endpoint:
 
 ```
 GET /v1/admin/sessions/{sessionId}/tasks

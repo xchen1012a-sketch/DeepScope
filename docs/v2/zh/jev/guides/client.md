@@ -8,13 +8,13 @@ title: "创建客户端与发起类型化判断"
 
 ```xml
 <dependency>
-  <groupId>io.agentscope</groupId>
-  <artifactId>agentscope-extensions-jev</artifactId>
-  <version>${agentscope.version}</version>
+  <groupId>io.deepscope</groupId>
+  <artifactId>deepscope-extensions-jev</artifactId>
+  <version>${deepscope.version}</version>
 </dependency>
 ```
 
-涉及 Harness 中间件、压缩或 Agent 案例时，还需要同版本 `agentscope-harness`；扩展中的 Harness 依赖为 optional。
+涉及 Harness 中间件、压缩或 Agent 案例时，还需要同版本 `deepscope-harness`；扩展中的 Harness 依赖为 optional。
 
 ## 场景：检查“退款已完成”是否有证据
 
@@ -23,7 +23,7 @@ title: "创建客户端与发起类型化判断"
 ## 发起判断并读取概率
 
 ```java
-import io.agentscope.extensions.judge.jev.*;
+import io.deepscope.extensions.judge.jev.*;
 import java.time.Duration;
 import java.util.Map;
 
@@ -60,14 +60,14 @@ System.out.println("记录支持回答的概率：" + answer.noul());
 
 ```xml
 <dependency>
-  <groupId>io.agentscope</groupId>
-  <artifactId>agentscope-jev-spring-boot-starter</artifactId>
-  <version>${agentscope.version}</version>
+  <groupId>io.deepscope</groupId>
+  <artifactId>deepscope-jev-spring-boot-starter</artifactId>
+  <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ```yaml
-agentscope:
+deepscope:
   jev:
     api-key: ${TYPESAFE_API_KEY:}
     model: jev-latest
@@ -90,7 +90,7 @@ agentscope:
 [JevApplicationScenarios](/examples/jev/source/JevApplicationScenarios.java.txt)的 `judge` 场景展示同类退款证据检查的三种状态。按[构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后执行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios judge
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevApplicationScenarios judge
 ```
 
 离线案例注入预设概率，不调用 HTTP，不代表模型效果。上面的客户端代码会访问真实接口，需要显式配置密钥；接口失败应走错误处理，不能用离线结果替代真实判断。

@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package io.agentscope.examples.jev;
+package io.deepscope.examples.jev;
 
 import com.sun.net.httpserver.HttpServer;
-import io.agentscope.extensions.judge.jev.JevClient;
-import io.agentscope.extensions.judge.jev.JevRetryPolicy;
-import io.agentscope.extensions.judge.jev.SystemOneRequest;
-import io.agentscope.extensions.judge.jev.SystemOneResult;
-import io.agentscope.extensions.judge.jev.Usage;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession.Action;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession.Outcome;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession.Permit;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession.Receipt;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession.Scope;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession.Snapshot;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession.Source;
-import io.agentscope.extensions.judge.jev.browser.JevPlaywrightSession;
+import io.deepscope.extensions.judge.jev.JevClient;
+import io.deepscope.extensions.judge.jev.JevRetryPolicy;
+import io.deepscope.extensions.judge.jev.SystemOneRequest;
+import io.deepscope.extensions.judge.jev.SystemOneResult;
+import io.deepscope.extensions.judge.jev.Usage;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession.Action;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession.Outcome;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession.Permit;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession.Receipt;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession.Scope;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession.Snapshot;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession.Source;
+import io.deepscope.extensions.judge.jev.browser.JevPlaywrightSession;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;

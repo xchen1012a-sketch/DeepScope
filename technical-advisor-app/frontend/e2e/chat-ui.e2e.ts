@@ -9,8 +9,8 @@ const session = {
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('claw_token', 'local-ui-test');
-    localStorage.setItem('controlplane.console.locale', 'zh-CN');
+    localStorage.setItem('deepscope_token', 'local-ui-test');
+    localStorage.setItem('deepscope.locale', 'zh-CN');
   });
   const models = [
     { endpointId: 'deepseek', kind: 'chat', modelName: 'DeepSeek', current: true },

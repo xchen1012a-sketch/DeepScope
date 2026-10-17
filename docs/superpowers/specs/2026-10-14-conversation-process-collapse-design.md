@@ -22,16 +22,16 @@
 
 | 已有能力 / 缺口 | 当前源码依据 |
 |---|---|
-| 主会话由 `buildBlocks(events, running)` 生成回合，再交给 `TurnGroup`；旧数据仍有独立的实时文字、思考补充展示 | [ConversationPanel.tsx](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/ConversationPanel.tsx:348)，同文件 453–494 行 |
-| 展示记录已有 `partsVersion: 1`，分为 `text`、`reasoning`、`tool`、`event`，带 `id/runId/status`；文本可带 `messageId` | [advisor.ts](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/api/advisor.ts:198) |
-| 工具发起占位，参数和迟到的结果更新原位置；不会因结果返回而挪动调用行 | [presentationParts.ts](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/model/presentationParts.ts:41) |
-| 新顺序记录分支强制 `collapsedByDefault: false`，其 `process` 排除了全部普通文字；`TurnGroup` 遇到 `ordered` 直接转入另一套渲染 | [blocks.ts](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/model/blocks.ts:197)，[TurnGroup.tsx](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/components/TurnGroup.tsx:56) |
-| 顺序分支只把连续工具组成小组，收起后仍显示前三条和失败工具；不会把中间文字、思考一起整轮折叠 | [TurnGroup.tsx](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/components/TurnGroup.tsx:104) |
-| `RunState.startedAt` 用于首 Token 采样，发送初期赋值后，在路由完成、调用流接口前再次赋值；不能直接认定为从点击发送起的整轮起点 | [useAdvisorConversation.ts](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/useAdvisorConversation.ts:311)，同文件 733–765 行 |
-| 客户端目前不分类 `RUN_STARTED/RUN_FINISHED`；`running: false` 还会在取消、错误后的 `finally` 设置，不能等同正常完成 | [aguiClient.ts](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/aguiClient.ts:213)，[useAdvisorConversation.ts](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/useAdvisorConversation.ts:834) |
-| 正常落库由前端发送 `/api/advisor/sessions/{sessionId}/messages`；服务端 `AguiRoundPersister` 另有断线兜底，默认延迟 15 秒冲刷 | [AdvisorSessionController.java](/Users/agent/agentscope-java/technical-advisor-app/backend/src/main/java/io/agentscope/advisor/session/AdvisorSessionController.java:283)，[AguiRoundPersister.java](/Users/agent/agentscope-java/technical-advisor-app/backend/src/main/java/io/agentscope/advisor/session/AguiRoundPersister.java:36) |
-| `advisor_events.payload` 为 JSON 文本；`appendAdvisorMessage` 已存储顺序记录，但没有整轮时间与最终正文身份 | [AdvisorSchema.java](/Users/agent/agentscope-java/technical-advisor-app/backend/src/main/java/io/agentscope/advisor/db/AdvisorSchema.java:93)，[TimelineStore.java](/Users/agent/agentscope-java/technical-advisor-app/backend/src/main/java/io/agentscope/advisor/session/TimelineStore.java:161) |
-| 工具行已有详情、状态、耗时；现有 `formatRunDuration` 输出 `ms/s/m`，不符合截图的中文时间格式 | [ToolLine.tsx](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/components/ToolLine.tsx:31)，[conversationModel.ts](/Users/agent/agentscope-java/technical-advisor-app/frontend/src/features/chat/conversationModel.ts:392) |
+| 主会话由 `buildBlocks(events, running)` 生成回合，再交给 `TurnGroup`；旧数据仍有独立的实时文字、思考补充展示 | [ConversationPanel.tsx](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/ConversationPanel.tsx:348)，同文件 453–494 行 |
+| 展示记录已有 `partsVersion: 1`，分为 `text`、`reasoning`、`tool`、`event`，带 `id/runId/status`；文本可带 `messageId` | [advisor.ts](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/api/advisor.ts:198) |
+| 工具发起占位，参数和迟到的结果更新原位置；不会因结果返回而挪动调用行 | [presentationParts.ts](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/model/presentationParts.ts:41) |
+| 新顺序记录分支强制 `collapsedByDefault: false`，其 `process` 排除了全部普通文字；`TurnGroup` 遇到 `ordered` 直接转入另一套渲染 | [blocks.ts](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/model/blocks.ts:197)，[TurnGroup.tsx](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/components/TurnGroup.tsx:56) |
+| 顺序分支只把连续工具组成小组，收起后仍显示前三条和失败工具；不会把中间文字、思考一起整轮折叠 | [TurnGroup.tsx](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/components/TurnGroup.tsx:104) |
+| `RunState.startedAt` 用于首 Token 采样，发送初期赋值后，在路由完成、调用流接口前再次赋值；不能直接认定为从点击发送起的整轮起点 | [useAdvisorConversation.ts](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/useAdvisorConversation.ts:311)，同文件 733–765 行 |
+| 客户端目前不分类 `RUN_STARTED/RUN_FINISHED`；`running: false` 还会在取消、错误后的 `finally` 设置，不能等同正常完成 | [aguiClient.ts](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/aguiClient.ts:213)，[useAdvisorConversation.ts](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/useAdvisorConversation.ts:834) |
+| 正常落库由前端发送 `/api/advisor/sessions/{sessionId}/messages`；服务端 `AguiRoundPersister` 另有断线兜底，默认延迟 15 秒冲刷 | [AdvisorSessionController.java](/Users/agent/deepscope-java/technical-advisor-app/backend/src/main/java/io/deepscope/advisor/session/AdvisorSessionController.java:283)，[AguiRoundPersister.java](/Users/agent/deepscope-java/technical-advisor-app/backend/src/main/java/io/deepscope/advisor/session/AguiRoundPersister.java:36) |
+| `advisor_events.payload` 为 JSON 文本；`appendAdvisorMessage` 已存储顺序记录，但没有整轮时间与最终正文身份 | [AdvisorSchema.java](/Users/agent/deepscope-java/technical-advisor-app/backend/src/main/java/io/deepscope/advisor/db/AdvisorSchema.java:93)，[TimelineStore.java](/Users/agent/deepscope-java/technical-advisor-app/backend/src/main/java/io/deepscope/advisor/session/TimelineStore.java:161) |
+| 工具行已有详情、状态、耗时；现有 `formatRunDuration` 输出 `ms/s/m`，不符合截图的中文时间格式 | [ToolLine.tsx](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/components/ToolLine.tsx:31)，[conversationModel.ts](/Users/agent/deepscope-java/technical-advisor-app/frontend/src/features/chat/conversationModel.ts:392) |
 
 现有能力说明：不能把全部会话概括成“工具统一在顶部”。当前已有按序展示分支；顶部集中和折叠差异来自新旧记录的两套处理规则。此次应收敛规则，而不是从头另建一套。
 
@@ -43,7 +43,7 @@
 | 应用层补展示元数据，正常结果确认后整轮折叠 | 复用现有事件扩展和存储链路，真实时间可回放 | 折叠发生在结果确认后，不能保证总结首字时折叠 | 推荐本轮采用，需确认上述交互差异 |
 | 增加明确最终输出阶段，再在首字时折叠 | 能建立可靠的提前阶段边界 | 改变生成编排，可能涉及工具选择、额外模型调用和运行语义 | 若首字折叠是硬要求，单独完善此路径后评审 |
 
-推荐方案属于应用前后端协作的中级改动。保持 `agentscope-core` 和 AG-UI 扩展源码不变；只读取它们现有事件，在 advisor 应用层扩展展示信息。
+推荐方案属于应用前后端协作的中级改动。保持 `deepscope-core` 和 AG-UI 扩展源码不变；只读取它们现有事件，在 advisor 应用层扩展展示信息。
 
 ## 4. 顺序与折叠投影
 
@@ -75,10 +75,10 @@
 
 ### 5.1 已验证的事件边界
 
-- [AgentResultEvent.java](/Users/agent/agentscope-java/agentscope-core/src/main/java/io/agentscope/core/event/AgentResultEvent.java:22)：最终 `Msg` 在运行收尾才提供。
-- [AgentLifecycleEventConverter.java](/Users/agent/agentscope-java/agentscope-extensions/agentscope-extensions-protocol/agentscope-extensions-agui/src/main/java/io/agentscope/core/agui/adapter/strategy/AgentLifecycleEventConverter.java:70)：`AgentStartEvent` 转 `RUN_STARTED`，`AgentEndEvent` 转 `RUN_FINISHED`，挂起工具可能携带 interrupt outcome。
-- [AgentEventConverterRegistry.java](/Users/agent/agentscope-java/agentscope-extensions/agentscope-extensions-protocol/agentscope-extensions-agui/src/main/java/io/agentscope/core/agui/adapter/strategy/AgentEventConverterRegistry.java:96)：原生事件转换结果即使为空，也会进入应用层 enricher，可以利用这一扩展点读取 `AgentResultEvent`。
-- [GenerateReason.java](/Users/agent/agentscope-java/agentscope-core/src/main/java/io/agentscope/core/message/GenerateReason.java:36)：除正常停止外还有工具挂起、权限询问、中断、直接工具返回等原因，不能将所有结果都当作成功总结。
+- [AgentResultEvent.java](/Users/agent/deepscope-java/deepscope-core/src/main/java/io/deepscope/core/event/AgentResultEvent.java:22)：最终 `Msg` 在运行收尾才提供。
+- [AgentLifecycleEventConverter.java](/Users/agent/deepscope-java/deepscope-extensions/deepscope-extensions-protocol/deepscope-extensions-agui/src/main/java/io/deepscope/core/agui/adapter/strategy/AgentLifecycleEventConverter.java:70)：`AgentStartEvent` 转 `RUN_STARTED`，`AgentEndEvent` 转 `RUN_FINISHED`，挂起工具可能携带 interrupt outcome。
+- [AgentEventConverterRegistry.java](/Users/agent/deepscope-java/deepscope-extensions/deepscope-extensions-protocol/deepscope-extensions-agui/src/main/java/io/deepscope/core/agui/adapter/strategy/AgentEventConverterRegistry.java:96)：原生事件转换结果即使为空，也会进入应用层 enricher，可以利用这一扩展点读取 `AgentResultEvent`。
+- [GenerateReason.java](/Users/agent/deepscope-java/deepscope-core/src/main/java/io/deepscope/core/message/GenerateReason.java:36)：除正常停止外还有工具挂起、权限询问、中断、直接工具返回等原因，不能将所有结果都当作成功总结。
 
 ### 5.2 应用层确认规则（拟新增）
 
@@ -92,9 +92,9 @@
 
 **关联不能假定为 `result.getId() == AG-UI messageId`。** 已检索到：
 
-- [TextBlockEventConverter.java](/Users/agent/agentscope-java/agentscope-extensions/agentscope-extensions-protocol/agentscope-extensions-agui/src/main/java/io/agentscope/core/agui/adapter/strategy/TextBlockEventConverter.java:32) 的 AG-UI messageId 是 `replyId + "-" + blockId`。
-- [ReActAgent.java](/Users/agent/agentscope-java/agentscope-core/src/main/java/io/agentscope/core/ReActAgent.java:3040) 为模型调用生成独立 `callId`。
-- [ReasoningContext.java](/Users/agent/agentscope-java/agentscope-core/src/main/java/io/agentscope/core/agent/accumulator/ReasoningContext.java:166) 生成最终消息时使用累积的模型消息 ID。
+- [TextBlockEventConverter.java](/Users/agent/deepscope-java/deepscope-extensions/deepscope-extensions-protocol/deepscope-extensions-agui/src/main/java/io/deepscope/core/agui/adapter/strategy/TextBlockEventConverter.java:32) 的 AG-UI messageId 是 `replyId + "-" + blockId`。
+- [ReActAgent.java](/Users/agent/deepscope-java/deepscope-core/src/main/java/io/deepscope/core/ReActAgent.java:3040) 为模型调用生成独立 `callId`。
+- [ReasoningContext.java](/Users/agent/deepscope-java/deepscope-core/src/main/java/io/deepscope/core/agent/accumulator/ReasoningContext.java:166) 生成最终消息时使用累积的模型消息 ID。
 
 因此采用原生文本事件的 `replyId/blockId` 与已转换的 AG-UI messageId 建立对应表；最终结果与模型输出的关联必须通过测试证明。常规无工具最终回复可结合最后相关模型调用及可见正文一致性确认；遇到 middleware 改写最终结果、直接工具返回等未证明路径，保守降级为展开，不做全文搜索替换或按 ID 前缀猜测。
 
@@ -203,7 +203,7 @@
 | 对应已有测试及新增会话 E2E | 覆盖顺序、终态、计时、折叠、刷新与定位 |
 | `docs/v2/{en,zh}/docs/others/technical-advisor-login.md` | 实施后同步用户可见的会话行为描述 |
 
-表中 `frontend/`、`backend/` 均相对于 `/Users/agent/agentscope-java/technical-advisor-app/`。保留现有会话列表、路由、提案裁决、工具权限和原生模型历史的行为；仅在其展示接入点必要时调整。
+表中 `frontend/`、`backend/` 均相对于 `/Users/agent/deepscope-java/technical-advisor-app/`。保留现有会话列表、路由、提案裁决、工具权限和原生模型历史的行为；仅在其展示接入点必要时调整。
 
 ## 9. 实施顺序与验收
 
@@ -230,22 +230,22 @@
 
 复用已有前端 `presentationParts.test.ts`、`blocks.test.ts`、`ProcessViews.test.tsx`、`aguiClient.test.ts`、`useAdvisorConversation*.test.tsx/ts`，以及后端 `ConversationPartsTest`、`AguiRoundPersisterTest`、`AdvisorSessionControllerTest`、`TimelineStoreTest`。
 
-当前仓库已存在 [playwright.config.ts](/Users/agent/agentscope-java/technical-advisor-app/frontend/playwright.config.ts)，`testDir` 为 `e2e`、匹配 `*.e2e.ts`，测试服务端口为 5190。沿用该配置新增会话用例，不沿用旧交接文档中“没有 Playwright 配置”的过时结论。
+当前仓库已存在 [playwright.config.ts](/Users/agent/deepscope-java/technical-advisor-app/frontend/playwright.config.ts)，`testDir` 为 `e2e`、匹配 `*.e2e.ts`，测试服务端口为 5190。沿用该配置新增会话用例，不沿用旧交接文档中“没有 Playwright 配置”的过时结论。
 
 计划验证命令，**本次未执行**：
 
 ```bash
-# /Users/agent/agentscope-java/technical-advisor-app/frontend
+# /Users/agent/deepscope-java/technical-advisor-app/frontend
 npm test
 npm run build
 npm run lint
 npm run test:e2e
 
-# /Users/agent/agentscope-java
+# /Users/agent/deepscope-java
 mvn -T1 -pl technical-advisor-app/backend -am test
 mvn -T1 -pl technical-advisor-app/backend -am spotless:check
 
-# /Users/agent/agentscope-java/docs
+# /Users/agent/deepscope-java/docs
 npm test
 npm run validate
 npm run broken-links
@@ -259,6 +259,6 @@ npm run broken-links
 
 新元数据为可选、独立版本；旧客户端忽略新 `CUSTOM` 事件，旧请求和旧 payload 仍可读取。最终身份或时间证据缺失时保守展开或不显示耗时，不回填推测数据。回滚到旧前端会忽略新元数据；旧后端需继续兼容未知可选字段，实施测试应证明降级路径。
 
-既有 [2026-10-11 会话设计](/Users/agent/agentscope-java/docs/superpowers/specs/2026-10-11-conversation-stream-design.md:36) 写的是结束后按工具次数等收起，并以最后无工具正文作为最终回复。本次批准后须同步更新相应条款，避免两份设计同时对同一交互给出不同验收标准。
+既有 [2026-10-11 会话设计](/Users/agent/deepscope-java/docs/superpowers/specs/2026-10-11-conversation-stream-design.md:36) 写的是结束后按工具次数等收起，并以最后无工具正文作为最终回复。本次批准后须同步更新相应条款，避免两份设计同时对同一交互给出不同验收标准。
 
-实现和实际验证结果见 [2026-10-15 实施结果](/Users/agent/agentscope-java/technical-advisor-app/docs/conversation-collapse-results-2026-10-15.md)。设计描述不替代验证证据。
+实现和实际验证结果见 [2026-10-15 实施结果](/Users/agent/deepscope-java/technical-advisor-app/docs/conversation-collapse-results-2026-10-15.md)。设计描述不替代验证证据。

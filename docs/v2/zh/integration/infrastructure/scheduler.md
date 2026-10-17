@@ -3,14 +3,14 @@ title: Scheduler
 en_link: /v2/en/integration/infrastructure/scheduler
 ---
 
-`agentscope-extensions-scheduler` 让 Agent 可以按调度器配置周期性执行——比如"每天 8 点跑一次日报 Agent"、"每 5 秒做一次健康巡检"。模块抽出统一的 `AgentScheduler` 接口，提供两个实现：
+`deepscope-extensions-scheduler` 让 Agent 可以按调度器配置周期性执行——比如"每天 8 点跑一次日报 Agent"、"每 5 秒做一次健康巡检"。模块抽出统一的 `AgentScheduler` 接口，提供两个实现：
 
 | 子模块 | 实现 | 部署形态 |
 | --- | --- | --- |
-| `agentscope-extensions-scheduler-quartz` | [Quartz](https://www.quartz-scheduler.org/) | 单机或集群（共享 Quartz 数据库） |
-| `agentscope-extensions-scheduler-xxl-job` | [XXL-Job](https://www.xuxueli.com/xxl-job/) | 分布式调度，依赖 admin server |
+| `deepscope-extensions-scheduler-quartz` | [Quartz](https://www.quartz-scheduler.org/) | 单机或集群（共享 Quartz 数据库） |
+| `deepscope-extensions-scheduler-xxl-job` | [XXL-Job](https://www.xuxueli.com/xxl-job/) | 分布式调度，依赖 admin server |
 
-底层 SPI 在 `agentscope-extensions-scheduler-common`，可以自己实现接入其他调度框架。
+底层 SPI 在 `deepscope-extensions-scheduler-common`，可以自己实现接入其他调度框架。
 
 ## 共享概念
 
@@ -27,21 +27,21 @@ en_link: /v2/en/integration/infrastructure/scheduler
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-scheduler-quartz</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-scheduler-quartz</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ### 用法
 
 ```java
-import io.agentscope.extensions.scheduler.AgentScheduler;
-import io.agentscope.extensions.scheduler.config.AgentConfig;
-import io.agentscope.extensions.scheduler.config.DashScopeModelConfig;
-import io.agentscope.extensions.scheduler.config.ScheduleConfig;
-import io.agentscope.extensions.scheduler.config.ScheduleMode;
-import io.agentscope.extensions.scheduler.quartz.QuartzAgentScheduler;
+import io.deepscope.extensions.scheduler.AgentScheduler;
+import io.deepscope.extensions.scheduler.config.AgentConfig;
+import io.deepscope.extensions.scheduler.config.DashScopeModelConfig;
+import io.deepscope.extensions.scheduler.config.ScheduleConfig;
+import io.deepscope.extensions.scheduler.config.ScheduleMode;
+import io.deepscope.extensions.scheduler.quartz.QuartzAgentScheduler;
 
 AgentScheduler scheduler = QuartzAgentScheduler.builder()
     .autoStart(true)
@@ -78,9 +78,9 @@ scheduler.shutdown();
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-scheduler-xxl-job</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-scheduler-xxl-job</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -88,12 +88,12 @@ scheduler.shutdown();
 
 ```java
 import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
-import io.agentscope.extensions.scheduler.xxljob.XxlJobAgentScheduler;
+import io.deepscope.extensions.scheduler.xxljob.XxlJobAgentScheduler;
 
 // 1) 启动 XXL-Job Executor
 XxlJobSpringExecutor executor = new XxlJobSpringExecutor();
 executor.setAdminAddresses("http://localhost:8080/xxl-job-admin");
-executor.setAppname("agentscope-demo");
+executor.setAppname("deepscope-demo");
 executor.setAccessToken("xxxxxxxx");
 executor.setPort(9999);
 executor.start();

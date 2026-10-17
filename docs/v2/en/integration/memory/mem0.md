@@ -3,7 +3,7 @@ title: Mem0
 zh_link: /v2/zh/integration/memory/mem0
 ---
 
-`agentscope-extensions-mem0` integrates [Mem0](https://mem0.ai/) as the long-term memory store, combining vector search with LLM-based memory extraction. It supports the Mem0 SaaS platform, self-hosted deployments, and local stand-alone setups.
+`deepscope-extensions-mem0` integrates [Mem0](https://mem0.ai/) as the long-term memory store, combining vector search with LLM-based memory extraction. It supports the Mem0 SaaS platform, self-hosted deployments, and local stand-alone setups.
 
 ## When to use
 
@@ -15,17 +15,17 @@ zh_link: /v2/zh/integration/memory/mem0
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-mem0</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-mem0</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## Quickstart
 
 ```java
-import io.agentscope.core.memory.mem0.Mem0LongTermMemory;
-import io.agentscope.core.memory.mem0.Mem0ApiType;
+import io.deepscope.core.memory.mem0.Mem0LongTermMemory;
+import io.deepscope.core.memory.mem0.Mem0ApiType;
 
 // 1. Build a memory instance (local, no auth)
 Mem0LongTermMemory memory = Mem0LongTermMemory.builder()

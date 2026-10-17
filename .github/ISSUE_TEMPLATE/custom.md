@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-**<u>AgentScope-Java is an open-source project. To involve a broader community, we recommend asking your questions in English.</u>**
+**<u>DeepScope-Java is an open-source project. To involve a broader community, we recommend asking your questions in English.</u>**
 
 
 

@@ -6,41 +6,41 @@ zh_link: /v2/zh/docs/quickstart
 
 ## Installation
 
-AgentScope Java requires JDK 17 or newer. Maven 3.9+ is recommended.
+DeepScope Java requires JDK 17 or newer. Maven 3.9+ is recommended.
 
 ### Maven dependency
 
-`HarnessAgent` is the recommended entry point — it packages workspace, long-term memory, session persistence, subagents, sandboxes, and other engineering capabilities into one builder. Depending on `agentscope-harness` pulls `agentscope-core` in transitively:
+`HarnessAgent` is the recommended entry point — it packages workspace, long-term memory, session persistence, subagents, sandboxes, and other engineering capabilities into one builder. Depending on `deepscope-harness` pulls `deepscope-core` in transitively:
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-harness</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-harness</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 
 <Note>
 
-Substitute `${agentscope.version}` with the latest version. See [Release Notes](/v2/en/docs/others/release-notes) for the latest version and full release details.
+Substitute `${deepscope.version}` with the latest version. See [Release Notes](/v2/en/docs/others/release-notes) for the latest version and full release details.
 
 </Note>
 
 
-If you only need the `ReActAgent` reasoning, tool and context APIs and want to compose the application capabilities yourself, `agentscope-core` is enough for the agent framework itself. Concrete model providers are separate: provider-specific chat models and formatters live in independent `agentscope-extensions-model-*` modules. The difference between `ReActAgent` and `HarnessAgent` is covered in [Harness Architecture](/v2/en/docs/harness/architecture).
+If you only need the `ReActAgent` reasoning, tool and context APIs and want to compose the application capabilities yourself, `deepscope-core` is enough for the agent framework itself. Concrete model providers are separate: provider-specific chat models and formatters live in independent `deepscope-extensions-model-*` modules. The difference between `ReActAgent` and `HarnessAgent` is covered in [Harness Architecture](/v2/en/docs/harness/architecture).
 
 The quickstart below uses DashScope through `.model("dashscope:qwen-plus")`, so add the matching model extension as well:
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-dashscope</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-model-dashscope</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
-MCP integration requires the official MCP SDK — see `agentscope-examples/documentation/pom.xml` for a working example.
+MCP integration requires the official MCP SDK — see `deepscope-examples/documentation/pom.xml` for a working example.
 
 ## Your first agent
 
@@ -51,10 +51,10 @@ export DASHSCOPE_API_KEY=your_api_key
 ```
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.UserMessage;
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.UserMessage;
+import io.deepscope.harness.agent.HarnessAgent;
 import java.nio.file.Path;
 
 public class FirstAgent {
@@ -64,7 +64,7 @@ public class FirstAgent {
             .agentId("note-taker")
             .sysPrompt("You are a note-taking assistant.")
             .model("dashscope:qwen-plus")
-            .workspace(Path.of(".agentscope/workspace"));
+            .workspace(Path.of(".deepscope/workspace"));
 
     public static void main(String[] args) {
         try (HarnessAgent agent = AGENT_BUILDER.build()) {
@@ -88,16 +88,16 @@ public class FirstAgent {
 
 By default, Harness saves execution history and working-state snapshots (checkpoints). Keep the same `agentId`, user, session identity and storage configuration across restarts to continue the conversation. You do not need to create an `AgentSession` for this persistence.
 
-In this local example, native history lives under `.agentscope-runtime/` at the Workspace Filesystem root resolved for the current identity. With filesystem isolation or distributed storage, the location follows the selected root or namespace. See the [storage reference](/v2/en/docs/harness/session-log#storage-and-backend-configuration) when you need to inspect records or change backends.
+In this local example, native history lives under `.deepscope-runtime/` at the Workspace Filesystem root resolved for the current identity. With filesystem isolation or distributed storage, the location follows the selected root or namespace. See the [storage reference](/v2/en/docs/harness/session-log#storage-and-backend-configuration) when you need to inspect records or change backends.
 
 ### Streaming reasoning and tool calls
 
 Use `streamEvents` to display output as it is generated. Add these imports at the top of the file and create a fresh instance for this request in `main`:
 
 ```java
-import io.agentscope.core.event.AgentEventType;
-import io.agentscope.core.event.TextBlockDeltaEvent;
-import io.agentscope.core.event.ToolCallStartEvent;
+import io.deepscope.core.event.AgentEventType;
+import io.deepscope.core.event.TextBlockDeltaEvent;
+import io.deepscope.core.event.ToolCallStartEvent;
 
 try (HarnessAgent agent = AGENT_BUILDER.build()) {
     RuntimeContext ctx = RuntimeContext.builder()

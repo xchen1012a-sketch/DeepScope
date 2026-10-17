@@ -35,7 +35,7 @@ const resource = { ownerId: 'alex', createdAt: millis, updatedAt: millis };
 export async function installFixtures(context) {
   const token = `docs.${Buffer.from(JSON.stringify({ username: 'alex', sub: 'alex', roles: ['admin'] })).toString('base64url')}.fixture`;
   await context.addInitScript(token => {
-    localStorage.setItem('claw_token', token);
+    localStorage.setItem('deepscope_token', token);
     localStorage.setItem('theme', 'light');
   }, token);
   const unexpected = new Set();

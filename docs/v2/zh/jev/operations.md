@@ -13,7 +13,7 @@ JEV 增加的是判断步骤。为它分配独立预算，并把建议、实际�
 下面用有界内存队列展示观察器的接入位置；生产应用可由异步消费者定期读取并写入自己的观测系统。
 
 ```java
-import io.agentscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.JevExecution;
 import java.time.Duration;
 import java.util.concurrent.ArrayBlockingQueue;
 

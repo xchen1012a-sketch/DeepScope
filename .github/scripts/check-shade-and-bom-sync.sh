@@ -1,22 +1,22 @@
 #!/bin/bash
-# Check that all extension jar modules are declared in agentscope-all and agentscope-bom
+# Check that all extension jar modules are declared in deepscope-all and deepscope-bom
 # This prevents missing modules in the shaded uber-jar and BOM
 #
 # Rules:
-# - agentscope-all: Contains non-framework-specific extensions (shaded into uber-jar)
-# - agentscope-bom: Contains ALL published modules (for version management)
+# - deepscope-all: Contains non-framework-specific extensions (shaded into uber-jar)
+# - deepscope-bom: Contains ALL published modules (for version management)
 
 set -e
 
-ALL_POM="agentscope-distribution/agentscope-all/pom.xml"
-BOM_POM="agentscope-distribution/agentscope-bom/pom.xml"
+ALL_POM="deepscope-distribution/deepscope-all/pom.xml"
+BOM_POM="deepscope-distribution/deepscope-bom/pom.xml"
 
-echo "Checking module sync between extensions, agentscope-all and agentscope-bom..."
+echo "Checking module sync between extensions, deepscope-all and deepscope-bom..."
 echo ""
 
-# Framework-specific modules that should NOT be included in agentscope-all
+# Framework-specific modules that should NOT be included in deepscope-all
 # These are integration modules that users should depend on separately
-# But they SHOULD be in agentscope-bom for version management
+# But they SHOULD be in deepscope-bom for version management
 #
 # Detection rules (by keyword in module name):
 #   - *starter*   : Spring Boot starters
@@ -25,14 +25,14 @@ echo ""
 EXCLUDED_KEYWORDS=("starter" "quarkus" "micronaut")
 
 # Test-only modules are part of the reactor but are not published runtime artifacts.
-EXCLUDED_FROM_DISTRIBUTION=("agentscope-extensions-model-e2e-tests")
+EXCLUDED_FROM_DISTRIBUTION=("deepscope-extensions-model-e2e-tests")
 
 # Two separate lists
-MODULES_FOR_ALL=()   # Non-framework extensions -> shade into agentscope-all
+MODULES_FOR_ALL=()   # Non-framework extensions -> shade into deepscope-all
 MODULES_FOR_BOM=()   # All modules -> version management in BOM
 EXCLUDED_MODULES=()  # Track which modules were excluded (for reporting)
 
-# Function to check if module should be skipped for both agentscope-all and agentscope-bom
+# Function to check if module should be skipped for both deepscope-all and deepscope-bom
 is_distribution_excluded() {
     local module=$1
     for excluded in "${EXCLUDED_FROM_DISTRIBUTION[@]}"; do
@@ -43,7 +43,7 @@ is_distribution_excluded() {
     return 1  # false, should be checked
 }
 
-# Function to check if module should be excluded from agentscope-all
+# Function to check if module should be excluded from deepscope-all
 # Returns 0 (true) if module contains any of the excluded keywords
 is_excluded() {
     local module=$1
@@ -77,9 +77,9 @@ get_packaging() {
     echo "$packaging"
 }
 
-# Scan agentscope-extensions directory for jar modules
-echo "Scanning agentscope-extensions/ for jar modules..."
-for pom in $(find "agentscope-extensions" -name "pom.xml" -type f); do
+# Scan deepscope-extensions directory for jar modules
+echo "Scanning deepscope-extensions/ for jar modules..."
+for pom in $(find "deepscope-extensions" -name "pom.xml" -type f); do
     packaging=$(get_packaging "$pom")
 
     # Skip pom packaging (aggregator modules)
@@ -103,8 +103,8 @@ for pom in $(find "agentscope-extensions" -name "pom.xml" -type f); do
     # All jar modules go to BOM list
     MODULES_FOR_BOM+=("$artifact_id")
 
-    # Only non-excluded modules with agentscope-extensions-* prefix go to ALL list
-    if [[ "$artifact_id" == agentscope-extensions-* ]]; then
+    # Only non-excluded modules with deepscope-extensions-* prefix go to ALL list
+    if [[ "$artifact_id" == deepscope-extensions-* ]]; then
         if is_excluded "$artifact_id"; then
             EXCLUDED_MODULES+=("$artifact_id")
         else
@@ -121,40 +121,40 @@ MODULES_FOR_ALL=($(printf '%s\n' "${MODULES_FOR_ALL[@]}" | sort -u))
 MODULES_FOR_BOM=($(printf '%s\n' "${MODULES_FOR_BOM[@]}" | sort -u))
 EXCLUDED_MODULES=($(printf '%s\n' "${EXCLUDED_MODULES[@]}" | sort -u))
 
-# Add agentscope-core to BOM list (it's in a separate directory)
-MODULES_FOR_BOM+=("agentscope-core")
+# Add deepscope-core to BOM list (it's in a separate directory)
+MODULES_FOR_BOM+=("deepscope-core")
 
 echo ""
-echo "Modules to check for agentscope-all (${#MODULES_FOR_ALL[@]} extensions):"
+echo "Modules to check for deepscope-all (${#MODULES_FOR_ALL[@]} extensions):"
 for m in "${MODULES_FOR_ALL[@]}"; do
     echo "  - $m"
 done
 
 echo ""
-echo "Modules to check for agentscope-bom (${#MODULES_FOR_BOM[@]} total):"
+echo "Modules to check for deepscope-bom (${#MODULES_FOR_BOM[@]} total):"
 for m in "${MODULES_FOR_BOM[@]}"; do
     echo "  - $m"
 done
 
 echo ""
-echo "Excluded from agentscope-all or distribution checks (keywords: ${EXCLUDED_KEYWORDS[*]}; explicit: ${EXCLUDED_FROM_DISTRIBUTION[*]}):"
+echo "Excluded from deepscope-all or distribution checks (keywords: ${EXCLUDED_KEYWORDS[*]}; explicit: ${EXCLUDED_FROM_DISTRIBUTION[*]}):"
 for m in "${EXCLUDED_MODULES[@]}"; do
     echo "  - $m"
 done
 echo ""
 
-# Check modules against agentscope-all and agentscope-bom
+# Check modules against deepscope-all and deepscope-bom
 MISSING_IN_ALL=()
 MISSING_IN_BOM=()
 
-# Check agentscope-all
+# Check deepscope-all
 for module in "${MODULES_FOR_ALL[@]}"; do
     if ! grep -q "<artifactId>${module}</artifactId>" "$ALL_POM"; then
         MISSING_IN_ALL+=("$module")
     fi
 done
 
-# Check agentscope-bom
+# Check deepscope-bom
 for module in "${MODULES_FOR_BOM[@]}"; do
     if ! grep -q "<artifactId>${module}</artifactId>" "$BOM_POM"; then
         MISSING_IN_BOM+=("$module")
@@ -173,7 +173,7 @@ if [ ${#MISSING_IN_ALL[@]} -gt 0 ]; then
     echo ""
     for m in "${MISSING_IN_ALL[@]}"; do
         echo "    <dependency>"
-        echo "        <groupId>io.agentscope</groupId>"
+        echo "        <groupId>io.deepscope</groupId>"
         echo "        <artifactId>${m}</artifactId>"
         echo "        <scope>compile</scope>"
         echo "        <optional>true</optional>"
@@ -192,7 +192,7 @@ if [ ${#MISSING_IN_BOM[@]} -gt 0 ]; then
     echo ""
     for m in "${MISSING_IN_BOM[@]}"; do
         echo "    <dependency>"
-        echo "        <groupId>io.agentscope</groupId>"
+        echo "        <groupId>io.deepscope</groupId>"
         echo "        <artifactId>${m}</artifactId>"
         echo "        <version>\${project.version}</version>"
         echo "    </dependency>"
@@ -206,8 +206,8 @@ if [ $EXIT_CODE -eq 0 ]; then
     echo "SUCCESS: All modules are properly synced!"
     echo "=========================================="
     echo ""
-    echo "- agentscope-all: ${#MODULES_FOR_ALL[@]} extension modules"
-    echo "- agentscope-bom: ${#MODULES_FOR_BOM[@]} total modules"
+    echo "- deepscope-all: ${#MODULES_FOR_ALL[@]} extension modules"
+    echo "- deepscope-bom: ${#MODULES_FOR_BOM[@]} total modules"
 fi
 
 exit $EXIT_CODE

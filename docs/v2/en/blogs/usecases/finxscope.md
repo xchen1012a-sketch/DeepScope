@@ -9,7 +9,7 @@ zh_link: /v2/zh/blogs/usecases/finxscope
 
 ### 1.1 What Is FinXScope
 
-FinXScope is a **financial-grade, AI-native agent foundation built on AgentScope Java** by the Alibaba Cloud New Finance Technical Services team. As a core part of the overall Agent Harness system, FinXScope fully reuses AgentScope Java's mature capabilities in agent orchestration, tool integration, multi-model access, and extensible runtime, and on top of that performs deep customization and enhancement to meet the financial industry's compliance, security, and high-availability requirements. The complete Agent Harness system consists of the FinXScope runtime foundation, the AI Service Asset Platform, the full-link evaluation platform, and the operations management platform, with FinXScope taking on the most critical responsibility of agent execution and management.
+FinXScope is a **financial-grade, AI-native agent foundation built on DeepScope Java** by the Alibaba Cloud New Finance Technical Services team. As a core part of the overall Agent Harness system, FinXScope fully reuses DeepScope Java's mature capabilities in agent orchestration, tool integration, multi-model access, and extensible runtime, and on top of that performs deep customization and enhancement to meet the financial industry's compliance, security, and high-availability requirements. The complete Agent Harness system consists of the FinXScope runtime foundation, the AI Service Asset Platform, the full-link evaluation platform, and the operations management platform, with FinXScope taking on the most critical responsibility of agent execution and management.
 
 ![FinXScope's position in the Agent Harness system](https://mmbiz.qpic.cn/sz_mmbiz_png/bvDbzNRia8j0kkybNzlZ4kkdLlAs3LtUY6vicvYk6pDnUKicDfxf2kmL3xc3pk4GHYNTAROGEpWrdAqibbEMW8vlU5udgHibJcP9DWMzFrQnc7Wk/640?wx_fmt=png&from=appmsg)
 
@@ -57,7 +57,7 @@ An easily overlooked fact is: the ultimate business outcome of an agent does not
 
 ### 3.1 Six-Layer Architecture Design
 
-FinXScope is the core engine of the entire Agent Harness system, and also the first enterprise-grade agent runtime foundation targeting the financial industry. It provides a systematic, complete capability combination rather than scattered technical components: based on the AgentScope framework — proven at large scale at Alibaba — it adds ten fully self-developed core capabilities and financial-grade enhancements, forming an agent runtime platform with both a solid technical foundation and rapid adaptability to financial scenarios. Around FinXScope, the Agent Harness system further extends into the AI Service Asset Platform (FinXSkillHub), the full-link evaluation platform (FinXVantage), and the operations management platform, together covering the complete lifecycle of agents from development and execution to continuous optimization. FinXScope's six-layer architecture is not only the technical implementation skeleton of this system, but also a brand-new definition and specification of enterprise application architecture for the AI-native era.
+FinXScope is the core engine of the entire Agent Harness system, and also the first enterprise-grade agent runtime foundation targeting the financial industry. It provides a systematic, complete capability combination rather than scattered technical components: based on the DeepScope framework — proven at large scale at Alibaba — it adds ten fully self-developed core capabilities and financial-grade enhancements, forming an agent runtime platform with both a solid technical foundation and rapid adaptability to financial scenarios. Around FinXScope, the Agent Harness system further extends into the AI Service Asset Platform (FinXSkillHub), the full-link evaluation platform (FinXVantage), and the operations management platform, together covering the complete lifecycle of agents from development and execution to continuous optimization. FinXScope's six-layer architecture is not only the technical implementation skeleton of this system, but also a brand-new definition and specification of enterprise application architecture for the AI-native era.
 
 ![FinXScope's six-layer architecture](https://mmbiz.qpic.cn/mmbiz_png/bvDbzNRia8j2Oqs21qftQibzJXYkH4MTwxau2HRrTJYUZGGbor1ceehlhicr57K0UZoCfXBRQibkXWkUY4k3JjoWszKciah8nAXq9mia88wLRb478/640?wx_fmt=png&from=appmsg)
 
@@ -75,7 +75,7 @@ The significance of the six-layer architecture goes far beyond technical impleme
 
 ## 04 Deep Dive into Core Capabilities
 
-The ten core capabilities below are FinXScope's technical moat. They include both fully self-developed original capabilities and deep enhancements built on AgentScope. These capabilities originate from the rigid requirements of real financial customer scenarios and have been polished and validated in multiple production environments.
+The ten core capabilities below are FinXScope's technical moat. They include both fully self-developed original capabilities and deep enhancements built on DeepScope. These capabilities originate from the rigid requirements of real financial customer scenarios and have been polished and validated in multiple production environments.
 
 ### 4.1 Intent Engine: Precise Understanding of Financial Semantics
 
@@ -263,21 +263,21 @@ Scenario pain points: configuration changes require going through a complete rel
 - Configuration hot update: covers all core configurations of Agent/Skill/Tool/intent tree/model/gateway. Redis Pub/Sub synchronizes across multiple instances, taking effect within seconds. ConfigVersionRegistry version management supports precise rollback.
 - Operations management platform: implements full lifecycle management of agents, skills, intents, tools, and gateways: visually editing intent trees, configuring mapping relationships, registering/enabling/disabling skills, managing MCP connections, and configuring security policies. Supports building mirror runtime environments for configuration dry-run verification, comparing and evaluating multiple versions before publishing the best one. In the future, it will connect with the full-link evaluation system to realize an automated operations closed loop of "configure → dry-run → evaluate → publish the best".
 
-## 05 Why Build on AgentScope
+## 05 Why Build on DeepScope
 
-### 5.1 AgentScope: A Development Framework Born for Agents
+### 5.1 DeepScope: A Development Framework Born for Agents
 
-AgentScope is an AI-native application development framework open-sourced by Alibaba, designed specifically for building autonomously planning agents. Choosing it as the foundation framework is based on three key dimensions: dynamic skill governance (Tool Group on-demand activation, avoiding context overload), high-concurrency architecture (the AgentPool factory pattern is naturally stateless), and execution reliability (exponential backoff retries, and a complete Hook system implementing circuit breaking and rate limiting).
+DeepScope is an AI-native application development framework open-sourced by Alibaba, designed specifically for building autonomously planning agents. Choosing it as the foundation framework is based on three key dimensions: dynamic skill governance (Tool Group on-demand activation, avoiding context overload), high-concurrency architecture (the AgentPool factory pattern is naturally stateless), and execution reliability (exponential backoff retries, and a complete Hook system implementing circuit breaking and rate limiting).
 
 ### 5.2 Comprehensive Comparison with Traditional Frameworks
 
-![Comprehensive comparison between AgentScope and traditional frameworks](https://mmbiz.qpic.cn/sz_mmbiz_png/bvDbzNRia8j2Xmp0PT9HKian68GGSoMNvUPblQG4cdJEBzsPjiaN4ZtPzaqIbIwU7VCHJZnAlFPib1sADSv4pInsCvQc0IJXyfrZ1SjAeMLgh2g/640?wx_fmt=png&from=appmsg)
+![Comprehensive comparison between DeepScope and traditional frameworks](https://mmbiz.qpic.cn/sz_mmbiz_png/bvDbzNRia8j2Xmp0PT9HKian68GGSoMNvUPblQG4cdJEBzsPjiaN4ZtPzaqIbIwU7VCHJZnAlFPib1sADSv4pInsCvQc0IJXyfrZ1SjAeMLgh2g/640?wx_fmt=png&from=appmsg)
 
-### 5.3 Core Extensions on Top of AgentScope
+### 5.3 Core Extensions on Top of DeepScope
 
-AgentScope provides solid foundational framework capabilities, but there remains a significant capability gap between a general-purpose framework and a financial-grade product. FinXScope builds six major extensions on top of AgentScope:
+DeepScope provides solid foundational framework capabilities, but there remains a significant capability gap between a general-purpose framework and a financial-grade product. FinXScope builds six major extensions on top of DeepScope:
 
-![FinXScope's six major extensions on top of AgentScope](https://mmbiz.qpic.cn/mmbiz_png/bvDbzNRia8j1rEZgobbPyTIszNDMWRCU95IAhBlEia6pwLd7ZPXFjKadQLA82p0GO2MAqOxwZUgkDsRuKtuoPg5PbMib9LLFGsDicCVOmUXzTDc/640?wx_fmt=png&from=appmsg)
+![FinXScope's six major extensions on top of DeepScope](https://mmbiz.qpic.cn/mmbiz_png/bvDbzNRia8j1rEZgobbPyTIszNDMWRCU95IAhBlEia6pwLd7ZPXFjKadQLA82p0GO2MAqOxwZUgkDsRuKtuoPg5PbMib9LLFGsDicCVOmUXzTDc/640?wx_fmt=png&from=appmsg)
 
 **Extensions new in 2.0**: multi-agent workflow engine (eight orchestration strategies), workflow mounting mechanism (MountableResource), configuration hot update engine (Redis Pub/Sub + ConfigVersionRegistry), three-level permission system, observability framework (BizLogger + Prometheus + ObservabilityHook), remote storage refactoring (fully stateless).
 
@@ -325,7 +325,7 @@ FinXScope provides a full-link observability system covering access, intent, and
 
 **Business metric monitoring**: business instrumentation through the unified BizLogger API automatically generates standard Prometheus metrics. The metric system is divided into six layers according to system architecture (access layer, presentation layer, intent layer, execution layer, tool layer, knowledge layer), with each layer independently defining metric enumerations covering dimensions such as event counts, latency statistics, active request counts, and error classification. A separate management port exposes the `/actuator/prometheus` endpoint for Prometheus Server scraping.
 
-**Agent lifecycle observability**: deeply integrated with the AgentScope Hook mechanism, using ObservabilityHook to track 5 lifecycle stages of Agent execution: invocation entry, LLM reasoning, tool execution, summary generation, and exception handling. Each stage automatically collects latency and token usage, supporting three-level switch control (global switch → event-type switch → Agent-level override), allowing observation data collection for specific Agents or specific stages to be turned on or off on demand in production.
+**Agent lifecycle observability**: deeply integrated with the DeepScope Hook mechanism, using ObservabilityHook to track 5 lifecycle stages of Agent execution: invocation entry, LLM reasoning, tool execution, summary generation, and exception handling. Each stage automatically collects latency and token usage, supporting three-level switch control (global switch → event-type switch → Agent-level override), allowing observation data collection for specific Agents or specific stages to be turned on or off on demand in production.
 
 **Structured logging**: BizLogger provides dual-mode log output: each business log is simultaneously output to the console in a human-readable format and written to a separate file in structured JSON format. Logs automatically carry context information such as traceId, sessionId, and userId, supporting machine parsing and integration with log platforms.
 
@@ -407,7 +407,7 @@ FinXScope 2.0 completes the leap from a "single-agent runtime framework" to an "
 
 FinXScope represents a brand-new paradigm of financial-grade agent foundations. It does not attempt to become an "all-purpose AI application", but focuses on doing one thing well: providing financial institutions with a reliable, high-performance, easily extensible agent runtime and management foundation, so that any financial application can gain AI-native capabilities at extremely low cost.
 
-FinXScope's foundation is built entirely on top of AgentScope Java 2.0, deeply reusing its core capabilities for enterprise-grade production environments — including the ReAct reasoning-acting loop, the six-stage middleware chain, the unified message model and typed event stream, the tool and skill framework, layered memory and state persistence, the tri-state permission engine, and graceful shutdown and interruption mechanisms. On this basis, FinXScope performs systematic industry-specific enhancements for the financial industry's compliance auditing, data security, and high-availability requirements.
+FinXScope's foundation is built entirely on top of DeepScope Java 2.0, deeply reusing its core capabilities for enterprise-grade production environments — including the ReAct reasoning-acting loop, the six-stage middleware chain, the unified message model and typed event stream, the tool and skill framework, layered memory and state persistence, the tri-state permission engine, and graceful shutdown and interruption mechanisms. On this basis, FinXScope performs systematic industry-specific enhancements for the financial industry's compliance auditing, data security, and high-availability requirements.
 
 Looking back at FinXScope's core value: the six-layer standardized architecture provides a clear architecture blueprint and planning path for enterprise AI construction; the dual-mode execution architecture finds the optimal balance between flexibility and controllability; the configuration-driven design combines the high capability ceiling of pro-code with a low usage barrier; enterprise-grade guarantees of high availability, security compliance, and observability make financial-grade production deployment no longer a difficult problem.
 

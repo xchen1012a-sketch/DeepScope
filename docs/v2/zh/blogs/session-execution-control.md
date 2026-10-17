@@ -28,7 +28,7 @@ description: 使用 AgentSession 管理任务排队、运行中补充、HITL 和
 下面假设 `agent` 是配置了稳定 agentId 和持久日志后端的 `HarnessAgent`，`ownerId` 来自认证身份，`sessionId` 已完成访问权限检查。
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
+import io.deepscope.core.agent.RuntimeContext;
 
 var session = agent.session(RuntimeContext.builder()
         .userId(ownerId).sessionId(sessionId).build());
@@ -106,10 +106,10 @@ var events = session.log().readAfter(lastAppliedSeq, 100);
 
 重启后使用相同 userId、agentId、sessionId 和日志后端取得会话。查看历史不启动推理；应用显式调用 `session.start()` 恢复已接收任务的调度，中断任务仍需 `resume`。退出时关闭 `agent`，框架负责中断活动执行并保留持久队列。
 
-## AgentScope Service 的对应入口
+## DeepScope Service 的对应入口
 
 托管 Agent 使用 [Agent API](/v2/zh/service/session-event-log)：创建 `/api/v1/agent-sessions`，向 session 的 `/turns` 提交任务，通过 `/snapshot` 和 `/events/stream` 恢复界面，使用 actions/resume 接口继续原任务。它有自己的持久命令、鉴权和公共事件协议。
 
 SDK `AgentSession` 与 Service 表达相同的会话和任务概念，但不是同一个调度器。Service 已持有自己的任务租约和命令队列，不应在一个请求中再嵌套 SDK 会话调度。旧 `/api/sessions` 事件接口和 Endpoint SSE 的行为见[SSE 格式](/v2/zh/service/sse-events)，不能套用新 Agent API 的排队与 cursor 约定。
 
-需要后台排队和中断续做的应用可以使用上述会话操作。已有工作流或服务调度器时，仍可使用 `call` / `streamEvents` 驱动执行；更底层的执行控制用于自定义调度器和协议适配。简洁的配套代码见 [SessionRunGuide.java](https://github.com/agentscope-ai/agentscope-java/blob/main/docs/examples/execution-control/SessionRunGuide.java)。
+需要后台排队和中断续做的应用可以使用上述会话操作。已有工作流或服务调度器时，仍可使用 `call` / `streamEvents` 驱动执行；更底层的执行控制用于自定义调度器和协议适配。简洁的配套代码见 [SessionRunGuide.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/docs/examples/execution-control/SessionRunGuide.java)。

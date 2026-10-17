@@ -13,7 +13,7 @@ JEV 判断提供的产物证据能否支持任务完成；是否通过实际验�
 ## 1. 提供任务与有界产物证据
 
 ```java
-import io.agentscope.extensions.judge.jev.application.JevSupervisor;
+import io.deepscope.extensions.judge.jev.application.JevSupervisor;
 import java.util.Map;
 
 var task = "修复退款条件检查";
@@ -49,7 +49,7 @@ var observed = pending.doOnNext(report -> {
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP`：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios task-review
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevApplicationScenarios task-review
 ```
 
 用例给两个分支相同的预设完成与未偏航概率，仅改变模拟宿主验证标志。输出依次为 REQUEST_VERIFICATION、REVIEW_COMPLETION，证明语义完成不替代验证。它没有实际运行业务测试或修改任务状态。[完整源码](/examples/jev/source/JevApplicationScenarios.java.txt)

@@ -15,9 +15,9 @@ title: "审核输入与输出内容"
 `client` 的构建见[客户端接入](/v2/zh/jev/guides/client)。先使用 SHADOW 观察真实样本中的建议：
 
 ```java
-import io.agentscope.extensions.judge.jev.JevGuardrail;
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.integration.JevResponseMiddleware;
+import io.deepscope.extensions.judge.jev.JevGuardrail;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.integration.JevResponseMiddleware;
 import java.time.Duration;
 
 var policy = JevGuardrail.defaults(client);
@@ -41,7 +41,7 @@ SHADOW 只记录建议，**不会阻止内容发布**。按业务样本验证策
 `model` 与 `toolkit` 是应用已有的生成模型和工具集合：
 
 ```java
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.HarnessAgent;
 
 var agent = HarnessAgent.builder()
     .name("support-content-check")
@@ -67,7 +67,7 @@ var agent = HarnessAgent.builder()
 [JevIntegrationExample](/examples/jev/source/JevIntegrationExample.java.txt)演示“检索退款政策 → 输入与输出检查 → 草稿修订 → 发布”。按[构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP`：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevIntegrationExample
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevIntegrationExample
 ```
 
 该案例使用预设判断，验证组合流程；它不测量真实模型的安全识别准确率。拒绝、超限、取消与跨会话行为见示例模块中的 `JevResponseIntegrationTest`。

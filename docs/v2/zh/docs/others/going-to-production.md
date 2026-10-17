@@ -59,7 +59,7 @@ HarnessAgent.builder()
 
 ### DistributedStore 能力矩阵
 
-| 能力 | Redis (`agentscope-extensions-redis`) | OSS (`agentscope-extensions-oss`) | MySQL (`agentscope-extensions-mysql`) |
+| 能力 | Redis (`deepscope-extensions-redis`) | OSS (`deepscope-extensions-oss`) | MySQL (`deepscope-extensions-mysql`) |
 |------|:-----:|:---:|:-----:|
 | `AgentStateStore` | `RedisAgentStateStore` | `OssAgentStateStore` | `MysqlAgentStateStore` |
 | `BaseStore` | `RedisStore` | `OssBaseStore` | `JdbcStore` |
@@ -87,16 +87,16 @@ HarnessAgent.builder()
 
 | 实现 | 模块 | 何时使用 |
 |------|------|---------|
-| `InMemoryAgentStateStore` | `agentscope-core` | 单元测试；进程退出全部丢 |
-| `JsonFileAgentStateStore` | `agentscope-core` | 单机开发；按 `(userId, sessionId)` 在文件系统分目录。**HarnessAgent 默认**，根目录 `~/.agentscope/state/<agentId>/`；**单机** |
-| `RedisAgentStateStore` | `agentscope-extensions-redis` | **多副本生产首选**；支持 Jedis / Lettuce / Redisson（Standalone / Cluster / Sentinel） |
-| `MysqlAgentStateStore` | `agentscope-extensions-mysql` | 需要把状态沉淀进关系型库（审计 / 报表 / 联表查询） |
+| `InMemoryAgentStateStore` | `deepscope-core` | 单元测试；进程退出全部丢 |
+| `JsonFileAgentStateStore` | `deepscope-core` | 单机开发；按 `(userId, sessionId)` 在文件系统分目录。**HarnessAgent 默认**，根目录 `~/.deepscope/state/<agentId>/`；**单机** |
+| `RedisAgentStateStore` | `deepscope-extensions-redis` | **多副本生产首选**；支持 Jedis / Lettuce / Redisson（Standalone / Cluster / Sentinel） |
+| `MysqlAgentStateStore` | `deepscope-extensions-mysql` | 需要把状态沉淀进关系型库（审计 / 报表 / 联表查询） |
 
 **Redis 三种 client adapter** 都通过 `RedisAgentStateStore.builder()` 切换：
 
 ```java
-import io.agentscope.core.state.AgentStateStore;
-import io.agentscope.extensions.redis.state.RedisAgentStateStore;
+import io.deepscope.core.state.AgentStateStore;
+import io.deepscope.extensions.redis.state.RedisAgentStateStore;
 import redis.clients.jedis.JedisPooled;
 
 // Jedis Standalone
@@ -162,8 +162,8 @@ HarnessAgent.builder()
 
 | 实现 | 依赖 | 并发安全 | 适用 |
 |------|------|---------|------|
-| `RedisStore` | `agentscope-extensions-redis` | Lua 实现 CAS putIfVersion，`ZRANGEBYLEX` 做 prefix search | 主推；多副本共享 |
-| `JdbcStore` | `agentscope-extensions-mysql`；MySQL / PostgreSQL / SQLite / H2 dialect 自动判别 | 单语句 CAS UPDATE | 已有关系型基础设施 / 需要联表 |
+| `RedisStore` | `deepscope-extensions-redis` | Lua 实现 CAS putIfVersion，`ZRANGEBYLEX` 做 prefix search | 主推；多副本共享 |
+| `JdbcStore` | `deepscope-extensions-mysql`；MySQL / PostgreSQL / SQLite / H2 dialect 自动判别 | 单语句 CAS UPDATE | 已有关系型基础设施 / 需要联表 |
 | `InMemoryStore` | — | — | 测试 |
 
 ```java
@@ -210,7 +210,7 @@ DistributedStore mysqlStore = MysqlDistributedStore.create(dataSource);
 | `agents/<agentId>/tasks/` | `tasks` |
 | 额外目录：`.addSharedPrefix("prompts/")` | 自动派生 |
 
-每段下面再按 `IsolationScope` 切桶（`USER` → `agents/<agentId>/users/<userId>/`）。Redis key 大致长成 `agentscope:store:item:agents\0X\0users\0alice\0memory\0memory/2026-06-02.md`。
+每段下面再按 `IsolationScope` 切桶（`USER` → `agents/<agentId>/users/<userId>/`）。Redis key 大致长成 `deepscope:store:item:agents\0X\0users\0alice\0memory\0memory/2026-06-02.md`。
 
 ### `CompositeFilesystem`：两层读+写穿透
 
@@ -232,7 +232,7 @@ Skill 优先级从低到高合成（详见 [技能](/v2/zh/docs/harness/skill)�
 
 | 层 | 来源 | 用什么 | 适用 |
 |---|------|-------|------|
-| 1 | 项目全局 | `.projectGlobalSkillsDir(Path)` | 个人开发机器；`~/.agentscope/skills/` |
+| 1 | 项目全局 | `.projectGlobalSkillsDir(Path)` | 个人开发机器；`~/.deepscope/skills/` |
 | 2 | Marketplace | `.skillRepository(...)` | 跨项目共享 |
 | 3 | 工作区共用 | `workspace/skills/` | 项目专属；进 git |
 | 4 | 用户隔离 | `<userId>/skills/` | 用户级覆盖 |
@@ -241,17 +241,17 @@ Skill 优先级从低到高合成（详见 [技能](/v2/zh/docs/harness/skill)�
 
 | Repository | 模块 | 特点 | 推荐场景 |
 |-----------|------|------|---------|
-| `GitSkillRepository` | `agentscope-extensions-skill-git-repository` | 团队 git 仓库；HEAD 变化才拉；只读分发 | 早期 / 小团队；改 skill 走 git PR review |
-| `MysqlSkillRepository` | `agentscope-extensions-skill-mysql-repository` | DataSource 注入；`writeable(true/false)` 双模式；从 agent 侧可写回 | 平台侧统一治理；多团队多 agent |
-| `NacosSkillRepository` | `agentscope-extensions-nacos-skill` | 在线下发 + 配置中心变更订阅；`AutoCloseable` | 阿里系生态；要"改一次全网立即生效" |
-| `ClasspathSkillRepository` | `agentscope-core` | 和 JAR 一起发；Spring Boot Fat JAR 兼容 | 产品内置不可改的能力包 |
+| `GitSkillRepository` | `deepscope-extensions-skill-git-repository` | 团队 git 仓库；HEAD 变化才拉；只读分发 | 早期 / 小团队；改 skill 走 git PR review |
+| `MysqlSkillRepository` | `deepscope-extensions-skill-mysql-repository` | DataSource 注入；`writeable(true/false)` 双模式；从 agent 侧可写回 | 平台侧统一治理；多团队多 agent |
+| `NacosSkillRepository` | `deepscope-extensions-nacos-skill` | 在线下发 + 配置中心变更订阅；`AutoCloseable` | 阿里系生态；要"改一次全网立即生效" |
+| `ClasspathSkillRepository` | `deepscope-core` | 和 JAR 一起发；Spring Boot Fat JAR 兼容 | 产品内置不可改的能力包 |
 
 ```java
 HarnessAgent agent = HarnessAgent.builder()
         // ...
         .skillRepository(new GitSkillRepository("https://github.com/your-org/team-skills.git"))
         .skillRepository(MysqlSkillRepository.builder(dataSource)
-                .databaseName("agentscope")
+                .databaseName("deepscope")
                 .skillsTableName("skills")
                 .createIfNotExist(true)
                 .writeable(false)                  // 只读分发，生产建议
@@ -280,7 +280,7 @@ HarnessAgent agent = HarnessAgent.builder()
 
 | Spec | 模块路径 | 适用 |
 |------|---------|------|
-| `DockerFilesystemSpec` | `io.agentscope.harness.agent.sandbox.impl.docker` | 单机 / 本地集群；从 image 起容器；最熟悉 |
+| `DockerFilesystemSpec` | `io.deepscope.harness.agent.sandbox.impl.docker` | 单机 / 本地集群；从 image 起容器；最熟悉 |
 | `KubernetesFilesystemSpec` | `...impl.kubernetes` | 已经跑 K8s；走 pod / Job |
 | `DaytonaFilesystemSpec` | `...impl.daytona` | Daytona 服务（开发环境即服务） |
 | `E2bFilesystemSpec` | `...impl.e2b` | E2B 云沙箱；最快上云、不依赖自有基础设施 |
@@ -300,18 +300,18 @@ HarnessAgent agent = HarnessAgent.builder()
 
 | Spec | Store | 模块 | 何时用 |
 |------|------|------|--------|
-| `NoopSnapshotSpec` | — | `agentscope-harness` | 不要在生产用；容器丢了就走冷启动 |
-| `LocalSnapshotSpec(Path)` | 本地目录 `tar` 文件 | `agentscope-harness` | 单机调试 |
-| `OssSnapshotSpec` | 阿里云 OSS | `agentscope-extensions-oss` | **大对象首选**；天然适合对象存储 |
-| `RedisSnapshotSpec` | Redis | `agentscope-extensions-redis` | 小工作区 + 短 TTL（注意 Redis 内存代价） |
-| `JdbcSnapshotSpec` | JDBC BLOB | `agentscope-extensions-jdbc` | 已有关系型数据库、不想引入额外中间件 |
+| `NoopSnapshotSpec` | — | `deepscope-harness` | 不要在生产用；容器丢了就走冷启动 |
+| `LocalSnapshotSpec(Path)` | 本地目录 `tar` 文件 | `deepscope-harness` | 单机调试 |
+| `OssSnapshotSpec` | 阿里云 OSS | `deepscope-extensions-oss` | **大对象首选**；天然适合对象存储 |
+| `RedisSnapshotSpec` | Redis | `deepscope-extensions-redis` | 小工作区 + 短 TTL（注意 Redis 内存代价） |
+| `JdbcSnapshotSpec` | JDBC BLOB | `deepscope-extensions-jdbc` | 已有关系型数据库、不想引入额外中间件 |
 | 自实现 `RemoteSnapshotClient` → `RemoteSnapshotSpec` | S3 / GCS / MinIO | — | 不在内置列表里 |
 
 ```java
 DistributedStore redisStore = RedisDistributedStore.fromJedis(jedis);
 DistributedStore ossStore = OssDistributedStore.create(
         ossClient,
-        "agentscope-sandbox-snapshots",
+        "deepscope-sandbox-snapshots",
         "prod/");                         // key 前缀，多环境隔离
 
 DistributedStore store = DistributedStore.builder()
@@ -340,8 +340,8 @@ HarnessAgent agent = HarnessAgent.builder()
 
 | 实现 | 模块 | 机制 |
 |------|------|------|
-| `RedisSandboxExecutionGuard` | `agentscope-extensions-redis` | Redis `SET NX PX` 租约 |
-| `JdbcSandboxExecutionGuard` | `agentscope-extensions-mysql` | MySQL `GET_LOCK()` / `RELEASE_LOCK()` |
+| `RedisSandboxExecutionGuard` | `deepscope-extensions-redis` | Redis `SET NX PX` 租约 |
+| `JdbcSandboxExecutionGuard` | `deepscope-extensions-mysql` | MySQL `GET_LOCK()` / `RELEASE_LOCK()` |
 
 推荐仍然通过 `DistributedStore` 注入执行锁：
 
@@ -422,23 +422,23 @@ HarnessAgent.builder()
 应用启动时配置共享 Builder 和外部依赖；每次请求用 `agentBuilder.build()` 获得新的实例，并在执行结束后关闭。Builder 不保存本次请求的用户或会话参数，身份通过 `RuntimeContext` 传入。完整生命周期约定见[智能体](/v2/zh/docs/building-blocks/agent#实例生命周期)。
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.skill.repository.mysql.MysqlSkillRepository;
-import io.agentscope.extensions.redis.RedisDistributedStore;
-import io.agentscope.core.tracing.OtelTracingMiddleware;
-import io.agentscope.harness.agent.DistributedStore;
-import io.agentscope.harness.agent.HarnessAgent;
-import io.agentscope.harness.agent.IsolationScope;
-import io.agentscope.harness.agent.sandbox.impl.docker.DockerFilesystemSpec;
-import io.agentscope.core.memory.compaction.CompactionConfig;
-import io.agentscope.core.memory.compaction.ToolResultEvictionConfig;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.skill.repository.mysql.MysqlSkillRepository;
+import io.deepscope.extensions.redis.RedisDistributedStore;
+import io.deepscope.core.tracing.OtelTracingMiddleware;
+import io.deepscope.harness.agent.DistributedStore;
+import io.deepscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.IsolationScope;
+import io.deepscope.harness.agent.sandbox.impl.docker.DockerFilesystemSpec;
+import io.deepscope.core.memory.compaction.CompactionConfig;
+import io.deepscope.core.memory.compaction.ToolResultEvictionConfig;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import redis.clients.jedis.JedisPooled;
 
 // --- 依赖（应用启动时创建一次） ---
-Path workspace = Paths.get("/var/agentscope/workspace");
+Path workspace = Paths.get("/var/deepscope/workspace");
 JedisPooled jedis = new JedisPooled(System.getenv("REDIS_URI"));
 DistributedStore store = RedisDistributedStore.fromJedis(jedis);
 

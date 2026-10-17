@@ -3,7 +3,7 @@ title: Overview
 zh_link: /v1/zh/docs/harness/overview
 ---
 
-`agentscope-harness` builds a production-grade runtime infrastructure on top of `agentscope-core`'s `ReActAgent`, through two extension channels: **Hooks** and **Toolkits**. Your entry point is one class: `HarnessAgent`.
+`deepscope-harness` builds a production-grade runtime infrastructure on top of `deepscope-core`'s `ReActAgent`, through two extension channels: **Hooks** and **Toolkits**. Your entry point is one class: `HarnessAgent`.
 
 A bare `ReActAgent` handles a single request–reason–tool–reply cycle. Harness answers a different set of questions: **what happens on the next turn, what happens the next day, what happens when context overflows, what happens when state is lost, what happens when a task is too heavy**. It does not replace the reasoning loop — it injects hooks at critical lifecycle points and provides a baseline set of tools, packaging the default engineering answers to these questions.
 
@@ -13,20 +13,20 @@ Add the dependency:
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-harness</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-harness</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
-The example below demonstrates three core values of Harness: **workspace-driven persona**, **session persistence** (a second turn with the same `sessionId` remembers the first), and **explicit conversation compaction**. On first run, `AGENTS.md` is generated under `${cwd}/.agentscope/workspace/`; subsequent runs reuse it.
+The example below demonstrates three core values of Harness: **workspace-driven persona**, **session persistence** (a second turn with the same `sessionId` remembers the first), and **explicit conversation compaction**. On first run, `AGENTS.md` is generated under `${cwd}/.deepscope/workspace/`; subsequent runs reuse it.
 
 ```java
 public class QuickstartExample {
 
     public static void main(String[] args) throws Exception {
         // 1. Prepare workspace: generate AGENTS.md on first run, reuse afterwards
-        Path workspace = Paths.get(".agentscope/workspace");
+        Path workspace = Paths.get(".deepscope/workspace");
         initWorkspaceIfAbsent(workspace);
 
         // 2. Build model
@@ -90,7 +90,7 @@ public class QuickstartExample {
 }
 ```
 
-Full runnable version: [`agentscope-examples/agents/harness-examples/harness-quickstart/src/main/java/io/agentscope/harness/example/QuickstartExample.java`](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/agents/harness-examples/harness-quickstart/src/main/java/io/agentscope/harness/example/QuickstartExample.java)
+Full runnable version: [`deepscope-examples/agents/harness-examples/harness-quickstart/src/main/java/io/deepscope/harness/example/QuickstartExample.java`](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/agents/harness-examples/harness-quickstart/src/main/java/io/deepscope/harness/example/QuickstartExample.java)
 
 Run:
 
@@ -98,18 +98,18 @@ Run:
 export DASHSCOPE_API_KEY=your_key_here
 
 # First run: install dependency modules to local repo (skip javadoc and spotless)
-mvn -pl agentscope-examples/agents/harness-examples/harness-quickstart -am install \
+mvn -pl deepscope-examples/agents/harness-examples/harness-quickstart -am install \
     -DskipTests -Dspotless.check.skip=true -Dmaven.javadoc.skip=true -q
 
 # Execute main
-mvn -pl agentscope-examples/agents/harness-examples/harness-quickstart exec:java \
-    -Dexec.mainClass=io.agentscope.harness.example.QuickstartExample \
+mvn -pl deepscope-examples/agents/harness-examples/harness-quickstart exec:java \
+    -Dexec.mainClass=io.deepscope.harness.example.QuickstartExample \
     -Dspotless.check.skip=true -q
 ```
 
 **What to observe after running**:
 
-- `.agentscope/workspace/AGENTS.md` is auto-created — this is the source of the agent's persona
+- `.deepscope/workspace/AGENTS.md` is auto-created — this is the source of the agent's persona
 - Turn 2 "What is my name?" gets the right answer because the second `call()` with the same `sessionId=demo-session` auto-restored turn 1's state via `bindRuntimeContext` at the start
 - After a few more turns that trigger compaction (≥30 messages), you can see LLM-extracted facts in `workspace/memory/YYYY-MM-DD.md`; the background `MemoryMaintenanceScheduler` will continue merging these into `MEMORY.md`
 - On the next process restart, as long as `sessionId` is unchanged, the agent still remembers everything

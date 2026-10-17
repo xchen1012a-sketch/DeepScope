@@ -44,7 +44,7 @@ public class WeatherService {
 }
 ```
 
-配置了严格模式后，AgentScope 在以下所有路径中保留并传播严格模式配置：
+配置了严格模式后，DeepScope 在以下所有路径中保留并传播严格模式配置：
 
 - `@Tool(..., strict = true)` 注解驱动的工具注册
 - `AgentTool` 接口实现（通过 `getStrict()` 方法）
@@ -208,8 +208,8 @@ public String query(
 ### 文件工具
 
 ```java
-import io.agentscope.core.tool.file.ReadFileTool;
-import io.agentscope.core.tool.file.WriteFileTool;
+import io.deepscope.core.tool.file.ReadFileTool;
+import io.deepscope.core.tool.file.WriteFileTool;
 
 // 基础注册
 toolkit.registerTool(new ReadFileTool());
@@ -236,7 +236,7 @@ toolkit.registerTool(new WriteFileTool("/safe/workspace"));
 **快速使用：**
 
 ```java
-import io.agentscope.core.tool.coding.ShellCommandTool;
+import io.deepscope.core.tool.coding.ShellCommandTool;
 
 Function<String, Boolean> callback = cmd -> askUserForApproval(cmd);
 toolkit.registerTool(new ShellCommandTool(allowedCommands, callback));
@@ -245,8 +245,8 @@ toolkit.registerTool(new ShellCommandTool(allowedCommands, callback));
 ### 多模态工具
 
 ```java
-import io.agentscope.core.tool.multimodal.DashScopeMultiModalTool;
-import io.agentscope.extensions.model.openai.tool.OpenAIMultiModalTool;
+import io.deepscope.core.tool.multimodal.DashScopeMultiModalTool;
+import io.deepscope.extensions.model.openai.tool.OpenAIMultiModalTool;
 
 toolkit.registerTool(new DashScopeMultiModalTool(System.getenv("DASHSCOPE_API_KEY")));
 toolkit.registerTool(new OpenAIMultiModalTool(System.getenv("OPENAI_API_KEY")));
@@ -402,6 +402,6 @@ boolean isExternal = toolkit.isExternalTool("query_database");  // true
 
 ## 完整示例
 
-- **工具调用示例**: [ToolCallingExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/ToolCallingExample.java)
-- **工具组示例**: [ToolGroupExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/ToolGroupExample.java)
-- **多模态工具示例**: [MultiModalToolExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/MultiModalToolExample.java)
+- **工具调用示例**: [ToolCallingExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/ToolCallingExample.java)
+- **工具组示例**: [ToolGroupExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/ToolGroupExample.java)
+- **多模态工具示例**: [MultiModalToolExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/MultiModalToolExample.java)

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.session.log.SessionEvent;
-import io.agentscope.harness.agent.HarnessAgent;
-import io.agentscope.harness.agent.session.AgentSession;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.session.log.SessionEvent;
+import io.deepscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.session.AgentSession;
 import java.util.List;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;

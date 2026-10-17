@@ -141,7 +141,7 @@ HarnessAgent agent = HarnessAgent.builder()
     .build();
 
 // Agent can call memory_search at any time
-MemoryIndex index = new MemoryIndex(workspaceAgentScopeDir);
+MemoryIndex index = new MemoryIndex(workspaceDeepScopeDir);
 index.open();
 List<MemoryIndex.SearchHit> hits = index.search("database migration", 10);
 // hit: { path, lineNumber, content, rank }

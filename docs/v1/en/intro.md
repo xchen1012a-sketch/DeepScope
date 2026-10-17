@@ -1,12 +1,12 @@
 ---
-title: AgentScope Java v1
+title: DeepScope Java v1
 description: Build distributed, enterprise-grade agents
 mode: custom
 toc: false
 zh_link: /v1/zh/intro
 ---
 
-<div className="agentscope-landing">
+<div className="deepscope-landing">
 
 <div className="hs-hero">
 
@@ -17,11 +17,11 @@ Harness framework for <span className="hs-hero__accent">distributed, enterprise-
 </h1>
 
 <p className="hs-hero__desc">
-AgentScope Java is the open-source agent framework for the JVM. ReAct reasoning, Harness engineering infrastructure, multi-agent orchestration, and MCP/A2A protocol support — from local prototype to enterprise-scale deployment.
+DeepScope Java is the open-source agent framework for the JVM. ReAct reasoning, Harness engineering infrastructure, multi-agent orchestration, and MCP/A2A protocol support — from local prototype to enterprise-scale deployment.
 </p>
 
 <div className="hs-hero__actions">
- <a href="/v1/en/docs/harness/overview" className="hs-btn hs-btn--primary">Get started →</a> <a href="https://github.com/agentscope-ai/agentscope-java" className="hs-btn hs-btn--secondary"> <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.167 6.839 9.49.5.09.682-.217.682-.48 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.577.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path></svg> GitHub </a>
+ <a href="/v1/en/docs/harness/overview" className="hs-btn hs-btn--primary">Get started →</a> <a href="https://github.com/xchen1012a-sketch/DeepScope" className="hs-btn hs-btn--secondary"> <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.167 6.839 9.49.5.09.682-.217.682-.48 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.577.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path></svg> GitHub </a>
 </div>
 
 <div className="hs-hero__badges">
@@ -61,7 +61,7 @@ AgentScope Java is the open-source agent framework for the JVM. ReAct reasoning,
 <div className="hs-code-panel" id="en-react" style={{"display": "none"}}>
 
 ```java
-import io.agentscope.core.*;
+import io.deepscope.core.*;
 var agent = ReActAgent.builder()
     .name("assistant")
     .model(new QwenConfig("qwen-plus"))
@@ -76,7 +76,7 @@ agent.call(messages).block();
 <div className="hs-code-panel" id="en-harness">
 
 ```java
-import io.agentscope.harness.*;
+import io.deepscope.harness.*;
 var agent = HarnessAgent.builder()
     .name("coder")
     .model(new QwenConfig("qwen-plus"))
@@ -91,7 +91,7 @@ agent.call(messages, RuntimeContext.builder()
 </div>
 
 <div className="hs-install">
- <code>io.agentscope:agentscope-harness</code> <button className="hs-copy-btn" data-copy-base64="aW8uYWdlbnRzY29wZTphZ2VudHNjb3BlLWhhcm5lc3M=">Copy Maven</button>
+ <code>io.deepscope:deepscope-harness</code> <button className="hs-copy-btn" data-copy-base64="aW8uYWdlbnRzY29wZTphZ2VudHNjb3BlLWhhcm5lc3M=">Copy Maven</button>
 </div>
 
 </div>
@@ -316,7 +316,7 @@ Full-stack capabilities, production-hardened
 </h2>
 
 <p>
-From reasoning core to enterprise deployment, AgentScope Java covers the full agent development lifecycle.
+From reasoning core to enterprise deployment, DeepScope Java covers the full agent development lifecycle.
 </p>
 
 </div>
@@ -390,7 +390,7 @@ Observability
 </h3>
 
 <p>
-Pluggable Tracer SPI with native OpenTelemetry support for distributed tracing. AgentScope Studio provides visual debugging and real-time monitoring dashboards.
+Pluggable Tracer SPI with native OpenTelemetry support for distributed tracing. DeepScope Studio provides visual debugging and real-time monitoring dashboards.
 </p>
  <span className="hs-card__link">View Studio →</span>
 </a>
@@ -420,7 +420,7 @@ Frequently Asked Questions
 </h2>
 
 <p>
-Still have questions? Ask on <a href="https://github.com/agentscope-ai/agentscope-java/discussions" style={{"color": "var(--hs-accent)"}}>GitHub Discussions</a>.
+Still have questions? Ask on <a href="https://github.com/xchen1012a-sketch/DeepScope/discussions" style={{"color": "var(--hs-accent)"}}>GitHub Discussions</a>.
 </p>
 
 </div>
@@ -432,7 +432,7 @@ What Java version is required?
 </summary>
 
 <p>
-AgentScope Java requires <code>JDK 17</code> or higher. The framework uses modern Java features such as Records and Sealed Classes, and is built on Project Reactor for a non-blocking reactive execution model. For ultra-low cold-start latency, native image compilation via Quarkus and GraalVM is supported.
+DeepScope Java requires <code>JDK 17</code> or higher. The framework uses modern Java features such as Records and Sealed Classes, and is built on Project Reactor for a non-blocking reactive execution model. For ultra-low cold-start latency, native image compilation via Quarkus and GraalVM is supported.
 </p>
 
 </details>
@@ -464,11 +464,11 @@ A <code>ReActAgent</code> is the core reasoning–tool–response loop. <code>Ha
 <details className="hs-faq-item">
 
 <summary>
-Can I use AgentScope Java with Spring Boot or Quarkus?
+Can I use DeepScope Java with Spring Boot or Quarkus?
 </summary>
 
 <p>
-Yes. AgentScope Java's core modules are framework-agnostic Java libraries that can be added as dependencies to any JVM application — Spring Boot, Quarkus, Micronaut, or plain Java. Quarkus further supports GraalVM native image compilation for sub-100ms cold starts, making it ideal for serverless environments.
+Yes. DeepScope Java's core modules are framework-agnostic Java libraries that can be added as dependencies to any JVM application — Spring Boot, Quarkus, Micronaut, or plain Java. Quarkus further supports GraalVM native image compilation for sub-100ms cold starts, making it ideal for serverless environments.
 </p>
 
 </details>
@@ -480,7 +480,7 @@ How do I scale horizontally in production?
 </summary>
 
 <p>
-AgentScope Java is designed for stateless horizontal scaling. Move session state to <code>RedisSession</code> and workspace files to object storage (<code>OssFilesystemSpec</code>); any replica can then fully restore a user's context. Combined with Kubernetes HPA, this enables elastic scaling with no sticky sessions required.
+DeepScope Java is designed for stateless horizontal scaling. Move session state to <code>RedisSession</code> and workspace files to object storage (<code>OssFilesystemSpec</code>); any replica can then fully restore a user's context. Combined with Kubernetes HPA, this enables elastic scaling with no sticky sessions required.
 </p>
 
 </details>

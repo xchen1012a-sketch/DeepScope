@@ -3,7 +3,7 @@ title: HayStack
 zh_link: /v2/zh/integration/rag/haystack
 ---
 
-`agentscope-extensions-rag-haystack` connects AgentScope to a [HayStack](https://haystack.deepset.ai/) RAG service. Document management and indexing happen on the HayStack side; AgentScope only invokes its retrieval API.
+`deepscope-extensions-rag-haystack` connects DeepScope to a [HayStack](https://haystack.deepset.ai/) RAG service. Document management and indexing happen on the HayStack side; DeepScope only invokes its retrieval API.
 
 ## When to use
 
@@ -14,18 +14,18 @@ zh_link: /v2/zh/integration/rag/haystack
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-rag-haystack</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-rag-haystack</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## Quickstart
 
 ```java
-import io.agentscope.core.rag.integration.haystack.HayStackConfig;
-import io.agentscope.core.rag.integration.haystack.HayStackKnowledge;
-import io.agentscope.core.rag.model.RetrieveConfig;
+import io.deepscope.core.rag.integration.haystack.HayStackConfig;
+import io.deepscope.core.rag.integration.haystack.HayStackKnowledge;
+import io.deepscope.core.rag.model.RetrieveConfig;
 
 HayStackConfig config = HayStackConfig.builder()
     .baseUrl("http://localhost:8080")  // your HayStack service

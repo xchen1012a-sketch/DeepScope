@@ -15,10 +15,10 @@ title: "分类、过滤和重排检索证据"
 `client` 初始化见[客户端接入](/v2/zh/jev/guides/client)。SHADOW 保留原有授权材料，只记录筛选建议：
 
 ```java
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.evidence.JevEvidenceProcessor;
-import io.agentscope.extensions.judge.jev.evidence.JevEvidenceTool;
-import io.agentscope.extensions.judge.jev.evidence.JevPassage;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.evidence.JevEvidenceProcessor;
+import io.deepscope.extensions.judge.jev.evidence.JevEvidenceTool;
+import io.deepscope.extensions.judge.jev.evidence.JevPassage;
 import java.time.Duration;
 import java.util.List;
 
@@ -73,8 +73,8 @@ OFF 仍执行检索和 ACL，只禁用语义请求。SHADOW 返回原有授权�
 使用同一处理器注册 `search_evidence`。下例复用上面的固定候选和演示 ACL；实际应用将 Source 的读取函数替换为检索后端，身份从运行上下文获取。
 
 ```java
-import io.agentscope.harness.agent.HarnessAgent;
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.harness.agent.HarnessAgent;
+import io.deepscope.core.tool.Toolkit;
 import reactor.core.publisher.Mono;
 
 var toolkit = new Toolkit();
@@ -99,7 +99,7 @@ Agent 得到的 Result 只包含实际 delivered 段落的 id、version、text�
 
 同步发布前审核继续使用已有缓冲和预算。仅 FAIL 可进入有限草稿修订，修订调用没有工具；ERROR、INCONCLUSIVE 和修订耗尽不发布草稿。不会重跑已经执行的工具，也不会在修订耗尽后发布仍未通过的答案。参见[最终草稿审核](/v2/zh/jev/guides/answer-refinement-api)。引用格式/ID/version 的确定性验证仍由应用负责；本例保留引用并审核语义依据，没有实现通用引用解析器。
 
-## AgentScope Service
+## DeepScope Service
 
 在现有 Agent overrides 中配置（以下阈值只用于演示，不代表已校准）：
 
@@ -132,7 +132,7 @@ Agent 得到的 Result 只包含实际 delivered 段落的 id、version、text�
 [JevEvidenceExample](/examples/jev/source/JevEvidenceExample.java.txt)提供上面三段候选及完整检索、回答、修订流程。按[构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后运行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevEvidenceExample
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevEvidenceExample
 ```
 
 不使用密钥。案例通过真实 ReActAgent / Toolkit / ResponseMiddleware：ACL 移除私有段落、语义筛选移除注入、保留冲突政策证据；初稿错误承诺退款，审核后只修订草稿。实际输出为 `retrievals=1, modelCalls=3, judgmentRequests=5`，包含一个正确配对的工具结果，初稿没有泄漏给用户。判断与生成均为脚本，案例证明执行边界，不证明模型准确率。

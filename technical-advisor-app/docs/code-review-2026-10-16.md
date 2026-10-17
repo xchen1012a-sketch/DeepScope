@@ -1,6 +1,6 @@
 # 代码规范 / 质量 / 健壮性审查报告（2026-10-16）
 
-- **审查范围**：`technical-advisor-app`（backend + frontend）。上游框架模块（`agentscope-core`、`agentscope-harness`、`agentscope-extensions`、`agentscope-examples`）不在本次范围。
+- **审查范围**：`technical-advisor-app`（backend + frontend）。上游框架模块（`deepscope-core`、`deepscope-harness`、`deepscope-extensions`、`deepscope-examples`）不在本次范围。
 - **判据（SSOT）**：`.ai-spec/change-levels.md`、`.ai-spec/collaboration.md`、`.ai-spec/backend/{java.md,gates.md}`、`.ai-spec/frontend/{spec.md,gates.md}`、`AGENTS.md` 导航；通用工程标准（文件 ~350–400 行、函数 ≤40 行、禁调试残留、类型收敛）。
 - **方法**：静态阅读 + 自动化度量（文件规模、路由/权限分布、吞异常、死代码、内联样式、跨 feature 依赖、测试断言质量）。**未运行** `mvn`/`npm`/浏览器（并发会话正在开发，避免写产物与冲突）；因此"能跑通"类结论不代表已执行，见文末。
 - **过程说明**：原计划 6 个分域只读审查子任务，**全部因基础设施故障失败**（无收尾输出），改为人工分域审查 + 自动化检查。工作区有多个并发会话的未提交改动，本报告评审的是**当前工作区快照**。

@@ -3,7 +3,7 @@ title: A2A Protocol
 zh_link: /v1/zh/docs/task/a2a
 ---
 
-A2A is AgentScope's support for the [A2A protocol](https://a2a-protocol.org/latest/specification/), including client (calling remote Agents) and server (exposing local Agents) components.
+A2A is DeepScope's support for the [A2A protocol](https://a2a-protocol.org/latest/specification/), including client (calling remote Agents) and server (exposing local Agents) components.
 
 ---
 
@@ -14,8 +14,8 @@ Use remote A2A services as local Agents.
 ### Quick Start
 
 ```java
-import io.agentscope.core.a2a.agent.A2aAgent;
-import io.agentscope.core.a2a.agent.card.WellKnownAgentCardResolver;
+import io.deepscope.core.a2a.agent.A2aAgent;
+import io.deepscope.core.a2a.agent.card.WellKnownAgentCardResolver;
 
 // Create A2A Agent
 A2aAgent agent = A2aAgent.builder()
@@ -65,11 +65,11 @@ A2aAgent.builder()
 
 #### Automatically Discovering A2A Services from Nacos
 
-Using Nacos as an A2A registry allows AgentScope to automatically discover A2A services from Nacos for invocation.
+Using Nacos as an A2A registry allows DeepScope to automatically discover A2A services from Nacos for invocation.
 
 ```java
-import io.agentscope.core.a2a.agent.A2aAgent;
-import io.agentscope.core.nacos.a2a.discovery.NacosAgentCardResolver;
+import io.deepscope.core.a2a.agent.A2aAgent;
+import io.deepscope.core.nacos.a2a.discovery.NacosAgentCardResolver;
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.ai.AiFactory;
 import com.alibaba.nacos.api.ai.AiService;
@@ -98,15 +98,15 @@ Expose local Agents as A2A services.
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-a2a-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-a2a-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ```yaml
 # application.yml
-agentscope:
+deepscope:
   dashscope:
     api-key: your-api-key
   agent:
@@ -116,7 +116,7 @@ agentscope:
       enabled: true
       card:
         name: My Assistant
-        description: An intelligent assistant based on AgentScope
+        description: An intelligent assistant based on DeepScope
 ```
 
 ```java
@@ -131,11 +131,11 @@ public class A2aServerApplication {
 ### Manual Setup
 
 ```java
-import io.agentscope.core.a2a.server.AgentScopeA2aServer;
-import io.agentscope.core.a2a.server.transport.DeploymentProperties;
+import io.deepscope.core.a2a.server.DeepScopeA2aServer;
+import io.deepscope.core.a2a.server.transport.DeploymentProperties;
 
 // Create A2A Server
-AgentScopeA2aServer server = AgentScopeA2aServer.builder(
+DeepScopeA2aServer server = DeepScopeA2aServer.builder(
         ReActAgent.builder()
             .name("my-assistant")
             .sysPrompt("You are a helpful assistant"))
@@ -156,7 +156,7 @@ server.postEndpointReady();
 ### Configure AgentCard
 
 ```java
-import io.agentscope.core.a2a.server.card.ConfigurableAgentCard;
+import io.deepscope.core.a2a.server.card.ConfigurableAgentCard;
 
 ConfigurableAgentCard agentCard = new ConfigurableAgentCard.Builder()
     .name("My Assistant")
@@ -167,35 +167,35 @@ ConfigurableAgentCard agentCard = new ConfigurableAgentCard.Builder()
         AgentSkill.builder().name("question-answering").description("Q&A").skillContent("").build()))
     .build();
 
-AgentScopeA2aServer.builder(agentBuilder)
+DeepScopeA2aServer.builder(agentBuilder)
     .agentCard(agentCard)
     .build();
 ```
 
 ### Auto Register to Registry
 
-Using Nacos as an A2A registry allows AgentScope's A2A services to be automatically registered to Nacos.
+Using Nacos as an A2A registry allows DeepScope's A2A services to be automatically registered to Nacos.
 
 - For `Spring Boot approach` (Recommended)
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-a2a-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-a2a-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 
 <!-- Additional dependency for Nacos Spring Boot starter -->
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-nacos-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-nacos-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ```yaml
 # application.yml
-agentscope:
+deepscope:
   dashscope:
     api-key: your-api-key
   agent:
@@ -205,8 +205,8 @@ agentscope:
       enabled: true
       card:
         name: My Assistant
-        description: An intelligent assistant based on AgentScope
-    # Adding Nacos properties under `agentscope.a2a`
+        description: An intelligent assistant based on DeepScope
+    # Adding Nacos properties under `deepscope.a2a`
     nacos:
       server-addr: ${NACOS_SERVER_ADDRESS:127.0.0.1:8848}
       username: ${NACOS_USERNAME:nacos}
@@ -226,9 +226,9 @@ public class A2aServerApplication {
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-nacos-a2a</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-nacos-a2a</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -236,9 +236,9 @@ public class A2aServerApplication {
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.ai.AiFactory;
 import com.alibaba.nacos.api.ai.AiService;
-import io.agentscope.core.a2a.server.AgentScopeA2aServer;
-import io.agentscope.core.a2a.server.transport.DeploymentProperties;
-import io.agentscope.core.nacos.a2a.registry.NacosAgentRegistry;
+import io.deepscope.core.a2a.server.DeepScopeA2aServer;
+import io.deepscope.core.a2a.server.transport.DeploymentProperties;
+import io.deepscope.core.nacos.a2a.registry.NacosAgentRegistry;
 
 // Set Nacos address
 Properties properties = new Properties();
@@ -246,7 +246,7 @@ properties.put(PropertyKeyConst.SERVER_ADDR, "localhost:8848");
 // Create Nacos Client
 AiService aiService = AiFactory.createAiService(properties);
 // Add Nacos AgentRegistry
-AgentScopeA2aServer server = AgentScopeA2aServer.builder(
+DeepScopeA2aServer server = DeepScopeA2aServer.builder(
         ReActAgent.builder()
             .name("my-assistant")
             .sysPrompt("You are a helpful assistant"))
@@ -298,7 +298,7 @@ agent.interrupt(Msg.builder()
 ## More Resources
 
 - **A2A Protocol Specification**: https://a2a-protocol.org/latest/specification/
-- **Agent Interface**: [Agent.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-core/src/main/java/io/agentscope/core/agent/Agent.java)
+- **Agent Interface**: [Agent.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-core/src/main/java/io/deepscope/core/agent/Agent.java)
 - **Nacos Quick Start**: https://nacos.io/docs/latest/quickstart/quick-start
 - **Nacos Java SDK**: https://nacos.io/docs/latest/manual/user/java-sdk/usage
 - **Nacos Java SDK Additional Configuration Parameters**: https://nacos.io/docs/latest/manual/user/java-sdk/properties

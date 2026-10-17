@@ -3,7 +3,7 @@ title: Dify
 en_link: /v2/en/integration/rag/dify
 ---
 
-`agentscope-extensions-rag-dify` 接入 [Dify](https://dify.ai/) 的数据集（Dataset）API，复用 Dify 上已经维护的知识库。
+`deepscope-extensions-rag-dify` 接入 [Dify](https://dify.ai/) 的数据集（Dataset）API，复用 Dify 上已经维护的知识库。
 
 ## 何时使用
 
@@ -14,19 +14,19 @@ en_link: /v2/en/integration/rag/dify
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-rag-dify</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-rag-dify</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## 快速上手
 
 ```java
-import io.agentscope.core.rag.integration.dify.DifyKnowledge;
-import io.agentscope.core.rag.integration.dify.DifyRAGConfig;
-import io.agentscope.core.rag.integration.dify.RetrievalMode;
-import io.agentscope.core.rag.model.RetrieveConfig;
+import io.deepscope.core.rag.integration.dify.DifyKnowledge;
+import io.deepscope.core.rag.integration.dify.DifyRAGConfig;
+import io.deepscope.core.rag.integration.dify.RetrievalMode;
+import io.deepscope.core.rag.model.RetrieveConfig;
 
 DifyRAGConfig config = DifyRAGConfig.builder()
     .apiKey(System.getenv("DIFY_RAG_API_KEY"))

@@ -42,7 +42,7 @@
 后端最终命令（仓库根目录）：
 
 ```sh
-mvn -T1 -pl technical-advisor-app/backend -am test '-Dtest=io.agentscope.advisor.session.**' -Dsurefire.failIfNoSpecifiedTests=false '-DspotlessFiles=.*(QuestionService|TimelineStore|ReportActions|AdvisorSessionController)(Test)?\.java'
+mvn -T1 -pl technical-advisor-app/backend -am test '-Dtest=io.deepscope.advisor.session.**' -Dsurefire.failIfNoSpecifiedTests=false '-DspotlessFiles=.*(QuestionService|TimelineStore|ReportActions|AdvisorSessionController)(Test)?\.java'
 ```
 
 RED→GREEN证据：后端版本字段、非法角色、继续候选与附件快照分别先失败再修复，见 `/tmp/question-backend-{red,role-red,continuation-red,attachment-red}.log`。前端卡片11项先RED后GREEN；hook7项先RED后GREEN；审查恢复与缓存边界见 `/tmp/question-review-red2.log`、`/tmp/question-review-final-green.log`；附件恢复见 `/tmp/question-attachment-red.log`；保存即确认见 `/tmp/question-save-ack-red.log`、`/tmp/question-save-ack-green.log`；错误映射见 `/tmp/question-error-mapping-red.log` 和最终对话测试日志。

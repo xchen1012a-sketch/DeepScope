@@ -3,7 +3,7 @@ title: 模型集成
 en_link: /v1/en/docs/task/model
 ---
 
-本指南介绍 AgentScope Java 支持的 LLM 模型及其配置方法。
+本指南介绍 DeepScope Java 支持的 LLM 模型及其配置方法。
 
 ## 支持的模型
 
@@ -31,7 +31,7 @@ en_link: /v1/en/docs/task/model
 
 ## ModelRegistry
 
-[`ModelRegistry`](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-core/src/main/java/io/agentscope/core/model/ModelRegistry.java)（`io.agentscope.core.model.ModelRegistry`）用**字符串 id**得到 `Model` 实例，适合不想手写各厂商 `*ChatModel.builder()` 的场景。例如 Harness 场景下可使用 `HarnessAgent.builder().model(String)`；任意需要 `Model` 的地方可先调用 `ModelRegistry.resolve(...)` 再传入 `ReActAgent` 等构建器。
+[`ModelRegistry`](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-core/src/main/java/io/deepscope/core/model/ModelRegistry.java)（`io.deepscope.core.model.ModelRegistry`）用**字符串 id**得到 `Model` 实例，适合不想手写各厂商 `*ChatModel.builder()` 的场景。例如 Harness 场景下可使用 `HarnessAgent.builder().model(String)`；任意需要 `Model` 的地方可先调用 `ModelRegistry.resolve(...)` 再传入 `ReActAgent` 等构建器。
 
 ### API 一览
 
@@ -65,10 +65,10 @@ en_link: /v1/en/docs/task/model
 需要先精细配置（温度、超时等）时，用 Builder 构建一次，再注册成名字：
 
 ```java
-import io.agentscope.core.model.GenerateOptions;
-import io.agentscope.core.model.ModelRegistry;
-import io.agentscope.extensions.model.openai.OpenAIChatModel;
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.core.model.GenerateOptions;
+import io.deepscope.core.model.ModelRegistry;
+import io.deepscope.extensions.model.openai.OpenAIChatModel;
+import io.deepscope.harness.agent.HarnessAgent;
 
 Model tuned = OpenAIChatModel.builder()
         .apiKey(System.getenv("OPENAI_API_KEY"))
@@ -87,7 +87,7 @@ HarnessAgent agent = HarnessAgent.builder()
 ### 示例：内置前缀（默认连接参数）
 
 ```java
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.HarnessAgent;
 
 HarnessAgent agent = HarnessAgent.builder()
         .name("demo")
@@ -99,8 +99,8 @@ HarnessAgent agent = HarnessAgent.builder()
 ### 示例：自定义工厂
 
 ```java
-import io.agentscope.core.model.Model;
-import io.agentscope.core.model.ModelRegistry;
+import io.deepscope.core.model.Model;
+import io.deepscope.core.model.ModelRegistry;
 
 ModelRegistry.registerFactory(
         "my-llm:.+",
@@ -466,7 +466,7 @@ GenerateOptions options = GenerateOptions.builder()
 
 ## Formatter
 
-Formatter 负责将 AgentScope 的统一消息格式转换为各 LLM 提供商的 API 格式。每个提供商有两种 Formatter：
+Formatter 负责将 DeepScope 的统一消息格式转换为各 LLM 提供商的 API 格式。每个提供商有两种 Formatter：
 
 | 提供商 | 单智能体 | 多智能体 |
 |--------|----------|----------|

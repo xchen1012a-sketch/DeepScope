@@ -5,7 +5,7 @@ en_link: /v2/en/integration/skill/postgresql-repository
 
 
 > **已废弃**：请迁移到[统一 JDBC 模块](/v2/zh/integration/distributed/jdbc)的 `JdbcAgentSkillRepository`——一套实现覆盖 MySQL、PostgreSQL、H2、SQLite 及后续方言。本模块建的表原样可用，早于 metadata_json 的旧表需先补一列；迁移要点见[迁移指南](/v2/zh/integration/distributed/jdbc#从历史模块迁移)。
-`agentscope-extensions-skill-postgresql-repository` 把技能存到 PostgreSQL，提供完整的 CRUD：在控制台/业务系统里编辑保存，Agent 这边立即可读。
+`deepscope-extensions-skill-postgresql-repository` 把技能存到 PostgreSQL，提供完整的 CRUD：在控制台/业务系统里编辑保存，Agent 这边立即可读。
 
 ## 何时使用
 
@@ -17,9 +17,9 @@ en_link: /v2/en/integration/skill/postgresql-repository
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-skill-postgresql-repository</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-skill-postgresql-repository</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -27,7 +27,7 @@ en_link: /v2/en/integration/skill/postgresql-repository
 
 ```java
 import javax.sql.DataSource;
-import io.agentscope.core.skill.repository.postgresql.PostgresSkillRepository;
+import io.deepscope.core.skill.repository.postgresql.PostgresSkillRepository;
 
 DataSource ds = ...;  // HikariCP、PgBouncer 等连接池
 
@@ -55,7 +55,7 @@ PostgresSkillRepository repo = PostgresSkillRepository.builder(ds)
 `createIfNotExist=true` 时自动创建以下两张表（在指定 schema 下）：
 
 ```sql
-CREATE TABLE IF NOT EXISTS "agentscope"."agentscope_skills" (
+CREATE TABLE IF NOT EXISTS "deepscope"."deepscope_skills" (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
     description TEXT NOT NULL,
@@ -66,26 +66,26 @@ CREATE TABLE IF NOT EXISTS "agentscope"."agentscope_skills" (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS "agentscope"."agentscope_skill_resources" (
+CREATE TABLE IF NOT EXISTS "deepscope"."deepscope_skill_resources" (
     id BIGINT NOT NULL,
     resource_path VARCHAR(500) NOT NULL,
     resource_content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id, resource_path),
-    FOREIGN KEY (id) REFERENCES "agentscope"."agentscope_skills"(id) ON DELETE CASCADE
+    FOREIGN KEY (id) REFERENCES "deepscope"."deepscope_skills"(id) ON DELETE CASCADE
 );
 ```
 
-- `agentscope_skills`：技能本身，`name` 唯一，`skill_content` 存 `SKILL.md` 全文。
-- `agentscope_skill_resources`：技能附带的资源文件（截图、模板等），与 `id` 级联。
+- `deepscope_skills`：技能本身，`name` 唯一，`skill_content` 存 `SKILL.md` 全文。
+- `deepscope_skill_resources`：技能附带的资源文件（截图、模板等），与 `id` 级联。
 
 与 MySQL 版不同，PostgreSQL 使用 **schema**（而非 database）作为命名空间隔离边界，数据库由 JDBC URL 决定。
 
 ## 与已有表兼容
 
 - 旧表如果没有 `metadata_json` 列，仓库会自动降级到"只往返 name + description"的兼容模式，不会主动 `ALTER TABLE`。
-- 想升级到完整模式，自行执行 `ALTER TABLE "agentscope"."agentscope_skills" ADD COLUMN metadata_json TEXT NULL;` 即可。
+- 想升级到完整模式，自行执行 `ALTER TABLE "deepscope"."deepscope_skills" ADD COLUMN metadata_json TEXT NULL;` 即可。
 
 ## CRUD 操作
 
@@ -109,8 +109,8 @@ repo.delete("calculator");
 
 | 方法 | 说明 |
 | --- | --- |
-| `schemaName(String)` | 默认 `agentscope` |
-| `skillsTableName(String)` | 默认 `agentscope_skills` |
-| `resourcesTableName(String)` | 默认 `agentscope_skill_resources` |
+| `schemaName(String)` | 默认 `deepscope` |
+| `skillsTableName(String)` | 默认 `deepscope_skills` |
+| `resourcesTableName(String)` | 默认 `deepscope_skill_resources` |
 | `createIfNotExist(boolean)` | `true` 时自动 `CREATE SCHEMA` + `CREATE TABLE`，默认 `true` |
 | `writeable(boolean)` | 是否允许写操作，默认 `true` |

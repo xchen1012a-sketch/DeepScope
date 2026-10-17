@@ -6,7 +6,7 @@ en_link: /v2/en/docs/building-blocks/permission-system
 
 ## 概述
 
-Permission system（`io.agentscope.core.permission`）拦截 agent 的每一次工具调用，给出三种决策之一：**允许（ALLOW）** 执行、**拒绝（DENY）** 执行，或者**询问用户（ASK）** 确认。
+Permission system（`io.deepscope.core.permission`）拦截 agent 的每一次工具调用，给出三种决策之一：**允许（ALLOW）** 执行、**拒绝（DENY）** 执行，或者**询问用户（ASK）** 确认。
 
 它把静态配置与动态运行时分析组合起来。三个组件共同决定结果：
 
@@ -92,7 +92,7 @@ Deny 规则与危险路径检查是**不可绕过的** —— 即使在 `BYPASS`
 
 ## Permission Mode
 
-`PermissionMode` 枚举（`io.agentscope.core.permission.PermissionMode`）支持以下模式，分别适配不同的部署场景：
+`PermissionMode` 枚举（`io.deepscope.core.permission.PermissionMode`）支持以下模式，分别适配不同的部署场景：
 
 | Mode | 行为 | 适用场景 |
 |------|------|----------|
@@ -111,9 +111,9 @@ Deny 规则与危险路径检查是**不可绕过的** —— 即使在 `BYPASS`
 <Tab title="初始化时配置">
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.permission.PermissionContextState;
-import io.agentscope.core.permission.PermissionMode;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.permission.PermissionContextState;
+import io.deepscope.core.permission.PermissionMode;
 
 PermissionContextState permCtx =
         PermissionContextState.builder()
@@ -135,9 +135,9 @@ ReActAgent agent =
 <Tab title="ACCEPT_EDITS 配合工作目录">
 
 ```java
-import io.agentscope.core.permission.AdditionalWorkingDirectory;
-import io.agentscope.core.permission.PermissionContextState;
-import io.agentscope.core.permission.PermissionMode;
+import io.deepscope.core.permission.AdditionalWorkingDirectory;
+import io.deepscope.core.permission.PermissionContextState;
+import io.deepscope.core.permission.PermissionMode;
 
 PermissionContextState permCtx =
         PermissionContextState.builder()
@@ -173,10 +173,10 @@ PermissionContextState permCtx =
 **初始化时** —— 通过 `PermissionContextState.builder()` 把规则传入：
 
 ```java
-import io.agentscope.core.permission.PermissionBehavior;
-import io.agentscope.core.permission.PermissionContextState;
-import io.agentscope.core.permission.PermissionMode;
-import io.agentscope.core.permission.PermissionRule;
+import io.deepscope.core.permission.PermissionBehavior;
+import io.deepscope.core.permission.PermissionContextState;
+import io.deepscope.core.permission.PermissionMode;
+import io.deepscope.core.permission.PermissionRule;
 
 PermissionContextState permCtx =
         PermissionContextState.builder()
@@ -202,7 +202,7 @@ PermissionContextState permCtx =
 **运行时通过建议规则** —— 当权限系统返回 ASK 时，会基于本次调用自动生成建议规则。把已接受的规则附在 `ConfirmResult.acceptedRules` 中回传，agent 会自动写入引擎：
 
 ```java
-import io.agentscope.core.event.ConfirmResult;
+import io.deepscope.core.event.ConfirmResult;
 
 // ASK 决策会把建议规则挂在 PermissionDecision 上（权限钩子可见），而不是 ToolUseBlock 上。
 // 恢复层可以直接放行，也可以显式传入规则，让今后相同的调用自动放行：
@@ -212,7 +212,7 @@ ConfirmResult result =
                 /* toolCall  = */ toolCall);
 ```
 
-完整可运行示例：`agentscope-examples/documentation/.../tool/PermissionContextExample.java`、`hitl/PermissionHITLExample.java`。
+完整可运行示例：`deepscope-examples/documentation/.../tool/PermissionContextExample.java`、`hitl/PermissionHITLExample.java`。
 
 ## Built-in Checks
 
@@ -223,9 +223,9 @@ ConfirmResult result =
 自定义 tool 可以重写 `checkPermissions()` 实现自己的检查逻辑：
 
 ```java
-import io.agentscope.core.permission.PermissionDecision;
-import io.agentscope.core.tool.ToolBase;
-import io.agentscope.core.tool.ToolExecutionContext;
+import io.deepscope.core.permission.PermissionDecision;
+import io.deepscope.core.tool.ToolBase;
+import io.deepscope.core.tool.ToolExecutionContext;
 import java.util.Map;
 import reactor.core.publisher.Mono;
 
@@ -280,17 +280,17 @@ public class MyTool extends ToolBase {
 4. 构建 `ConfirmResult`，附在新消息的 metadata 中恢复 agent
 
 ```java
-import io.agentscope.core.event.ConfirmResult;
-import io.agentscope.core.message.GenerateReason;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.ToolCallState;
-import io.agentscope.core.message.ToolUseBlock;
-import io.agentscope.core.message.UserMessage;
-import io.agentscope.core.permission.PermissionBehavior;
-import io.agentscope.core.permission.PermissionContextState;
-import io.agentscope.core.permission.PermissionMode;
-import io.agentscope.core.permission.PermissionRule;
+import io.deepscope.core.event.ConfirmResult;
+import io.deepscope.core.message.GenerateReason;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.ToolCallState;
+import io.deepscope.core.message.ToolUseBlock;
+import io.deepscope.core.message.UserMessage;
+import io.deepscope.core.permission.PermissionBehavior;
+import io.deepscope.core.permission.PermissionContextState;
+import io.deepscope.core.permission.PermissionMode;
+import io.deepscope.core.permission.PermissionRule;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -367,12 +367,12 @@ if (result != null && result.getGenerateReason() == GenerateReason.PERMISSION_AS
 使用 `streamEvents()` 时，不需要从返回的 `Msg` 提取 `ToolUseBlock` —— 通过事件流直接获得 `RequireUserConfirmEvent`，它携带了待确认的工具调用列表：
 
 ```java
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.event.ConfirmResult;
-import io.agentscope.core.event.RequireUserConfirmEvent;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.ToolUseBlock;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.event.ConfirmResult;
+import io.deepscope.core.event.RequireUserConfirmEvent;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.ToolUseBlock;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -437,7 +437,7 @@ PermissionContextState headless =
 // ASK 规则命中时自动拒绝，不会阻塞等待
 ```
 
-完整可运行示例：`agentscope-examples/documentation/.../hitl/PermissionHITLExample.java`。
+完整可运行示例：`deepscope-examples/documentation/.../hitl/PermissionHITLExample.java`。
 
 ## 常见配方
 
@@ -471,8 +471,8 @@ ReActAgent explorer =
 <Tab title="无人值守自动化">
 
 ```java
-import io.agentscope.core.permission.PermissionBehavior;
-import io.agentscope.core.permission.PermissionRule;
+import io.deepscope.core.permission.PermissionBehavior;
+import io.deepscope.core.permission.PermissionRule;
 
 PermissionContextState ci =
         PermissionContextState.builder()

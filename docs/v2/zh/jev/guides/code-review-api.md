@@ -15,10 +15,10 @@ title: "评审变更与定位代码证据"
 `client` 初始化见[客户端接入](/v2/zh/jev/guides/client)，`context` 为当前运行上下文：
 
 ```java
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.review.JevCodeReviewer;
-import io.agentscope.extensions.judge.jev.review.JevReviewInput;
-import io.agentscope.extensions.judge.jev.review.JevCodeReviewTool;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.review.JevCodeReviewer;
+import io.deepscope.extensions.judge.jev.review.JevReviewInput;
+import io.deepscope.extensions.judge.jev.review.JevCodeReviewTool;
 import java.time.Duration;
 import java.util.List;
 
@@ -67,8 +67,8 @@ FollowUp 分别返回 LOCATED、NO_MATCH、NO_ISSUE、LOW_CONFIDENCE、DEFERRED�
 注册只读工具，再为每次调用提供快照 Source。下例只向指定演示用户和会话开放上面的固定快照；实际接入需替换为你的授权快照存储。
 
 ```java
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.harness.agent.HarnessAgent;
 import reactor.core.publisher.Mono;
 
 var toolkit = new Toolkit();
@@ -135,7 +135,7 @@ OFF 不获取证据、不请求模型，Service 也不注册工具。SHADOW 必�
 [JevCodeReviewExample](/examples/jev/source/JevCodeReviewExample.java.txt)提供上述权限检查删除的 diff，通过真实 Agent 调用只读评审工具。按[构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后运行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevCodeReviewExample
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevCodeReviewExample
 ```
 
 默认不读取你的仓库，不使用密钥。案例使用脚本生成模型和预设评审响应，验证快照读取、分阶段评审及工具结果传递，不测量真实漏洞检出率。实际项目仍需运行测试并人工核查证据，再决定是否修改或合并。

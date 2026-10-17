@@ -3,7 +3,7 @@ title: Overview
 zh_link: /v2/zh/integration/infrastructure/overview
 ---
 
-These extensions plug AgentScope into the infrastructure you already run — gateways, registries, message buses, schedulers — so an Agent can be governed and scheduled like any other service.
+These extensions plug DeepScope into the infrastructure you already run — gateways, registries, message buses, schedulers — so an Agent can be governed and scheduled like any other service.
 
 | Extension | Middleware | Capability |
 | --- | --- | --- |
@@ -13,7 +13,7 @@ These extensions plug AgentScope into the infrastructure you already run — gat
 
 ## Where this fits
 
-- **Higress / Nacos** turn "gateway, registry" into horizontal capabilities of AgentScope.
+- **Higress / Nacos** turn "gateway, registry" into horizontal capabilities of DeepScope.
 - **Scheduler** addresses the "Agent isn't always triggered by humans — sometimes by a scheduler" use case.
 
 These extensions are independent and can be combined freely.

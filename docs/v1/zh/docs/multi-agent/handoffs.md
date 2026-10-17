@@ -3,7 +3,7 @@ title: Handoffs
 en_link: /v1/en/docs/multi-agent/handoffs
 ---
 
-> **说明：** 原先的 Spring Boot 示例模块 `agentscope-examples/multiagent-patterns/` 已在 2.0 包重构中移除。请以本文中的代码片段作为参考实现。其他可运行示例见 `agentscope-examples/documentation/`。
+> **说明：** 原先的 Spring Boot 示例模块 `deepscope-examples/multiagent-patterns/` 已在 2.0 包重构中移除。请以本文中的代码片段作为参考实现。其他可运行示例见 `deepscope-examples/documentation/`。
 
 在 **Handoffs** 模式中，行为根据状态动态变化。工具会更新一个在轮次间持久存在的状态变量（如 `active_agent`），图根据该变量将请求路由到不同智能体。该模式适合客服、销售等场景：通过工具调用在专职智能体（如销售与支持）之间转移控制权。
 
@@ -22,9 +22,9 @@ en_link: /v1/en/docs/multi-agent/handoffs
 
 ## 架构
 
-在 AgentScope 与 Spring AI Alibaba Graph 下，实现包含：
+在 DeepScope 与 Spring AI Alibaba Graph 下，实现包含：
 
-- **独立智能体作为图节点**：例如销售智能体与支持智能体，各自实现为 `AgentScopeAgent`（ReActAgent + Toolkit）。
+- **独立智能体作为图节点**：例如销售智能体与支持智能体，各自实现为 `DeepScopeAgent`（ReActAgent + Toolkit）。
 - **交接工具**：注册在各智能体的 Toolkit 上。模型调用交接工具时，工具通过 `ToolContextHelper.getStateForUpdate(toolContext)` 设置 `active_agent`（或类似键）。图需为该键声明策略（如 `ReplaceStrategy`），以便在节点完成时合并更新。
 - **条件边**：每个智能体节点执行后，由路由动作读取 `active_agent`，决定进入另一智能体节点或 `END`。
 
@@ -51,31 +51,31 @@ en_link: /v1/en/docs/multi-agent/handoffs
 
 ```java
 // 状态键与智能体节点名
-public final class AgentScopeStateConstants {
+public final class DeepScopeStateConstants {
     public static final String ACTIVE_AGENT = "active_agent";
     public static final String SALES_AGENT = "sales_agent";
     public static final String SUPPORT_AGENT = "support_agent";
 }
 
 // 在配置中：构建带键策略的图
-StateGraph graph = new StateGraph("agent_scope_handoffs", () -> {
+StateGraph graph = new StateGraph("deep_scope_handoffs", () -> {
     Map<String, KeyStrategy> strategies = new HashMap<>();
     strategies.put("messages", new AppendStrategy(false));
-    strategies.put(AgentScopeStateConstants.ACTIVE_AGENT, new ReplaceStrategy());
+    strategies.put(DeepScopeStateConstants.ACTIVE_AGENT, new ReplaceStrategy());
     return strategies;
 });
 ```
 
 ### 步骤 2：创建交接工具
 
-每个交接工具是一个 AgentScope `@Tool`，并自动注入 `ToolContext`。工具通过 `ToolContextHelper.getStateForUpdate(toolContext)` 更新图状态，节点完成后，图的条件边会根据新的 `active_agent` 选择下一节点或结束。
+每个交接工具是一个 DeepScope `@Tool`，并自动注入 `ToolContext`。工具通过 `ToolContextHelper.getStateForUpdate(toolContext)` 更新图状态，节点完成后，图的条件边会根据新的 `active_agent` 选择下一节点或结束。
 
 **转接支持（供销售智能体使用）：**
 
 ```java
 import com.alibaba.cloud.ai.graph.agent.tools.ToolContextHelper;
-import io.agentscope.core.tool.Tool;
-import io.agentscope.core.tool.ToolParam;
+import io.deepscope.core.tool.Tool;
+import io.deepscope.core.tool.ToolParam;
 import org.springframework.ai.chat.model.ToolContext;
 
 @Tool(
@@ -83,7 +83,7 @@ import org.springframework.ai.chat.model.ToolContext;
     description = "将对话转接给支持智能体。当客户询问技术问题、故障排查或账户问题时使用。")
 public String transferToSupport(ToolContext toolContext) {
     ToolContextHelper.getStateForUpdate(toolContext).ifPresent(update ->
-            update.put(AgentScopeStateConstants.ACTIVE_AGENT, AgentScopeStateConstants.SUPPORT_AGENT));
+            update.put(DeepScopeStateConstants.ACTIVE_AGENT, DeepScopeStateConstants.SUPPORT_AGENT));
     return "已从销售智能体转接至支持智能体。";
 }
 ```
@@ -98,30 +98,30 @@ public String transferToSales(
         @ToolParam(name = "reason", description = "转接的简要原因") String reason,
         ToolContext toolContext) {
     ToolContextHelper.getStateForUpdate(toolContext).ifPresent(update ->
-            update.put(AgentScopeStateConstants.ACTIVE_AGENT, AgentScopeStateConstants.SALES_AGENT));
+            update.put(DeepScopeStateConstants.ACTIVE_AGENT, DeepScopeStateConstants.SALES_AGENT));
     return "已从支持智能体转接至销售智能体。原因：" + (reason != null ? reason : "客户需要销售");
 }
 ```
 
 在对应智能体的 Toolkit 上通过 `toolkit.registerTool(TransferToSupportTool.create())` 和 `toolkit.registerTool(TransferToSalesTool.create())` 注册上述工具。
 
-### 步骤 3：构建智能体（AgentScopeAgent + Toolkit）
+### 步骤 3：构建智能体（DeepScopeAgent + Toolkit）
 
-创建销售与支持两个 `AgentScopeAgent`，各自使用 ReActAgent、系统提示和包含对应交接工具的 Toolkit。
+创建销售与支持两个 `DeepScopeAgent`，各自使用 ReActAgent、系统提示和包含对应交接工具的 Toolkit。
 
 ```java
-import com.alibaba.cloud.ai.agent.agentscope.AgentScopeAgent;
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.tool.Toolkit;
+import com.alibaba.cloud.ai.agent.deepscope.DeepScopeAgent;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.tool.Toolkit;
 
 // 销售智能体：具备 transfer_to_support
 Toolkit salesToolkit = new Toolkit();
 salesToolkit.registerTool(TransferToSupportTool.create());
 
 ReActAgent.Builder salesReActBuilder = ReActAgent.builder()
-        .name(AgentScopeStateConstants.SALES_AGENT)
+        .name(DeepScopeStateConstants.SALES_AGENT)
         .description("负责价格、产品库存与销售咨询的销售智能体")
         .sysPrompt("""
             你是销售智能体。负责销售咨询、价格与产品库存。
@@ -132,8 +132,8 @@ ReActAgent.Builder salesReActBuilder = ReActAgent.builder()
         .toolkit(salesToolkit)
         .memory(new InMemoryMemory());
 
-AgentScopeAgent salesAgent = AgentScopeAgent.fromBuilder(salesReActBuilder)
-        .name(AgentScopeStateConstants.SALES_AGENT)
+DeepScopeAgent salesAgent = DeepScopeAgent.fromBuilder(salesReActBuilder)
+        .name(DeepScopeStateConstants.SALES_AGENT)
         .instruction("请协助客户处理销售相关咨询：{input}。")
         .includeContents(true)
         .returnReasoningContents(true)
@@ -144,7 +144,7 @@ Toolkit supportToolkit = new Toolkit();
 supportToolkit.registerTool(TransferToSalesTool.create());
 
 ReActAgent.Builder supportReActBuilder = ReActAgent.builder()
-        .name(AgentScopeStateConstants.SUPPORT_AGENT)
+        .name(DeepScopeStateConstants.SUPPORT_AGENT)
         .description("负责技术问题与故障排查的支持智能体")
         .sysPrompt("""
             你是支持智能体。负责技术问题、故障排查与账户问题。
@@ -155,8 +155,8 @@ ReActAgent.Builder supportReActBuilder = ReActAgent.builder()
         .toolkit(supportToolkit)
         .memory(new InMemoryMemory());
 
-AgentScopeAgent supportAgent = AgentScopeAgent.fromBuilder(supportReActBuilder)
-        .name(AgentScopeStateConstants.SUPPORT_AGENT)
+DeepScopeAgent supportAgent = DeepScopeAgent.fromBuilder(supportReActBuilder)
+        .name(DeepScopeStateConstants.SUPPORT_AGENT)
         .instruction("请协助客户处理产品技术相关咨询：{input}。")
         .includeContents(true)
         .returnReasoningContents(true)
@@ -172,21 +172,21 @@ AgentScopeAgent supportAgent = AgentScopeAgent.fromBuilder(supportReActBuilder)
 - **支持之后**：从 `support_agent` 出来时，若 `active_agent` 为 `sales_agent` 则进入 `sales_agent`，否则进入 `END`。
 
 ```java
-graph.addNode(AgentScopeStateConstants.SALES_AGENT, salesAgent.asNode());
-graph.addNode(AgentScopeStateConstants.SUPPORT_AGENT, supportAgent.asNode());
+graph.addNode(DeepScopeStateConstants.SALES_AGENT, salesAgent.asNode());
+graph.addNode(DeepScopeStateConstants.SUPPORT_AGENT, supportAgent.asNode());
 
 // START → sales_agent 或 support_agent（默认 sales）
 graph.addConditionalEdges(START, new RouteInitialAction(), Map.of(
-        AgentScopeStateConstants.SALES_AGENT, AgentScopeStateConstants.SALES_AGENT,
-        AgentScopeStateConstants.SUPPORT_AGENT, AgentScopeStateConstants.SUPPORT_AGENT));
+        DeepScopeStateConstants.SALES_AGENT, DeepScopeStateConstants.SALES_AGENT,
+        DeepScopeStateConstants.SUPPORT_AGENT, DeepScopeStateConstants.SUPPORT_AGENT));
 
 // sales_agent → support_agent 或 END
-graph.addConditionalEdges(AgentScopeStateConstants.SALES_AGENT, new RouteAfterSalesAction(),
-        Map.of(AgentScopeStateConstants.SUPPORT_AGENT, AgentScopeStateConstants.SUPPORT_AGENT, "__end__", END));
+graph.addConditionalEdges(DeepScopeStateConstants.SALES_AGENT, new RouteAfterSalesAction(),
+        Map.of(DeepScopeStateConstants.SUPPORT_AGENT, DeepScopeStateConstants.SUPPORT_AGENT, "__end__", END));
 
 // support_agent → sales_agent 或 END
-graph.addConditionalEdges(AgentScopeStateConstants.SUPPORT_AGENT, new RouteAfterSupportAction(),
-        Map.of(AgentScopeStateConstants.SALES_AGENT, AgentScopeStateConstants.SALES_AGENT, "__end__", END));
+graph.addConditionalEdges(DeepScopeStateConstants.SUPPORT_AGENT, new RouteAfterSupportAction(),
+        Map.of(DeepScopeStateConstants.SALES_AGENT, DeepScopeStateConstants.SALES_AGENT, "__end__", END));
 
 CompiledGraph compiledGraph = graph.compile();
 ```
@@ -196,11 +196,11 @@ CompiledGraph compiledGraph = graph.compile();
 ```java
 @Override
 public CompletableFuture<Command> apply(OverAllState state, RunnableConfig config) {
-    String active = state.value(AgentScopeStateConstants.ACTIVE_AGENT)
+    String active = state.value(DeepScopeStateConstants.ACTIVE_AGENT)
             .map(Object::toString)
             .orElse("");
-    String target = AgentScopeStateConstants.SUPPORT_AGENT.equals(active)
-            ? AgentScopeStateConstants.SUPPORT_AGENT
+    String target = DeepScopeStateConstants.SUPPORT_AGENT.equals(active)
+            ? DeepScopeStateConstants.SUPPORT_AGENT
             : "__end__";
     return CompletableFuture.completedFuture(new Command(target));
 }
@@ -222,7 +222,7 @@ resultOpt.ifPresent(state -> {
 
 ## 在工具中读取与更新状态
 
-参与图的 AgentScope 工具会（自动注入）收到 `ToolContext`，用于读取或更新图状态：
+参与图的 DeepScope 工具会（自动注入）收到 `ToolContext`，用于读取或更新图状态：
 
 - **更新状态（用于路由）**：将键放入 `ToolContextHelper.getStateForUpdate(toolContext)` 返回的 Map。节点完成时图会合并这些更新。图必须为这些键声明键策略（如对 `active_agent` 使用 `ReplaceStrategy`）。
 - **读取状态**：使用 `ToolContextHelper.getState(toolContext)` 获取当前 `OverAllState`（例如在工具内分支或向交接消息中传入上下文）。
@@ -231,24 +231,24 @@ resultOpt.ifPresent(state -> {
 
 ## 设计要点
 
-1. **两个智能体均使用 AgentScope Toolkit**  
-   销售与支持智能体都使用 `io.agentscope.core.tool.Toolkit` 和 ReActAgent；交接工具是标准的 AgentScope `@Tool` 实现，通过 `ToolContext` 更新状态。
+1. **两个智能体均使用 DeepScope Toolkit**  
+   销售与支持智能体都使用 `io.deepscope.core.tool.Toolkit` 和 ReActAgent；交接工具是标准的 DeepScope `@Tool` 实现，通过 `ToolContext` 更新状态。
 
 2. **在节点完成时合并状态**  
    工具不会立即改变图的走向，只更新状态。当前智能体节点结束后，图的条件边会执行，根据更新后的 `active_agent` 选择下一节点或结束。
 
 3. **工具中的 ToolContext**  
-   交接工具使用 `io.agentscope.core.tool.Tool` 和可选的 `@ToolParam`；`ToolContext` 自动注入，便于调用 `ToolContextHelper.getStateForUpdate(toolContext)`（以及可选的 `getState(toolContext)`）。
+   交接工具使用 `io.deepscope.core.tool.Tool` 和可选的 `@ToolParam`；`ToolContext` 自动注入，便于调用 `ToolContextHelper.getStateForUpdate(toolContext)`（以及可选的 `getState(toolContext)`）。
 
 ## 示例项目
 
 完整的 Handoffs 示例（销售 + 支持与交接工具）位于仓库中：
 
-- **要点**：`AgentScopeHandoffsConfig`（图、智能体、路由），`TransferToSalesTool`、`TransferToSupportTool`，`RouteInitialAction`、`RouteAfterSalesAction`、`RouteAfterSupportAction`，以及用于调用图的 `AgentScopeHandoffsService`。
+- **要点**：`DeepScopeHandoffsConfig`（图、智能体、路由），`TransferToSalesTool`、`TransferToSupportTool`，`RouteInitialAction`、`RouteAfterSalesAction`、`RouteAfterSupportAction`，以及用于调用图的 `DeepScopeHandoffsService`。
 
 在仓库根目录构建并运行：
 
-在 `application.yml` 中设置 `agentscope.runner.enabled=true` 可在启动时运行演示。默认端口为 8089。
+在 `application.yml` 中设置 `deepscope.runner.enabled=true` 可在启动时运行演示。默认端口为 8089。
 
 ## 相关文档
 
@@ -257,4 +257,4 @@ resultOpt.ifPresent(state -> {
 - [Supervisor](/v1/zh/docs/multi-agent/supervisor) - 中心监督者与专职智能体即工具
 - [MsgHub](/v1/zh/docs/task/msghub) - 多智能体对话的消息广播
 - [Agent as Tool](/v1/zh/docs/task/agent-as-tool) - 将智能体注册为工具供其他智能体调用
-- [工具系统](/v1/zh/docs/task/tool) - AgentScope 工具与 Toolkit
+- [工具系统](/v1/zh/docs/task/tool) - DeepScope 工具与 Toolkit

@@ -27,7 +27,7 @@
 ## 2. 核心技术决策
 
 ### 2.1 ZIP 解压容错（为什么用户拖入 zip 经常报错）
-底层 `agentscope-core` 的 `SkillUtil.createFromZip` 强制校验了 `separatorIndex > 0`（要求所有 entry 必须在同一顶级目录下），而大部分操作系统（如 macOS/Windows 右键直接压缩文件）打出的 zip 包中，`SKILL.md` 直接位于 zip 根目录（`separatorIndex = -1`），导致直接抛出 `IllegalArgumentException("Zip entries must be under a single root directory.")`。
+底层 `deepscope-core` 的 `SkillUtil.createFromZip` 强制校验了 `separatorIndex > 0`（要求所有 entry 必须在同一顶级目录下），而大部分操作系统（如 macOS/Windows 右键直接压缩文件）打出的 zip 包中，`SKILL.md` 直接位于 zip 根目录（`separatorIndex = -1`），导致直接抛出 `IllegalArgumentException("Zip entries must be under a single root directory.")`。
 
 **技术决策**：
 在业务层的 `SkillPackage.java` 中增加智能重构与安全解包逻辑（不修改 core）：

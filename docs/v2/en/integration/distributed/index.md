@@ -3,7 +3,7 @@ title: Distributed Storage (Distributed Store)
 zh_link: /v2/zh/integration/distributed/index
 ---
 
-AgentScope unifies all components that need distributed persistence under the `DistributedStore` interface. One line of configuration switches agent state, workspace filesystem, sandbox snapshots, and concurrency locks to the same distributed store.
+DeepScope unifies all components that need distributed persistence under the `DistributedStore` interface. One line of configuration switches agent state, workspace filesystem, sandbox snapshots, and concurrency locks to the same distributed store.
 
 ## Quick Start
 
@@ -90,7 +90,7 @@ Explicit builder methods (.stateStore(), .snapshotSpec() on FilesystemSpec, etc.
 
 ## Control Plane Hosted Store
 
-When you already run an AgentScope Service Control Plane, it can host the coordination side of `DistributedStore` (BaseStore, sandbox lock/snapshot, MessageBus, AsyncToolRegistry, **TaskRepository**, optional **SessionTurnGate**). You still provide **one** `AgentStateStore` backend yourself (Redis / MySQL / Postgres / OSS); core exposes `getVersioned` / `saveIfVersion` optimistic concurrency, but state storage stays off the control plane.
+When you already run an DeepScope Service Control Plane, it can host the coordination side of `DistributedStore` (BaseStore, sandbox lock/snapshot, MessageBus, AsyncToolRegistry, **TaskRepository**, optional **SessionTurnGate**). You still provide **one** `AgentStateStore` backend yourself (Redis / MySQL / Postgres / OSS); core exposes `getVersioned` / `saveIfVersion` optimistic concurrency, but state storage stays off the control plane.
 
 ```java
 ControlPlaneStores cp = ControlPlaneStores.fromEnv();

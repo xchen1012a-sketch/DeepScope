@@ -8,7 +8,7 @@ en_link: /v2/en/docs/building-blocks/middleware
 
 Agent middleware 是在不修改 agent 或 model 代码的前提下，向 agent 执行流程中的关键位置注入自定义逻辑（日志、追踪、输入改写、访问控制等）的机制。
 
-AgentScope Java 中，可以在 6 个位置上设置 hook，覆盖了从外层 reply 流程一路下沉到底层模型 API 调用的全链路：
+DeepScope Java 中，可以在 6 个位置上设置 hook，覆盖了从外层 reply 流程一路下沉到底层模型 API 调用的全链路：
 
 | 位置 | 类型 | 说明 |
 |------|------|------|
@@ -47,12 +47,12 @@ onAgent/
 
 ## 装备 Middleware
 
-AgentScope 把一组 hook 装在一个 `MiddlewareBase` 实现里 —— 同一个 middleware 类可以同时实现 6 个位置中任意子集的 hook（未实现的 Onion / Transformer 位置默认 `next.apply(input)`；通知式位置默认不做任何事）。把实例传给 builder 的 `middlewares(...)` 即可装备：
+DeepScope 把一组 hook 装在一个 `MiddlewareBase` 实现里 —— 同一个 middleware 类可以同时实现 6 个位置中任意子集的 hook（未实现的 Onion / Transformer 位置默认 `next.apply(input)`；通知式位置默认不做任何事）。把实例传给 builder 的 `middlewares(...)` 即可装备：
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.middleware.MiddlewareBase;
-import io.agentscope.core.tracing.OtelTracingMiddleware;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.tracing.OtelTracingMiddleware;
 import java.util.List;
 
 ReActAgent agent =
@@ -71,7 +71,7 @@ ReActAgent agent =
 
 ### OtelTracingMiddleware
 
-`OtelTracingMiddleware`（位于 `io.agentscope.core.tracing`）为 agent 全生命周期接入 [OpenTelemetry](https://opentelemetry.io/docs/specs/semconv/gen-ai/) 追踪。它在 `onAgent`、`onModelCall`、`onActing` 三个位置打点，按层级生成 span：
+`OtelTracingMiddleware`（位于 `io.deepscope.core.tracing`）为 agent 全生命周期接入 [OpenTelemetry](https://opentelemetry.io/docs/specs/semconv/gen-ai/) 追踪。它在 `onAgent`、`onModelCall`、`onActing` 三个位置打点，按层级生成 span：
 
 - `invoke_agent <name>` —— 包裹整次 reply
 - `chat <model>` —— 包裹每次模型 API 调用
@@ -79,7 +79,7 @@ ReActAgent agent =
 
 未配置 OpenTelemetry SDK（只剩默认的 no-op provider）时，所有 hook 会直接短路到 `next.apply(input)`，几乎零开销。
 
-默认情况下，`OtelTracingMiddleware` 从进程级 `GlobalOpenTelemetry` 实例读取配置。无参构造函数在 hook 执行时才惰性查找该实例，因此可以在注册全局 SDK 之前构造 middleware。应用如果自行导出 span，除了 AgentScope 之外还需要引入 OpenTelemetry SDK 和 OTLP exporter。使用 OpenTelemetry BOM 保持二者版本一致（下列版本与 AgentScope 当前使用的版本一致）：
+默认情况下，`OtelTracingMiddleware` 从进程级 `GlobalOpenTelemetry` 实例读取配置。无参构造函数在 hook 执行时才惰性查找该实例，因此可以在注册全局 SDK 之前构造 middleware。应用如果自行导出 span，除了 DeepScope 之外还需要引入 OpenTelemetry SDK 和 OTLP exporter。使用 OpenTelemetry BOM 保持二者版本一致（下列版本与 DeepScope 当前使用的版本一致）：
 
 ```xml
 <properties>
@@ -113,8 +113,8 @@ ReActAgent agent =
 构建 agent 之前，在每个进程中只构建并注册一次 SDK。下例中的可选环境变量可保存 `Basic <base64-credentials>` 形式的值，供 Langfuse 等要求 `Authorization` header 的后端使用：
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tracing.OtelTracingMiddleware;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tracing.OtelTracingMiddleware;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
@@ -156,8 +156,8 @@ ReActAgent agent =
 如果要改用应用自己持有的 SDK，而不是进程级实例，请用 `build()`（不要用 `buildAndRegisterGlobal()`）构建 SDK，把 OTLP HTTP exporter 指向应用的 endpoint，并显式挂到 agent 上。这是一条可选的 middleware 路径：调用方拥有 SDK 的生命周期，并负责关闭 provider。生产环境的接入方式仍然是现有的 `ReActAgent.builder().middleware(...)`，不需要改 builder。
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tracing.OtelTracingMiddleware;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tracing.OtelTracingMiddleware;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
@@ -200,14 +200,14 @@ ReActAgent agent =
 
 ### TaskReminderMiddleware
 
-`TaskReminderMiddleware`（位于 `io.agentscope.core.middleware`）与内置 `TodoTools` 配合使用，在每个 reasoning step 之前把当前 `AgentState.tasksContext` 渲染成 `<system-reminder>` 注入上下文，避免长任务期间 agent 偏离计划。
+`TaskReminderMiddleware`（位于 `io.deepscope.core.middleware`）与内置 `TodoTools` 配合使用，在每个 reasoning step 之前把当前 `AgentState.tasksContext` 渲染成 `<system-reminder>` 注入上下文，避免长任务期间 agent 偏离计划。
 
 通过 builder 上的 `enableTaskList(true)` 开关与 `TodoTools` 一同启用：
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.builtin.TodoTools;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.builtin.TodoTools;
 
 Toolkit toolkit = new Toolkit();
 toolkit.registerTool(new TodoTools());
@@ -227,7 +227,7 @@ ReActAgent agent =
 `FinalAnswerFilterMiddleware` 仅输出 ReAct 最终推理轮次的文本。产生工具调用的中间轮次文本会被过滤，工具事件及其他非文本事件仍会正常流式输出。
 
 ```java
-import io.agentscope.core.middleware.FinalAnswerFilterMiddleware;
+import io.deepscope.core.middleware.FinalAnswerFilterMiddleware;
 
 ReActAgent agent =
         ReActAgent.builder()
@@ -242,19 +242,19 @@ ReActAgent agent =
 
 ## 自定义 Middleware
 
-实现 `MiddlewareBase` 接口（位于 `io.agentscope.core.middleware`），只重写需要的 hook 即可，其它的不用管。
+实现 `MiddlewareBase` 接口（位于 `io.deepscope.core.middleware`），只重写需要的 hook 即可，其它的不用管。
 
 每个洋葱 hook 收到一个 `next` 函数，调用 `next.apply(input)` 进入内层逻辑；可以在调用前后插入自己的处理，或者通过 `Flux<AgentEvent>` 算子（`doOnNext` / `flatMap` / `map` 等）观察、改写中间事件流。
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.middleware.ActingInput;
-import io.agentscope.core.middleware.AgentInput;
-import io.agentscope.core.middleware.MiddlewareBase;
-import io.agentscope.core.middleware.ModelCallInput;
-import io.agentscope.core.middleware.ReasoningInput;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.middleware.ActingInput;
+import io.deepscope.core.middleware.AgentInput;
+import io.deepscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.middleware.ModelCallInput;
+import io.deepscope.core.middleware.ReasoningInput;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.Function;
@@ -303,7 +303,7 @@ public class FullObservabilityMiddleware implements MiddlewareBase {
 }
 ```
 
-每个 hook 的 input 类型（均位于 `io.agentscope.core.middleware`）：
+每个 hook 的 input 类型（均位于 `io.deepscope.core.middleware`）：
 
 | Hook | Input record | 字段 |
 |------|--------------|------|
@@ -316,18 +316,18 @@ public class FullObservabilityMiddleware implements MiddlewareBase {
 
 需要替换流入下一层的字段时，构造一个新的 input record 后再调用 `next.apply(...)`。
 
-完整可运行示例：`agentscope-examples/documentation/.../middleware/CustomizedMiddlewareExample.java`、`middleware/ModelCallMiddlewareExample.java`、`middleware/SystemPromptMiddlewareExample.java`。
+完整可运行示例：`deepscope-examples/documentation/.../middleware/CustomizedMiddlewareExample.java`、`middleware/ModelCallMiddlewareExample.java`、`middleware/SystemPromptMiddlewareExample.java`。
 
 ### 状态就绪通知
 
 `onAgentStateReady` 是通知式 hook（没有 `next`）：每次调用同步触发一次，时点在 call 级 `AgentState` 绑定到 `RuntimeContext` 之后、输入进入流水线之前。`state` 与 `ctx.getAgentState()` 是同一实例且永不为 `null`——全新会话拿到的是刚创建、上下文为空的状态。`inputMessages` 是本次调用输入的私有可变副本：就地修改对本次调用全程生效，调用方原始列表不受影响。
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.middleware.MiddlewareBase;
-import io.agentscope.core.state.AgentState;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.state.AgentState;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -357,11 +357,11 @@ public class SessionBootstrapMiddleware implements MiddlewareBase {
 `MiddlewareBase` 的所有 hook 都将本次 `call` / `stream` 绑定的 [`RuntimeContext`](/v2/zh/docs/building-blocks/agent#runtimecontext-per-call-上下文) 作为第二个参数直接传入——既能读会话字段，也能按类型 / 按 key 取属性，还能反向写入来给下游 hook 和 tool 传值。
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.middleware.AgentInput;
-import io.agentscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.middleware.AgentInput;
+import io.deepscope.core.middleware.MiddlewareBase;
 import java.util.function.Function;
 import reactor.core.publisher.Flux;
 
@@ -461,7 +461,7 @@ onAgent
 - **与 `order()` 正交。** 声明只回答"是否参与"，不回答"什么顺序"——各点参与者保持既有 `order()` 语义。
 
 ```java
-import io.agentscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.middleware.MiddlewareBase;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -486,10 +486,10 @@ MiddlewareBase timingOnly =
 下面的 middleware 记录每次模型调用的耗时：
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.middleware.MiddlewareBase;
-import io.agentscope.core.middleware.ModelCallInput;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.middleware.ModelCallInput;
 import java.util.function.Function;
 import reactor.core.publisher.Flux;
 
@@ -513,10 +513,10 @@ public class TimingMiddleware implements MiddlewareBase {
 下面的 middleware 在两次模型调用之间强制留出最小间隔：
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.middleware.MiddlewareBase;
-import io.agentscope.core.middleware.ModelCallInput;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.middleware.ModelCallInput;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
@@ -549,8 +549,8 @@ public class RateLimitMiddleware implements MiddlewareBase {
 下面的 middleware 在 system prompt 中注入实时上下文。也可以直接复用示例 `middleware/SystemPromptMiddlewareExample.java`：
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.middleware.MiddlewareBase;
 import java.time.Instant;
 import java.util.function.Supplier;
 import reactor.core.publisher.Mono;
@@ -578,11 +578,11 @@ public class DynamicContextMiddleware implements MiddlewareBase {
 下面的 middleware 在主模型失败时切换到备用模型：
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.middleware.MiddlewareBase;
-import io.agentscope.core.middleware.ModelCallInput;
-import io.agentscope.core.model.Model;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.middleware.ModelCallInput;
+import io.deepscope.core.model.Model;
 import java.util.function.Function;
 import reactor.core.publisher.Flux;
 
@@ -625,14 +625,14 @@ public class ModelFallbackMiddleware implements MiddlewareBase {
 当用户通过 HITL 拒绝了一轮推理产出的全部工具调用时，agent 默认会继续下一轮推理（向后兼容）。如果希望在这种场景下停止 agent，可以编写一个 `onActing` middleware 观察 `AllToolsDeniedEvent` 并发出 `RequestStopEvent`：
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.event.AllToolsDeniedEvent;
-import io.agentscope.core.event.RequestStopEvent;
-import io.agentscope.core.message.GenerateReason;
-import io.agentscope.core.middleware.ActingInput;
-import io.agentscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.event.AllToolsDeniedEvent;
+import io.deepscope.core.event.RequestStopEvent;
+import io.deepscope.core.message.GenerateReason;
+import io.deepscope.core.middleware.ActingInput;
+import io.deepscope.core.middleware.MiddlewareBase;
 import java.util.function.Function;
 import reactor.core.publisher.Flux;
 

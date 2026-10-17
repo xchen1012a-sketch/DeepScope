@@ -13,7 +13,7 @@ title: "筛选相关文档并检查回答依据"
 ## 1. 提供带版本的文档与访问控制
 
 ```java
-import io.agentscope.extensions.judge.jev.application.JevRag;
+import io.deepscope.extensions.judge.jev.application.JevRag;
 import java.util.List;
 
 var documents = List.of(
@@ -51,7 +51,7 @@ var checked = pending.flatMap(retrieval -> {
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP`：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios rag
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevApplicationScenarios rag
 ```
 
 离线夹具保留 `policy`、排除物流说明；私有材料在判断前过滤。有依据草稿预设为 PASS，空证据路径确定性 FAIL。它验证 ACL、证据选择和无证据处理，不代表真实检索召回率或答案质量。[完整源码](/examples/jev/source/JevApplicationScenarios.java.txt)

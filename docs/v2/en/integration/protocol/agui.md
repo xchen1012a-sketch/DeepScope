@@ -5,7 +5,7 @@ zh_link: /v2/zh/integration/protocol/agui
 
 ## Compatibility Notes
 
-`agentscope-extensions-agui` converts AgentScope v2 `AgentEvent` streams into [AG-UI Protocol](https://github.com/ag-ui-protocol/ag-ui) events so front-end UIs can render an agent run in real time, including text, reasoning, tool calls, state, custom events, token usage, and HITL interrupts.
+`deepscope-extensions-agui` converts DeepScope v2 `AgentEvent` streams into [AG-UI Protocol](https://github.com/ag-ui-protocol/ag-ui) events so front-end UIs can render an agent run in real time, including text, reasoning, tool calls, state, custom events, token usage, and HITL interrupts.
 
 `RUN_ERROR` and `RUN_FINISHED` are mutually exclusive terminal events. Set `emitRunFinishedAfterError=true` only if you still need the legacy `RUN_ERROR` + `RUN_FINISHED` sequence.
 
@@ -17,7 +17,7 @@ Multimodal input is supported, but document types are not supported yet.
 
 ## When To Use
 
-- You need to connect an AgentScope agent to an AG-UI-compatible front end or a custom chat UI.
+- You need to connect an DeepScope agent to an AG-UI-compatible front end or a custom chat UI.
 - You need to stream `RUN_*`, `TEXT_MESSAGE_*`, `TOOL_CALL_*`, `CUSTOM`, and related AG-UI events over SSE.
 - You need frontend tools, user-approval interrupts, runtime context propagation, or custom event-conversion extensions.
 
@@ -27,9 +27,9 @@ For manual adapter usage, add:
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-agui</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-agui</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -37,9 +37,9 @@ Spring Boot applications can use the starter:
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-agui-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-agui-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -48,11 +48,11 @@ Spring Boot applications can use the starter:
 Configure a shared `HarnessAgent.Builder agentBuilder` as in the [Quickstart](/v2/en/docs/quickstart). Build an Agent for each request and close it when the SSE stream ends or is cancelled:
 
 ```java
-import io.agentscope.core.agui.adapter.AguiAdapterConfig;
-import io.agentscope.core.agui.adapter.AguiAgentAdapter;
-import io.agentscope.core.agui.event.AguiEvent;
-import io.agentscope.core.agui.model.RunAgentInput;
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.core.agui.adapter.AguiAdapterConfig;
+import io.deepscope.core.agui.adapter.AguiAgentAdapter;
+import io.deepscope.core.agui.event.AguiEvent;
+import io.deepscope.core.agui.model.RunAgentInput;
+import io.deepscope.harness.agent.HarnessAgent;
 import java.time.Duration;
 import reactor.core.publisher.Flux;
 
@@ -68,13 +68,13 @@ Flux<AguiEvent> events = Flux.using(
     HarnessAgent::close);
 ```
 
-The front end provides `RunAgentInput`, including `threadId`, `runId`, `messages`, `tools`, `state`, and related fields. The adapter converts AG-UI messages to AgentScope `Msg` objects, invokes v2 `streamEvents(...)`, and converts each `AgentEvent` to AG-UI events.
+The front end provides `RunAgentInput`, including `threadId`, `runId`, `messages`, `tools`, `state`, and related fields. The adapter converts AG-UI messages to DeepScope `Msg` objects, invokes v2 `streamEvents(...)`, and converts each `AgentEvent` to AG-UI events.
 
 ## Event Mapping
 
 The v2 path consumes `AgentEvent`. Built-in converters handle semantic mapping, and unmapped events fall back to the official `RAW` event.
 
-| AgentScope event / content             | AG-UI event |
+| DeepScope event / content             | AG-UI event |
 |----------------------------------------| --- |
 | `AgentStartEvent`                      | `RUN_STARTED` |
 | `AgentEndEvent`                        | `RUN_FINISHED` |
@@ -86,7 +86,7 @@ The v2 path consumes `AgentEvent`. Built-in converters handle semantic mapping, 
 | token usage (`emitTokenUsage=true`)    | `CUSTOM`, `name=token_usage` |
 | Unmapped `AgentEvent`                  | `RAW`, with official `event` and `source` fields |
 
-Normal `RUN_STARTED` and `RUN_FINISHED` events are driven by upstream `AgentStartEvent` and `AgentEndEvent`. If a normal stream completes without an upstream `AgentEndEvent`, the adapter does not synthesize `RUN_FINISHED`. On errors, the adapter emits a `RUN_ERROR` with a `timestamp`. `RUN_ERROR` and `RUN_FINISHED` are mutually exclusive terminal events. Set `emitRunFinishedAfterError=true` (or Spring Boot `agentscope.agui.emit-run-finished-after-error=true`) only for legacy clients that still expect a finish event after an error.
+Normal `RUN_STARTED` and `RUN_FINISHED` events are driven by upstream `AgentStartEvent` and `AgentEndEvent`. If a normal stream completes without an upstream `AgentEndEvent`, the adapter does not synthesize `RUN_FINISHED`. On errors, the adapter emits a `RUN_ERROR` with a `timestamp`. `RUN_ERROR` and `RUN_FINISHED` are mutually exclusive terminal events. Set `emitRunFinishedAfterError=true` (or Spring Boot `deepscope.agui.emit-run-finished-after-error=true`) only for legacy clients that still expect a finish event after an error.
 
 ## Subagent events
 
@@ -182,7 +182,7 @@ AguiAdapterConfig config = AguiAdapterConfig.builder()
 Spring Boot config:
 
 ```yaml
-agentscope:
+deepscope:
   agui:
     emit-token-usage: true
 ```
@@ -213,7 +213,7 @@ When enabled, every `ModelCallEndEvent` with usage emits a `CUSTOM` event: `delt
 The starter registers MVC or WebFlux endpoints automatically. Common config:
 
 ```yaml
-agentscope:
+deepscope:
   agui:
     path-prefix: /agui
     cors-enabled: true
@@ -266,14 +266,14 @@ An AG-UI front end can pass tool schemas through `RunAgentInput.tools`. The adap
 | `AGENT_ONLY` | Ignore frontend-provided tools and use only the agent toolkit |
 | `MERGE_EXTERNAL_PRIORITY` | Merge both sides; frontend tools win on name conflicts |
 
-The default is `MERGE_EXTERNAL_PRIORITY`. Import the enum from `io.agentscope.core.tool.ToolMergeMode`. `EXTERNAL_ONLY` exposes no tools when the external list is empty, regardless of the Toolkit deletion policy: it controls request visibility only.
+The default is `MERGE_EXTERNAL_PRIORITY`. Import the enum from `io.deepscope.core.tool.ToolMergeMode`. `EXTERNAL_ONLY` exposes no tools when the external list is empty, regardless of the Toolkit deletion policy: it controls request visibility only.
 
 ## HITL Interrupts
 
-When a run pauses for a tool decision, the AG-UI adapter emits the official interrupt outcome on `RUN_FINISHED`. AgentScope Java has two built-in tool-call interrupt paths:
+When a run pauses for a tool decision, the AG-UI adapter emits the official interrupt outcome on `RUN_FINISHED`. DeepScope Java has two built-in tool-call interrupt paths:
 
 - **Tool suspension / external execution**: a suspended `ToolResultBlock` becomes a `tool_call` interrupt and resumes as a `ToolResultBlock`.
-- **Permission confirmation**: `RequireUserConfirmEvent` becomes a `tool_call` interrupt with AgentScope metadata and resumes as a `ConfirmResult`.
+- **Permission confirmation**: `RequireUserConfirmEvent` becomes a `tool_call` interrupt with DeepScope metadata and resumes as a `ConfirmResult`.
 
 Both use the official AG-UI `reason: "tool_call"` because the interrupt is bound to a specific `toolCallId`. Do not use `reason: "confirmation"` for these tool-bound approvals.
 
@@ -304,7 +304,7 @@ Both use the official AG-UI `reason: "tool_call"` because the interrupt is bound
           "required": ["approved"]
         },
         "metadata": {
-          "agentscope.interruptKind": "permission_confirm",
+          "deepscope.interruptKind": "permission_confirm",
           "toolName": "request_approval",
           "toolInput": { "path": "/tmp/report.txt" },
           "toolContent": "{\"path\":\"/tmp/report.txt\"}",
@@ -340,20 +340,20 @@ The front end can show an approval or external-execution UI. After the user acts
 
 `status` supports the official `resolved` and `cancelled` values. For the common approval case where a user rejects a tool request, prefer `resolved` and express the business decision in `payload`, for example `{ "approved": false }`; use `cancelled` when the interrupt itself is cancelled.
 
-For permission confirmations, `payload.approved` must be the boolean `true` to approve the tool. Any missing, non-boolean, or `false` value is treated as denial. `payload.editedArgs`, when present, must be a JSON object and is a **full replacement** of the original tool arguments, not a partial merge. AgentScope Java rebuilds both the `ToolUseBlock.input` and raw JSON `ToolUseBlock.content` from `editedArgs`, so the approved tool executes the edited arguments.
+For permission confirmations, `payload.approved` must be the boolean `true` to approve the tool. Any missing, non-boolean, or `false` value is treated as denial. `payload.editedArgs`, when present, must be a JSON object and is a **full replacement** of the original tool arguments, not a partial merge. DeepScope Java rebuilds both the `ToolUseBlock.input` and raw JSON `ToolUseBlock.content` from `editedArgs`, so the approved tool executes the edited arguments.
 
-`payload.reason` is an optional string. On denial it becomes `ConfirmResult.reason` and is used as the DENIED tool-result text; when it is missing or blank, AgentScope keeps the default `Permission denied by user` message.
+`payload.reason` is an optional string. On denial it becomes `ConfirmResult.reason` and is used as the DENIED tool-result text; when it is missing or blank, DeepScope keeps the default `Permission denied by user` message.
 
-The front end does not need to echo `metadata` in `resume[]`; it only sends `interruptId`, `status`, and `payload`. Through the Spring `AguiRequestProcessor` entry point, AgentScope Java records the latest `RUN_FINISHED.outcome.interrupts[]` server-side, validates that the next `resume[]` covers all open interrupts, and passes the originating interrupts into the adapter for conversion.
+The front end does not need to echo `metadata` in `resume[]`; it only sends `interruptId`, `status`, and `payload`. Through the Spring `AguiRequestProcessor` entry point, DeepScope Java records the latest `RUN_FINISHED.outcome.interrupts[]` server-side, validates that the next `resume[]` covers all open interrupts, and passes the originating interrupts into the adapter for conversion.
 
 ## Example Project
 
-See the complete example at [agentscope-examples/documentation](https://github.com/agentscope-ai/agentscope-java/tree/main/agentscope-examples/documentation):
+See the complete example at [deepscope-examples/documentation](https://github.com/xchen1012a-sketch/DeepScope/tree/main/deepscope-examples/documentation):
 
 ```bash
 export DASHSCOPE_API_KEY=your-key
-cd agentscope-examples/documentation
-mvn spring-boot:run -Dspring-boot.run.mainClass=io.agentscope.examples.documentation2.agui.AguiExampleApplication
+cd deepscope-examples/documentation
+mvn spring-boot:run -Dspring-boot.run.mainClass=io.deepscope.examples.documentation2.agui.AguiExampleApplication
 ```
 
 Visit http://localhost:8080 after startup. The example demonstrates multi-agent routing, custom converters, custom enrichers, token usage, and HITL interrupts.

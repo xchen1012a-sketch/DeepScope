@@ -3,7 +3,7 @@ title: MsgHub
 en_link: /v1/en/docs/task/msghub
 ---
 
-MsgHub 是 AgentScope 中用于多智能体对话的消息广播中心。它管理一组智能体之间的消息分发，无需手动编写消息传递代码。
+MsgHub 是 DeepScope 中用于多智能体对话的消息广播中心。它管理一组智能体之间的消息分发，无需手动编写消息传递代码。
 
 ## 概述
 
@@ -47,14 +47,14 @@ try (MsgHub hub = MsgHub.builder()
 ### 创建和使用 MsgHub
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeMultiAgentFormatter;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.pipeline.MsgHub;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeMultiAgentFormatter;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.pipeline.MsgHub;
 
 // 创建模型，使用 MultiAgentFormatter
 DashScopeChatModel model = DashScopeChatModel.builder()

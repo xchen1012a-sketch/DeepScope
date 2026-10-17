@@ -3,15 +3,15 @@ title: Kimi
 en_link: /v2/en/integration/model/kimi
 ---
 
-`agentscope-extensions-model-openai` 通过 OpenAI 兼容模型栈提供 Kimi（月之暗面 / Moonshot AI）的一等支持。引入 OpenAI 模型扩展模块后，可以通过 `ModelRegistry` 使用 `kimi:<model>`。
+`deepscope-extensions-model-openai` 通过 OpenAI 兼容模型栈提供 Kimi（月之暗面 / Moonshot AI）的一等支持。引入 OpenAI 模型扩展模块后，可以通过 `ModelRegistry` 使用 `kimi:<model>`。
 
 ## 添加依赖
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-openai</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-model-openai</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -26,17 +26,17 @@ ReActAgent agent = ReActAgent.builder()
     .build();
 ```
 
-Provider 默认使用 `https://api.moonshot.cn/v1` ，发送请求前会去掉 `kimi:` 前缀，并使用 `io.agentscope.extensions.model.openai.compat.kimi` 下的 Kimi formatter。
+Provider 默认使用 `https://api.moonshot.cn/v1` ，发送请求前会去掉 `kimi:` 前缀，并使用 `io.deepscope.extensions.model.openai.compat.kimi` 下的 Kimi formatter。
 
 ## 思考模式
 
 通过 `ModelCreationContext` 解析模型时，可以用 `GenerateOptions` 传入 Kimi 思考相关参数：
 
 ```java
-import io.agentscope.core.model.GenerateOptions;
-import io.agentscope.core.model.Model;
-import io.agentscope.core.model.ModelCreationContext;
-import io.agentscope.core.model.ModelRegistry;
+import io.deepscope.core.model.GenerateOptions;
+import io.deepscope.core.model.Model;
+import io.deepscope.core.model.ModelCreationContext;
+import io.deepscope.core.model.ModelRegistry;
 import java.util.Map;
 
 Model model = ModelRegistry.resolve(
@@ -63,6 +63,6 @@ Kimi formatter 会把 OpenAI 风格请求适配为 Kimi chat-completions API 支
 
 `tool_choice=auto` 和 `tool_choice=none` 通常可以直接使用。K2.x 模型不支持 `tool_choice=required`，formatter 会将其降级为 `auto`。tool_choice 指定函数调用时与开启思考模式不兼容，因此在 `kimi-k3`、`kimi-k2.7-code`，以及未显式设置 `thinking.type=disabled` 的 `kimi-k2.6` / `kimi-k2.5` 上会降级为 `auto`。
 
-结构化输出默认使用 AgentScope 的 fallback 行为。
+结构化输出默认使用 DeepScope 的 fallback 行为。
 
 使用兼容端点或自托管端点时，可以通过 `ModelCreationContext` 传入 `baseUrl`、`endpointPath`、生成参数或 formatter 覆盖。

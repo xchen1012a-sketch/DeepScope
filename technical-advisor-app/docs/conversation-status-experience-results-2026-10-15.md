@@ -29,7 +29,7 @@
 | 派发回执 | 19条，未当作子任务完成 |
 | 其余返回 | 22条，中性说明及实际文本 |
 
-本批真实数据没有空返回、输入回显或结构化测试统计样本，这些边界仅由单元/组件测试覆盖，不能宣称实库验证。源码核对依据：`agentscope-harness`的ShellExecuteTool、TaskTool、AgentSpawnTool及FilesystemTool。
+本批真实数据没有空返回、输入回显或结构化测试统计样本，这些边界仅由单元/组件测试覆盖，不能宣称实库验证。源码核对依据：`deepscope-harness`的ShellExecuteTool、TaskTool、AgentSpawnTool及FilesystemTool。
 
 ## 验证与限制
 

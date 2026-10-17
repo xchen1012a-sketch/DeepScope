@@ -3,14 +3,14 @@ title: Scheduler
 zh_link: /v2/zh/integration/infrastructure/scheduler
 ---
 
-`agentscope-extensions-scheduler` runs Agents periodically — e.g. "every day at 8 AM run the daily-report Agent" or "every 5 seconds run a health-check Agent". The module abstracts a unified `AgentScheduler` interface and ships two implementations:
+`deepscope-extensions-scheduler` runs Agents periodically — e.g. "every day at 8 AM run the daily-report Agent" or "every 5 seconds run a health-check Agent". The module abstracts a unified `AgentScheduler` interface and ships two implementations:
 
 | Sub-module | Implementation | Deployment |
 | --- | --- | --- |
-| `agentscope-extensions-scheduler-quartz` | [Quartz](https://www.quartz-scheduler.org/) | Standalone or clustered (shared Quartz DB) |
-| `agentscope-extensions-scheduler-xxl-job` | [XXL-Job](https://www.xuxueli.com/xxl-job/) | Distributed scheduling, requires admin server |
+| `deepscope-extensions-scheduler-quartz` | [Quartz](https://www.quartz-scheduler.org/) | Standalone or clustered (shared Quartz DB) |
+| `deepscope-extensions-scheduler-xxl-job` | [XXL-Job](https://www.xuxueli.com/xxl-job/) | Distributed scheduling, requires admin server |
 
-The SPI lives in `agentscope-extensions-scheduler-common` so you can plug in other schedulers.
+The SPI lives in `deepscope-extensions-scheduler-common` so you can plug in other schedulers.
 
 ## Shared concepts
 
@@ -27,21 +27,21 @@ Each trigger creates a fresh Agent instance for execution to avoid leaked state.
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-scheduler-quartz</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-scheduler-quartz</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ### Usage
 
 ```java
-import io.agentscope.extensions.scheduler.AgentScheduler;
-import io.agentscope.extensions.scheduler.config.AgentConfig;
-import io.agentscope.extensions.scheduler.config.DashScopeModelConfig;
-import io.agentscope.extensions.scheduler.config.ScheduleConfig;
-import io.agentscope.extensions.scheduler.config.ScheduleMode;
-import io.agentscope.extensions.scheduler.quartz.QuartzAgentScheduler;
+import io.deepscope.extensions.scheduler.AgentScheduler;
+import io.deepscope.extensions.scheduler.config.AgentConfig;
+import io.deepscope.extensions.scheduler.config.DashScopeModelConfig;
+import io.deepscope.extensions.scheduler.config.ScheduleConfig;
+import io.deepscope.extensions.scheduler.config.ScheduleMode;
+import io.deepscope.extensions.scheduler.quartz.QuartzAgentScheduler;
 
 AgentScheduler scheduler = QuartzAgentScheduler.builder()
     .autoStart(true)
@@ -78,9 +78,9 @@ scheduler.shutdown();
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-scheduler-xxl-job</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-scheduler-xxl-job</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -88,12 +88,12 @@ scheduler.shutdown();
 
 ```java
 import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
-import io.agentscope.extensions.scheduler.xxljob.XxlJobAgentScheduler;
+import io.deepscope.extensions.scheduler.xxljob.XxlJobAgentScheduler;
 
 // 1) Boot the XXL-Job executor
 XxlJobSpringExecutor executor = new XxlJobSpringExecutor();
 executor.setAdminAddresses("http://localhost:8080/xxl-job-admin");
-executor.setAppname("agentscope-demo");
+executor.setAppname("deepscope-demo");
 executor.setAccessToken("xxxxxxxx");
 executor.setPort(9999);
 executor.start();

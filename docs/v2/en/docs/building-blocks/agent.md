@@ -1,12 +1,12 @@
 ---
 title: Agent
-description: Learn how to define and configure agents in AgentScope Java 2.0
+description: Learn how to define and configure agents in DeepScope Java 2.0
 zh_link: /v2/zh/docs/building-blocks/agent
 ---
 
 ## Overview
 
-`Agent` (`io.agentscope.core.agent.Agent`) is the common interface for agent execution. `ReActAgent` implements the fundamental reasoning-acting loop: the model reasons, calls tools and uses their results to continue until it can respond. This loop is the foundation of AgentScope Harness.
+`Agent` (`io.deepscope.core.agent.Agent`) is the common interface for agent execution. `ReActAgent` implements the fundamental reasoning-acting loop: the model reasons, calls tools and uses their results to continue until it can respond. This loop is the foundation of DeepScope Harness.
 
 `HarnessAgent` wraps a `ReActAgent`, keeping that loop unchanged while adding built-in workspace, long-term memory, context compaction, skills, subagents, sandboxes, and session logging and recovery. **Start with `HarnessAgent` for most business applications.** Use `ReActAgent` directly when you need the underlying engine or want to compose these capabilities yourself. See [Quickstart](/v2/en/docs/quickstart) to get started and [Harness architecture](/v2/en/docs/harness/architecture) for the available capabilities.
 
@@ -90,8 +90,8 @@ Define shared configuration with `ReActAgent.builder()`, then call `agentBuilder
 <Tab title="String model id (recommended)">
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tool.Toolkit;
 
 ReActAgent.Builder agentBuilder =
         ReActAgent.builder()
@@ -110,10 +110,10 @@ ReActAgent.Builder agentBuilder =
 <Tab title="Explicit Model builder">
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.tool.Toolkit;
 
 ReActAgent.Builder agentBuilder =
         ReActAgent.builder()
@@ -135,11 +135,11 @@ ReActAgent.Builder agentBuilder =
 <Tab title="With Toolkit / MCP">
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.builtin.TodoTools;
-import io.agentscope.core.tool.mcp.McpClientBuilder;
-import io.agentscope.core.tool.mcp.McpClientWrapper;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.builtin.TodoTools;
+import io.deepscope.core.tool.mcp.McpClientBuilder;
+import io.deepscope.core.tool.mcp.McpClientWrapper;
 
 Toolkit toolkit = new Toolkit();
 toolkit.registerTool(new TodoTools());          // reflectively register @Tool methods
@@ -203,9 +203,9 @@ Choose one entry point and subscribe once for each request. `streamEvents` start
 `call` consumes all events internally and returns the final `Msg` when the agent finishes or pauses for external interaction.
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.UserMessage;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.UserMessage;
 import java.util.List;
 
 UserMessage msg = new UserMessage("What files are in the current directory?");
@@ -221,9 +221,9 @@ try (ReActAgent agent = agentBuilder.build()) {
 `streamEvents` emits `AgentEvent`s one by one so you can stream text, tool-call progress, and lifecycle events to your UI in real time. Dispatch on `event.getType()` to handle each kind:
 
 ```java
-import io.agentscope.core.event.AgentEventType;
-import io.agentscope.core.event.TextBlockDeltaEvent;
-import io.agentscope.core.event.ToolCallStartEvent;
+import io.deepscope.core.event.AgentEventType;
+import io.deepscope.core.event.TextBlockDeltaEvent;
+import io.deepscope.core.event.ToolCallStartEvent;
 
 try (ReActAgent agent = agentBuilder.build()) {
     agent.streamEvents(new UserMessage("Summarize the README."), ctx)
@@ -270,7 +270,7 @@ For a streaming HTTP response, use `Flux.using(agentBuilder::build, agent -> age
 
 Different sessions can run concurrently. Per-instance execution gates do not coordinate other instances. Order requests to the same conversation in an application queue, or use an `AgentSession` owned by a background manager. Native journal fencing prevents competing writes but does not provide cross-instance FIFO queueing; a legacy `stateStore` alone is not a distributed execution lock.
 
-The full Spring Boot example is `agentscope-examples/documentation/.../streaming/StreamingWebExample.java`.
+The full Spring Boot example is `deepscope-examples/documentation/.../streaming/StreamingWebExample.java`.
 
 ## Execution control in session applications
 
@@ -307,7 +307,7 @@ Run managers own lookup, authorization and terminal cleanup. The Agent does not 
 The following applies to executions started with `call` / `streamEvents`. For interruption from another request, the application must locate the Agent instance running the target execution and remove and close it when execution ends. Use `agent.interrupt` for cooperative interruption. For tasks submitted through AgentSession, use `session.interrupt()` and follow the [session continuation guide](/v2/en/docs/harness/session-log#continue-after-interruption):
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
+import io.deepscope.core.agent.RuntimeContext;
 
 // Identify the target session
 RuntimeContext target = RuntimeContext.builder()
@@ -338,7 +338,7 @@ agent.interrupt("alice", "session-001", interruptMsg);
 
 ## RuntimeContext (per-call context)
 
-`RuntimeContext` (`io.agentscope.core.agent.RuntimeContext`) is a **per-call metadata bag**. Pass a separate instance to each call; tools and middlewares receive the context through their parameters. The agent does not expose a shared current-context getter or inject contexts into shared hook fields. Skill repository operations and `HarnessAgent.promoteSkill(name, reviewerId, ctx)` likewise take an explicit context; context-less repository operations use the default namespace.
+`RuntimeContext` (`io.deepscope.core.agent.RuntimeContext`) is a **per-call metadata bag**. Pass a separate instance to each call; tools and middlewares receive the context through their parameters. The agent does not expose a shared current-context getter or inject contexts into shared hook fields. Skill repository operations and `HarnessAgent.promoteSkill(name, reviewerId, ctx)` likewise take an explicit context; context-less repository operations use the default namespace.
 
 It is **not** persistent state — `AgentState` (conversation context, compressed summaries, permission rules, tool state) covers that. `RuntimeContext` carries data that is scoped to a single invocation: tenant / userId / request-id, DB connections, audit loggers, feature flags, and so on.
 
@@ -357,9 +357,9 @@ Typed attributes power tool injection — declare a parameter of the matching ty
 ### Construct and pass
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.UserMessage;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.UserMessage;
 import java.util.List;
 
 RuntimeContext ctx =
@@ -386,12 +386,12 @@ Msg result = agent.call(List.of(new UserMessage("Hi.")), ctx).block();
 - Free-form / typed `RuntimeContext` attributes never enter `AgentState` and are never written back by the `AgentStateStore`.
 - The `sessionId` / `userId` fields **do** drive persistence: each call activates the `(userId, sessionId)` state slot, so passing different identities on `RuntimeContext` retargets which `AgentState` is loaded and saved. When absent, the agent falls back to its builder-time `defaultSessionId`.
 
-Runnable examples: `agentscope-examples/documentation/.../context/RuntimeContextExample.java`, `tool/ToolExecutionContextExample.java`.
+Runnable examples: `deepscope-examples/documentation/.../context/RuntimeContextExample.java`, `tool/ToolExecutionContextExample.java`.
 
 
 <Note>
 
-A legacy `ToolExecutionContext` (`io.agentscope.core.tool`) is `@Deprecated`. New code should use `RuntimeContext`. The legacy type is bridged automatically via `RuntimeContext.asToolExecutionContext()`, so existing code keeps working.
+A legacy `ToolExecutionContext` (`io.deepscope.core.tool`) is `@Deprecated`. New code should use `RuntimeContext`. The legacy type is bridged automatically via `RuntimeContext.asToolExecutionContext()`, so existing code keeps working.
 
 </Note>
 
@@ -409,7 +409,7 @@ When the permission system decides a tool call needs user approval, the agent em
 **1. Receive `RequireUserConfirmEvent`** — use `streamEvents` to detect the pause. The event carries `getReplyId()` (used to resume) and `getToolCalls()` — a list of `ToolUseBlock` each exposing `getId()` / `getName()` / `getInput()`.
 
 ```java
-import io.agentscope.core.event.RequireUserConfirmEvent;
+import io.deepscope.core.event.RequireUserConfirmEvent;
 
 agent.streamEvents(msg, ctx)
         .doOnNext(event -> {
@@ -430,7 +430,7 @@ agent.streamEvents(msg, ctx)
 **2. Build confirm results** — construct a `ConfirmResult` per pending call. You can tweak the tool input on the way back; to remember a choice for identical future calls, pass explicit `PermissionRule`s in the `rules` argument (suggested rules surface on the permission engine's `PermissionDecision`, not on the tool call):
 
 ```java
-import io.agentscope.core.event.ConfirmResult;
+import io.deepscope.core.event.ConfirmResult;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -446,8 +446,8 @@ for (var tc : confirmEvent.getToolCalls()) {
 **3. Resume the agent** — pass `confirmResults` to the next `call` via metadata:
 
 ```java
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.UserMessage;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.UserMessage;
 import java.util.Map;
 
 UserMessage resumeMsg =
@@ -470,7 +470,7 @@ When the agent invokes a tool with `isExternalTool() == true`, it emits `Require
 **1. Receive `RequireExternalExecutionEvent`** — same shape as user confirmation: `getReplyId()` plus a list of `getToolCalls()` awaiting external execution.
 
 ```java
-import io.agentscope.core.event.RequireExternalExecutionEvent;
+import io.deepscope.core.event.RequireExternalExecutionEvent;
 
 agent.streamEvents(msg, ctx)
         .doOnNext(event -> {
@@ -485,9 +485,9 @@ agent.streamEvents(msg, ctx)
 **2. Execute externally and build results** — run the action outside the agent and wrap each result as a `ToolResultBlock`:
 
 ```java
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.core.message.ToolResultBlock;
-import io.agentscope.core.message.ToolResultState;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.core.message.ToolResultBlock;
+import io.deepscope.core.message.ToolResultState;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -509,7 +509,7 @@ for (var tc : externalEvent.getToolCalls()) {
 
 <Tip>
 
-Use `streamEvents` when building interactive UIs — it lets you detect pauses in real time and prompt the user immediately. Use `call` for programmatic flows that handle events automatically. Complete runnable examples: `agentscope-examples/documentation/.../hitl/PermissionHITLExample.java`.
+Use `streamEvents` when building interactive UIs — it lets you detect pauses in real time and prompt the user immediately. Use `call` for programmatic flows that handle events automatically. Complete runnable examples: `deepscope-examples/documentation/.../hitl/PermissionHITLExample.java`.
 
 </Tip>
 
@@ -523,8 +523,8 @@ The examples below configure state storage for a directly built `ReActAgent`. `H
 **Set `stateStore(...)` on the builder and the agent persists and recovers automatically**: every `call` writes `AgentState` back; the next time you call with the same `(userId, sessionId)`, it loads. The agent instance is stateless with respect to sessions — the slot is chosen per-call from the `RuntimeContext` (falling back to `defaultSessionId`).
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.state.JsonFileAgentStateStore;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.state.JsonFileAgentStateStore;
 import java.nio.file.Paths;
 
 ReActAgent agent = ReActAgent.builder()
@@ -533,7 +533,7 @@ ReActAgent agent = ReActAgent.builder()
         .model(model)
         .toolkit(new Toolkit())
         .stateStore(new JsonFileAgentStateStore(
-                Paths.get(System.getProperty("user.home"), ".agentscope/sessions")))
+                Paths.get(System.getProperty("user.home"), ".deepscope/sessions")))
         .build();
 
 // Pick the slot for this conversation. userId is optional (null = anonymous).
@@ -550,10 +550,10 @@ Built-in and extension implementations:
 
 | Implementation | Module | When to use |
 |----------------|--------|-------------|
-| `InMemoryAgentStateStore` | `agentscope-core` | unit tests / single-process demos |
-| `JsonFileAgentStateStore` | `agentscope-core` | single-machine dev; JSON per `(userId, sessionId)` directory |
-| `RedisAgentStateStore` | `agentscope-extensions-redis` | multi-replica production; shared across processes and nodes |
-| `MysqlAgentStateStore` | `agentscope-extensions-mysql` | when state must live in a relational store (audit / reporting) |
+| `InMemoryAgentStateStore` | `deepscope-core` | unit tests / single-process demos |
+| `JsonFileAgentStateStore` | `deepscope-core` | single-machine dev; JSON per `(userId, sessionId)` directory |
+| `RedisAgentStateStore` | `deepscope-extensions-redis` | multi-replica production; shared across processes and nodes |
+| `MysqlAgentStateStore` | `deepscope-extensions-mysql` | when state must live in a relational store (audit / reporting) |
 
 A single `sessionId` is enough for most cases. For per-user partitioning, also set `userId` on the `RuntimeContext`; the store addresses each slot by the `(userId, sessionId)` pair.
 
@@ -576,8 +576,8 @@ Structured output forces the agent to respond according to a JSON Schema you spe
 Pass a Java class (or `JsonNode` schema) to `call`:
 
 ```java
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.UserMessage;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.UserMessage;
 
 // Define the output structure
 public record WeatherResponse(String location, String temperature, String condition) {}

@@ -1,6 +1,6 @@
-# AgentScope Java documentation · Mintlify
+# DeepScope Java documentation · Mintlify
 
-This directory is the complete Mintlify source for the AgentScope Java site. It includes
+This directory is the complete Mintlify source for the DeepScope Java site. It includes
 v1 and v2 documentation in English and Chinese, the landing pages, SDK guides,
 integrations, blog posts, and community pages. Java/Maven is not required
 to preview or publish the documentation.
@@ -58,22 +58,22 @@ workflow runs these checks on documentation PRs and pushes to `main` or `Mintlif
 ## Connect Mintlify hosting
 
 1. Create a site at https://www.mintlify.com/start and connect GitHub.
-2. Install the Mintlify GitHub App in `agentscope-ai`, granting access to
-   `agentscope-java`. A repository administrator can do this if organization policy
+2. Install the Mintlify GitHub App in `deepscope-ai`, granting access to
+   `deepscope-java`. A repository administrator can do this if organization policy
    permits; otherwise an organization owner must approve the installation.
 3. In **Git Settings**, select:
 
    | Field | Value |
    | --- | --- |
-   | Organization | `agentscope-ai` |
-   | Repository | `agentscope-java` |
+   | Organization | `deepscope-ai` |
+   | Repository | `deepscope-java` |
    | Branch | `Mintlify` to deploy this migration branch; `main` after merging |
    | Documentation directory | `docs` |
 
 4. Open the URL provided by **Overview** and verify both languages, both versions,
    landing page interactions, diagrams, and links. The hosted build
    may expose configuration differences that local preview cannot verify.
-5. Add `java.agentscope.io` in **Custom domain setup** when ready to replace the
+5. Add `github.com/xchen1012a-sketch/DeepScope` in **Custom domain setup** when ready to replace the
    existing site. Add the exact TXT verification records shown in the dashboard;
    wait for verification and TLS provisioning before changing the CNAME to
    `cname.mintlify.builders`. Cloudflare-proxied domains require the alternate flow
@@ -102,8 +102,8 @@ redirects (307). Unknown article paths still return 404 instead of going to the 
 The local checker supports prefix wildcards in the `/:slug*` form and checks their
 destination pages, page conflicts, and redirect loops. Do not add a site-wide
 `/:slug*` fallback that would also match the new routes.
-The production domain remains `java.agentscope.io`. All redirects explicitly set
-`permanent: true`. Bind `java.agentscope.io` in the Mintlify dashboard and apply the
+The production domain remains `github.com/xchen1012a-sketch/DeepScope`. All redirects explicitly set
+`permanent: true`. Bind `github.com/xchen1012a-sketch/DeepScope` in the Mintlify dashboard and apply the
 DNS records it provides for these rules to handle incoming links. Keep the same
 hostname; no cross-domain redirect is needed. Deploying on a different domain alone
 does not redirect the old domain.

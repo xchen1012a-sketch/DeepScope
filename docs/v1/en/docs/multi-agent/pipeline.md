@@ -3,9 +3,9 @@ title: Pipeline
 zh_link: /v1/zh/docs/multi-agent/pipeline
 ---
 
-> **Note:** The former Spring Boot example module `agentscope-examples/multiagent-patterns/` was removed during the 2.0 package refactor. Use the code snippets on this page as the reference implementation. For other runnable samples, see `agentscope-examples/documentation/`.
+> **Note:** The former Spring Boot example module `deepscope-examples/multiagent-patterns/` was removed during the 2.0 package refactor. Use the code snippets on this page as the reference implementation. For other runnable samples, see `deepscope-examples/documentation/`.
 
-The pipeline example uses **Spring AI Alibaba** flow agents (**SequentialAgent**, **ParallelAgent**, **LoopAgent**) with **AgentScopeAgent** sub-agents and AgentScope **DashScopeChatModel** (`Model`). Each pipeline is built from ReActAgent-based AgentScopeAgents and invoked via `PipelineService`.
+The pipeline example uses **Spring AI Alibaba** flow agents (**SequentialAgent**, **ParallelAgent**, **LoopAgent**) with **DeepScopeAgent** sub-agents and DeepScope **DashScopeChatModel** (`Model`). Each pipeline is built from ReActAgent-based DeepScopeAgents and invoked via `PipelineService`.
 
 ## Prerequisites
 
@@ -20,8 +20,8 @@ The example uses a single `Model` bean (DashScopeChatModel) shared by all pipeli
 ```java
 package com.alibaba.cloud.ai.examples.multiagents.pipeline;
 
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.model.Model;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.model.Model;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -50,11 +50,11 @@ public class PipelineModelConfig {
 ```java
 package com.alibaba.cloud.ai.examples.multiagents.pipeline.sequential;
 
-import com.alibaba.cloud.ai.agent.agentscope.AgentScopeAgent;
+import com.alibaba.cloud.ai.agent.deepscope.DeepScopeAgent;
 import com.alibaba.cloud.ai.graph.agent.flow.agent.SequentialAgent;
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.model.Model;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.model.Model;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -82,7 +82,7 @@ public class SequentialPipelineConfig {
 				.description("Converts natural language to MySQL SQL")
 				.sysPrompt(SQL_GENERATOR_PROMPT)
 				.memory(new InMemoryMemory());
-		AgentScopeAgent sqlGenerateAgent = AgentScopeAgent.fromBuilder(sqlGenBuilder)
+		DeepScopeAgent sqlGenerateAgent = DeepScopeAgent.fromBuilder(sqlGenBuilder)
 				.name("sql_generator")
 				.description("Converts natural language to MySQL SQL")
 				.instruction("{input}")
@@ -96,7 +96,7 @@ public class SequentialPipelineConfig {
 				.description("Scores SQL against user intent")
 				.sysPrompt(SQL_RATER_PROMPT)
 				.memory(new InMemoryMemory());
-		AgentScopeAgent sqlRatingAgent = AgentScopeAgent.fromBuilder(sqlRaterBuilder)
+		DeepScopeAgent sqlRatingAgent = DeepScopeAgent.fromBuilder(sqlRaterBuilder)
 				.name("sql_rater")
 				.description("Scores SQL against user intent")
 				.instruction("Here's the generated SQL:\n {sql}.\n\n Here's the original user request:\n {input}.")
@@ -127,11 +127,11 @@ public class SequentialPipelineConfig {
 ```java
 package com.alibaba.cloud.ai.examples.multiagents.pipeline.parallel;
 
-import com.alibaba.cloud.ai.agent.agentscope.AgentScopeAgent;
+import com.alibaba.cloud.ai.agent.deepscope.DeepScopeAgent;
 import com.alibaba.cloud.ai.graph.agent.flow.agent.ParallelAgent;
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.model.Model;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.model.Model;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -166,7 +166,7 @@ public class ParallelPipelineConfig {
 				.description("Researches from technology perspective")
 				.sysPrompt(TECH_RESEARCH_PROMPT)
 				.memory(new InMemoryMemory());
-		AgentScopeAgent techResearcher = AgentScopeAgent.fromBuilder(techBuilder)
+		DeepScopeAgent techResearcher = DeepScopeAgent.fromBuilder(techBuilder)
 				.name("tech_researcher")
 				.description("Researches from technology perspective")
 				.instruction("Research the following topic: {input}.")
@@ -180,7 +180,7 @@ public class ParallelPipelineConfig {
 				.description("Researches from finance perspective")
 				.sysPrompt(FINANCE_RESEARCH_PROMPT)
 				.memory(new InMemoryMemory());
-		AgentScopeAgent financeResearcher = AgentScopeAgent.fromBuilder(financeBuilder)
+		DeepScopeAgent financeResearcher = DeepScopeAgent.fromBuilder(financeBuilder)
 				.name("finance_researcher")
 				.description("Researches from finance perspective")
 				.instruction("Research the following topic: {input}.")
@@ -194,7 +194,7 @@ public class ParallelPipelineConfig {
 				.description("Researches from market perspective")
 				.sysPrompt(MARKET_RESEARCH_PROMPT)
 				.memory(new InMemoryMemory());
-		AgentScopeAgent marketResearcher = AgentScopeAgent.fromBuilder(marketBuilder)
+		DeepScopeAgent marketResearcher = DeepScopeAgent.fromBuilder(marketBuilder)
 				.name("market_researcher")
 				.description("Researches from market perspective")
 				.instruction("Research the following topic: {input}.")
@@ -224,7 +224,7 @@ public class ParallelPipelineConfig {
 
 ### Implementation
 
-`LoopPipelineConfig` builds the same SQL Generator and SQL Rater AgentScopeAgents as `SequentialPipelineConfig` (same prompts, `instruction`, `outputKey`). It then wraps them in a **SequentialAgent** and that in a **LoopAgent** with a condition-based loop strategy:
+`LoopPipelineConfig` builds the same SQL Generator and SQL Rater DeepScopeAgents as `SequentialPipelineConfig` (same prompts, `instruction`, `outputKey`). It then wraps them in a **SequentialAgent** and that in a **LoopAgent** with a condition-based loop strategy:
 
 ```java
 SequentialAgent sqlAgent = SequentialAgent.builder()

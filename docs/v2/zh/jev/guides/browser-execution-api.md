@@ -15,14 +15,14 @@ title: "在授权页面中只读导航并验证完成"
 `client` 初始化见[客户端接入](/v2/zh/jev/guides/client)，`model` 是生成回答的模型。先使用 SHADOW 检查建议，浏览器停留在起始页，不实际点击：
 
 ```java
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserNavigator;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserReadTool;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession.*;
-import io.agentscope.extensions.judge.jev.browser.JevPlaywrightSession;
-import io.agentscope.harness.agent.HarnessAgent;
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserNavigator;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserReadTool;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession.*;
+import io.deepscope.extensions.judge.jev.browser.JevPlaywrightSession;
+import io.deepscope.harness.agent.HarnessAgent;
+import io.deepscope.core.tool.Toolkit;
 import java.time.Duration;
 import java.nio.file.Path;
 import java.util.Set;
@@ -108,7 +108,7 @@ var session = new JevPlaywrightSession(
 
 页面版本包含文档时间标识、URL、视口、可见文本、候选身份及安全表单属性。安全表单属性仅用于本地守卫，不进入模型 state；密码、隐藏和文件字段排除。页面守卫覆盖整个可见页面。跨导航重新创建快照控制器；异常派发保留 UNKNOWN。暂不支持跨 frame、shadow DOM、弹窗和通用交互式网站。
 
-## AgentScope Service
+## DeepScope Service
 
 ```json
 {
@@ -129,7 +129,7 @@ var session = new JevPlaywrightSession(
 [JevBrowserExample](/examples/jev/source/JevBrowserExample.java.txt)提供脚本会话和独立验证器。按[构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后运行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevBrowserExample
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevBrowserExample
 ```
 
 默认无需密钥、浏览器或网络。真实 ReActAgent 调用 read_browser，脚本浏览器导航一次，独立验证通过后生成答案。结果 judgments=2、modelCalls=2、browserActions=1、closedSessions=1。脚本判断只证明执行链，不代表语义准确率。
@@ -137,7 +137,7 @@ java -cp "$JEV_CP" io.agentscope.examples.jev.JevBrowserExample
 显式启用真实浏览器，仍不调用外部模型或网站：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevBrowserLocalExample \
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevBrowserLocalExample \
   --browser "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 ```
 

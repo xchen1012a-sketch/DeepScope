@@ -2,17 +2,17 @@
 title: "运行案例与功能入口"
 ---
 
-所有案例都位于 `agentscope-examples/jev`，包名为 `io.agentscope.examples.jev`。你可以先用合成判断跑通 Harness 链路，再替换为真实后端与业务证据。
+所有案例都位于 `deepscope-examples/jev`，包名为 `io.deepscope.examples.jev`。你可以先用合成判断跑通 Harness 链路，再替换为真实后端与业务证据。
 
 ## 构建一次，运行多个案例
 
 在仓库根目录执行：
 
 ```bash
-mvn -pl agentscope-dependencies-bom,agentscope-distribution/agentscope-bom,agentscope-examples/jev -am install -DskipTests
-mvn -pl agentscope-examples/jev dependency:build-classpath -Dmdep.outputFile=/tmp/jev-examples-cp.txt
-JEV_CP="agentscope-examples/jev/target/classes:$(cat /tmp/jev-examples-cp.txt)"
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevIntegrationExample
+mvn -pl deepscope-dependencies-bom,deepscope-distribution/deepscope-bom,deepscope-examples/jev -am install -DskipTests
+mvn -pl deepscope-examples/jev dependency:build-classpath -Dmdep.outputFile=/tmp/jev-examples-cp.txt
+JEV_CP="deepscope-examples/jev/target/classes:$(cat /tmp/jev-examples-cp.txt)"
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevIntegrationExample
 ```
 
 该组合案例查询退款条件、取回授权证据、生成遗漏条件的草稿、审核失败后仅修订文本，最后返回保留退款条件的回答。它使用内存检索、脚本生成模型和合成判断，不读取密钥或访问模型服务。
@@ -50,7 +50,7 @@ java -cp "$JEV_CP" io.agentscope.examples.jev.JevIntegrationExample
 `JevBrowserLocalExample` 启动 loopback 页面并使用显式提供的 Chromium 可执行文件。默认仍使用合成判断，不访问外部网站或模型接口：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevBrowserLocalExample \
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevBrowserLocalExample \
   --browser "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 ```
 

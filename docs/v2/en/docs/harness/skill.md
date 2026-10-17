@@ -64,9 +64,9 @@ During reasoning, the agent sees skills from the repo and calls `load_skill_thro
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-skill-git-repository</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-skill-git-repository</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -80,9 +80,9 @@ By default, each read does a lightweight remote check, pulling only when HEAD ch
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-nacos-skill</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-nacos-skill</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -99,7 +99,7 @@ Best for online distribution + change subscription. `market` is `AutoCloseable`;
 
 ```java
 MysqlSkillRepository registry = MysqlSkillRepository.builder(dataSource)
-        .databaseName("agentscope")
+        .databaseName("deepscope")
         .skillsTableName("skills")
         .createIfNotExist(true)
         .writeable(true)
@@ -187,7 +187,7 @@ All four sources can yield a same-named skill. Priority from low to high:
 
 | Priority | Source | How to configure |
 |----------|--------|------------------|
-| 1 (lowest) | Project-global dir | `projectGlobalSkillsDir(Path)`, e.g. `~/.agentscope/skills/` |
+| 1 (lowest) | Project-global dir | `projectGlobalSkillsDir(Path)`, e.g. `~/.deepscope/skills/` |
 | 2 | Marketplaces | `skillRepository(...)`; later registrations win |
 | 3 | Workspace shared | `workspace/skills/` |
 | 4 (highest) | Per-user | `<userId>/skills/` |
@@ -389,7 +389,7 @@ execute("python3 /workspace/skills/code-reviewer/scripts/run-checks.sh <target>"
 
 That command runs in the container and reads exactly the file that was projected in. The agent doesn't need to know which layer a skill came from — the framework computes the prefix.
 
-> If a sandbox backend mounts the workspace at a non-default location (e.g. AgentRun uses `/home/agentscope/workspace`), the `<files-root>` prefix changes accordingly, and the agent still gets a correct absolute path.
+> If a sandbox backend mounts the workspace at a non-default location (e.g. AgentRun uses `/home/deepscope/workspace`), the `<files-root>` prefix changes accordingly, and the agent still gets a correct absolute path.
 
 ### Persisting script side effects across calls
 

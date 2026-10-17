@@ -3,7 +3,7 @@ title: 飞书 Channel
 en_link: /v2/en/integration/channel/feishu
 ---
 
-`agentscope-extensions-channel-feishu` 通过**事件订阅 v2** 回调机制将你的 Agent 接入飞书 / Lark。一个 Spring `@RestController` 接收 webhook 回调，可选地解密加密载荷，然后通过 Gateway 分发消息。
+`deepscope-extensions-channel-feishu` 通过**事件订阅 v2** 回调机制将你的 Agent 接入飞书 / Lark。一个 Spring `@RestController` 接收 webhook 回调，可选地解密加密载荷，然后通过 Gateway 分发消息。
 
 ## 适用场景
 
@@ -14,9 +14,9 @@ en_link: /v2/en/integration/channel/feishu
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-channel-feishu</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-channel-feishu</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 

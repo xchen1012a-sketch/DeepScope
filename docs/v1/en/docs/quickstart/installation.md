@@ -3,7 +3,7 @@ title: Installation
 zh_link: /v1/zh/docs/quickstart/installation
 ---
 
-AgentScope Java supports multiple models, RAG stores, and extensions, each requiring different third-party SDKs. Bundling everything together would bloat your project, so we offer two ways to add dependencies:
+DeepScope Java supports multiple models, RAG stores, and extensions, each requiring different third-party SDKs. Bundling everything together would bloat your project, so we offer two ways to add dependencies:
 
 - **All-in-one**: Single dependency with common model extensions (OpenAI / Gemini / Anthropic / DashScope / Ollama) and MCP SDK included, get started quickly
 - **Core + extensions**: Minimal core package, add extension modules as needed, for strict dependency control
@@ -24,22 +24,22 @@ For most cases, all-in-one is enough. Switch to core + extensions when you need 
 **Maven:**
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope</artifactId>
     <version>2.0.0</version>
 </dependency>
 ```
 
 **Gradle:**
 ```gradle
-implementation 'io.agentscope:agentscope:2.0.0'
+implementation 'io.deepscope:deepscope:2.0.0'
 ```
 
 ### Included Dependencies
 
-The all-in-one package (`io.agentscope:agentscope`) already bundles the common model extensions and their required third-party SDKs. **You do not need to add model-provider SDKs separately:**
+The all-in-one package (`io.deepscope:deepscope`) already bundles the common model extensions and their required third-party SDKs. **You do not need to add model-provider SDKs separately:**
 
-- OpenAI model support (`agentscope-extensions-model-openai`, native HTTP — no `openai-java` required)
+- OpenAI model support (`deepscope-extensions-model-openai`, native HTTP — no `openai-java` required)
 - Google Gemini model support (includes Google GenAI SDK)
 - Anthropic model support (includes Anthropic Java SDK)
 - DashScope model support (Qwen series)
@@ -72,7 +72,7 @@ Add the following only when using **core + extensions**, or when you need runtim
 #### Example: Using Qdrant RAG + PDF Processing
 
 ```xml
-<!-- Add on top of agentscope when the runtime drivers are not already available -->
+<!-- Add on top of deepscope when the runtime drivers are not already available -->
 <dependency>
     <groupId>io.qdrant</groupId>
     <artifactId>client</artifactId>
@@ -85,7 +85,7 @@ Add the following only when using **core + extensions**, or when you need runtim
 
 ### Studio Integration
 
-Connect to [AgentScope Studio](https://github.com/modelscope/agentscope) for visualization and debugging:
+Connect to [DeepScope Studio](https://github.com/modelscope/deepscope) for visualization and debugging:
 
 | Dependency | Maven Coordinates |
 |------------|-------------------|
@@ -98,7 +98,7 @@ Connect to [AgentScope Studio](https://github.com/modelscope/agentscope) for vis
 Full configuration:
 
 ```xml
-<!-- Add on top of agentscope -->
+<!-- Add on top of deepscope -->
 <dependency>
     <groupId>com.squareup.okhttp3</groupId>
     <artifactId>okhttp</artifactId>
@@ -123,20 +123,20 @@ Full configuration:
 
 ## Core + Extensions
 
-For fine-grained dependency control, use `agentscope-core` with extension modules:
+For fine-grained dependency control, use `deepscope-core` with extension modules:
 
 **Maven:**
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-core</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-core</artifactId>
     <version>2.0.0</version>
 </dependency>
 ```
 
 **Gradle:**
 ```gradle
-implementation 'io.agentscope:agentscope-core:2.0.0'
+implementation 'io.deepscope:deepscope-core:2.0.0'
 ```
 
 ### Extension Modules
@@ -145,57 +145,57 @@ implementation 'io.agentscope:agentscope-core:2.0.0'
 
 | Module | Feature | Maven Coordinates |
 |--------|---------|-------------------|
-| [agentscope-extensions-mem0](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-mem0) | Mem0 Long-term Memory | `io.agentscope:agentscope-extensions-mem0` |
-| [agentscope-extensions-reme](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-reme) | ReME Long-term Memory | `io.agentscope:agentscope-extensions-reme` |
+| [deepscope-extensions-mem0](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-mem0) | Mem0 Long-term Memory | `io.deepscope:deepscope-extensions-mem0` |
+| [deepscope-extensions-reme](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-reme) | ReME Long-term Memory | `io.deepscope:deepscope-extensions-reme` |
 
 #### RAG
 
 | Module | Feature | Maven Coordinates |
 |--------|---------|-------------------|
-| [agentscope-extensions-rag-bailian](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-rag-bailian) | Bailian RAG | `io.agentscope:agentscope-extensions-rag-bailian` |
-| [agentscope-extensions-rag-simple](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-rag-simple) | Simple RAG (Qdrant, Milvus, PgVector, InMemory, Elasticsearch) | `io.agentscope:agentscope-extensions-rag-simple` |
-| [agentscope-extensions-rag-dify](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-rag-dify) | Dify RAG | `io.agentscope:agentscope-extensions-rag-dify` |
-| [agentscope-extensions-rag-ragflow](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-rag-ragflow) | RAGFlow RAG | `io.agentscope:agentscope-extensions-rag-ragflow` |
-| [agentscope-extensions-rag-haystack](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-rag-haystack) | HayStack RAG | `io.agentscope:agentscope-extensions-rag-haystack` |
+| [deepscope-extensions-rag-bailian](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-rag-bailian) | Bailian RAG | `io.deepscope:deepscope-extensions-rag-bailian` |
+| [deepscope-extensions-rag-simple](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-rag-simple) | Simple RAG (Qdrant, Milvus, PgVector, InMemory, Elasticsearch) | `io.deepscope:deepscope-extensions-rag-simple` |
+| [deepscope-extensions-rag-dify](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-rag-dify) | Dify RAG | `io.deepscope:deepscope-extensions-rag-dify` |
+| [deepscope-extensions-rag-ragflow](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-rag-ragflow) | RAGFlow RAG | `io.deepscope:deepscope-extensions-rag-ragflow` |
+| [deepscope-extensions-rag-haystack](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-rag-haystack) | HayStack RAG | `io.deepscope:deepscope-extensions-rag-haystack` |
 
 #### Session Storage
 
 | Module | Feature | Maven Coordinates |
 |--------|---------|-------------------|
-| [agentscope-extensions-session-mysql](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-session-mysql) | MySQL Session | `io.agentscope:agentscope-extensions-session-mysql` |
-| [agentscope-extensions-session-redis](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-session-redis) | Redis Session | `io.agentscope:agentscope-extensions-session-redis` |
+| [deepscope-extensions-session-mysql](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-session-mysql) | MySQL Session | `io.deepscope:deepscope-extensions-session-mysql` |
+| [deepscope-extensions-session-redis](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-session-redis) | Redis Session | `io.deepscope:deepscope-extensions-session-redis` |
 
 #### Multi-Agent Collaboration
 
 | Module | Feature | Maven Coordinates |
 |--------|---------|-------------------|
-| [agentscope-extensions-a2a-client](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-a2a-client) | A2A Client | `io.agentscope:agentscope-extensions-a2a-client` |
-| [agentscope-extensions-a2a-server](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-a2a-server) | A2A Server | `io.agentscope:agentscope-extensions-a2a-server` |
+| [deepscope-extensions-a2a-client](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-a2a-client) | A2A Client | `io.deepscope:deepscope-extensions-a2a-client` |
+| [deepscope-extensions-a2a-server](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-a2a-server) | A2A Server | `io.deepscope:deepscope-extensions-a2a-server` |
 
 #### Scheduling
 
 | Module | Feature | Maven Coordinates |
 |--------|---------|-------------------|
-| [agentscope-extensions-scheduler-common](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-scheduler-common) | Scheduler Common | `io.agentscope:agentscope-extensions-scheduler-common` |
-| [agentscope-extensions-scheduler-xxl-job](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-scheduler-xxl-job) | XXL-Job Scheduler | `io.agentscope:agentscope-extensions-scheduler-xxl-job` |
-| [agentscope-extensions-scheduler-quartz](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-scheduler-quartz) | Quartz Scheduler | `io.agentscope:agentscope-extensions-scheduler-quartz` |
+| [deepscope-extensions-scheduler-common](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-scheduler-common) | Scheduler Common | `io.deepscope:deepscope-extensions-scheduler-common` |
+| [deepscope-extensions-scheduler-xxl-job](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-scheduler-xxl-job) | XXL-Job Scheduler | `io.deepscope:deepscope-extensions-scheduler-xxl-job` |
+| [deepscope-extensions-scheduler-quartz](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-scheduler-quartz) | Quartz Scheduler | `io.deepscope:deepscope-extensions-scheduler-quartz` |
 
 #### User Interface
 
 | Module | Feature | Maven Coordinates |
 |--------|---------|-------------------|
-| [agentscope-extensions-studio](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-studio) | Studio Integration | `io.agentscope:agentscope-extensions-studio` |
-| [agentscope-extensions-agui](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-agui) | AG-UI Protocol | `io.agentscope:agentscope-extensions-agui` |
+| [deepscope-extensions-studio](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-studio) | Studio Integration | `io.deepscope:deepscope-extensions-studio` |
+| [deepscope-extensions-agui](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-agui) | AG-UI Protocol | `io.deepscope:deepscope-extensions-agui` |
 
 Extension modules automatically include their required third-party dependencies.
 
 #### Example: Core + Mem0 Extension
 
 ```xml
-<!-- Add on top of agentscope-core -->
+<!-- Add on top of deepscope-core -->
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-mem0</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-mem0</artifactId>
     <version>2.0.0</version>
 </dependency>
 ```
@@ -206,8 +206,8 @@ Extension modules automatically include their required third-party dependencies.
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-spring-boot-starter</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-spring-boot-starter</artifactId>
     <version>2.0.0</version>
 </dependency>
 ```
@@ -216,17 +216,17 @@ Additional starters:
 
 | Starter | Feature | Maven Coordinates |
 |---------|---------|-------------------|
-| agentscope-a2a-spring-boot-starter | A2A Integration | `io.agentscope:agentscope-a2a-spring-boot-starter` |
-| agentscope-agui-spring-boot-starter | AG-UI Integration | `io.agentscope:agentscope-agui-spring-boot-starter` |
-| agentscope-chat-completions-web-starter | Chat Completions Web Integration | `io.agentscope:agentscope-chat-completions-web-starter` |
-| agentscope-nacos-spring-boot-starter | Nacos Integration | `io.agentscope:agentscope-nacos-spring-boot-starter` |
+| deepscope-a2a-spring-boot-starter | A2A Integration | `io.deepscope:deepscope-a2a-spring-boot-starter` |
+| deepscope-agui-spring-boot-starter | AG-UI Integration | `io.deepscope:deepscope-agui-spring-boot-starter` |
+| deepscope-chat-completions-web-starter | Chat Completions Web Integration | `io.deepscope:deepscope-chat-completions-web-starter` |
+| deepscope-nacos-spring-boot-starter | Nacos Integration | `io.deepscope:deepscope-nacos-spring-boot-starter` |
 
 ### Quarkus
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-quarkus-extension</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-quarkus-extension</artifactId>
     <version>2.0.0</version>
 </dependency>
 ```
@@ -235,8 +235,8 @@ Additional starters:
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-micronaut-extension</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-micronaut-extension</artifactId>
     <version>2.0.0</version>
 </dependency>
 ```

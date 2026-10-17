@@ -5,7 +5,7 @@ en_link: /v2/en/integration/skill/mysql-repository
 
 
 > **已废弃**：请迁移到[统一 JDBC 模块](/v2/zh/integration/distributed/jdbc)的 `JdbcAgentSkillRepository`——一套实现覆盖 MySQL、PostgreSQL、H2、SQLite 及后续方言。本模块建的表原样可用，早于 metadata_json 的旧表需先补一列；迁移要点见[迁移指南](/v2/zh/integration/distributed/jdbc#从历史模块迁移)。
-`agentscope-extensions-skill-mysql-repository` 把技能存到 MySQL，提供完整的 CRUD：在控制台/业务系统里编辑保存，Agent 这边立即可读。
+`deepscope-extensions-skill-mysql-repository` 把技能存到 MySQL，提供完整的 CRUD：在控制台/业务系统里编辑保存，Agent 这边立即可读。
 
 ## 何时使用
 
@@ -17,9 +17,9 @@ en_link: /v2/en/integration/skill/mysql-repository
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-skill-mysql-repository</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-skill-mysql-repository</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -27,11 +27,11 @@ en_link: /v2/en/integration/skill/mysql-repository
 
 ```java
 import com.zaxxer.hikari.HikariDataSource;
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.skill.repository.mysql.MysqlSkillRepository;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.skill.repository.mysql.MysqlSkillRepository;
 
 HikariDataSource ds = new HikariDataSource();
-ds.setJdbcUrl("jdbc:mysql://localhost:3306/agentscope");
+ds.setJdbcUrl("jdbc:mysql://localhost:3306/deepscope");
 ds.setUsername("root");
 ds.setPassword("***");
 
@@ -50,7 +50,7 @@ ReActAgent agent = ReActAgent.builder()
 `createIfNotExist=true` 时自动创建以下两张表：
 
 ```sql
-CREATE TABLE IF NOT EXISTS agentscope_skills (
+CREATE TABLE IF NOT EXISTS deepscope_skills (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
     description TEXT NOT NULL,
@@ -61,24 +61,24 @@ CREATE TABLE IF NOT EXISTS agentscope_skills (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS agentscope_skill_resources (
+CREATE TABLE IF NOT EXISTS deepscope_skill_resources (
     id BIGINT NOT NULL,
     resource_path VARCHAR(500) NOT NULL,
     resource_content LONGTEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id, resource_path),
-    FOREIGN KEY (id) REFERENCES agentscope_skills(id) ON DELETE CASCADE
+    FOREIGN KEY (id) REFERENCES deepscope_skills(id) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-- `agentscope_skills`：技能本身，`name` 唯一，`skill_content` 存 `SKILL.md` 全文。
-- `agentscope_skill_resources`：技能附带的资源文件（截图、模板等），与 `id` 级联。
+- `deepscope_skills`：技能本身，`name` 唯一，`skill_content` 存 `SKILL.md` 全文。
+- `deepscope_skill_resources`：技能附带的资源文件（截图、模板等），与 `id` 级联。
 
 ## 与已有表兼容
 
 - 旧表如果没有 `metadata_json` 列，仓库会自动降级到"只往返 name + description"的兼容模式，不会主动 `ALTER TABLE`。
-- 想升级到完整模式，自行执行 `ALTER TABLE agentscope_skills ADD COLUMN metadata_json LONGTEXT NULL;` 即可。
+- 想升级到完整模式，自行执行 `ALTER TABLE deepscope_skills ADD COLUMN metadata_json LONGTEXT NULL;` 即可。
 
 ## 自定义库名 / 表名
 

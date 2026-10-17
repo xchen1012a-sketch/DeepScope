@@ -3,7 +3,7 @@ title: Higress
 en_link: /v2/en/integration/infrastructure/higress
 ---
 
-`agentscope-extensions-higress` 把 [Higress](https://higress.io/) 上以 MCP（Model Context Protocol）方式发布的工具引入 AgentScope。Higress 在网关层做了工具搜索、鉴权、限流、可观测；Agent 这边只负责调用对应工具。
+`deepscope-extensions-higress` 把 [Higress](https://higress.io/) 上以 MCP（Model Context Protocol）方式发布的工具引入 DeepScope。Higress 在网关层做了工具搜索、鉴权、限流、可观测；Agent 这边只负责调用对应工具。
 
 ## 何时使用
 
@@ -14,18 +14,18 @@ en_link: /v2/en/integration/infrastructure/higress
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-higress</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-higress</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## 快速上手
 
 ```java
-import io.agentscope.extensions.higress.HigressMcpClientBuilder;
-import io.agentscope.extensions.higress.HigressMcpClientWrapper;
-import io.agentscope.extensions.higress.HigressToolkit;
+import io.deepscope.extensions.higress.HigressMcpClientBuilder;
+import io.deepscope.extensions.higress.HigressMcpClientWrapper;
+import io.deepscope.extensions.higress.HigressToolkit;
 
 // 1) 通过 Higress 网关发布的 MCP endpoint 创建客户端
 HigressMcpClientWrapper client = HigressMcpClientBuilder

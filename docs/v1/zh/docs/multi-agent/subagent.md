@@ -3,7 +3,7 @@ title: Subagents
 en_link: /v1/en/docs/multi-agent/subagent
 ---
 
-> **说明：** 原先的 Spring Boot 示例模块 `agentscope-examples/multiagent-patterns/` 已在 2.0 包重构中移除。请以本文中的代码片段作为参考实现。其他可运行示例见 `agentscope-examples/documentation/`。
+> **说明：** 原先的 Spring Boot 示例模块 `deepscope-examples/multiagent-patterns/` 已在 2.0 包重构中移除。请以本文中的代码片段作为参考实现。其他可运行示例见 `deepscope-examples/documentation/`。
 
 **子智能体**是主编排智能体（orchestrator）委托工作的**专职智能体**。编排智能体不亲自执行这些工作，而是通过 **Task** 工具传入子智能体类型和任务描述来调用。系统在**独立上下文**（各自的系统提示与工具）中运行选定的子智能体，再将结果返回给编排智能体。这样主对话保持聚焦、避免上下文膨胀，同时仍可由不同专职智能体处理多类任务（如代码库探索、网络调研、依赖分析）。
 
@@ -92,7 +92,7 @@ TaskToolsBuilder.builder()
 
 编排智能体即可通过 Task 工具传入 `subagent_type="dependency-analyzer"` 和任务描述。编程式子智能体可使用默认工具映射之外的自定义工具与逻辑。
 
-## Task 工具构建器（AgentScope 示例）
+## Task 工具构建器（DeepScope 示例）
 
 示例使用 **TaskToolsBuilder** 创建 **Task** 与 **TaskOutput** 工具并注册所有子智能体：
 
@@ -115,7 +115,7 @@ TaskToolsBuilder.builder()
 
 ## 示例：技术尽调助手
 
-AgentScope 示例实现了一个**技术尽调助手**：一个编排智能体委托给四个子智能体。
+DeepScope 示例实现了一个**技术尽调助手**：一个编排智能体委托给四个子智能体。
 
 | 子智能体 | 定义方式 | 工具 | 用途 |
 |----------|----------|------|------|

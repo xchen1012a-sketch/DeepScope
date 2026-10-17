@@ -13,8 +13,8 @@ Agent 已把过时文件内容移出当前上下文，后来用户要求说明�
 ## 1. 选择归档存储
 
 ```java
-import io.agentscope.extensions.judge.jev.context.FileJevContextArchive;
-import io.agentscope.extensions.judge.jev.context.JevContextArchive;
+import io.deepscope.extensions.judge.jev.context.FileJevContextArchive;
+import io.deepscope.extensions.judge.jev.context.JevContextArchive;
 
 var archive = new FileJevContextArchive(archiveRoot, 20_000_000);
 ```
@@ -47,7 +47,7 @@ var observed = pending.doOnNext(previous ->
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP`：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevContextCompactionExample
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevContextCompactionExample
 ```
 
 用例在临时目录归档压缩前的 6 条消息，保留当前测试证据和用户约束，再用同一 user/agent/session 恢复。没有重新派发历史工具；终端会打印归档路径。[完整源码](/examples/jev/source/JevContextCompactionExample.java.txt)

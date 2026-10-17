@@ -3,7 +3,7 @@ title: Bailian Knowledge
 zh_link: /v2/zh/integration/rag/bailian
 ---
 
-`agentscope-extensions-rag-bailian` integrates Alibaba Cloud Bailian Knowledge Base — embeddings, indexing, and retrieval are all managed by Bailian. The Agent only sends the query and receives documents back.
+`deepscope-extensions-rag-bailian` integrates Alibaba Cloud Bailian Knowledge Base — embeddings, indexing, and retrieval are all managed by Bailian. The Agent only sends the query and receives documents back.
 
 ## When to use
 
@@ -15,18 +15,18 @@ zh_link: /v2/zh/integration/rag/bailian
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-rag-bailian</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-rag-bailian</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## Quickstart
 
 ```java
-import io.agentscope.core.rag.integration.bailian.BailianConfig;
-import io.agentscope.core.rag.integration.bailian.BailianKnowledge;
-import io.agentscope.core.rag.model.RetrieveConfig;
+import io.deepscope.core.rag.integration.bailian.BailianConfig;
+import io.deepscope.core.rag.integration.bailian.BailianKnowledge;
+import io.deepscope.core.rag.model.RetrieveConfig;
 
 BailianConfig config = BailianConfig.builder()
     .accessKeyId(System.getenv("ALIBABA_CLOUD_ACCESS_KEY_ID"))

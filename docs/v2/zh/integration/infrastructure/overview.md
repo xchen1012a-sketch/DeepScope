@@ -3,7 +3,7 @@ title: 概览
 en_link: /v2/en/integration/infrastructure/overview
 ---
 
-这一组扩展把 AgentScope 接到企业里常见的基础设施上，让 Agent 能像普通服务一样被治理、被调度、被发现。
+这一组扩展把 DeepScope 接到企业里常见的基础设施上，让 Agent 能像普通服务一样被治理、被调度、被发现。
 
 | 扩展 | 中间件 | 主要能力 |
 | --- | --- | --- |
@@ -13,7 +13,7 @@ en_link: /v2/en/integration/infrastructure/overview
 
 ## 整体定位
 
-- **Higress / Nacos** 把"接入网关、注册中心"作为 AgentScope 的横向能力。
+- **Higress / Nacos** 把"接入网关、注册中心"作为 DeepScope 的横向能力。
 - **Scheduler** 解决"Agent 不一定是被人类触发，可能由调度器周期性触发"的需求。
 
 各扩展之间相互独立，可以按需组合。

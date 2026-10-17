@@ -1,8 +1,8 @@
 # Java 工程规范
 
-适用模块：`agentscope-core`、`agentscope-harness`、`agentscope-extensions`、`agentscope-examples`、`agentscope-dependencies-bom`、`agentscope-distribution`。
+适用模块：`deepscope-core`、`deepscope-harness`、`deepscope-extensions`、`deepscope-examples`、`deepscope-dependencies-bom`、`deepscope-distribution`。
 
-技术基线：Java 17（禁止 preview 特性与 switch 模式匹配）、Maven 多模块（`-T1` 构建）、Reactor、JUnit 5 + Mockito + StepVerifier；**core 与 harness 保持 Spring 无关**；extensions 中 `agentscope-spring-boot-starters/*` 及部分 channel/protocol 扩展基于 Spring，属设计内选择，但 Spring 依赖不得反向带入 core/harness。
+技术基线：Java 17（禁止 preview 特性与 switch 模式匹配）、Maven 多模块（`-T1` 构建）、Reactor、JUnit 5 + Mockito + StepVerifier；**core 与 harness 保持 Spring 无关**；extensions 中 `deepscope-spring-boot-starters/*` 及部分 channel/protocol 扩展基于 Spring，属设计内选择，但 Spring 依赖不得反向带入 core/harness。
 
 ## 门禁规则（工具强制）
 
@@ -11,15 +11,15 @@
 - **【门禁】格式**：Spotless 统一使用 google-java-format（AOSP 风格，4 空格缩进），含 import 排序、禁止通配符 import、禁止未使用 import；`mvn -T1 -pl <module> -am spotless:check` 必须通过。
 - **【门禁】License 头**：所有源码文件必须带 Apache 2.0 许可证头，CI 通过 skywalking-eyes（`.licenserc.yaml`）强制检查。
 - **【门禁】编译与测试**：`mvn -T1 -pl <module> -am test`；跨模块或公共契约变更必须 `mvn -B -T1 clean verify` 全量通过（Ubuntu 与 Windows 双平台语义，禁止为 Windows 偶发问题弱化断言）。
-- **【门禁】依赖版本**：所有第三方依赖版本必须收敛在既有 BOM/POM 层级（`agentscope-dependencies-bom` → distribution BOM → 模块 POM），不得在业务模块 POM 中散落硬编码版本号。
-- **【门禁】模块同步**：新增/调整扩展模块（`agentscope-extensions/*`）后，parent 模块、`agentscope-distribution` 与 BOM 必须同步更新，且 `.github/scripts/check-shade-and-bom-sync.sh` 必须通过。
+- **【门禁】依赖版本**：所有第三方依赖版本必须收敛在既有 BOM/POM 层级（`deepscope-dependencies-bom` → distribution BOM → 模块 POM），不得在业务模块 POM 中散落硬编码版本号。
+- **【门禁】模块同步**：新增/调整扩展模块（`deepscope-extensions/*`）后，parent 模块、`deepscope-distribution` 与 BOM 必须同步更新，且 `.github/scripts/check-shade-and-bom-sync.sh` 必须通过。
 
 ## 人工规范（评审约束）
 
 ### 架构边界
 
-- **【人工】分层归属**：可复用的 Agent 行为放入 `agentscope-core`；workspace、memory、subagents、channels、`HarnessAgent` 等高层能力放入 `agentscope-harness`；Provider 特定实现（模型、存储、协议、channel、sandbox）放入 `agentscope-extensions`；应用装配代码只出现在 examples。
-- **【人工】依赖方向**：core 不依赖 Harness 与任何具体 extension；库模块不得依赖 `agentscope-examples/*`；传输层 handler 保持薄（decode → call → map）。
+- **【人工】分层归属**：可复用的 Agent 行为放入 `deepscope-core`；workspace、memory、subagents、channels、`HarnessAgent` 等高层能力放入 `deepscope-harness`；Provider 特定实现（模型、存储、协议、channel、sandbox）放入 `deepscope-extensions`；应用装配代码只出现在 examples。
+- **【人工】依赖方向**：core 不依赖 Harness 与任何具体 extension；库模块不得依赖 `deepscope-examples/*`；传输层 handler 保持薄（decode → call → map）。
 - **【人工】扩展方式**：Agent 行为扩展只能通过 `MiddlewareBase` / `MiddlewareChain` 组合，禁止 fork 或继承改写 Agent 核心类。
 
 ### 兼容性

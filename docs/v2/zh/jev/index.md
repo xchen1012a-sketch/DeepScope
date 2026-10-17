@@ -30,12 +30,12 @@ JEV 为 Harness 中需要语义判断的环节提供类型化结果：哪些工�
 
 - **直接调用**：应用已经有输入、证据或草稿时，调用 Judge、评估器、证据处理器等组件，自行消费结果。
 - **Harness 集成**：通过 `.middleware(...)`、`.compaction(...)` 或 Toolkit 注册工具，把判断放在对应执行环节。
-- **AgentScope Service**：通过 session 的 `agentOverrides.jev` 配置用途；检索源、模型目录、浏览器和验证证据仍由宿主提供。[Service 配置](/v2/zh/jev/guides/service-api)
+- **DeepScope Service**：通过 session 的 `agentOverrides.jev` 配置用途；检索源、模型目录、浏览器和验证证据仍由宿主提供。[Service 配置](/v2/zh/jev/guides/service-api)
 
 JEV 判断不授予工具权限，也不证明业务操作已经成功。工具授权、ACL、参数校验、幂等及独立完成验证仍由你的应用负责。各页面分别说明建议、实际输入和执行结果的关系。
 
 ## 从离线案例开始
 
-[运行案例](/v2/zh/jev/guides/agent-integration-example)无需密钥，展示检索、审核和有限修订。所有可运行源码位于 `agentscope-examples/jev`，入口包为 `io.agentscope.examples.jev`。
+[运行案例](/v2/zh/jev/guides/agent-integration-example)无需密钥，展示检索、审核和有限修订。所有可运行源码位于 `deepscope-examples/jev`，入口包为 `io.deepscope.examples.jev`。
 
 接入真实模型前，先了解 [Noul、Choice、Score 与状态契约](/v2/zh/jev/concepts)，再配置[客户端](/v2/zh/jev/guides/client)和[运行模式](/v2/zh/jev/guides/harness-runtime)。文档中的概率阈值是示例值，应使用自己的业务样本校准。

@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "name": "AgentScope Java",
+  "name": "DeepScope Java",
   "theme": "mint",
   "contextual": {
     "options": [
@@ -121,7 +121,7 @@
                       {
                         "group": "Connect existing Agents",
                         "pages": [
-                          "v2/en/service/register-agentscope-agent",
+                          "v2/en/service/register-deepscope-agent",
                           "v2/en/service/external-agent",
                           "v2/en/service/connect-hosted-agent",
                           "v2/en/service/runtime-host",
@@ -328,14 +328,14 @@
                       "v2/zh/blogs/how-to-build-agent-harness/03-context-and-state",
                       "v2/zh/blogs/how-to-build-agent-harness/04-controlled-execution",
                       "v2/zh/blogs/session-execution-control",
-                      "v2/en/blogs/agentscope-v2-release",
-                      "v2/en/blogs/agentscope-v2-explained",
-                      "v2/en/blogs/agentscope-v1-harness",
-                      "v2/en/blogs/agentscope-v1-builder",
-                      "v2/en/blogs/agentscope-v2-coding-agent",
-                      "v2/en/blogs/managed-agents-agentscope-rumtime",
-                      "v2/en/blogs/agentscope-service-release",
-                      "v2/en/blogs/agentscope-service-release-tech"
+                      "v2/en/blogs/deepscope-v2-release",
+                      "v2/en/blogs/deepscope-v2-explained",
+                      "v2/en/blogs/deepscope-v1-harness",
+                      "v2/en/blogs/deepscope-v1-builder",
+                      "v2/en/blogs/deepscope-v2-coding-agent",
+                      "v2/en/blogs/managed-agents-deepscope-rumtime",
+                      "v2/en/blogs/deepscope-service-release",
+                      "v2/en/blogs/deepscope-service-release-tech"
                     ]
                   },
                   {
@@ -456,7 +456,7 @@
                     "group": "Blogs",
                     "pages": [
                       "v1/en/blogs/index",
-                      "v1/en/blogs/agentscope-v1-harness"
+                      "v1/en/blogs/deepscope-v1-harness"
                     ]
                   }
                 ]
@@ -569,7 +569,7 @@
                       {
                         "group": "接入已有 Agent",
                         "pages": [
-                          "v2/zh/service/register-agentscope-agent",
+                          "v2/zh/service/register-deepscope-agent",
                           "v2/zh/service/external-agent",
                           "v2/zh/service/connect-hosted-agent",
                           "v2/zh/service/runtime-host",
@@ -866,14 +866,14 @@
                       "v2/zh/blogs/how-to-build-agent-harness/03-context-and-state",
                       "v2/zh/blogs/how-to-build-agent-harness/04-controlled-execution",
                       "v2/zh/blogs/session-execution-control",
-                      "v2/zh/blogs/agentscope-v2-release",
-                      "v2/zh/blogs/agentscope-v2-explained",
-                      "v2/zh/blogs/agentscope-v1-harness",
-                      "v2/zh/blogs/agentscope-v1-builder",
-                      "v2/zh/blogs/agentscope-v2-coding-agent",
-                      "v2/zh/blogs/managed-agents-agentscope-rumtime",
-                      "v2/zh/blogs/agentscope-service-release",
-                      "v2/zh/blogs/agentscope-service-release-tech"
+                      "v2/zh/blogs/deepscope-v2-release",
+                      "v2/zh/blogs/deepscope-v2-explained",
+                      "v2/zh/blogs/deepscope-v1-harness",
+                      "v2/zh/blogs/deepscope-v1-builder",
+                      "v2/zh/blogs/deepscope-v2-coding-agent",
+                      "v2/zh/blogs/managed-agents-deepscope-rumtime",
+                      "v2/zh/blogs/deepscope-service-release",
+                      "v2/zh/blogs/deepscope-service-release-tech"
                     ]
                   },
                   {
@@ -996,8 +996,8 @@
                     "group": "博客",
                     "pages": [
                       "v1/zh/blogs/index",
-                      "v1/zh/blogs/agentscope-v1-harness",
-                      "v1/zh/blogs/agentscope-v1-builder"
+                      "v1/zh/blogs/deepscope-v1-harness",
+                      "v1/zh/blogs/deepscope-v1-builder"
                     ]
                   }
                 ]
@@ -1023,13 +1023,13 @@
     "links": [
       {
         "label": "GitHub",
-        "href": "https://github.com/agentscope-ai/agentscope-java"
+        "href": "https://github.com/xchen1012a-sketch/DeepScope"
       }
     ]
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/agentscope-ai/agentscope-java"
+      "github": "https://github.com/xchen1012a-sketch/DeepScope"
     }
   },
   "redirects": [
@@ -1106,12 +1106,12 @@
       "destination": "/v2/zh/service/cases/incident-to-pr"
     },
     {
-      "source": "/v1/en/blogs/agentscope-v1-harness.html",
-      "destination": "/v1/en/blogs/agentscope-v1-harness"
+      "source": "/v1/en/blogs/deepscope-v1-harness.html",
+      "destination": "/v1/en/blogs/deepscope-v1-harness"
     },
     {
-      "source": "/en/blogs/agentscope-v1-harness.html",
-      "destination": "/v1/en/blogs/agentscope-v1-harness"
+      "source": "/en/blogs/deepscope-v1-harness.html",
+      "destination": "/v1/en/blogs/deepscope-v1-harness"
     },
     {
       "source": "/v1/en/blogs/index.html",
@@ -1522,20 +1522,20 @@
       "destination": "/v1/en/intro"
     },
     {
-      "source": "/v1/zh/blogs/agentscope-v1-builder.html",
-      "destination": "/v1/zh/blogs/agentscope-v1-builder"
+      "source": "/v1/zh/blogs/deepscope-v1-builder.html",
+      "destination": "/v1/zh/blogs/deepscope-v1-builder"
     },
     {
-      "source": "/zh/blogs/agentscope-v1-builder.html",
-      "destination": "/v1/zh/blogs/agentscope-v1-builder"
+      "source": "/zh/blogs/deepscope-v1-builder.html",
+      "destination": "/v1/zh/blogs/deepscope-v1-builder"
     },
     {
-      "source": "/v1/zh/blogs/agentscope-v1-harness.html",
-      "destination": "/v1/zh/blogs/agentscope-v1-harness"
+      "source": "/v1/zh/blogs/deepscope-v1-harness.html",
+      "destination": "/v1/zh/blogs/deepscope-v1-harness"
     },
     {
-      "source": "/zh/blogs/agentscope-v1-harness.html",
-      "destination": "/v1/zh/blogs/agentscope-v1-harness"
+      "source": "/zh/blogs/deepscope-v1-harness.html",
+      "destination": "/v1/zh/blogs/deepscope-v1-harness"
     },
     {
       "source": "/v1/zh/blogs/index.html",
@@ -1962,36 +1962,36 @@
       "destination": "/v1/zh/intro"
     },
     {
-      "source": "/v2/en/blogs/agentscope-service-release-tech.html",
-      "destination": "/v2/en/blogs/agentscope-service-release-tech"
+      "source": "/v2/en/blogs/deepscope-service-release-tech.html",
+      "destination": "/v2/en/blogs/deepscope-service-release-tech"
     },
     {
-      "source": "/v2/en/blogs/agentscope-service-release.html",
-      "destination": "/v2/en/blogs/agentscope-service-release"
+      "source": "/v2/en/blogs/deepscope-service-release.html",
+      "destination": "/v2/en/blogs/deepscope-service-release"
     },
     {
-      "source": "/v2/en/blogs/agentscope-v1-builder.html",
-      "destination": "/v2/en/blogs/agentscope-v1-builder"
+      "source": "/v2/en/blogs/deepscope-v1-builder.html",
+      "destination": "/v2/en/blogs/deepscope-v1-builder"
     },
     {
-      "source": "/v2/en/blogs/agentscope-v1-harness.html",
-      "destination": "/v2/en/blogs/agentscope-v1-harness"
+      "source": "/v2/en/blogs/deepscope-v1-harness.html",
+      "destination": "/v2/en/blogs/deepscope-v1-harness"
     },
     {
-      "source": "/v2/en/blogs/agentscope-v2-coding-agent.html",
-      "destination": "/v2/en/blogs/agentscope-v2-coding-agent"
+      "source": "/v2/en/blogs/deepscope-v2-coding-agent.html",
+      "destination": "/v2/en/blogs/deepscope-v2-coding-agent"
     },
     {
-      "source": "/v2/en/blogs/agentscope-v2-explained.html",
-      "destination": "/v2/en/blogs/agentscope-v2-explained"
+      "source": "/v2/en/blogs/deepscope-v2-explained.html",
+      "destination": "/v2/en/blogs/deepscope-v2-explained"
     },
     {
-      "source": "/v2/en/blogs/agentscope-v2-release.html",
-      "destination": "/v2/en/blogs/agentscope-v2-release"
+      "source": "/v2/en/blogs/deepscope-v2-release.html",
+      "destination": "/v2/en/blogs/deepscope-v2-release"
     },
     {
-      "source": "/v2/en/blogs/managed-agents-agentscope-rumtime.html",
-      "destination": "/v2/en/blogs/managed-agents-agentscope-rumtime"
+      "source": "/v2/en/blogs/managed-agents-deepscope-rumtime.html",
+      "destination": "/v2/en/blogs/managed-agents-deepscope-rumtime"
     },
     {
       "source": "/v2/en/blogs/usecases/aidc-logistics.html",
@@ -2416,36 +2416,36 @@
       "destination": "/v2/en/service/workspaces"
     },
     {
-      "source": "/v2/zh/blogs/agentscope-service-release-tech.html",
-      "destination": "/v2/zh/blogs/agentscope-service-release-tech"
+      "source": "/v2/zh/blogs/deepscope-service-release-tech.html",
+      "destination": "/v2/zh/blogs/deepscope-service-release-tech"
     },
     {
-      "source": "/v2/zh/blogs/agentscope-service-release.html",
-      "destination": "/v2/zh/blogs/agentscope-service-release"
+      "source": "/v2/zh/blogs/deepscope-service-release.html",
+      "destination": "/v2/zh/blogs/deepscope-service-release"
     },
     {
-      "source": "/v2/zh/blogs/agentscope-v1-builder.html",
-      "destination": "/v2/zh/blogs/agentscope-v1-builder"
+      "source": "/v2/zh/blogs/deepscope-v1-builder.html",
+      "destination": "/v2/zh/blogs/deepscope-v1-builder"
     },
     {
-      "source": "/v2/zh/blogs/agentscope-v1-harness.html",
-      "destination": "/v2/zh/blogs/agentscope-v1-harness"
+      "source": "/v2/zh/blogs/deepscope-v1-harness.html",
+      "destination": "/v2/zh/blogs/deepscope-v1-harness"
     },
     {
-      "source": "/v2/zh/blogs/agentscope-v2-coding-agent.html",
-      "destination": "/v2/zh/blogs/agentscope-v2-coding-agent"
+      "source": "/v2/zh/blogs/deepscope-v2-coding-agent.html",
+      "destination": "/v2/zh/blogs/deepscope-v2-coding-agent"
     },
     {
-      "source": "/v2/zh/blogs/agentscope-v2-explained.html",
-      "destination": "/v2/zh/blogs/agentscope-v2-explained"
+      "source": "/v2/zh/blogs/deepscope-v2-explained.html",
+      "destination": "/v2/zh/blogs/deepscope-v2-explained"
     },
     {
-      "source": "/v2/zh/blogs/agentscope-v2-release.html",
-      "destination": "/v2/zh/blogs/agentscope-v2-release"
+      "source": "/v2/zh/blogs/deepscope-v2-release.html",
+      "destination": "/v2/zh/blogs/deepscope-v2-release"
     },
     {
-      "source": "/v2/zh/blogs/managed-agents-agentscope-rumtime.html",
-      "destination": "/v2/zh/blogs/managed-agents-agentscope-rumtime"
+      "source": "/v2/zh/blogs/managed-agents-deepscope-rumtime.html",
+      "destination": "/v2/zh/blogs/managed-agents-deepscope-rumtime"
     },
     {
       "source": "/v2/zh/blogs/usecases/aidc-logistics.html",

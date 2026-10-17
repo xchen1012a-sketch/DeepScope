@@ -3,9 +3,9 @@ title: Supervisor
 en_link: /v1/en/docs/multi-agent/supervisor
 ---
 
-> **说明：** 原先的 Spring Boot 示例模块 `agentscope-examples/multiagent-patterns/` 已在 2.0 包重构中移除。请以本文中的代码片段作为参考实现。其他可运行示例见 `agentscope-examples/documentation/`。
+> **说明：** 原先的 Spring Boot 示例模块 `deepscope-examples/multiagent-patterns/` 已在 2.0 包重构中移除。请以本文中的代码片段作为参考实现。其他可运行示例见 `deepscope-examples/documentation/`。
 
-在 **Supervisor** 模式中，一个中心**监督者**（主智能体）通过**工具**调用专职智能体进行协调。监督者接收用户请求，决定调用哪些专家（如日历、邮件），并将结果综合成一条回复。专职智能体从用户视角看是**无状态**的；监督者维护对话，将一次性任务委托给专家。在 AgentScope 中通过 **Agent as Tool**（[agent-as-tool.md](/v1/zh/docs/task/agent-as-tool)）实现：`Toolkit.registration().subAgent()`。
+在 **Supervisor** 模式中，一个中心**监督者**（主智能体）通过**工具**调用专职智能体进行协调。监督者接收用户请求，决定调用哪些专家（如日历、邮件），并将结果综合成一条回复。专职智能体从用户视角看是**无状态**的；监督者维护对话，将一次性任务委托给专家。在 DeepScope 中通过 **Agent as Tool**（[agent-as-tool.md](/v1/zh/docs/task/agent-as-tool)）实现：`Toolkit.registration().subAgent()`。
 
 ## 概述
 
@@ -35,7 +35,7 @@ en_link: /v1/en/docs/multi-agent/supervisor
 
 ## 实现
 
-1. **模型**：所有智能体共用同一 **DashScopeChatModel**（或其它 AgentScope `Model`）；API Key 来自 `spring.ai.dashscope.api-key` 或 `AI_DASHSCOPE_API_KEY`。
+1. **模型**：所有智能体共用同一 **DashScopeChatModel**（或其它 DeepScope `Model`）；API Key 来自 `spring.ai.dashscope.api-key` 或 `AI_DASHSCOPE_API_KEY`。
 2. **专家智能体**：为每个领域构建一个 ReActAgent（日历、邮件），各有 sysPrompt 与 Toolkit（桩或真实工具）。在监督者的 Toolkit 中注册：`toolkit.registration().subAgent(() -> calendarAgent).apply()`，邮件同理。可选使用 **SubAgentConfig** 设置 `toolName` 与 `description`。
 3. **监督者**：用同一模型与包含 subAgent 注册的 Toolkit 构建 ReActAgent。监督者系统提示中应说明何时使用 `schedule_event` 与 `manage_email`。
 4. **调用**：注入监督者 ReActAgent，调用 `supervisorAgent.call(userMsg).block()`。对于跨领域请求（如「安排会议并发邮件」），监督者会调用多个工具并合并结果。

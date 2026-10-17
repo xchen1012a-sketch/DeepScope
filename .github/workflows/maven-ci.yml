@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check extension modules are synced to agentscope-all and agentscope-bom
+      - name: Check extension modules are synced to deepscope-all and deepscope-bom
         run: |
           chmod +x .github/scripts/check-shade-and-bom-sync.sh
           ./.github/scripts/check-shade-and-bom-sync.sh
@@ -108,7 +108,7 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          # -T1: single-threaded build so reactor order is respected and agentscope-core
+          # -T1: single-threaded build so reactor order is respected and deepscope-core
           # is installed before modules (e.g. subagent) that resolve it from the reactor.
           # Use the runner's standard Maven; mvnd's embedded distribution breaks Surefire IPC.
           mvn -B -T1 clean verify

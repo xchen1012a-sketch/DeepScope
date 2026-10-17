@@ -40,9 +40,9 @@ HarnessAgent agent = HarnessAgent.builder()
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-skill-git-repository</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-skill-git-repository</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -56,9 +56,9 @@ HarnessAgent agent = HarnessAgent.builder()
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-nacos-skill</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-nacos-skill</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -75,7 +75,7 @@ HarnessAgent.builder()
 
 ```java
 MysqlSkillRepository registry = MysqlSkillRepository.builder(dataSource)
-        .databaseName("agentscope")
+        .databaseName("deepscope")
         .skillsTableName("skills")
         .resourcesTableName("skill_resources")
         .createIfNotExist(true)
@@ -172,7 +172,7 @@ workspace/
 
 | 优先级 | 来源 | 怎么配 |
 |--------|------|--------|
-| 1（最低） | 项目全局目录 | `projectGlobalSkillsDir(Path)`，比如 `~/.agentscope/skills/` |
+| 1（最低） | 项目全局目录 | `projectGlobalSkillsDir(Path)`，比如 `~/.deepscope/skills/` |
 | 2 | 市场 | `skillRepository(...)`，后注册的覆盖先注册的 |
 | 3 | 工作区共用 | `workspace/skills/` |
 | 4（最高） | 用户隔离 | `<userId>/skills/` |

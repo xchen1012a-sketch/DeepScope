@@ -1,5 +1,5 @@
 ---
-title: FinXScope：基于 AgentScope 构建金融级智能体底座
+title: FinXScope：基于 DeepScope 构建金融级智能体底座
 en_link: /v2/en/blogs/usecases/finxscope
 ---
 
@@ -9,7 +9,7 @@ en_link: /v2/en/blogs/usecases/finxscope
 
 ### 1.1 FinXScope 是什么
 
-FinXScope 是阿里云新金融技术服务团队**基于 AgentScope Java 构建的金融级 AI 原生智能体底座。**作为整个 Agent Harness 体系的核心组成部分，FinXScope 充分复用 AgentScope Java 在智能体编排、工具集成、多模型接入及可扩展运行时等方面的成熟能力，并在此基础上针对金融行业的合规性、安全性与高可用要求进行了深度定制与增强。完整的 Agent Harness 体系由 FinXScope 运行底座、AI 服务资产平台、全链路评测平台和运营管理平台共同构成，FinXScope 在其中承担着最核心的智能体运行与管理职责。
+FinXScope 是阿里云新金融技术服务团队**基于 DeepScope Java 构建的金融级 AI 原生智能体底座。**作为整个 Agent Harness 体系的核心组成部分，FinXScope 充分复用 DeepScope Java 在智能体编排、工具集成、多模型接入及可扩展运行时等方面的成熟能力，并在此基础上针对金融行业的合规性、安全性与高可用要求进行了深度定制与增强。完整的 Agent Harness 体系由 FinXScope 运行底座、AI 服务资产平台、全链路评测平台和运营管理平台共同构成，FinXScope 在其中承担着最核心的智能体运行与管理职责。
 
 ![FinXScope 在 Agent Harness 体系中的定位](https://mmbiz.qpic.cn/sz_mmbiz_png/bvDbzNRia8j0kkybNzlZ4kkdLlAs3LtUY6vicvYk6pDnUKicDfxf2kmL3xc3pk4GHYNTAROGEpWrdAqibbEMW8vlU5udgHibJcP9DWMzFrQnc7Wk/640?wx_fmt=png&from=appmsg)
 
@@ -57,7 +57,7 @@ FinXScope 是阿里云新金融技术服务团队**基于 AgentScope Java 构建
 
 ### 3.1 6 层架构设计
 
-FinXScope 是整个 Agent Harness 体系的核心引擎，也是首个面向金融行业的企业级智能体运行底座。它提供的是系统性的完整能力组合，而非散点式的技术组件：基于已在阿里巴巴大规模验证的 AgentScope 框架，叠加完全自研的十大核心能力和金融级增强，形成了一个既有坚实技术根基、又能快速适配金融场景的智能体运行平台。围绕 FinXScope，Agent Harness 体系进一步延伸出 AI 服务资产平台（FinXSkillHub）、全链路评测平台（FinXVantage）和运营管理平台，共同覆盖智能体从开发、运行到持续优化的完整生命周期。而 FinXScope 的六层架构，不仅是这套体系的技术实现骨架，更是面向 AI 原生时代对企业应用架构的全新定义与规范。
+FinXScope 是整个 Agent Harness 体系的核心引擎，也是首个面向金融行业的企业级智能体运行底座。它提供的是系统性的完整能力组合，而非散点式的技术组件：基于已在阿里巴巴大规模验证的 DeepScope 框架，叠加完全自研的十大核心能力和金融级增强，形成了一个既有坚实技术根基、又能快速适配金融场景的智能体运行平台。围绕 FinXScope，Agent Harness 体系进一步延伸出 AI 服务资产平台（FinXSkillHub）、全链路评测平台（FinXVantage）和运营管理平台，共同覆盖智能体从开发、运行到持续优化的完整生命周期。而 FinXScope 的六层架构，不仅是这套体系的技术实现骨架，更是面向 AI 原生时代对企业应用架构的全新定义与规范。
 
 ![FinXScope 六层架构](https://mmbiz.qpic.cn/mmbiz_png/bvDbzNRia8j2Oqs21qftQibzJXYkH4MTwxau2HRrTJYUZGGbor1ceehlhicr57K0UZoCfXBRQibkXWkUY4k3JjoWszKciah8nAXq9mia88wLRb478/640?wx_fmt=png&from=appmsg)
 
@@ -75,7 +75,7 @@ FinXScope 是整个 Agent Harness 体系的核心引擎，也是首个面向金�
 
 ## 04 核心能力深度解析
 
-以下十大核心能力是 FinXScope 的技术护城河，它们既包含完全自研的原创能力，也包含在 AgentScope 基础上进行深度增强。这些能力源自实际金融客户场景的刚性需求，经过了多个生产环境的打磨验证。
+以下十大核心能力是 FinXScope 的技术护城河，它们既包含完全自研的原创能力，也包含在 DeepScope 基础上进行深度增强。这些能力源自实际金融客户场景的刚性需求，经过了多个生产环境的打磨验证。
 
 ### 4.1 意图引擎：金融语义的精准理解
 
@@ -263,21 +263,21 @@ FinXScope 是整个 Agent Harness 体系的核心引擎，也是首个面向金�
 - 配置热更新：覆盖 Agent/Skill/Tool/意图树/模型/网关全部核心配置。Redis Pub/Sub 多实例同步，秒级生效。ConfigVersionRegistry 版本管理支持精确回滚。
 - 运营管理平台：对智能体、技能、意图、工具及网关实现全生命周期管理：可视化编辑意图树、配置映射关系、注册/启停技能、管理 MCP 连接、配置安全策略。支持搭建镜像运行环境进行配置试跑验证，多版本对比评测后择优发布。未来与全链路评测体系打通，实现"配置→试跑→评测→择优发布"的自动化运营闭环。
 
-## 05 为什么基于 AgentScope 构建
+## 05 为什么基于 DeepScope 构建
 
-### 5.1 AgentScope：为智能体而生的开发框架
+### 5.1 DeepScope：为智能体而生的开发框架
 
-AgentScope 是阿里巴巴开源的 AI 原生应用开发框架，专为构建自主规划智能体而设计。选择它作为底座框架，基于三个关键维度：技能动态治理（Tool Group 按需激活，避免上下文过载）、高并发架构（AgentPool 工厂模式天然无状态）、执行可靠性（指数退避重试、完整 Hook 系统实现熔断限流）。
+DeepScope 是阿里巴巴开源的 AI 原生应用开发框架，专为构建自主规划智能体而设计。选择它作为底座框架，基于三个关键维度：技能动态治理（Tool Group 按需激活，避免上下文过载）、高并发架构（AgentPool 工厂模式天然无状态）、执行可靠性（指数退避重试、完整 Hook 系统实现熔断限流）。
 
 ### 5.2 与传统框架的全面对比
 
-![AgentScope 与传统框架的全面对比](https://mmbiz.qpic.cn/sz_mmbiz_png/bvDbzNRia8j2Xmp0PT9HKian68GGSoMNvUPblQG4cdJEBzsPjiaN4ZtPzaqIbIwU7VCHJZnAlFPib1sADSv4pInsCvQc0IJXyfrZ1SjAeMLgh2g/640?wx_fmt=png&from=appmsg)
+![DeepScope 与传统框架的全面对比](https://mmbiz.qpic.cn/sz_mmbiz_png/bvDbzNRia8j2Xmp0PT9HKian68GGSoMNvUPblQG4cdJEBzsPjiaN4ZtPzaqIbIwU7VCHJZnAlFPib1sADSv4pInsCvQc0IJXyfrZ1SjAeMLgh2g/640?wx_fmt=png&from=appmsg)
 
-### 5.3 AgentScope 之上的核心扩展
+### 5.3 DeepScope 之上的核心扩展
 
-AgentScope 提供了坚实的基础框架能力，但通用框架到金融级产品之间仍有显著的能力鸿沟。FinXScope 在 AgentScope 之上构建了六大扩展：
+DeepScope 提供了坚实的基础框架能力，但通用框架到金融级产品之间仍有显著的能力鸿沟。FinXScope 在 DeepScope 之上构建了六大扩展：
 
-![FinXScope 在 AgentScope 之上的六大扩展](https://mmbiz.qpic.cn/mmbiz_png/bvDbzNRia8j1rEZgobbPyTIszNDMWRCU95IAhBlEia6pwLd7ZPXFjKadQLA82p0GO2MAqOxwZUgkDsRuKtuoPg5PbMib9LLFGsDicCVOmUXzTDc/640?wx_fmt=png&from=appmsg)
+![FinXScope 在 DeepScope 之上的六大扩展](https://mmbiz.qpic.cn/mmbiz_png/bvDbzNRia8j1rEZgobbPyTIszNDMWRCU95IAhBlEia6pwLd7ZPXFjKadQLA82p0GO2MAqOxwZUgkDsRuKtuoPg5PbMib9LLFGsDicCVOmUXzTDc/640?wx_fmt=png&from=appmsg)
 
 **2.0 新增扩展**：多智能体工作流引擎（八种编排策略）、工作流挂载机制（MountableResource）、配置热更新引擎（Redis Pub/Sub + ConfigVersionRegistry）、三级权限体系、可观测性框架（BizLogger + Prometheus + ObservabilityHook）、远端存储改造（完全无状态化）。
 
@@ -325,7 +325,7 @@ FinXScope 提供了一套覆盖接入、意图、以及智能体执行的全链�
 
 **业务指标监控**：通过 BizLogger 统一 API 实现业务埋点，自动生成 Prometheus 标准指标。指标体系按系统架构划分为六个层级（接入层、表现层、意图层、执行层、工具层、知识层），每层独立定义指标枚举，覆盖事件计数、耗时统计、活跃请求数、错误分类等维度。通过独立管理端口暴露 `/actuator/prometheus` 端点，供 Prometheus Server 拉取。
 
-**Agent 生命周期可观测**：深度集成 AgentScope Hook 机制，通过 ObservabilityHook 追踪 Agent 执行的 5 个生命周期阶段：调用入口、LLM 推理、工具执行、摘要生成、异常处理。每个阶段自动采集耗时和 Token 用量，支持三级开关精细控制（全局开关 → 事件类型开关 → Agent 级覆盖），可在生产环境按需开启或关闭特定 Agent 或特定阶段的观测数据采集。
+**Agent 生命周期可观测**：深度集成 DeepScope Hook 机制，通过 ObservabilityHook 追踪 Agent 执行的 5 个生命周期阶段：调用入口、LLM 推理、工具执行、摘要生成、异常处理。每个阶段自动采集耗时和 Token 用量，支持三级开关精细控制（全局开关 → 事件类型开关 → Agent 级覆盖），可在生产环境按需开启或关闭特定 Agent 或特定阶段的观测数据采集。
 
 **结构化日志**：BizLogger 提供双模日志输出：每条业务日志同时以人类可读格式输出到控制台，以结构化 JSON 格式写入独立文件。日志自动携带 traceId、sessionId、userId 等上下文信息，支持机器解析和日志平台对接。
 
@@ -407,7 +407,7 @@ FinXScope 2.0 完成了从"单智能体运行框架"到"企业级智能体运行
 
 FinXScope 代表了金融级智能体底座的一种全新范式。它不试图成为一个"万能的 AI 应用"，而是专注于做好一件事：为金融机构提供一个可靠的、高性能的、易扩展的智能体运行与管理底座，让任何金融应用都能以极低的成本获得 AI 原生能力。
 
-FinXScope 的底层完全构建于 AgentScope Java 2.0 之上，深度复用了其面向企业级生产环境的核心能力——包括 ReAct 推理-行动循环、六阶段中间件链、统一消息模型与类型化事件流、工具与技能框架、分层记忆与状态持久化、三态权限引擎以及优雅停机与中断机制等。在此基础上，FinXScope 针对金融行业的合规审计、数据安全与高可用要求进行了系统性的行业化增强。
+FinXScope 的底层完全构建于 DeepScope Java 2.0 之上，深度复用了其面向企业级生产环境的核心能力——包括 ReAct 推理-行动循环、六阶段中间件链、统一消息模型与类型化事件流、工具与技能框架、分层记忆与状态持久化、三态权限引擎以及优雅停机与中断机制等。在此基础上，FinXScope 针对金融行业的合规审计、数据安全与高可用要求进行了系统性的行业化增强。
 
 回顾 FinXScope 的核心价值：六层标准化架构为企业 AI 建设提供了清晰的架构蓝图和规划路径；双模执行架构在灵活性与可控性之间找到了最佳平衡；配置驱动的设计将高码的能力上限与低使用门槛结合；高可用、安全合规、可观测的企业级保障让金融级投产不再是难题。
 

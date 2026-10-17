@@ -3,7 +3,7 @@ title: 概览
 en_link: /v1/en/docs/multi-agent/overview
 ---
 
-多智能体系统通过协调多个专职智能体或组件来完成复杂流程。并非所有复杂任务都需要多智能体——单个智能体配合合适的工具与提示往往就够用。本文概览何时采用多智能体模式更有价值，以及 AgentScope 支持哪些模式。
+多智能体系统通过协调多个专职智能体或组件来完成复杂流程。并非所有复杂任务都需要多智能体——单个智能体配合合适的工具与提示往往就够用。本文概览何时采用多智能体模式更有价值，以及 DeepScope 支持哪些模式。
 
 ## 为何使用多智能体？
 
@@ -18,18 +18,18 @@ en_link: /v1/en/docs/multi-agent/overview
 
 ## 支持的模式
 
-AgentScope 支持以下多智能体模式，每种都有独立页面说明实现与示例。
+DeepScope 支持以下多智能体模式，每种都有独立页面说明实现与示例。
 
 | 模式 | 作用 | 适用场景 |
 |------|------|----------|
-| **[Pipeline](/v1/zh/docs/multi-agent/pipeline)** | 按固定流程运行智能体：**顺序**（A → B → C）、**并行**（同一输入给多个智能体再合并）、**循环**（子流程重复直到条件满足）。基于 Spring AI Alibaba flow 与 AgentScopeAgent 构建。 | 流程明确（如 NL → SQL → 打分，或一主题 → 多研究角度 → 合并报告）。 |
+| **[Pipeline](/v1/zh/docs/multi-agent/pipeline)** | 按固定流程运行智能体：**顺序**（A → B → C）、**并行**（同一输入给多个智能体再合并）、**循环**（子流程重复直到条件满足）。基于 Spring AI Alibaba flow 与 DeepScopeAgent 构建。 | 流程明确（如 NL → SQL → 打分，或一主题 → 多研究角度 → 合并报告）。 |
 | **[Routing](/v1/zh/docs/multi-agent/routing)** | **路由器**对输入分类并转发给一个或多个专家智能体（如 GitHub、Notion、Slack）；结果合并为单一回答。 | 有明确垂直领域，希望一次完成「分类 → 专家 → 综合」，或用图实现。 |
 | **[Skills](/v1/zh/docs/multi-agent/skills)** | **按需披露**：一个智能体只看到技能名/描述，通过工具（`read_skill`）按需加载完整技能内容（如 `SKILL.md`）。无独立子智能体进程。 | 希望一个智能体具备多种专长，但不想一次性把所有领域文本塞进上下文。 |
 | **[Subagents](/v1/zh/docs/multi-agent/subagent)** | 中心**编排智能体**通过工具（如 Task / TaskOutput）将工作委托给**子智能体**。子智能体可用 Markdown 或代码定义；编排智能体持有对话，子智能体每次调用无状态。 | 多领域（如代码库、网络、依赖），希望一个协调者，且子智能体无需直接对用户说话。 |
 | **[Supervisor](/v1/zh/docs/multi-agent/supervisor)** | 中心**监督者**智能体将专家智能体当作**工具**调用（每个专家一个工具，如 `schedule_event`、`manage_email`）。专家无状态；仅监督者的回复呈现给用户。 | 领域清晰（如日历、邮件），希望单一入口完成路由与结果合并。 |
 | **[Handoffs](/v1/zh/docs/multi-agent/handoffs)** | **状态驱动路由**：工具更新状态变量（如 `active_agent`），图根据该变量路由到不同智能体节点。每个智能体可通过工具调用「交接」给另一智能体。 | 需要按角色或按顺序交接（如销售 ↔ 支持），对话过程中「当前负责」的智能体会变化。 |
 | **[Multi-Agent Debate](/v1/zh/docs/multi-agent/multiagent-debate)** | **辩手**通过 MsgHub 交换论点；**主持人**用结构化输出评估并决定辩论何时结束。 | 需要多视角（如推理任务）以及明确的结束条件与最终答案。 |
-| **[Custom Workflow](/v1/zh/docs/multi-agent/workflow)** | 使用 **StateGraph** 自定图结构：顺序、条件或**确定性 + 智能体**混合步骤（如 rewrite → retrieve → agent，或 list_tables → get_schema → generate_query）。节点可为函数或 AgentScopeAgent。 | 标准模式不适用；需要多阶段、显式控制或非 LLM 与 LLM/智能体步骤混合时。 |
+| **[Custom Workflow](/v1/zh/docs/multi-agent/workflow)** | 使用 **StateGraph** 自定图结构：顺序、条件或**确定性 + 智能体**混合步骤（如 rewrite → retrieve → agent，或 list_tables → get_schema → generate_query）。节点可为函数或 DeepScopeAgent。 | 标准模式不适用；需要多阶段、显式控制或非 LLM 与 LLM/智能体步骤混合时。 |
 
 ## 如何选型
 

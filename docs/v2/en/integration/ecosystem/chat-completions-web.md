@@ -3,7 +3,7 @@ title: Chat Completions Web
 zh_link: /v2/zh/integration/ecosystem/chat-completions-web
 ---
 
-`agentscope-extensions-chat-completions-web` exposes an AgentScope Agent behind an [OpenAI Chat Completions](https://platform.openai.com/docs/api-reference/chat)-compatible API, so OpenAI SDKs, LangChain, LlamaIndex, ChatBox, etc. can connect as if they were talking to OpenAI.
+`deepscope-extensions-chat-completions-web` exposes an DeepScope Agent behind an [OpenAI Chat Completions](https://platform.openai.com/docs/api-reference/chat)-compatible API, so OpenAI SDKs, LangChain, LlamaIndex, ChatBox, etc. can connect as if they were talking to OpenAI.
 
 ## When to use
 
@@ -14,9 +14,9 @@ zh_link: /v2/zh/integration/ecosystem/chat-completions-web
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-chat-completions-web</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-chat-completions-web</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -25,9 +25,9 @@ Note: this module ships only the framework-agnostic core adapter — wire HTTP/S
 ## Core adapter
 
 ```java
-import io.agentscope.core.chat.completions.streaming.ChatCompletionsStreamingAdapter;
-import io.agentscope.core.chat.completions.model.ChatCompletionsRequest;
-import io.agentscope.core.chat.completions.model.ChatCompletionsChunk;
+import io.deepscope.core.chat.completions.streaming.ChatCompletionsStreamingAdapter;
+import io.deepscope.core.chat.completions.model.ChatCompletionsRequest;
+import io.deepscope.core.chat.completions.model.ChatCompletionsChunk;
 import reactor.core.publisher.Flux;
 
 ChatCompletionsStreamingAdapter adapter = new ChatCompletionsStreamingAdapter();
@@ -36,7 +36,7 @@ ChatCompletionsStreamingAdapter adapter = new ChatCompletionsStreamingAdapter();
 Flux<ChatCompletionsChunk> stream = adapter.stream(agent, request);
 ```
 
-The adapter converts AgentScope's `Event` stream (including `REASONING` and `TOOL_RESULT`) into OpenAI-compatible `ChatCompletionsChunk` objects:
+The adapter converts DeepScope's `Event` stream (including `REASONING` and `TOOL_RESULT`) into OpenAI-compatible `ChatCompletionsChunk` objects:
 
 - Text deltas → `delta.content`
 - Tool calls → `delta.tool_calls[]`

@@ -3,7 +3,7 @@ title: A2A 协议
 en_link: /v1/en/docs/task/a2a
 ---
 
-A2A 是 AgentScope 对 [A2A 协议](https://a2a-protocol.org/latest/specification/) 的支持，包括客户端（调用远程 Agent）和服务端（暴露本地 Agent）两部分。
+A2A 是 DeepScope 对 [A2A 协议](https://a2a-protocol.org/latest/specification/) 的支持，包括客户端（调用远程 Agent）和服务端（暴露本地 Agent）两部分。
 
 ---
 
@@ -14,8 +14,8 @@ A2A 是 AgentScope 对 [A2A 协议](https://a2a-protocol.org/latest/specificatio
 ### 快速开始
 
 ```java
-import io.agentscope.core.a2a.agent.A2aAgent;
-import io.agentscope.core.a2a.agent.card.WellKnownAgentCardResolver;
+import io.deepscope.core.a2a.agent.A2aAgent;
+import io.deepscope.core.a2a.agent.card.WellKnownAgentCardResolver;
 
 // 创建 A2A Agent
 A2aAgent agent = A2aAgent.builder()
@@ -68,8 +68,8 @@ A2aAgent.builder()
 使用 Nacos 作为 A2A 注册中心，自动从 Nacos 中发现 A2A 服务进行调用。
 
 ```java
-import io.agentscope.core.a2a.agent.A2aAgent;
-import io.agentscope.core.nacos.a2a.discovery.NacosAgentCardResolver;
+import io.deepscope.core.a2a.agent.A2aAgent;
+import io.deepscope.core.nacos.a2a.discovery.NacosAgentCardResolver;
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.ai.AiFactory;
 import com.alibaba.nacos.api.ai.AiService;
@@ -98,15 +98,15 @@ A2aAgent agent = A2aAgent.builder()
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-a2a-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-a2a-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ```yaml
 # application.yml
-agentscope:
+deepscope:
   dashscope:
     api-key: your-api-key
   agent:
@@ -116,7 +116,7 @@ agentscope:
       enabled: true
       card:
         name: My Assistant
-        description: 基于 AgentScope 的智能助手
+        description: 基于 DeepScope 的智能助手
 ```
 
 ```java
@@ -131,11 +131,11 @@ public class A2aServerApplication {
 ### 手动创建方式
 
 ```java
-import io.agentscope.core.a2a.server.AgentScopeA2aServer;
-import io.agentscope.core.a2a.server.transport.DeploymentProperties;
+import io.deepscope.core.a2a.server.DeepScopeA2aServer;
+import io.deepscope.core.a2a.server.transport.DeploymentProperties;
 
 // 创建 A2A Server
-AgentScopeA2aServer server = AgentScopeA2aServer.builder(
+DeepScopeA2aServer server = DeepScopeA2aServer.builder(
         ReActAgent.builder()
             .name("my-assistant")
             .sysPrompt("你是一个有用的助手"))
@@ -156,7 +156,7 @@ server.postEndpointReady();
 ### 配置 AgentCard
 
 ```java
-import io.agentscope.core.a2a.server.card.ConfigurableAgentCard;
+import io.deepscope.core.a2a.server.card.ConfigurableAgentCard;
 
 ConfigurableAgentCard agentCard = new ConfigurableAgentCard.Builder()
     .name("My Assistant")
@@ -167,35 +167,35 @@ ConfigurableAgentCard agentCard = new ConfigurableAgentCard.Builder()
         AgentSkill.builder().name("question-answering").description("问答").skillContent("").build()))
     .build();
 
-AgentScopeA2aServer.builder(agentBuilder)
+DeepScopeA2aServer.builder(agentBuilder)
     .agentCard(agentCard)
     .build();
 ```
 
 ### 自动注册 A2A 服务到 Nacos 注册中心
 
-使用 Nacos 作为 A2A 注册中心，将 AgentScope 所提供的 A2A 服务自动注册到 Nacos 中
+使用 Nacos 作为 A2A 注册中心，将 DeepScope 所提供的 A2A 服务自动注册到 Nacos 中
 
 - 为`Spring Boot 方式`添加（推荐）
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-a2a-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-a2a-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 
 <!-- 额外添加 Nacos Spring Boot starter 的依赖 -->
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-nacos-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-nacos-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ```yaml
 # application.yml
-agentscope:
+deepscope:
   dashscope:
     api-key: your-api-key
   agent:
@@ -205,8 +205,8 @@ agentscope:
       enabled: true
       card:
         name: My Assistant
-        description: An intelligent assistant based on AgentScope
-    # 在 `agentscope.a2a` 下添加Nacos相关配置
+        description: An intelligent assistant based on DeepScope
+    # 在 `deepscope.a2a` 下添加Nacos相关配置
     nacos:
       server-addr: ${NACOS_SERVER_ADDRESS:127.0.0.1:8848}
       username: ${NACOS_USERNAME:nacos}
@@ -226,9 +226,9 @@ public class A2aServerApplication {
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-nacos-a2a</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-nacos-a2a</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -236,9 +236,9 @@ public class A2aServerApplication {
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.ai.AiFactory;
 import com.alibaba.nacos.api.ai.AiService;
-import io.agentscope.core.a2a.server.AgentScopeA2aServer;
-import io.agentscope.core.a2a.server.transport.DeploymentProperties;
-import io.agentscope.core.nacos.a2a.registry.NacosAgentRegistry;
+import io.deepscope.core.a2a.server.DeepScopeA2aServer;
+import io.deepscope.core.a2a.server.transport.DeploymentProperties;
+import io.deepscope.core.nacos.a2a.registry.NacosAgentRegistry;
 
 // 设置 Nacos 地址
 Properties properties = new Properties();
@@ -246,7 +246,7 @@ properties.put(PropertyKeyConst.SERVER_ADDR, "localhost:8848");
 // 创建 Nacos Client
 AiService aiService = AiFactory.createAiService(properties);
 // 添加 Nacos 的 AgentRegistry
-AgentScopeA2aServer server = AgentScopeA2aServer.builder(
+DeepScopeA2aServer server = DeepScopeA2aServer.builder(
         ReActAgent.builder()
             .name("my-assistant")
             .sysPrompt("你是一个有用的助手"))
@@ -298,7 +298,7 @@ agent.interrupt(Msg.builder()
 ## 更多资源
 
 - **A2A 协议规范**: https://a2a-protocol.org/latest/specification/
-- **Agent 接口**: [Agent.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-core/src/main/java/io/agentscope/core/agent/Agent.java)
+- **Agent 接口**: [Agent.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-core/src/main/java/io/deepscope/core/agent/Agent.java)
 - **Nacos 快速开始** : https://nacos.io/docs/latest/quickstart/quick-start
 - **Nacos Java SDK** : https://nacos.io/docs/latest/manual/user/java-sdk/usage
 - **Nacos Java SDK 更多配置参数** : https://nacos.io/docs/latest/manual/user/java-sdk/properties

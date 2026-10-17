@@ -3,7 +3,7 @@ title: Agent
 zh_link: /v1/zh/docs/quickstart/agent
 ---
 
-AgentScope provides an out-of-the-box ReAct agent `ReActAgent` for developers.
+DeepScope provides an out-of-the-box ReAct agent `ReActAgent` for developers.
 
 It supports the following features:
 
@@ -47,12 +47,12 @@ The `ReActAgent` class exposes the following parameters in its constructor:
 Using DashScope API as an example, we create an agent as follows:
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.message.Msg;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.Tool;
-import io.agentscope.core.tool.ToolParam;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.message.Msg;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.Tool;
+import io.deepscope.core.tool.ToolParam;
 
 public class QuickStart {
     public static void main(String[] args) {

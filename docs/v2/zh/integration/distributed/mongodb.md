@@ -5,15 +5,15 @@ en_link: /v2/en/integration/distributed/mongodb
 
 # MongoDB
 
-`agentscope-extensions-mongodb` 提供全链路的 MongoDB 分布式存储实现，适合已部署 MongoDB 或偏好文档型后端的场景。
+`deepscope-extensions-mongodb` 提供全链路的 MongoDB 分布式存储实现，适合已部署 MongoDB 或偏好文档型后端的场景。
 
 ## 添加依赖
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-mongodb</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-mongodb</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -22,7 +22,7 @@ en_link: /v2/en/integration/distributed/mongodb
 ## 一键配置
 
 ```java
-import io.agentscope.extensions.mongodb.MongoDistributedStore;
+import io.deepscope.extensions.mongodb.MongoDistributedStore;
 
 MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
 DistributedStore store = MongoDistributedStore.create(mongoClient);
@@ -41,7 +41,7 @@ DistributedStore store = MongoDistributedStore.fromConnectionString(
         "mongodb://user:pass@host:27017/mydb?authSource=admin");
 ```
 
-连接串中包含库名路径时（如 `/mydb`），将使用该库而非默认的 `agentscope`。
+连接串中包含库名路径时（如 `/mydb`），将使用该库而非默认的 `deepscope`。
 
 ## 提供的组件
 
@@ -50,12 +50,12 @@ DistributedStore store = MongoDistributedStore.fromConnectionString(
 Agent 会话状态持久化到 MongoDB。每个会话是一个文档，使用复合 `_id` `{user, session}`。State key 存储在 `states` 子文档中（通过 dot notation 访问），与保留字段隔离。
 
 ```java
-import io.agentscope.extensions.mongodb.state.MongoAgentStateStore;
+import io.deepscope.extensions.mongodb.state.MongoAgentStateStore;
 
 AgentStateStore store = MongoAgentStateStore.builder()
     .mongoClient(mongoClient)
-    .databaseName("agentscope")
-    .collectionName("agentscope_sessions")
+    .databaseName("deepscope")
+    .collectionName("deepscope_sessions")
     .build();
 ```
 
@@ -68,9 +68,9 @@ AgentStateStore store = MongoAgentStateStore.builder()
 工作区文件系统 KV 存储，供 `RemoteFilesystemSpec` 使用。通过复合 `(namespace, key)` 索引上的范围查询实现前缀匹配——与 `InMemoryStore` 和 `PostgresBaseStore` 行为一致。
 
 ```java
-import io.agentscope.extensions.mongodb.store.MongoBaseStore;
+import io.deepscope.extensions.mongodb.store.MongoBaseStore;
 
-BaseStore store = new MongoBaseStore(mongoClient.getDatabase("agentscope"), "agentscope_base");
+BaseStore store = new MongoBaseStore(mongoClient.getDatabase("deepscope"), "deepscope_base");
 ```
 
 - 命名空间路径使用 `\u001F`（ASCII Unit Separator）作为段分隔符，带 trailing separator 实现前缀匹配。
@@ -81,9 +81,9 @@ BaseStore store = new MongoBaseStore(mongoClient.getDatabase("agentscope"), "age
 沙箱快照存储为 BSON Binary，集合上建有 `createdAt` 的 30 天 TTL 索引。与会话 TTL 对齐，确保快照不会先于会话过期。
 
 ```java
-import io.agentscope.extensions.mongodb.snapshot.MongoSnapshotSpec;
+import io.deepscope.extensions.mongodb.snapshot.MongoSnapshotSpec;
 
-SandboxSnapshotSpec spec = new MongoSnapshotSpec(mongoClient, "agentscope");
+SandboxSnapshotSpec spec = new MongoSnapshotSpec(mongoClient, "deepscope");
 ```
 
 > BSON 文档大小上限 16 MB，快照上限 15 MB。更大工作区建议混合后端（MongoDB 管状态和锁，OSS 管快照）。
@@ -93,11 +93,11 @@ SandboxSnapshotSpec spec = new MongoSnapshotSpec(mongoClient, "agentscope");
 基于 MongoDB 集合的分布式锁，`expiresAt` 上建有 TTL 索引。每次获取锁生成随机 UUID token 用于安全续约和释放——同一 JVM 内两个 guard 实例不会误删对方的锁。
 
 ```java
-import io.agentscope.extensions.mongodb.sandbox.MongoSandboxExecutionGuard;
+import io.deepscope.extensions.mongodb.sandbox.MongoSandboxExecutionGuard;
 
 SandboxExecutionGuard guard = MongoSandboxExecutionGuard.builder(mongoClient)
-    .databaseName("agentscope")
-    .collectionName("agentscope_sandbox_locks")
+    .databaseName("deepscope")
+    .collectionName("deepscope_sandbox_locks")
     .lockTimeout(Duration.ofMinutes(30))
     .leaseTtl(Duration.ofMinutes(30))
     .retryInterval(Duration.ofMillis(500))
@@ -112,10 +112,10 @@ SandboxExecutionGuard guard = MongoSandboxExecutionGuard.builder(mongoClient)
 
 | 集合 | 用途 | TTL | 默认名称 |
 |------|------|-----|---------|
-| 会话 | Agent 状态存储 | `_updated_at` 30 天 | `agentscope_sessions` |
-| 基础存储 | 工作区 KV | — | `agentscope_base` |
-| 快照 | 沙箱 tar 归档 | `createdAt` 30 天 | `agentscope_snapshots` |
-| 沙箱锁 | 分布式锁 | `expiresAt` 即时 | `agentscope_sandbox_locks` |
+| 会话 | Agent 状态存储 | `_updated_at` 30 天 | `deepscope_sessions` |
+| 基础存储 | 工作区 KV | — | `deepscope_base` |
+| 快照 | 沙箱 tar 归档 | `createdAt` 30 天 | `deepscope_snapshots` |
+| 沙箱锁 | 分布式锁 | `expiresAt` 即时 | `deepscope_sandbox_locks` |
 
 所有集合名集中在 `MongoConstants` 中管理，可按组件覆盖。
 

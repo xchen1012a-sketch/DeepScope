@@ -3,15 +3,15 @@ title: Redis
 zh_link: /v2/zh/integration/distributed/redis
 ---
 
-`agentscope-extensions-redis` provides full-stack Redis distributed storage — the recommended store for multi-replica production deployments.
+`deepscope-extensions-redis` provides full-stack Redis distributed storage — the recommended store for multi-replica production deployments.
 
 ## Dependency
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-redis</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-redis</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -20,7 +20,7 @@ The module does not force a specific Redis client — import whichever you use (
 ## One-Line Setup
 
 ```java
-import io.agentscope.extensions.redis.RedisDistributedStore;
+import io.deepscope.extensions.redis.RedisDistributedStore;
 
 JedisPooled jedis = new JedisPooled("redis://localhost:6379");
 DistributedStore store = RedisDistributedStore.fromJedis(jedis);
@@ -45,7 +45,7 @@ DistributedStore store = RedisDistributedStore.fromJedis(jedis, "prod:");
 Agent state persisted to Redis. Supports Jedis / Lettuce / Redisson.
 
 ```java
-import io.agentscope.extensions.redis.state.RedisAgentStateStore;
+import io.deepscope.extensions.redis.state.RedisAgentStateStore;
 
 // Jedis
 AgentStateStore store = RedisAgentStateStore.builder()
@@ -71,7 +71,7 @@ AgentStateStore store = RedisAgentStateStore.builder()
 Workspace filesystem KV storage for `RemoteFilesystemSpec`.
 
 ```java
-import io.agentscope.extensions.redis.store.RedisStore;
+import io.deepscope.extensions.redis.store.RedisStore;
 
 BaseStore store = new RedisStore(jedis);
 BaseStore store = new RedisStore(jedis, "myapp:store:");
@@ -84,7 +84,7 @@ Concurrency-safe: `put` / `putIfVersion` use Lua scripts for atomicity.
 Sandbox snapshots stored as Redis binary keys. Best for small workspaces + short TTL.
 
 ```java
-import io.agentscope.extensions.redis.snapshot.RedisSnapshotSpec;
+import io.deepscope.extensions.redis.snapshot.RedisSnapshotSpec;
 
 SandboxSnapshotSpec spec = new RedisSnapshotSpec(jedis, "myapp:snapshot:", 3600);
 ```
@@ -94,7 +94,7 @@ SandboxSnapshotSpec spec = new RedisSnapshotSpec(jedis, "myapp:snapshot:", 3600)
 Redis `SET NX PX` lease-based distributed lock for multi-replica sandbox concurrency control.
 
 ```java
-import io.agentscope.extensions.redis.sandbox.RedisSandboxExecutionGuard;
+import io.deepscope.extensions.redis.sandbox.RedisSandboxExecutionGuard;
 
 SandboxExecutionGuard guard = RedisSandboxExecutionGuard.builder(jedis)
     .keyPrefix("myapp:guard:")

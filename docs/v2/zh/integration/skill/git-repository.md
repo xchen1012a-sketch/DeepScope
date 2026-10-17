@@ -3,7 +3,7 @@ title: Git 技能仓库
 en_link: /v2/en/integration/skill/git-repository
 ---
 
-`agentscope-extensions-skill-git-repository` 把一个远程 Git 仓库当作技能仓库：每次读取时做轻量的 remote ref 检查，只在远端 HEAD 变化时才真正 pull，平时几乎零开销。
+`deepscope-extensions-skill-git-repository` 把一个远程 Git 仓库当作技能仓库：每次读取时做轻量的 remote ref 检查，只在远端 HEAD 变化时才真正 pull，平时几乎零开销。
 
 ## 何时使用
 
@@ -15,9 +15,9 @@ en_link: /v2/en/integration/skill/git-repository
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-skill-git-repository</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-skill-git-repository</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -26,12 +26,12 @@ en_link: /v2/en/integration/skill/git-repository
 ## 快速上手
 
 ```java
-import io.agentscope.core.skill.repository.GitSkillRepository;
-import io.agentscope.core.skill.AgentSkill;
+import io.deepscope.core.skill.repository.GitSkillRepository;
+import io.deepscope.core.skill.AgentSkill;
 
 // 公开仓库 + 默认分支，使用临时目录
 GitSkillRepository repo = new GitSkillRepository(
-    "https://github.com/agentscope/skills.git"
+    "https://github.com/deepscope/skills.git"
 );
 
 // 取出全部技能注册到 Toolkit
@@ -46,10 +46,10 @@ Runtime.getRuntime().addShutdownHook(new Thread(repo::close));
 
 ```java
 GitSkillRepository repo = new GitSkillRepository(
-    "https://github.com/agentscope/skills.git",
+    "https://github.com/deepscope/skills.git",
     "develop",                   // 分支
     Path.of("/var/skills/repo"), // 本地路径（null = 临时目录）
-    "agentscope-public",         // source 标识（在 Toolkit 里能看到）
+    "deepscope-public",         // source 标识（在 Toolkit 里能看到）
     true                         // autoSync = true，每次读自动检查并 pull
 );
 ```

@@ -9,8 +9,8 @@ en_link: /v1/en/blogs/index
 
 | 文章 | 说明 |
 |------|------|
-| [首个Harness Framework发布 -- 把OpenClaw的「持续进化」体验，装进企业级的安全边界。](/v1/zh/blogs/agentscope-v1-harness) | AgentScope Java 1.1 与 Harness 能力概览、设计动机与落地实践（长文）。 |
-| [AgentScope Builder 正式发布 —— 把 Claw 的「自我进化」，装进可被整个团队共用的平台](/v1/zh/blogs/agentscope-v1-builder) | claw 的多租户、可分布式版本：用户隔离、Agent 共享、CompositeFilesystem 三种部署模式与 Docker Sandbox。 |
+| [首个Harness Framework发布 -- 把OpenClaw的「持续进化」体验，装进企业级的安全边界。](/v1/zh/blogs/deepscope-v1-harness) | DeepScope Java 1.1 与 Harness 能力概览、设计动机与落地实践（长文）。 |
+| [DeepScope Builder 正式发布 —— 把 Claw 的「自我进化」，装进可被整个团队共用的平台](/v1/zh/blogs/deepscope-v1-builder) | claw 的多租户、可分布式版本：用户隔离、Agent 共享、CompositeFilesystem 三种部署模式与 Docker Sandbox。 |
 
 
 <Tip>

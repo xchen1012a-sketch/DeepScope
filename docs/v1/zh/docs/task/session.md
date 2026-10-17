@@ -19,8 +19,8 @@ Session 支持 Agent 状态的持久化存储和恢复，让对话能够跨应�
 ## 快速开始
 
 ```java
-import io.agentscope.core.session.JsonSession;
-import io.agentscope.core.session.Session;
+import io.deepscope.core.session.JsonSession;
+import io.deepscope.core.session.Session;
 import java.nio.file.Path;
 
 // 1. 创建组件
@@ -32,7 +32,7 @@ ReActAgent agent = ReActAgent.builder()
     .build();
 
 // 2. 创建 Session 并加载已有会话
-Path sessionPath = Path.of(System.getProperty("user.home"), ".agentscope", "sessions");
+Path sessionPath = Path.of(System.getProperty("user.home"), ".deepscope", "sessions");
 Session session = new JsonSession(sessionPath);
 agent.loadIfExists(session, "userId");
 
@@ -47,7 +47,7 @@ agent.saveTo(session, "userId");
 
 ## Session 实现
 
-AgentScope 提供两种 Session 实现：
+DeepScope 提供两种 Session 实现：
 
 | 实现 | 持久化 | 适用场景 |
 |------|--------|---------|
@@ -59,7 +59,7 @@ AgentScope 提供两种 Session 实现：
 将状态以 JSON 文件存储在文件系统中。
 
 ```java
-import io.agentscope.core.session.JsonSession;
+import io.deepscope.core.session.JsonSession;
 
 // 创建 JsonSession
 Path sessionPath = Path.of("/path/to/sessions");
@@ -88,7 +88,7 @@ agent.loadFrom(session, "user123");
 将状态存储在内存中，适合测试和单进程临时场景。
 
 ```java
-import io.agentscope.core.session.InMemorySession;
+import io.deepscope.core.session.InMemorySession;
 
 // 创建内存会话（通常作为单例使用）
 InMemorySession session = new InMemorySession();
@@ -132,7 +132,7 @@ agent.loadFrom(session, "sessionId");
 ### Session 管理操作
 
 ```java
-import io.agentscope.core.state.SimpleSessionKey;
+import io.deepscope.core.state.SimpleSessionKey;
 
 // 检查会话是否存在
 boolean exists = session.exists(SimpleSessionKey.of("sessionId"));
@@ -149,13 +149,13 @@ Set<SessionKey> keys = session.listSessionKeys();
 ## 完整示例
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.core.session.JsonSession;
-import io.agentscope.core.session.Session;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.core.session.JsonSession;
+import io.deepscope.core.session.Session;
 import java.nio.file.Path;
 
 public class SessionExample {
@@ -170,7 +170,7 @@ public class SessionExample {
 
         // 设置会话
         String sessionId = "user_session_001";
-        Path sessionPath = Path.of(System.getProperty("user.home"), ".agentscope", "sessions");
+        Path sessionPath = Path.of(System.getProperty("user.home"), ".deepscope", "sessions");
         Session session = new JsonSession(sessionPath);
 
         // 加载已有会话（如存在）
@@ -201,9 +201,9 @@ public class SessionExample {
 实现 `Session` 接口创建自定义存储后端：
 
 ```java
-import io.agentscope.core.session.Session;
-import io.agentscope.core.state.SessionKey;
-import io.agentscope.core.state.State;
+import io.deepscope.core.session.Session;
+import io.deepscope.core.state.SessionKey;
+import io.deepscope.core.state.State;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -322,7 +322,7 @@ sessions/
 
 ```bash
 # 删除旧的会话文件
-rm -rf ~/.agentscope/sessions/*.json
+rm -rf ~/.deepscope/sessions/*.json
 ```
 
 #### 方案二：手动迁移
@@ -331,9 +331,9 @@ rm -rf ~/.agentscope/sessions/*.json
 
 ```java
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.session.JsonSession;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.session.JsonSession;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -401,7 +401,7 @@ if (Files.exists(newDir)) {
 
 **旧表结构**：
 ```sql
-CREATE TABLE agentscope_sessions (
+CREATE TABLE deepscope_sessions (
     session_id VARCHAR(255) PRIMARY KEY,
     state_data JSON NOT NULL,
     created_at TIMESTAMP,
@@ -411,7 +411,7 @@ CREATE TABLE agentscope_sessions (
 
 **新表结构**：
 ```sql
-CREATE TABLE agentscope_sessions (
+CREATE TABLE deepscope_sessions (
     session_id VARCHAR(255) NOT NULL,
     state_key VARCHAR(255) NOT NULL,
     item_index INT NOT NULL DEFAULT 0,
@@ -430,12 +430,12 @@ CREATE TABLE agentscope_sessions (
 
 1. **备份旧数据**：
 ```sql
-CREATE TABLE agentscope_sessions_backup AS SELECT * FROM agentscope_sessions;
+CREATE TABLE deepscope_sessions_backup AS SELECT * FROM deepscope_sessions;
 ```
 
 2. **删除旧表**：
 ```sql
-DROP TABLE agentscope_sessions;
+DROP TABLE deepscope_sessions;
 ```
 
 3. **重新创建**（使用 `createIfNotExist=true` 自动创建）：
@@ -451,21 +451,21 @@ MysqlSession session = new MysqlSession(dataSource, true);
 
 **旧结构**：
 ```
-agentscope:session:{sessionId}  -> JSON string (所有状态)
+deepscope:session:{sessionId}  -> JSON string (所有状态)
 ```
 
 **新结构**：
 ```
-agentscope:session:{sessionId}:{stateKey}       -> JSON string (单值状态)
-agentscope:session:{sessionId}:{stateKey}:list  -> Redis List (列表状态)
-agentscope:session:{sessionId}:_keys            -> Redis Set (状态索引)
+deepscope:session:{sessionId}:{stateKey}       -> JSON string (单值状态)
+deepscope:session:{sessionId}:{stateKey}:list  -> Redis List (列表状态)
+deepscope:session:{sessionId}:_keys            -> Redis Set (状态索引)
 ```
 
 **迁移步骤**：
 
 1. **清除旧数据**（如果不需要保留）：
 ```bash
-redis-cli KEYS "agentscope:session:*" | xargs redis-cli DEL
+redis-cli KEYS "deepscope:session:*" | xargs redis-cli DEL
 ```
 
 2. 新数据会自动使用新结构存储。
@@ -474,6 +474,6 @@ redis-cli KEYS "agentscope:session:*" | xargs redis-cli DEL
 
 ## 更多资源
 
-- **完整示例**: [SessionExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/SessionExample.java)
+- **完整示例**: [SessionExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/SessionExample.java)
 - **State 文档**: [state.md](/v1/zh/docs/task/state)
 - **Agent 配置**: [agent-config.md](/v1/zh/docs/task/agent-config)

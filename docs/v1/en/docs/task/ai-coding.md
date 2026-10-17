@@ -3,48 +3,48 @@ title: Coding with AI
 zh_link: /v1/zh/docs/task/ai-coding
 ---
 
-AgentScope Java documentation supports the [`llms.txt` standard](https://llmstxt.org/), providing a machine-readable index optimized for Large Language Models. This allows you to use the documentation as context in your AI-powered development environment.
+DeepScope Java documentation supports the [`llms.txt` standard](https://llmstxt.org/), providing a machine-readable index optimized for Large Language Models. This allows you to use the documentation as context in your AI-powered development environment.
 
 ## What is llms.txt?
 
 `llms.txt` is a standardized text file that acts as a map for LLMs, listing the most important documentation pages and their descriptions. This helps AI tools understand the structure of the documentation and retrieve relevant information.
 
-AgentScope provides the following files:
+DeepScope provides the following files:
 
 | File | Best For | URL |
 |------|----------|-----|
-| `v2/llms.txt` | New projects using AgentScope Java 2.0 | `https://java.agentscope.io/v2/llms.txt` |
-| `v2/llms-full.txt` | Single-file AgentScope Java 2.0 context | `https://java.agentscope.io/v2/llms-full.txt` |
-| `v1/llms.txt` | Existing AgentScope Java 1.x projects | `https://java.agentscope.io/v1/llms.txt` |
-| `v1/llms-full.txt` | Single-file AgentScope Java 1.x context | `https://java.agentscope.io/v1/llms-full.txt` |
+| `v2/llms.txt` | New projects using DeepScope Java 2.0 | `https://github.com/xchen1012a-sketch/DeepScope/v2/llms.txt` |
+| `v2/llms-full.txt` | Single-file DeepScope Java 2.0 context | `https://github.com/xchen1012a-sketch/DeepScope/v2/llms-full.txt` |
+| `v1/llms.txt` | Existing DeepScope Java 1.x projects | `https://github.com/xchen1012a-sketch/DeepScope/v1/llms.txt` |
+| `v1/llms-full.txt` | Single-file DeepScope Java 1.x context | `https://github.com/xchen1012a-sketch/DeepScope/v1/llms-full.txt` |
 
 ## Development Tools
 
 ### Claude Code
 
-[Claude Code](https://docs.anthropic.com/en/docs/claude-code) can be configured to query the AgentScope documentation by adding an MCP server.
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code) can be configured to query the DeepScope documentation by adding an MCP server.
 
 **Installation:**
 
 ```bash
-claude mcp add agentscope-docs -- uvx --from mcpdoc mcpdoc --urls AgentScopeJava:https://java.agentscope.io/v2/llms.txt
+claude mcp add deepscope-docs -- uvx --from mcpdoc mcpdoc --urls DeepScopeJava:https://github.com/xchen1012a-sketch/DeepScope/v2/llms.txt
 ```
 
 **Usage:**
 
-Once installed, you can ask questions about AgentScope directly in Claude Code:
+Once installed, you can ask questions about DeepScope directly in Claude Code:
 
-> How do I create a tool with AgentScope Java?
+> How do I create a tool with DeepScope Java?
 
 ### Cursor
 
-[Cursor](https://cursor.com/) IDE can be configured to access the AgentScope documentation in two ways.
+[Cursor](https://cursor.com/) IDE can be configured to access the DeepScope documentation in two ways.
 
 **Method 1: Docs Feature (Recommended)**
 
 1. Open **Cursor Settings** -> **Features** -> **Docs**
 2. Click **+ Add new Doc**
-3. Add URL: `https://java.agentscope.io/v2/llms-full.txt`
+3. Add URL: `https://github.com/xchen1012a-sketch/DeepScope/v2/llms-full.txt`
 
 **Method 2: MCP Server**
 
@@ -55,11 +55,11 @@ Once installed, you can ask questions about AgentScope directly in Claude Code:
 ```json
 {
   "mcpServers": {
-    "agentscope-docs": {
+    "deepscope-docs": {
       "command": "uvx",
       "args": [
         "--from", "mcpdoc", "mcpdoc",
-        "--urls", "AgentScopeJava:https://java.agentscope.io/v2/llms.txt"
+        "--urls", "DeepScopeJava:https://github.com/xchen1012a-sketch/DeepScope/v2/llms.txt"
       ]
     }
   }
@@ -70,7 +70,7 @@ Once installed, you can ask questions about AgentScope directly in Claude Code:
 
 Once configured, you can prompt the coding agent:
 
-> Use the AgentScope docs to build a ReActAgent with a weather tool.
+> Use the DeepScope docs to build a ReActAgent with a weather tool.
 
 ### Windsurf
 
@@ -85,11 +85,11 @@ Once configured, you can prompt the coding agent:
 ```json
 {
   "mcpServers": {
-    "agentscope-docs": {
+    "deepscope-docs": {
       "command": "uvx",
       "args": [
         "--from", "mcpdoc", "mcpdoc",
-        "--urls", "AgentScopeJava:https://java.agentscope.io/v2/llms.txt"
+        "--urls", "DeepScopeJava:https://github.com/xchen1012a-sketch/DeepScope/v2/llms.txt"
       ]
     }
   }
@@ -101,7 +101,7 @@ Once configured, you can prompt the coding agent:
 Any tool that supports the `llms.txt` standard or can ingest documentation from a URL can benefit from these files.
 
 **For tools with Docs/Knowledge Base feature:**
-- Add URL: `https://java.agentscope.io/v2/llms-full.txt`
+- Add URL: `https://github.com/xchen1012a-sketch/DeepScope/v2/llms-full.txt`
 
 **For tools with MCP support:**
 - Use the MCP configuration template above with `mcpdoc`
@@ -110,7 +110,7 @@ Any tool that supports the `llms.txt` standard or can ingest documentation from 
 
 MCP configurations require [`uv`](https://docs.astral.sh/uv/) to be installed, as they use `uvx` to run the documentation server.
 
-For AgentScope Java 1.x projects, use the v1 URLs instead:
+For DeepScope Java 1.x projects, use the v1 URLs instead:
 
-- `https://java.agentscope.io/v1/llms.txt`
-- `https://java.agentscope.io/v1/llms-full.txt`
+- `https://github.com/xchen1012a-sketch/DeepScope/v1/llms.txt`
+- `https://github.com/xchen1012a-sketch/DeepScope/v1/llms-full.txt`

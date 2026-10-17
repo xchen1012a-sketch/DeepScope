@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package io.agentscope.examples.jev;
+package io.deepscope.examples.jev;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.extensions.judge.jev.JevClient;
-import io.agentscope.extensions.judge.jev.JevException;
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.JevRetryPolicy;
-import io.agentscope.extensions.judge.jev.SystemOneRequest;
-import io.agentscope.extensions.judge.jev.SystemOneResult;
-import io.agentscope.extensions.judge.jev.Usage;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserNavigator;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession.Action;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession.Link;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession.Permit;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession.Receipt;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession.Scope;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession.Snapshot;
-import io.agentscope.extensions.judge.jev.browser.JevBrowserSession.Source;
-import io.agentscope.extensions.judge.jev.evaluation.JevTextBackend;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.extensions.judge.jev.JevClient;
+import io.deepscope.extensions.judge.jev.JevException;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.JevRetryPolicy;
+import io.deepscope.extensions.judge.jev.SystemOneRequest;
+import io.deepscope.extensions.judge.jev.SystemOneResult;
+import io.deepscope.extensions.judge.jev.Usage;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserNavigator;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession.Action;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession.Link;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession.Permit;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession.Receipt;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession.Scope;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession.Snapshot;
+import io.deepscope.extensions.judge.jev.browser.JevBrowserSession.Source;
+import io.deepscope.extensions.judge.jev.evaluation.JevTextBackend;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;

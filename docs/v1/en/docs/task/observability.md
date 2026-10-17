@@ -3,7 +3,7 @@ title: Observability & Studio
 zh_link: /v1/zh/docs/task/observability
 ---
 
-AgentScope Java provides multiple mechanisms for observing and debugging agent execution:
+DeepScope Java provides multiple mechanisms for observing and debugging agent execution:
 
 - **Studio (Visual Debugging)**: Real-time visualization and interactive debugging through a Web UI
 - **OpenTelemetry Tracing**: Export trace data to external observability platforms (e.g., Langfuse, Jaeger) via the OTLP protocol
@@ -31,14 +31,14 @@ Studio provides a Web interface for real-time visualization of Agent execution p
 
 Start from source code
 ```bash
-git clone https://github.com/agentscope-ai/agentscope-studio
-cd agentscope-studio
+git clone https://github.com/deepscope-ai/deepscope-studio
+cd deepscope-studio
 npm install
 npm run dev
 ```
 Install via npm
 ```bash
-npm install -g @agentscope/studio  # or npm install @agentscope/studio
+npm install -g @deepscope/studio  # or npm install @deepscope/studio
 as_studio
 ```
 Studio will run at http://localhost:5173 (frontend dev server)
@@ -49,9 +49,9 @@ Studio will run at http://localhost:5173 (frontend dev server)
 #### 2. Java Application Integration
 
 ```java
-import io.agentscope.core.studio.StudioManager;
-import io.agentscope.core.studio.StudioMessageHook;
-import io.agentscope.core.studio.StudioUserAgent;
+import io.deepscope.core.studio.StudioManager;
+import io.deepscope.core.studio.StudioMessageHook;
+import io.deepscope.core.studio.StudioUserAgent;
 
 // Initialize Studio connection
 StudioManager.init()
@@ -75,7 +75,7 @@ agent.call(msg).block();
 StudioManager.shutdown();
 ```
 
-#### 3. View Trace Information in AgentScope Studio
+#### 3. View Trace Information in DeepScope Studio
 
 ![Trace Information](/imgs/studioServer-trace.png)
 
@@ -86,7 +86,7 @@ StudioManager.shutdown();
 Receive user input through Web UI.
 
 ```java
-import io.agentscope.core.studio.StudioUserAgent;
+import io.deepscope.core.studio.StudioUserAgent;
 
 // Create user Agent
 StudioUserAgent user = StudioUserAgent.builder()
@@ -124,14 +124,14 @@ while (true) {
 ### Complete Example
 
 ```java
-package io.agentscope.examples;
+package io.deepscope.examples;
 
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.message.Msg;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.studio.StudioManager;
-import io.agentscope.core.studio.StudioMessageHook;
-import io.agentscope.core.studio.StudioUserAgent;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.message.Msg;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.studio.StudioManager;
+import io.deepscope.core.studio.StudioMessageHook;
+import io.deepscope.core.studio.StudioUserAgent;
 
 public class StudioExample {
 
@@ -241,15 +241,15 @@ ReActAgent agent2 = ReActAgent.builder()
 
 ## OpenTelemetry Tracing
 
-AgentScope Java integrates with OpenTelemetry to provide distributed tracing for agent execution. You can export traces to any platform that supports the OTLP protocol, such as Langfuse.
+DeepScope Java integrates with OpenTelemetry to provide distributed tracing for agent execution. You can export traces to any platform that supports the OTLP protocol, such as Langfuse.
 
 ### Quick Start
 
 Use `TelemetryTracer` and register it via `TracerRegistry` to enable automatic tracing for all agent calls, model calls, and tool executions:
 
 ```java
-import io.agentscope.core.tracing.TracerRegistry;
-import io.agentscope.core.tracing.telemetry.TelemetryTracer;
+import io.deepscope.core.tracing.TracerRegistry;
+import io.deepscope.core.tracing.telemetry.TelemetryTracer;
 
 // Register a TelemetryTracer with an OTLP endpoint
 TracerRegistry.register(
@@ -290,8 +290,8 @@ No additional code is needed — tracing is applied globally.
 [Langfuse](https://langfuse.com/) is an open-source observability platform that supports the OpenTelemetry protocol. You can send traces to Langfuse Cloud or a self-hosted instance.
 
 ```java
-import io.agentscope.core.tracing.TracerRegistry;
-import io.agentscope.core.tracing.telemetry.TelemetryTracer;
+import io.deepscope.core.tracing.TracerRegistry;
+import io.deepscope.core.tracing.telemetry.TelemetryTracer;
 import java.util.Base64;
 
 // Encode your Langfuse API key as Base64
@@ -328,6 +328,6 @@ TracerRegistry.register(
 
 ## More Resources
 
-- **Studio Example**: [StudioExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/advanced/src/main/java/io/agentscope/examples/advanced/StudioExample.java)
-- **Studio Repository**: https://github.com/agentscope-ai/agentscope-studio
+- **Studio Example**: [StudioExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/advanced/src/main/java/io/deepscope/examples/advanced/StudioExample.java)
+- **Studio Repository**: https://github.com/deepscope-ai/deepscope-studio
 - **Hook Documentation**: [hook.md](/v1/en/docs/task/hook)

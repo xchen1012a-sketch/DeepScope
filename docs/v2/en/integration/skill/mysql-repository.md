@@ -5,7 +5,7 @@ zh_link: /v2/zh/integration/skill/mysql-repository
 
 
 > **Deprecated**: migrate to [`JdbcAgentSkillRepository`](/v2/en/integration/distributed/jdbc) in the unified JDBC module — one implementation for MySQL, PostgreSQL, H2, SQLite, and future dialects. Tables from this module work as-is; pre-`metadata_json` tables need one ALTER first. See the [migration notes](/v2/en/integration/distributed/jdbc#migrating-from-legacy-modules).
-`agentscope-extensions-skill-mysql-repository` stores skills in MySQL with full CRUD: edit and save in your admin console / business system, and the Agent picks up changes immediately on the next read.
+`deepscope-extensions-skill-mysql-repository` stores skills in MySQL with full CRUD: edit and save in your admin console / business system, and the Agent picks up changes immediately on the next read.
 
 ## When to use
 
@@ -17,9 +17,9 @@ zh_link: /v2/zh/integration/skill/mysql-repository
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-skill-mysql-repository</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-skill-mysql-repository</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -27,11 +27,11 @@ zh_link: /v2/zh/integration/skill/mysql-repository
 
 ```java
 import com.zaxxer.hikari.HikariDataSource;
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.skill.repository.mysql.MysqlSkillRepository;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.skill.repository.mysql.MysqlSkillRepository;
 
 HikariDataSource ds = new HikariDataSource();
-ds.setJdbcUrl("jdbc:mysql://localhost:3306/agentscope");
+ds.setJdbcUrl("jdbc:mysql://localhost:3306/deepscope");
 ds.setUsername("root");
 ds.setPassword("***");
 
@@ -50,7 +50,7 @@ ReActAgent agent = ReActAgent.builder()
 When `createIfNotExist=true`, the following tables are created:
 
 ```sql
-CREATE TABLE IF NOT EXISTS agentscope_skills (
+CREATE TABLE IF NOT EXISTS deepscope_skills (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
     description TEXT NOT NULL,
@@ -61,24 +61,24 @@ CREATE TABLE IF NOT EXISTS agentscope_skills (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS agentscope_skill_resources (
+CREATE TABLE IF NOT EXISTS deepscope_skill_resources (
     id BIGINT NOT NULL,
     resource_path VARCHAR(500) NOT NULL,
     resource_content LONGTEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id, resource_path),
-    FOREIGN KEY (id) REFERENCES agentscope_skills(id) ON DELETE CASCADE
+    FOREIGN KEY (id) REFERENCES deepscope_skills(id) ON DELETE CASCADE
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-- `agentscope_skills`: the skills themselves; `name` is unique; `skill_content` stores the full `SKILL.md`.
-- `agentscope_skill_resources`: attached resource files (screenshots, templates, ...) cascaded by `id`.
+- `deepscope_skills`: the skills themselves; `name` is unique; `skill_content` stores the full `SKILL.md`.
+- `deepscope_skill_resources`: attached resource files (screenshots, templates, ...) cascaded by `id`.
 
 ## Compatibility with legacy tables
 
 - If an existing table lacks `metadata_json`, the repository falls back to round-tripping `name` + `description` only. It does not auto-`ALTER TABLE`.
-- To upgrade: run `ALTER TABLE agentscope_skills ADD COLUMN metadata_json LONGTEXT NULL;` yourself.
+- To upgrade: run `ALTER TABLE deepscope_skills ADD COLUMN metadata_json LONGTEXT NULL;` yourself.
 
 ## Custom database / table names
 

@@ -3,7 +3,7 @@ title: Model Context Protocol
 zh_link: /v1/zh/docs/task/mcp
 ---
 
-AgentScope Java provides full support for Model Context Protocol (MCP), enabling agents to connect to external tool servers and use tools from the MCP ecosystem.
+DeepScope Java provides full support for Model Context Protocol (MCP), enabling agents to connect to external tool servers and use tools from the MCP ecosystem.
 
 ## What is MCP?
 
@@ -16,7 +16,7 @@ MCP is a standard protocol for connecting AI applications to external data sourc
 
 ## Transport Types
 
-AgentScope supports three MCP transport mechanisms:
+DeepScope supports three MCP transport mechanisms:
 
 | Transport | Use Case | Connection | State |
 |-----------|----------|------------|-------|
@@ -29,8 +29,8 @@ AgentScope supports three MCP transport mechanisms:
 ### 1. Connect to MCP Server
 
 ```java
-import io.agentscope.core.tool.mcp.McpClientBuilder;
-import io.agentscope.core.tool.mcp.McpClientWrapper;
+import io.deepscope.core.tool.mcp.McpClientBuilder;
+import io.deepscope.core.tool.mcp.McpClientWrapper;
 
 // StdIO transport - connect to local MCP server
 McpClientWrapper mcpClient = McpClientBuilder.create("filesystem-mcp")
@@ -42,7 +42,7 @@ McpClientWrapper mcpClient = McpClientBuilder.create("filesystem-mcp")
 ### 2. Register MCP Tools
 
 ```java
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.core.tool.Toolkit;
 
 Toolkit toolkit = new Toolkit();
 
@@ -53,8 +53,8 @@ toolkit.registerMcpClient(mcpClient).block();
 ### 3. Configure MCP in Agent
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.InMemoryMemory;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.InMemoryMemory;
 
 ReActAgent agent = ReActAgent.builder()
         .name("Assistant")
@@ -324,24 +324,24 @@ toolkit.removeMcpClient("filesystem-mcp").block();
 
 ## Higress AI Gateway Integration
 
-AgentScope provides a Higress AI Gateway extension that enables unified access to MCP tools through the Higress gateway, with semantic search capabilities to automatically select the most suitable tools.
+DeepScope provides a Higress AI Gateway extension that enables unified access to MCP tools through the Higress gateway, with semantic search capabilities to automatically select the most suitable tools.
 
 ### Add Dependency
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-higress</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-higress</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ### Basic Usage
 
 ```java
-import io.agentscope.extensions.higress.HigressMcpClientBuilder;
-import io.agentscope.extensions.higress.HigressMcpClientWrapper;
-import io.agentscope.extensions.higress.HigressToolkit;
+import io.deepscope.extensions.higress.HigressMcpClientBuilder;
+import io.deepscope.extensions.higress.HigressMcpClientWrapper;
+import io.deepscope.extensions.higress.HigressToolkit;
 
 // 1. Create Higress MCP client
 HigressMcpClientWrapper higressClient = HigressMcpClientBuilder
@@ -374,15 +374,15 @@ HigressMcpClientWrapper higressClient = HigressMcpClientBuilder
 ### Higress Example
 
 See the complete Higress example:
-- `agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/HigressToolExample.java`
+- `deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/HigressToolExample.java`
 
 ## Complete Example
 
 See the complete MCP example:
-- `agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/McpToolExample.java`
+- `deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/McpToolExample.java`
 
 Run the example:
 ```bash
-cd agentscope-examples/documentation/quickstart
-mvn exec:java -Dexec.mainClass="io.agentscope.examples.quickstart.McpToolExample"
+cd deepscope-examples/documentation/quickstart
+mvn exec:java -Dexec.mainClass="io.deepscope.examples.quickstart.McpToolExample"
 ```

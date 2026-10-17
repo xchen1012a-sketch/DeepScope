@@ -10,7 +10,7 @@
 - 发现缓存按模型类型、协议、地址和密钥摘要隔离，最多128个连接、5分钟有效。滚动分页携带发现快照，缓存过期或重新发现时返回冲突并从第一页重载，避免旧结果与新结果混排。
 - 模型ID下拉使用服务端分页：首次30条，滚动接近底部加载下一页；输入关键词重置为第一页；显示预设建议、已发现结果、部分结果和总匹配数，不把前30条冒充完整目录。
 - 滚动分页请求带发现快照；快照过期或重新获取后返回 `model_options_changed`，前端丢弃旧页并从第一页重新加载，不把两批结果拼在一起。
-- 服务商矩阵由原有21项扩展为29项，增加已核实来源的智谱/Z.ai、StepFun常规、Gemini OpenAI兼容、xAI、火山常规/Coding、百度千帆等，并保留普通API/Coding/Token/Step Plan的独立地址。详见 [model-provider-discovery-matrix-2026-10-16.md](/Users/agent/agentscope-java/technical-advisor-app/docs/model-provider-discovery-matrix-2026-10-16.md)。
+- 服务商矩阵由原有21项扩展为29项，增加已核实来源的智谱/Z.ai、StepFun常规、Gemini OpenAI兼容、xAI、火山常规/Coding、百度千帆等，并保留普通API/Coding/Token/Step Plan的独立地址。详见 [model-provider-discovery-matrix-2026-10-16.md](/Users/agent/deepscope-java/technical-advisor-app/docs/model-provider-discovery-matrix-2026-10-16.md)。
 
 ## 验证
 

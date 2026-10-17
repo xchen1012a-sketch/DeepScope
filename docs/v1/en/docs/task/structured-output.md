@@ -123,5 +123,5 @@ try {
 
 ## More Resources
 
-- **Complete Example**: [StructuredOutputExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/StructuredOutputExample.java)
+- **Complete Example**: [StructuredOutputExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/StructuredOutputExample.java)
 - **Agent Configuration**: [agent-config.md](/v1/en/docs/task/agent-config)

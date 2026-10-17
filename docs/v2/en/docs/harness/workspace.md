@@ -72,7 +72,7 @@ For multi-user applications, share a Builder and build an Agent per request. Con
 ## Workspace directory layout
 
 ```
-.agentscope/workspace/
+.deepscope/workspace/
 ├── AGENTS.md                    ← static: persona + behavior rules
 ├── MEMORY.md                    ← long-term: curated long-term facts
 ├── tools.json                   ← static: MCP servers + tool allow/deny (optional)
@@ -92,7 +92,7 @@ For multi-user applications, share a Builder and build an Agent per request. Con
         └── <sessionId>.json
 ```
 
-> **This tree is a *logical* layout, not a fixed on-disk path.** It is drawn as `.agentscope/workspace/...`, but that is only the default local placement. The exact same layout can physically live on **local disk**, in a **remote distributed store** (Redis / JDBC / OSS, via `RemoteFilesystemSpec`), or be **projected into a sandbox container** (`SandboxFilesystemSpec`) — the relative paths below are identical across all three, only the backing store changes, and your agent code does not. Pick the backing store with [Filesystem](/v2/en/docs/harness/filesystem); everything in this document is written against the logical layout.
+> **This tree is a *logical* layout, not a fixed on-disk path.** It is drawn as `.deepscope/workspace/...`, but that is only the default local placement. The exact same layout can physically live on **local disk**, in a **remote distributed store** (Redis / JDBC / OSS, via `RemoteFilesystemSpec`), or be **projected into a sandbox container** (`SandboxFilesystemSpec`) — the relative paths below are identical across all three, only the backing store changes, and your agent code does not. Pick the backing store with [Filesystem](/v2/en/docs/harness/filesystem); everything in this document is written against the logical layout.
 
 **Only `AGENTS.md` is something you actually need to write** (skip it and the agent still runs — you just lose the persona injection). Everything else appears as you turn on the matching capability:
 
@@ -108,7 +108,7 @@ For multi-user applications, share a Builder and build an Agent per request. Con
 HarnessAgent agent = HarnessAgent.builder()
     .name("MyAgent")
     .model(model)
-    .workspace(Paths.get(".agentscope/workspace"))   // omit → see resolution order below
+    .workspace(Paths.get(".deepscope/workspace"))   // omit → see resolution order below
     .additionalContextFile("SOUL.md")                // any workspace-relative path, inlined in full
     .additionalContextFile("PREFERENCES.md")
     .maxContextTokens(8000)                          // MEMORY injection budget
@@ -123,22 +123,22 @@ the following priority (highest first):
 | Priority | Source | Notes |
 |----------|--------|-------|
 | 1 | `workspace(Path)` / `workspace(String)` | Explicit builder value, overrides everything |
-| 2 | `agentscope.workspace` system property | `-Dagentscope.workspace=/data/workspace` |
-| 3 | `AGENTSCOPE_WORKSPACE` environment variable | `export AGENTSCOPE_WORKSPACE=/data/workspace` |
-| 4 | Default | `${user.dir}/.agentscope/workspace` |
+| 2 | `deepscope.workspace` system property | `-Ddeepscope.workspace=/data/workspace` |
+| 3 | `DEEPSCOPE_WORKSPACE` environment variable | `export DEEPSCOPE_WORKSPACE=/data/workspace` |
+| 4 | Default | `${user.dir}/.deepscope/workspace` |
 
 The system property and environment variable exist mainly for **image packaging / container
 deployment**: keep the path out of application code and inject it at image-build or container-start
 time. For example:
 
 ```dockerfile
-ENV AGENTSCOPE_WORKSPACE=/data/agent-workspace
+ENV DEEPSCOPE_WORKSPACE=/data/agent-workspace
 ```
 
 ```yaml
 # k8s / docker-compose
 env:
-  - name: AGENTSCOPE_WORKSPACE
+  - name: DEEPSCOPE_WORKSPACE
     value: /data/agent-workspace
 ```
 
@@ -305,8 +305,8 @@ In default EVENT_LOG mode, AgentState checkpoints and execution facts live in na
 
 | Data | Storage and recovery |
 | --- | --- |
-| Native history and checkpoints | Reserved local `.agentscope-runtime/` or remote partition, or explicit SessionLogStore; read through APIs |
-| AgentStateStore | LEGACY recovery and explicit migration source; default local root `~/.agentscope/state/<agentId>/` |
+| Native history and checkpoints | Reserved local `.deepscope-runtime/` or remote partition, or explicit SessionLogStore; read through APIs |
+| AgentStateStore | LEGACY recovery and explicit migration source; default local root `~/.deepscope/state/<agentId>/` |
 | Tasks/plans/memory/files | Their Workspace, TaskRepository or sandbox backends; checkpoints do not copy all external content |
 
 ### Agent state and native history
@@ -381,7 +381,7 @@ skills/code-reviewer/
 
 There are four registration layers (low → high priority):
 
-1. `projectGlobalSkillsDir(Path)` — project global, e.g. `~/.agentscope/skills/`
+1. `projectGlobalSkillsDir(Path)` — project global, e.g. `~/.deepscope/skills/`
 2. `skillRepository(...)` — marketplace stores (Git / Nacos / MySQL / classpath)
 3. `workspace/skills/` — workspace shared
 4. `<userId>/skills/` — per-user (overrides all above)
@@ -462,7 +462,7 @@ agents/<agentId>/
     └── <sessionId>.json       ← subagent background task records (taskId → TaskRecord)
 ```
 
-> This tree shows task records. Native Session Log lives in the reserved Filesystem partition: local `.agentscope-runtime/` or remote `__agentscope_session_log_v1__`. Read history with `sessionTranscript()`, `session_history` and `session_list`; legacy JSONL, sessions.json and segmented transcripts are no longer written.
+> This tree shows task records. Native Session Log lives in the reserved Filesystem partition: local `.deepscope-runtime/` or remote `__deepscope_session_log_v1__`. Read history with `sessionTranscript()`, `session_history` and `session_list`; legacy JSONL, sessions.json and segmented transcripts are no longer written.
 
 Share native history, task/file artifacts and sandbox metadata as appropriate across replicas. Configuring shared AgentStateStore alone does not share a local native log. See [Session logs](/v2/en/docs/harness/session-log) and [Filesystem](/v2/en/docs/harness/filesystem).
 

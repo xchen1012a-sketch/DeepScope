@@ -8,7 +8,7 @@ zh_link: /v2/zh/docs/building-blocks/middleware
 
 Agent middleware lets you inject custom logic (logging, tracing, input rewriting, access control, …) at key points in an agent's execution flow without modifying the agent or model code.
 
-In AgentScope Java, you can hook into 6 places — covering everything from the outer reply flow down to the raw model API call:
+In DeepScope Java, you can hook into 6 places — covering everything from the outer reply flow down to the raw model API call:
 
 | Position | Type | Description |
 |----------|------|-------------|
@@ -47,12 +47,12 @@ onAgent/
 
 ## Equipping middleware
 
-AgentScope packs a set of hooks into a single `MiddlewareBase` implementation — one middleware class can implement any subset of the 6 hooks (onion/transformer hooks not implemented default to `next.apply(input)`; notification hooks default to a no-op). Pass the instances to the builder's `middlewares(...)`:
+DeepScope packs a set of hooks into a single `MiddlewareBase` implementation — one middleware class can implement any subset of the 6 hooks (onion/transformer hooks not implemented default to `next.apply(input)`; notification hooks default to a no-op). Pass the instances to the builder's `middlewares(...)`:
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.middleware.MiddlewareBase;
-import io.agentscope.core.tracing.OtelTracingMiddleware;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.tracing.OtelTracingMiddleware;
 import java.util.List;
 
 ReActAgent agent =
@@ -71,7 +71,7 @@ ReActAgent agent =
 
 ### OtelTracingMiddleware
 
-`OtelTracingMiddleware` (`io.agentscope.core.tracing`) wires up [OpenTelemetry](https://opentelemetry.io/docs/specs/semconv/gen-ai/) tracing for the agent lifecycle. It instruments `onAgent`, `onModelCall`, `onActing`, producing nested spans:
+`OtelTracingMiddleware` (`io.deepscope.core.tracing`) wires up [OpenTelemetry](https://opentelemetry.io/docs/specs/semconv/gen-ai/) tracing for the agent lifecycle. It instruments `onAgent`, `onModelCall`, `onActing`, producing nested spans:
 
 - `invoke_agent <name>` — wraps a full reply
 - `chat <model>` — wraps each model API call
@@ -79,7 +79,7 @@ ReActAgent agent =
 
 When no OpenTelemetry SDK is configured (only the default no-op provider), every hook short-circuits to `next.apply(input)` — near-zero overhead.
 
-By default, `OtelTracingMiddleware` reads the process-wide `GlobalOpenTelemetry` instance. The no-argument constructor looks that instance up lazily, when a hook runs, so the middleware can be constructed before the global SDK is registered. Applications that export spans themselves need the OpenTelemetry SDK and OTLP exporter in addition to AgentScope. Keep their versions aligned through the OpenTelemetry BOM (the version below matches the one currently used by AgentScope):
+By default, `OtelTracingMiddleware` reads the process-wide `GlobalOpenTelemetry` instance. The no-argument constructor looks that instance up lazily, when a hook runs, so the middleware can be constructed before the global SDK is registered. Applications that export spans themselves need the OpenTelemetry SDK and OTLP exporter in addition to DeepScope. Keep their versions aligned through the OpenTelemetry BOM (the version below matches the one currently used by DeepScope):
 
 ```xml
 <properties>
@@ -113,8 +113,8 @@ By default, `OtelTracingMiddleware` reads the process-wide `GlobalOpenTelemetry`
 Build and register the SDK once per process before constructing the agent. The optional environment variable in this example can contain a value such as `Basic <base64-credentials>` for a backend that requires an `Authorization` header, including Langfuse:
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tracing.OtelTracingMiddleware;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tracing.OtelTracingMiddleware;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
@@ -156,8 +156,8 @@ The SDK must be registered before the middleware is used. If your runtime (for e
 To export through an application-owned SDK instead of the process-wide one, build that SDK with `build()` (not `buildAndRegisterGlobal()`), point an OTLP HTTP exporter at the application's endpoint, and attach the middleware explicitly. This is an opt-in middleware path: the caller owns the SDK lifecycle and shuts the provider down. `ReActAgent.builder().middleware(...)` is already the production wiring; no other builder change is required.
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tracing.OtelTracingMiddleware;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tracing.OtelTracingMiddleware;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
@@ -200,14 +200,14 @@ Each reply produces a nested span tree with attributes such as agent name, sessi
 
 ### TaskReminderMiddleware
 
-`TaskReminderMiddleware` (`io.agentscope.core.middleware`) pairs with the built-in `TodoTools`: before every reasoning step it renders the current `AgentState.tasksContext` as a `<system-reminder>` and injects it into the context, keeping long-running tasks aligned with the plan.
+`TaskReminderMiddleware` (`io.deepscope.core.middleware`) pairs with the built-in `TodoTools`: before every reasoning step it renders the current `AgentState.tasksContext` as a `<system-reminder>` and injects it into the context, keeping long-running tasks aligned with the plan.
 
 Enable it together with `TodoTools` via `enableTaskList(true)`:
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.builtin.TodoTools;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.builtin.TodoTools;
 
 Toolkit toolkit = new Toolkit();
 toolkit.registerTool(new TodoTools());
@@ -227,7 +227,7 @@ ReActAgent agent =
 `FinalAnswerFilterMiddleware` exposes only the text from the final ReAct reasoning round. Text from rounds that produce tool calls is suppressed, while tool and other non-text events continue to stream normally.
 
 ```java
-import io.agentscope.core.middleware.FinalAnswerFilterMiddleware;
+import io.deepscope.core.middleware.FinalAnswerFilterMiddleware;
 
 ReActAgent agent =
         ReActAgent.builder()
@@ -242,19 +242,19 @@ The middleware buffers each round's text until the model call ends, because it c
 
 ## Custom middleware
 
-Implement `MiddlewareBase` (`io.agentscope.core.middleware`) and override only the hooks you need.
+Implement `MiddlewareBase` (`io.deepscope.core.middleware`) and override only the hooks you need.
 
 Each onion hook receives a `next` function — calling `next.apply(input)` enters the next layer. You can insert logic before or after, or use Reactor operators (`doOnNext` / `flatMap` / `map`, …) to observe and rewrite the event stream.
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.middleware.ActingInput;
-import io.agentscope.core.middleware.AgentInput;
-import io.agentscope.core.middleware.MiddlewareBase;
-import io.agentscope.core.middleware.ModelCallInput;
-import io.agentscope.core.middleware.ReasoningInput;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.middleware.ActingInput;
+import io.deepscope.core.middleware.AgentInput;
+import io.deepscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.middleware.ModelCallInput;
+import io.deepscope.core.middleware.ReasoningInput;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.Function;
@@ -303,7 +303,7 @@ public class FullObservabilityMiddleware implements MiddlewareBase {
 }
 ```
 
-Input record types per hook (under `io.agentscope.core.middleware`):
+Input record types per hook (under `io.deepscope.core.middleware`):
 
 | Hook | Input record | Fields |
 |------|--------------|--------|
@@ -316,18 +316,18 @@ Input record types per hook (under `io.agentscope.core.middleware`):
 
 To replace fields flowing into the next layer, construct a new input record, then call `next.apply(...)`.
 
-Runnable examples: `agentscope-examples/documentation/.../middleware/CustomizedMiddlewareExample.java`, `middleware/ModelCallMiddlewareExample.java`, `middleware/SystemPromptMiddlewareExample.java`.
+Runnable examples: `deepscope-examples/documentation/.../middleware/CustomizedMiddlewareExample.java`, `middleware/ModelCallMiddlewareExample.java`, `middleware/SystemPromptMiddlewareExample.java`.
 
 ### State-ready notification
 
 `onAgentStateReady` is a notification hook (no `next`): it fires synchronously once per call, right after the call-scoped `AgentState` is bound to the `RuntimeContext` and before the input enters the pipeline. `state` is the same instance as `ctx.getAgentState()` and is never `null` — a brand-new session receives a freshly-created state with an empty context. `inputMessages` is this call's input as a private mutable copy: in-place modification applies to the whole call, while the caller's original list stays untouched.
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.middleware.MiddlewareBase;
-import io.agentscope.core.state.AgentState;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.state.AgentState;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -357,11 +357,11 @@ Keep implementations non-blocking: the notification runs on the call's subscript
 Every `MiddlewareBase` hook receives the [`RuntimeContext`](/v2/en/docs/building-blocks/agent#runtimecontext-per-call-context) bound for this `call` / `stream` as the second argument — you can read session fields and typed/string attributes, and you can write back to it to forward values to downstream hooks and tools.
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.middleware.AgentInput;
-import io.agentscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.middleware.AgentInput;
+import io.deepscope.core.middleware.MiddlewareBase;
 import java.util.function.Function;
 import reactor.core.publisher.Flux;
 
@@ -461,7 +461,7 @@ Key semantics:
 - **Orthogonal to `order()`.** The declaration only answers *whether* a middleware participates at a point, never *in what order* — participants keep the usual `order()` semantics.
 
 ```java
-import io.agentscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.middleware.MiddlewareBase;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -486,10 +486,10 @@ The same applies when subclassing a built-in middleware: shipped classes declare
 The middleware below records the wall-clock time of each model call:
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.middleware.MiddlewareBase;
-import io.agentscope.core.middleware.ModelCallInput;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.middleware.ModelCallInput;
 import java.util.function.Function;
 import reactor.core.publisher.Flux;
 
@@ -513,10 +513,10 @@ public class TimingMiddleware implements MiddlewareBase {
 Enforce a minimum interval between two model calls:
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.middleware.MiddlewareBase;
-import io.agentscope.core.middleware.ModelCallInput;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.middleware.ModelCallInput;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
@@ -549,8 +549,8 @@ public class RateLimitMiddleware implements MiddlewareBase {
 Inject runtime context into the system prompt. Or reuse the example `middleware/SystemPromptMiddlewareExample.java`:
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.middleware.MiddlewareBase;
 import java.time.Instant;
 import java.util.function.Supplier;
 import reactor.core.publisher.Mono;
@@ -578,11 +578,11 @@ public class DynamicContextMiddleware implements MiddlewareBase {
 Swap to a backup model if the primary fails:
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.middleware.MiddlewareBase;
-import io.agentscope.core.middleware.ModelCallInput;
-import io.agentscope.core.model.Model;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.middleware.ModelCallInput;
+import io.deepscope.core.model.Model;
 import java.util.function.Function;
 import reactor.core.publisher.Flux;
 
@@ -625,14 +625,14 @@ For a simple primary→backup fallback, `ReActAgent.Builder` already exposes `fa
 When a user denies all tool calls from a reasoning step via HITL, the agent continues to the next reasoning iteration by default (backward compatible). To stop the agent in this scenario, write an `onActing` middleware that observes `AllToolsDeniedEvent` and emits a `RequestStopEvent`:
 
 ```java
-import io.agentscope.core.agent.Agent;
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.event.AllToolsDeniedEvent;
-import io.agentscope.core.event.RequestStopEvent;
-import io.agentscope.core.message.GenerateReason;
-import io.agentscope.core.middleware.ActingInput;
-import io.agentscope.core.middleware.MiddlewareBase;
+import io.deepscope.core.agent.Agent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.event.AllToolsDeniedEvent;
+import io.deepscope.core.event.RequestStopEvent;
+import io.deepscope.core.message.GenerateReason;
+import io.deepscope.core.middleware.ActingInput;
+import io.deepscope.core.middleware.MiddlewareBase;
 import java.util.function.Function;
 import reactor.core.publisher.Flux;
 

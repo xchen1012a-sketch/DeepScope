@@ -3,7 +3,7 @@ title: ReMe
 zh_link: /v2/zh/integration/memory/reme
 ---
 
-`agentscope-extensions-reme` integrates with the self-hosted ReMe memory service. Its distinguishing features are **trajectory-based** memory extraction and **workspace-level** isolation.
+`deepscope-extensions-reme` integrates with the self-hosted ReMe memory service. Its distinguishing features are **trajectory-based** memory extraction and **workspace-level** isolation.
 
 ## When to use
 
@@ -15,16 +15,16 @@ zh_link: /v2/zh/integration/memory/reme
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-reme</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-reme</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## Quickstart
 
 ```java
-import io.agentscope.core.memory.reme.ReMeLongTermMemory;
+import io.deepscope.core.memory.reme.ReMeLongTermMemory;
 
 ReMeLongTermMemory memory = ReMeLongTermMemory.builder()
     .userId("task_workspace")            // Maps to ReMe's workspace_id

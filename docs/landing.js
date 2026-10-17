@@ -1,10 +1,10 @@
 // Delegated handlers also work after Mintlify navigates without a full reload.
 (() => {
-  if (window.__agentScopeLanding) return;
-  window.__agentScopeLanding = true;
+  if (window.__deepScopeLanding) return;
+  window.__deepScopeLanding = true;
   document.addEventListener('click', async (event) => {
     if (!(event.target instanceof Element)) return;
-    const tab = event.target.closest('.agentscope-landing .hs-tab[data-panel]');
+    const tab = event.target.closest('.deepscope-landing .hs-tab[data-panel]');
     if (tab) {
       const windowElement = tab.closest('.hs-window');
       if (!windowElement) return;
@@ -17,7 +17,7 @@
         panel.style.display = panel.id === tab.dataset.panel ? '' : 'none';
       });
     }
-    const button = event.target.closest('.agentscope-landing .hs-copy-btn');
+    const button = event.target.closest('.deepscope-landing .hs-copy-btn');
     if (!button) return;
     const original = button.textContent;
     const chinese = window.location.pathname.includes('/zh/');

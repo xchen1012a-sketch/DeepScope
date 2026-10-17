@@ -3,7 +3,7 @@ title: Dify
 zh_link: /v2/zh/integration/rag/dify
 ---
 
-`agentscope-extensions-rag-dify` integrates with [Dify](https://dify.ai/) datasets, reusing knowledge bases you already maintain in Dify.
+`deepscope-extensions-rag-dify` integrates with [Dify](https://dify.ai/) datasets, reusing knowledge bases you already maintain in Dify.
 
 ## When to use
 
@@ -14,19 +14,19 @@ zh_link: /v2/zh/integration/rag/dify
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-rag-dify</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-rag-dify</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## Quickstart
 
 ```java
-import io.agentscope.core.rag.integration.dify.DifyKnowledge;
-import io.agentscope.core.rag.integration.dify.DifyRAGConfig;
-import io.agentscope.core.rag.integration.dify.RetrievalMode;
-import io.agentscope.core.rag.model.RetrieveConfig;
+import io.deepscope.core.rag.integration.dify.DifyKnowledge;
+import io.deepscope.core.rag.integration.dify.DifyRAGConfig;
+import io.deepscope.core.rag.integration.dify.RetrievalMode;
+import io.deepscope.core.rag.model.RetrieveConfig;
 
 DifyRAGConfig config = DifyRAGConfig.builder()
     .apiKey(System.getenv("DIFY_RAG_API_KEY"))

@@ -3,7 +3,7 @@ title: Model Integration
 zh_link: /v1/zh/docs/task/model
 ---
 
-This guide introduces the LLM models supported by AgentScope Java and how to configure them.
+This guide introduces the LLM models supported by DeepScope Java and how to configure them.
 
 ## Supported Models
 
@@ -31,7 +31,7 @@ This guide introduces the LLM models supported by AgentScope Java and how to con
 
 ## ModelRegistry
 
-[`ModelRegistry`](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-core/src/main/java/io/agentscope/core/model/ModelRegistry.java) (`io.agentscope.core.model.ModelRegistry`) resolves a `Model` from a **string id**, so you do not have to call each vendor’s `*ChatModel.builder()` for simple setups. With Harness, use `HarnessAgent.builder().model(String)`; anywhere else that needs a `Model`, call `ModelRegistry.resolve(...)` and pass the result into `ReActAgent` or other builders.
+[`ModelRegistry`](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-core/src/main/java/io/deepscope/core/model/ModelRegistry.java) (`io.deepscope.core.model.ModelRegistry`) resolves a `Model` from a **string id**, so you do not have to call each vendor’s `*ChatModel.builder()` for simple setups. With Harness, use `HarnessAgent.builder().model(String)`; anywhere else that needs a `Model`, call `ModelRegistry.resolve(...)` and pass the result into `ReActAgent` or other builders.
 
 ### API summary
 
@@ -65,10 +65,10 @@ Within one process, repeated `resolve` of the **same** factory-based id returns 
 Build once with full control, then register under a name:
 
 ```java
-import io.agentscope.core.model.GenerateOptions;
-import io.agentscope.core.model.ModelRegistry;
-import io.agentscope.extensions.model.openai.OpenAIChatModel;
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.core.model.GenerateOptions;
+import io.deepscope.core.model.ModelRegistry;
+import io.deepscope.extensions.model.openai.OpenAIChatModel;
+import io.deepscope.harness.agent.HarnessAgent;
 
 Model tuned = OpenAIChatModel.builder()
         .apiKey(System.getenv("OPENAI_API_KEY"))
@@ -87,7 +87,7 @@ HarnessAgent agent = HarnessAgent.builder()
 ### Example: built-in prefix (default connection settings)
 
 ```java
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.HarnessAgent;
 
 HarnessAgent agent = HarnessAgent.builder()
         .name("demo")
@@ -99,8 +99,8 @@ HarnessAgent agent = HarnessAgent.builder()
 ### Example: custom factory
 
 ```java
-import io.agentscope.core.model.Model;
-import io.agentscope.core.model.ModelRegistry;
+import io.deepscope.core.model.Model;
+import io.deepscope.core.model.ModelRegistry;
 
 ModelRegistry.registerFactory(
         "my-llm:.+",
@@ -469,7 +469,7 @@ GenerateOptions options = GenerateOptions.builder()
 
 ## Formatter
 
-Formatter converts AgentScope's unified message format to each LLM provider's API format. Each provider has two types of Formatter:
+Formatter converts DeepScope's unified message format to each LLM provider's API format. Each provider has two types of Formatter:
 
 | Provider | Single-Agent | Multi-Agent |
 |----------|--------------|-------------|

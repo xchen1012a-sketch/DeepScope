@@ -41,7 +41,7 @@ Agent 能否自动记忆个人的操作习惯，在对话中根据用户平常�
 
 先问一句：您的高代码长什么样？
 
-我们观察了几个基于 Google ADK、AgentScope 等框架构建的 Agent 应用（Java）。它们呈现出惊人的相似结构：
+我们观察了几个基于 Google ADK、DeepScope 等框架构建的 Agent 应用（Java）。它们呈现出惊人的相似结构：
 
 ```text
 my-agent-app/
@@ -249,7 +249,7 @@ return "NEED_CONFIRM: 金额过大，请确认";
 
 ## 02 技术选型
 
-在 Agent 运行时框架的选型上，我们系统评估了 LangChain、Google ADK 与 AgentScope 三大主流技术体系，最终选择 AgentScope 作为核心底座，是基于企业级生产诉求、阿里内部生态适配性及业财业务特殊性三重维度的综合决策。
+在 Agent 运行时框架的选型上，我们系统评估了 LangChain、Google ADK 与 DeepScope 三大主流技术体系，最终选择 DeepScope 作为核心底座，是基于企业级生产诉求、阿里内部生态适配性及业财业务特殊性三重维度的综合决策。
 
 ### 2.1 三大框架核心能力对比
 
@@ -257,11 +257,11 @@ return "NEED_CONFIRM: 金额过大，请确认";
 
 ### 2.2 最终选择
 
-![最终选择 AgentScope](https://mmbiz.qpic.cn/sz_mmbiz_png/bvDbzNRia8j3y2iaYibfXsUyoZiayltDUG2aZjqhkAfSXqKQkhA9pwMtY0uUOAiamgaCBK54f8nSa16djxaic8FC80XOIwhUiaQPtFA6eqJCKCzWiaA/640?wx_fmt=png&from=appmsg)
+![最终选择 DeepScope](https://mmbiz.qpic.cn/sz_mmbiz_png/bvDbzNRia8j3y2iaYibfXsUyoZiayltDUG2aZjqhkAfSXqKQkhA9pwMtY0uUOAiamgaCBK54f8nSa16djxaic8FC80XOIwhUiaQPtFA6eqJCKCzWiaA/640?wx_fmt=png&from=appmsg)
 
-## 03 AgentScope 的三层架构框架能力分析
+## 03 DeepScope 的三层架构框架能力分析
 
-我认为 AgentScope 分为三层能力，模型层、ReAct 推理循环层和对外抽象体系层：
+我认为 DeepScope 分为三层能力，模型层、ReAct 推理循环层和对外抽象体系层：
 
 ### 3.1 模型层
 
@@ -330,7 +330,7 @@ return "NEED_CONFIRM: 金额过大，请确认";
 
 ![tools 类与阿里生态平台的结合](https://mmbiz.qpic.cn/sz_mmbiz_png/bvDbzNRia8j1XPXn6Kj87p0BzWDFYssB8Mw2pzcF6OUOrUJzJt4sYBIP3hWXTkzGEBDBIlGwfcEvMKicmrKibJKhG3qh8VhwAnS8dyPKHHGv6I/640?wx_fmt=png&from=appmsg)
 
-AgentScope 原生只有 `AgentSkill` + `SkillBox` 接口定义，不提供任何外部来源。复用层补齐了企业级 tool 及衍生类的生态：
+DeepScope 原生只有 `AgentSkill` + `SkillBox` 接口定义，不提供任何外部来源。复用层补齐了企业级 tool 及衍生类的生态：
 
 ![复用层补齐的企业级 tool 生态](https://mmbiz.qpic.cn/sz_mmbiz_png/bvDbzNRia8j3QNqRlZnYSoAmIS1sic4TbsDYUyzicviaO3Fr2dIRwZX4OnBJJOpic0usOQOMKYK7vrJdzeJaXP1dUDmNbdWh9erBcTEmelcVqqVw/640?wx_fmt=png&from=appmsg)
 
@@ -358,7 +358,7 @@ AgentScope 原生只有 `AgentSkill` + `SkillBox` 接口定义，不提供任何
 
 ## 05 基于开发要点的实践过程
 
-前文梳理了 AgentScope 和复用层的核心架构与能力边界。基于此，我们围绕五大建设要点，逐一展开实践过程——遇到了什么问题、如何拆解、如何设计并落地解决方案。
+前文梳理了 DeepScope 和复用层的核心架构与能力边界。基于此，我们围绕五大建设要点，逐一展开实践过程——遇到了什么问题、如何拆解、如何设计并落地解决方案。
 
 ### 5.1 要点一：基于 DB 驱动的 Agent 运行引擎
 
@@ -747,7 +747,7 @@ public ProcessResult process(RunAgentInput input, String headerAgentId, String p
 }
 ```
 
-它本质上是构建了一个贯穿 AgentScope 整条请求链路的上下文对象。复用层框架将 `RuntimeContext` 的创建通过 `AguiRuntimeContextBuilder` SPI 开放给业务层定制。
+它本质上是构建了一个贯穿 DeepScope 整条请求链路的上下文对象。复用层框架将 `RuntimeContext` 的创建通过 `AguiRuntimeContextBuilder` SPI 开放给业务层定制。
 
 本项目实现了通过继承 `AguiRuntimeContextBuilder` 开发了 `FinanceAguiRuntimeContextBuilder`，将每次 AG-UI 请求的上下文数据组装进框架的 `RuntimeContext`，包含 4 个字段：
 
@@ -940,9 +940,9 @@ hitl 本身存在两种方式，一种是模型级别的方式，另一种是工
 2. 如何确认用户在使用工具前、后需要做拦截操作？
    a. 发现拦截点，如何停止 Agent 的所有行为！等待确认结果才能继续之前的链路；
 
-非常荣幸的是 AgentScope 的 hooks 系统非常强大：
+非常荣幸的是 DeepScope 的 hooks 系统非常强大：
 
-![AgentScope hooks 系统](https://mmbiz.qpic.cn/mmbiz_jpg/bvDbzNRia8j3JvZBkDfGvriaX6YEvybArD2xo992Frx8VT3D3gubqmv2ASmUbKsAvt1THovYldvo8wzDSxytIjLsQnMLPOPOGibQCtLHCJa8Dc/640?wx_fmt=jpeg&from=appmsg)
+![DeepScope hooks 系统](https://mmbiz.qpic.cn/mmbiz_jpg/bvDbzNRia8j3JvZBkDfGvriaX6YEvybArD2xo992Frx8VT3D3gubqmv2ASmUbKsAvt1THovYldvo8wzDSxytIjLsQnMLPOPOGibQCtLHCJa8Dc/640?wx_fmt=jpeg&from=appmsg)
 
 整体链路呈现方式：
 
@@ -978,7 +978,7 @@ hitl 本身存在两种方式，一种是模型级别的方式，另一种是工
 
 ##### 5.1.4.4 ContextInjectingMcpTool（SPI4）
 
-AgentTool 是 AgentScope 作为工具级别的 SPI 扩展点，可以定义封装工具调用逻辑：
+AgentTool 是 DeepScope 作为工具级别的 SPI 扩展点，可以定义封装工具调用逻辑：
 
 ```java
 public interface AgentTool {
@@ -993,7 +993,7 @@ public interface AgentTool {
 
 **1）问题背景**
 
-AgentScope 原生 `McpTool` 的身份在 `AoneMcpClientBuilder.buildSync()` 构建期就已确定（DB `ac_mcp_server.user_id`），所有用户共享同一个身份调用 MCP Server。这在金融场景下不可接受——不同用户调用同一个 MCP 工具（如查询审批单），MCP Server 必须看到调用者本人的身份才能做权限校验和数据隔离。
+DeepScope 原生 `McpTool` 的身份在 `AoneMcpClientBuilder.buildSync()` 构建期就已确定（DB `ac_mcp_server.user_id`），所有用户共享同一个身份调用 MCP Server。这在金融场景下不可接受——不同用户调用同一个 MCP 工具（如查询审批单），MCP Server 必须看到调用者本人的身份才能做权限校验和数据隔离。
 
 **2）设计：调用时身份注入**
 

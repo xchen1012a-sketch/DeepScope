@@ -3,7 +3,7 @@ title: JDBC
 zh_link: /v2/zh/integration/distributed/jdbc
 ---
 
-`agentscope-extensions-jdbc` provides full-stack distributed storage over standard JDBC and is the single entry point for relational databases: pass any JDBC `DataSource` and the dialect is auto-detected via SPI — no per-database setup. A natural fit for teams with existing relational database infrastructure.
+`deepscope-extensions-jdbc` provides full-stack distributed storage over standard JDBC and is the single entry point for relational databases: pass any JDBC `DataSource` and the dialect is auto-detected via SPI — no per-database setup. A natural fit for teams with existing relational database infrastructure.
 
 Currently supported databases:
 
@@ -16,15 +16,15 @@ Currently supported databases:
 
 Support for more relational databases is on the roadmap, including Oracle and domestic Chinese databases such as DM (Dameng), GaussDB, and OceanBase.
 
-> The legacy modules `agentscope-extensions-mysql`, `agentscope-extensions-postgresql`, `agentscope-extensions-skill-mysql-repository`, and `agentscope-extensions-skill-postgresql-repository` are deprecated and replaced by this module. See [migration](#migrating-from-legacy-modules) below.
+> The legacy modules `deepscope-extensions-mysql`, `deepscope-extensions-postgresql`, `deepscope-extensions-skill-mysql-repository`, and `deepscope-extensions-skill-postgresql-repository` are deprecated and replaced by this module. See [migration](#migrating-from-legacy-modules) below.
 
 ## Dependency
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-jdbc</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-jdbc</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -33,7 +33,7 @@ Add your database driver separately (e.g. `mysql-connector-j`, `postgresql`, `sq
 ## One-Line Setup
 
 ```java
-import io.agentscope.extensions.jdbc.JdbcDistributedStore;
+import io.deepscope.extensions.jdbc.JdbcDistributedStore;
 
 DataSource dataSource = ...;  // HikariCP, Druid, etc.
 DistributedStore store = JdbcDistributedStore.create(dataSource);
@@ -49,7 +49,7 @@ For table-name customization, setting a shared `tablePrefix` is recommended. The
 
 ```java
 AbstractJdbcDialect dialect = AbstractJdbcDialect.from(dataSource)
-    .tablePrefix("myapp_")            // default: agentscope_
+    .tablePrefix("myapp_")            // default: deepscope_
     .build();
 
 DistributedStore store = JdbcDistributedStore.create(dataSource, dialect);
@@ -63,10 +63,10 @@ Table creation and schema validation happen once, at assembly in `AbstractJdbcDi
 AbstractJdbcDialect dialect = AbstractJdbcDialect.from(dataSource)
     .enableBaseTables(true)      // default: on — store, sessions, snapshots
     .enableSkillTables(true)     // default: off — opt in to add the skill tables
-    .build();                    // creates agentscope_skills / agentscope_skill_resources
+    .build();                    // creates deepscope_skills / deepscope_skill_resources
 ```
 
-Tables created by default: `agentscope_store`, `agentscope_sessions`, `agentscope_snapshots`; the lock table `agentscope_distributed_locks` is created on first lock use. With the skill group enabled: additionally `agentscope_skills`, `agentscope_skill_resources`.
+Tables created by default: `deepscope_store`, `deepscope_sessions`, `deepscope_snapshots`; the lock table `deepscope_distributed_locks` is created on first lock use. With the skill group enabled: additionally `deepscope_skills`, `deepscope_skill_resources`.
 
 ## Components Provided
 
@@ -75,8 +75,8 @@ Tables created by default: `agentscope_store`, `agentscope_sessions`, `agentscop
 Agent state persisted to a database table.
 
 ```java
-import io.agentscope.extensions.jdbc.dialect.AbstractJdbcDialect;
-import io.agentscope.extensions.jdbc.state.JdbcAgentStateStore;
+import io.deepscope.extensions.jdbc.dialect.AbstractJdbcDialect;
+import io.deepscope.extensions.jdbc.state.JdbcAgentStateStore;
 
 AbstractJdbcDialect dialect = AbstractJdbcDialect.from(dataSource).build();  // schema creation + validation happen here
 
@@ -90,7 +90,7 @@ AgentStateStore store = new JdbcAgentStateStore(dataSource, dialect);
 Workspace filesystem KV storage. All SQL comes from the dialect layer — the component itself is database-agnostic.
 
 ```java
-import io.agentscope.extensions.jdbc.store.JdbcStore;
+import io.deepscope.extensions.jdbc.store.JdbcStore;
 
 BaseStore store = JdbcStore.builder(dataSource)
     .dialect(dialect)
@@ -104,7 +104,7 @@ BaseStore store = JdbcStore.builder(dataSource)
 Sandbox snapshots stored as BLOBs (LONGBLOB on MySQL, BYTEA on PostgreSQL).
 
 ```java
-import io.agentscope.extensions.jdbc.snapshot.JdbcSnapshotSpec;
+import io.deepscope.extensions.jdbc.snapshot.JdbcSnapshotSpec;
 
 SandboxSnapshotSpec spec = new JdbcSnapshotSpec(dataSource, dialect);
 ```
@@ -114,10 +114,10 @@ SandboxSnapshotSpec spec = new JdbcSnapshotSpec(dataSource, dialect);
 Distributed lock; the lock strategy is decided by the dialect:
 
 - **MySQL**: native `GET_LOCK()` / `RELEASE_LOCK()`. The lock is tied to the JDBC connection and auto-released on connection close; lock names longer than 64 characters are hashed automatically.
-- **PostgreSQL / H2 / SQLite**: a portable lock on the `agentscope_distributed_locks` table, with no database-specific syntax.
+- **PostgreSQL / H2 / SQLite**: a portable lock on the `deepscope_distributed_locks` table, with no database-specific syntax.
 
 ```java
-import io.agentscope.extensions.jdbc.sandbox.JdbcSandboxExecutionGuard;
+import io.deepscope.extensions.jdbc.sandbox.JdbcSandboxExecutionGuard;
 
 SandboxExecutionGuard guard = JdbcSandboxExecutionGuard.builder(dialect)
     .keyPrefix("myapp:lock:")
@@ -132,8 +132,8 @@ SandboxExecutionGuard guard = JdbcSandboxExecutionGuard.builder(dialect)
 Skill storage on the same dialects: implements core's `AgentSkillRepository`, so every database this module supports can back the skill channel.
 
 ```java
-import io.agentscope.core.skill.repository.AgentSkillRepository;
-import io.agentscope.extensions.jdbc.skill.JdbcAgentSkillRepository;
+import io.deepscope.core.skill.repository.AgentSkillRepository;
+import io.deepscope.extensions.jdbc.skill.JdbcAgentSkillRepository;
 
 AbstractJdbcDialect dialect = AbstractJdbcDialect.from(dataSource)
     .enableSkillTables(true)
@@ -142,7 +142,7 @@ AbstractJdbcDialect dialect = AbstractJdbcDialect.from(dataSource)
 AgentSkillRepository repo = new JdbcAgentSkillRepository(dataSource, dialect);
 ```
 
-Two tables are created: `agentscope_skills` and `agentscope_skill_resources` (composite PK `(id, resource_path)`, foreign key with `ON DELETE CASCADE`). Like the other components, the repository never touches the schema — enable the group at build; constructing it over a dialect without the group fails fast.
+Two tables are created: `deepscope_skills` and `deepscope_skill_resources` (composite PK `(id, resource_path)`, foreign key with `ON DELETE CASCADE`). Like the other components, the repository never touches the schema — enable the group at build; constructing it over a dialect without the group fails fast.
 
 Two behaviors to note:
 
@@ -151,7 +151,7 @@ Two behaviors to note:
 
 #### Scope isolation (namespaces)
 
-Reusing a skill name across teams is normal; `agentscope_skills` isolates scopes with a `namespace` column whose unique key is **`UNIQUE(namespace, name)`** — unique within a namespace, free to repeat across them. `skill_resources` carries the `namespace` column too, written with the skill row in one transaction. This is the `AgentSkillRepository` scope-isolation contract realized on a relational store: **one instance binds one namespace, and every no-argument method addresses the bound value**.
+Reusing a skill name across teams is normal; `deepscope_skills` isolates scopes with a `namespace` column whose unique key is **`UNIQUE(namespace, name)`** — unique within a namespace, free to repeat across them. `skill_resources` carries the `namespace` column too, written with the skill row in one transaction. This is the `AgentSkillRepository` scope-isolation contract realized on a relational store: **one instance binds one namespace, and every no-argument method addresses the bound value**.
 
 ```sql
 namespace VARCHAR(64) NOT NULL DEFAULT 'default'   -- existing rows fall into default
@@ -184,38 +184,38 @@ teamA.save("team-b", List.of(otherSkill), false);
 
 ```sql
 -- 1. Add the column (instant; existing rows fall into default; both tables)
-ALTER TABLE agentscope_skills
+ALTER TABLE deepscope_skills
   ADD COLUMN namespace VARCHAR(64) NOT NULL DEFAULT 'default';
-ALTER TABLE agentscope_skill_resources
+ALTER TABLE deepscope_skill_resources
   ADD COLUMN namespace VARCHAR(64) NOT NULL DEFAULT 'default';
 
 -- 2. MySQL only — pin the isolation boundary to case-sensitive comparison
 --    (rebuilds the table; prefer an off-peak window)
-ALTER TABLE agentscope_skills
+ALTER TABLE deepscope_skills
   MODIFY COLUMN namespace VARCHAR(64) COLLATE utf8mb4_bin NOT NULL DEFAULT 'default';
-ALTER TABLE agentscope_skill_resources
+ALTER TABLE deepscope_skill_resources
   MODIFY COLUMN namespace VARCHAR(64) COLLATE utf8mb4_bin NOT NULL DEFAULT 'default';
 
 -- 3. Rebuild the unique index (prefer an off-peak window: drop the old single-column
 --    one, then add the composite) and index the resources' namespace
-ALTER TABLE agentscope_skills DROP INDEX name;
-ALTER TABLE agentscope_skills
+ALTER TABLE deepscope_skills DROP INDEX name;
+ALTER TABLE deepscope_skills
   ADD UNIQUE KEY uk_namespace_name (namespace, name);
-ALTER TABLE agentscope_skill_resources ADD INDEX idx_namespace (namespace);
+ALTER TABLE deepscope_skill_resources ADD INDEX idx_namespace (namespace);
 ```
 
 PostgreSQL variant:
 
 ```sql
-ALTER TABLE agentscope_skills ADD COLUMN namespace VARCHAR(64) NOT NULL DEFAULT 'default';
-ALTER TABLE agentscope_skill_resources ADD COLUMN namespace VARCHAR(64) NOT NULL DEFAULT 'default';
-ALTER TABLE agentscope_skills DROP CONSTRAINT agentscope_skills_name_key;
-ALTER TABLE agentscope_skills ADD CONSTRAINT uk_namespace_name UNIQUE (namespace, name);
-CREATE INDEX IF NOT EXISTS agentscope_skill_resources_namespace_idx
-  ON agentscope_skill_resources (namespace);
+ALTER TABLE deepscope_skills ADD COLUMN namespace VARCHAR(64) NOT NULL DEFAULT 'default';
+ALTER TABLE deepscope_skill_resources ADD COLUMN namespace VARCHAR(64) NOT NULL DEFAULT 'default';
+ALTER TABLE deepscope_skills DROP CONSTRAINT deepscope_skills_name_key;
+ALTER TABLE deepscope_skills ADD CONSTRAINT uk_namespace_name UNIQUE (namespace, name);
+CREATE INDEX IF NOT EXISTS deepscope_skill_resources_namespace_idx
+  ON deepscope_skill_resources (namespace);
 ```
 
-H2 can drop the old constraint by name (`ALTER TABLE agentscope_skills DROP CONSTRAINT <name>`) and add the new one. SQLite differs: the implicit index behind an inline `UNIQUE` cannot be dropped, so rebuild the table instead (create both new tables with the `namespace` column and the skills table with `UNIQUE(namespace, name)`, copy the rows, drop the old tables, rename). Startup validation compares columns only, never indexes, so **steps 2 and 3 are required** (step 3 removes the global `UNIQUE(name)`; step 2 keeps MySQL namespace comparison case-sensitive). The resources index is performance-only.
+H2 can drop the old constraint by name (`ALTER TABLE deepscope_skills DROP CONSTRAINT <name>`) and add the new one. SQLite differs: the implicit index behind an inline `UNIQUE` cannot be dropped, so rebuild the table instead (create both new tables with the `namespace` column and the skills table with `UNIQUE(namespace, name)`, copy the rows, drop the old tables, rename). Startup validation compares columns only, never indexes, so **steps 2 and 3 are required** (step 3 removes the global `UNIQUE(name)`; step 2 keeps MySQL namespace comparison case-sensitive). The resources index is performance-only.
 
 ## Migrating from Legacy Modules
 
@@ -232,7 +232,7 @@ Migrating the skill repositories:
 
 - Tables created by the current legacy modules already include `metadata_json` and work as-is; older tables need the column added first — the startup error carries the reference DDL.
 - One caveat to "work as-is": the legacy modules never rejected absolute or `..` resource paths, and the new implementation validates rows on read — `getSkill` refuses such a row; `getAllSkills` / `getAllSkillNames` skip it with a warning. A row whose *name* fails validation cannot be deleted either — `clearAllSkills` or direct SQL is the only remedy. Audit `resource_path` and skill names before migrating; those values were never safely consumable downstream.
-- The old modules implicitly created an `agentscope` database (MySQL) or schema (PostgreSQL). The new repository puts its tables wherever the connection points — aim the `DataSource` at the existing tables.
+- The old modules implicitly created an `deepscope` database (MySQL) or schema (PostgreSQL). The new repository puts its tables wherever the connection points — aim the `DataSource` at the existing tables.
 - `databaseName` / `schemaName` have no equivalent — the tables live in whatever database the DataSource points to, same as the base tables. Table names can be overridden via `skillTableName` / `skillResourcesTableName`. Correspondingly, `getSource()` changes from `mysql_<databaseName>_<table>` / `postgresql_<schemaName>_<table>` to `jdbc_<skillTableName>@<namespace>` (the namespace suffix keeps scopes of one table distinct) — consumers keying on it (e.g. the skill staging cache namespace) get a fresh subtree after migration, and the old one is reclaimed by orphan GC.
 
 ## When to Use

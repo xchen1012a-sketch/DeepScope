@@ -1,0 +1,4 @@
+io.deepscope.extensions.jdbc.dialect.vendor.PostgresDialect
+io.deepscope.extensions.jdbc.dialect.vendor.MysqlDialect
+io.deepscope.extensions.jdbc.dialect.vendor.H2Dialect
+io.deepscope.extensions.jdbc.dialect.vendor.SqliteDialect

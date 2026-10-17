@@ -1,17 +1,17 @@
 ---
-name: agentscope-java
-description: Expert Java developer skill for AgentScope Java framework - a reactive, message-driven multi-agent system built on Project Reactor. Use when working with reactive programming, LLM integration, agent orchestration, multi-agent systems, or when the user mentions AgentScope, ReActAgent, Mono/Flux, Project Reactor, or Java agent development. Specializes in non-blocking code, tool integration, hooks, pipelines, and production-ready agent applications.
+name: deepscope-java
+description: Expert Java developer skill for DeepScope Java framework - a reactive, message-driven multi-agent system built on Project Reactor. Use when working with reactive programming, LLM integration, agent orchestration, multi-agent systems, or when the user mentions DeepScope, ReActAgent, Mono/Flux, Project Reactor, or Java agent development. Specializes in non-blocking code, tool integration, hooks, pipelines, and production-ready agent applications.
 license: Apache-2.0
 compatibility: Designed for Claude Code and Cursor. Requires Java 17+, Maven/Gradle, and familiarity with reactive programming concepts.
 metadata:
-  framework: AgentScope Java
+  framework: DeepScope Java
   language: Java 17+
   paradigm: Reactive Programming
   core-library: Project Reactor
   version: "1.0"
 ---
 
-When the user asks you to write AgentScope Java code, follow these instructions carefully.
+When the user asks you to write DeepScope Java code, follow these instructions carefully.
 
 ## CRITICAL RULES - NEVER VIOLATE THESE
 
@@ -21,7 +21,7 @@ When the user asks you to write AgentScope Java code, follow these instructions 
 3. **NEVER use `ThreadLocal`** - Use Reactor Context with `Mono.deferContextual()`.
 4. **NEVER hardcode API keys** - Always use `System.getenv()`.
 5. **NEVER ignore errors silently** - Always log errors and provide fallback values.
-6. **NEVER use wrong import paths** - Shared model interfaces are in `io.agentscope.core.model.*`; provider models are in `io.agentscope.extensions.model.<provider>.*`.
+6. **NEVER use wrong import paths** - Shared model interfaces are in `io.deepscope.core.model.*`; provider models are in `io.deepscope.extensions.model.<provider>.*`.
 
 **✅ ALWAYS DO:**
 1. **Use `Mono` and `Flux`** for all asynchronous operations.
@@ -29,7 +29,7 @@ When the user asks you to write AgentScope Java code, follow these instructions 
 3. **Use Builder pattern** for creating agents, models, and messages.
 4. **Include error handling** with `.onErrorResume()` or `.onErrorReturn()`.
 5. **Add logging** with SLF4J for important operations.
-6. **Use correct imports**: `import io.agentscope.extensions.model.dashscope.DashScopeChatModel;`
+6. **Use correct imports**: `import io.deepscope.extensions.model.dashscope.DashScopeChatModel;`
 7. **Use correct APIs** (many methods don't exist or have changed):
    - `toolkit.registerTool()` NOT `registerObject()`
    - `toolkit.getToolNames()` NOT `getTools()`
@@ -56,7 +56,7 @@ When the user asks you to write AgentScope Java code, follow these instructions 
 2. Check: Are all operations non-blocking? → If no, **FIX IT**.
 3. Check: Does it have error handling? → If no, **ADD IT**.
 4. Check: Are API keys from environment? → If no, **CHANGE IT**.
-5. Check: Are imports correct? → If using provider models from `io.agentscope.core.model.*`, **FIX TO** `io.agentscope.extensions.model.<provider>.*`.
+5. Check: Are imports correct? → If using provider models from `io.deepscope.core.model.*`, **FIX TO** `io.deepscope.extensions.model.<provider>.*`.
 
 **Default code structure for agent logic:**
 ```java
@@ -85,7 +85,7 @@ public static void main(String[] args) {
 
 ## PROJECT SETUP
 
-**When creating a new AgentScope project, use the correct Maven dependencies:**
+**When creating a new DeepScope project, use the correct Maven dependencies:**
 
 ### Maven Configuration (pom.xml)
 
@@ -98,8 +98,8 @@ public static void main(String[] args) {
 <dependencies>
     <!-- Use the latest stable release from Maven Central -->
     <dependency>
-        <groupId>io.agentscope</groupId>
-        <artifactId>agentscope</artifactId>
+        <groupId>io.deepscope</groupId>
+        <artifactId>deepscope</artifactId>
         <version>1.0.12</version>
     </dependency>
 </dependencies>
@@ -108,27 +108,27 @@ public static void main(String[] args) {
 **For local development (if working with source code):**
 ```xml
 <properties>
-    <agentscope.version>1.0.12</agentscope.version>
+    <deepscope.version>1.0.12</deepscope.version>
     <java.version>17</java.version>
 </properties>
 
 <dependencies>
     <dependency>
-        <groupId>io.agentscope</groupId>
-        <artifactId>agentscope-core</artifactId>
-        <version>${agentscope.version}</version>
+        <groupId>io.deepscope</groupId>
+        <artifactId>deepscope-core</artifactId>
+        <version>${deepscope.version}</version>
     </dependency>
     <dependency>
-        <groupId>io.agentscope</groupId>
-        <artifactId>agentscope-extensions-model-dashscope</artifactId>
-        <version>${agentscope.version}</version>
+        <groupId>io.deepscope</groupId>
+        <artifactId>deepscope-extensions-model-dashscope</artifactId>
+        <version>${deepscope.version}</version>
     </dependency>
 </dependencies>
 ```
 
 **⚠️ IMPORTANT: Version Selection**
-- **Use `agentscope:1.0.12`** for production (stable, from Maven Central)
-- **Use `agentscope-core:1.0.12`** only if you're developing AgentScope itself
+- **Use `deepscope:1.0.12`** for production (stable, from Maven Central)
+- **Use `deepscope-core:1.0.12`** only if you're developing DeepScope itself
 - **NEVER use version `0.1.0-SNAPSHOT`** - this version doesn't exist
 
 ### ⚠️ CRITICAL: Common Dependency Mistakes
@@ -137,25 +137,25 @@ public static void main(String[] args) {
 ```xml
 <!-- DON'T use these - they don't exist -->
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-model-dashscope</artifactId>  <!-- ❌ WRONG -->
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-model-dashscope</artifactId>  <!-- ❌ WRONG -->
 </dependency>
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-model-openai</artifactId>  <!-- ❌ WRONG -->
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-model-openai</artifactId>  <!-- ❌ WRONG -->
 </dependency>
 ```
 
 **❌ WRONG - These versions don't exist:**
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-core</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-core</artifactId>
     <version>0.1.0-SNAPSHOT</version>  <!-- ❌ WRONG - doesn't exist -->
 </dependency>
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope</artifactId>
     <version>0.1.0</version>  <!-- ❌ WRONG - doesn't exist -->
 </dependency>
 ```
@@ -164,8 +164,8 @@ public static void main(String[] args) {
 ```xml
 <!-- For production: use the stable release from Maven Central -->
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope</artifactId>
     <version>1.0.12</version>  <!-- ✅ CORRECT -->
 </dependency>
 ```
@@ -174,19 +174,19 @@ public static void main(String[] args) {
 
 ```java
 // DashScope (Alibaba Cloud)
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
 
 // OpenAI
-import io.agentscope.extensions.model.openai.OpenAIChatModel;
+import io.deepscope.extensions.model.openai.OpenAIChatModel;
 
 // Gemini (Google)
-import io.agentscope.extensions.model.gemini.GeminiChatModel;
+import io.deepscope.extensions.model.gemini.GeminiChatModel;
 
 // Anthropic (Claude)
-import io.agentscope.extensions.model.anthropic.AnthropicChatModel;
+import io.deepscope.extensions.model.anthropic.AnthropicChatModel;
 
 // Ollama (Local models)
-import io.agentscope.extensions.model.ollama.OllamaChatModel;
+import io.deepscope.extensions.model.ollama.OllamaChatModel;
 ```
 
 ### Optional Extensions
@@ -194,16 +194,16 @@ import io.agentscope.extensions.model.ollama.OllamaChatModel;
 ```xml
 <!-- Long-term memory with Mem0 -->
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-mem0</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-mem0</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 
 <!-- RAG with Dify -->
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-rag-dify</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-rag-dify</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -211,7 +211,7 @@ import io.agentscope.extensions.model.ollama.OllamaChatModel;
 
 ## PROJECT OVERVIEW & ARCHITECTURE
 
-AgentScope Java is a reactive, message-driven multi-agent framework built on **Project Reactor** and **Java 17+**.
+DeepScope Java is a reactive, message-driven multi-agent framework built on **Project Reactor** and **Java 17+**.
 
 ### Core Abstractions
 - **`Agent`**: The fundamental unit of execution. Most agents extend `AgentBase`.
@@ -565,7 +565,7 @@ ReActAgent agent = ReActAgent.builder()
 
 ## MCP (MODEL CONTEXT PROTOCOL) INTEGRATION
 
-AgentScope supports MCP for integrating external tools and resources.
+DeepScope supports MCP for integrating external tools and resources.
 
 ```java
 // Create MCP client
@@ -869,21 +869,21 @@ return Mono.deferContextual(ctx -> {
 ## COMPLETE EXAMPLE
 
 ```java
-package com.example.agentscope;
+package com.example.deepscope;
 
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.hook.Hook;
-import io.agentscope.core.hook.HookEvent;
-import io.agentscope.core.hook.ReasoningChunkEvent;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.core.model.Model;
-import io.agentscope.core.tool.Tool;
-import io.agentscope.core.tool.ToolParam;
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.hook.Hook;
+import io.deepscope.core.hook.HookEvent;
+import io.deepscope.core.hook.ReasoningChunkEvent;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.core.model.Model;
+import io.deepscope.core.tool.Tool;
+import io.deepscope.core.tool.ToolParam;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
@@ -892,7 +892,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Complete example demonstrating AgentScope best practices.
+ * Complete example demonstrating DeepScope best practices.
  */
 public class CompleteExample {
 

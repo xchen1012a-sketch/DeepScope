@@ -1,4 +1,4 @@
-你是接手「技术顾问 App」工具 / MCP 模块的 AI。工作目录 `/Users/agent/agentscope-java`，业务代码只在 `technical-advisor-app/`。全程中文汇报，**结论先行、说重点，不要长篇抽象**。
+你是接手「技术顾问 App」工具 / MCP 模块的 AI。工作目录 `/Users/agent/deepscope-java`，业务代码只在 `technical-advisor-app/`。全程中文汇报，**结论先行、说重点，不要长篇抽象**。
 
 ## 先读，再动手
 
@@ -34,7 +34,7 @@ cd technical-advisor-app/frontend && npm test && npm run lint && npm run build
 ## 别踩
 
 - 工作区混着**三批互不相关的未提交改动**（本轮的、之前智能体管理/斜杠命令的、以及两个 docs 文件）。不要 commit、不要 push，也不要顺手清理或"规整"别人的改动
-- 不要改 `agentscope-core` / `agentscope-harness`
+- 不要改 `deepscope-core` / `deepscope-harness`
 - 新 Java 文件先 `spotless:apply` 再过门禁，否则格式检查必挂
 - 改前端文案必须中英词典同步（`i18n/locales/{en,zh-CN}/app.json`）
 - H2 测试 URL 必须带 `DB_CLOSE_DELAY=-1`；前端 TS target 是 ES2020，没有 `.at()`

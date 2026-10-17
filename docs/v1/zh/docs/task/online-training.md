@@ -44,7 +44,7 @@ Agent 在训练中可直接调用线上已部署的真实工具（如 API、数�
 
 该方案使用Trinity-RFT作为训练后端进行训练。Trinity-RFT 是一个通用、灵活、用户友好的大语言模型（LLM）强化微调（RFT）框架。
 
-Github地址：https://github.com/agentscope-ai/Trinity-RFT
+Github地址：https://github.com/deepscope-ai/Trinity-RFT
 
 版本要求：v0.4.0及以上
 
@@ -62,7 +62,7 @@ Agent Runner、Explorer 和 Trainer 可以部署在不同的服务器上。其�
 
 ### 核心功能
 
-本方案通过 AgentScope Java 原生支持**端到端在线训练**，旨在打通从生产环境到模型优化的全链路闭环，实现以下目标：
+本方案通过 DeepScope Java 原生支持**端到端在线训练**，旨在打通从生产环境到模型优化的全链路闭环，实现以下目标：
 
 - **利用线上真实交互数据**：Agent 开发者可直接基于生产环境中 Agent 的真实请求调用与工具状态，使用线上的数据进行训练
 - **极简使用体验**：Agent 开发者仅需提供关键训练配置（如：RL 中的奖励函数），即可自动完成执行、数据收集、训练全流程
@@ -76,9 +76,9 @@ Agent Runner、Explorer 和 Trainer 可以部署在不同的服务器上。其�
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-training</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-training</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 ### 定义请求筛选逻辑
@@ -117,7 +117,7 @@ agent.call(msg).block();  // 这个请求会被用于训练
 - **GPU**：至少 2 块 GPU
 
 ```bash
-git clone https://github.com/agentscope-ai/Trinity-RFT
+git clone https://github.com/deepscope-ai/Trinity-RFT
 cd Trinity-RFT
 pip install -e ".[dev]"
 pip install flash-attn==2.8.1
@@ -240,8 +240,8 @@ trainingRunner.start();
 #### 完整示例
 
 ```java
-import io.agentscope.core.training.runner.TrainingRunner;
-import io.agentscope.core.training.strategy.SamplingRateStrategy;
+import io.deepscope.core.training.runner.TrainingRunner;
+import io.deepscope.core.training.strategy.SamplingRateStrategy;
 
 // 1. 启动训练 runner（无需 Task ID/Run ID！）
 TrainingRunner runner = TrainingRunner.builder()

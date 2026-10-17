@@ -3,7 +3,7 @@ title: JDBC
 en_link: /v2/en/integration/distributed/jdbc
 ---
 
-`agentscope-extensions-jdbc` 提供基于标准 JDBC 的全链路分布式存储实现，是关系型数据库的统一入口：传入任意 JDBC `DataSource`，方言通过 SPI 自动检测，无需针对数据库单独选型。适合已有关系型数据库基础设施的场景。
+`deepscope-extensions-jdbc` 提供基于标准 JDBC 的全链路分布式存储实现，是关系型数据库的统一入口：传入任意 JDBC `DataSource`，方言通过 SPI 自动检测，无需针对数据库单独选型。适合已有关系型数据库基础设施的场景。
 
 目前已支持的数据库：
 
@@ -16,15 +16,15 @@ en_link: /v2/en/integration/distributed/jdbc
 
 后续将持续扩展对更多关系型数据库的支持，包括 Oracle 以及达梦、高斯、OceanBase 等国产数据库。
 
-> 历史模块 `agentscope-extensions-mysql`、`agentscope-extensions-postgresql`、`agentscope-extensions-skill-mysql-repository`、`agentscope-extensions-skill-postgresql-repository` 已废弃，由本模块统一取代，迁移方式见下文。
+> 历史模块 `deepscope-extensions-mysql`、`deepscope-extensions-postgresql`、`deepscope-extensions-skill-mysql-repository`、`deepscope-extensions-skill-postgresql-repository` 已废弃，由本模块统一取代，迁移方式见下文。
 
 ## 添加依赖
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-jdbc</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-jdbc</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -33,7 +33,7 @@ en_link: /v2/en/integration/distributed/jdbc
 ## 一键配置
 
 ```java
-import io.agentscope.extensions.jdbc.JdbcDistributedStore;
+import io.deepscope.extensions.jdbc.JdbcDistributedStore;
 
 DataSource dataSource = ...;  // HikariCP, Druid, etc.
 DistributedStore store = JdbcDistributedStore.create(dataSource);
@@ -49,7 +49,7 @@ HarnessAgent agent = HarnessAgent.builder()
 
 ```java
 AbstractJdbcDialect dialect = AbstractJdbcDialect.from(dataSource)
-    .tablePrefix("myapp_")            // 默认 agentscope_
+    .tablePrefix("myapp_")            // 默认 deepscope_
     .build();
 
 DistributedStore store = JdbcDistributedStore.create(dataSource, dialect);
@@ -63,10 +63,10 @@ DistributedStore store = JdbcDistributedStore.create(dataSource, dialect);
 AbstractJdbcDialect dialect = AbstractJdbcDialect.from(dataSource)
     .enableBaseTables(true)      // 默认开 —— store、sessions、snapshots
     .enableSkillTables(true)     // 默认关 —— 显式开启才建 skill 表
-    .build();                    // 会创建 agentscope_skills / agentscope_skill_resources
+    .build();                    // 会创建 deepscope_skills / deepscope_skill_resources
 ```
 
-默认创建的表：`agentscope_store`、`agentscope_sessions`、`agentscope_snapshots`；锁表 `agentscope_distributed_locks` 在首次加锁时创建。开启 skill 表组后额外创建：`agentscope_skills`、`agentscope_skill_resources`。
+默认创建的表：`deepscope_store`、`deepscope_sessions`、`deepscope_snapshots`；锁表 `deepscope_distributed_locks` 在首次加锁时创建。开启 skill 表组后额外创建：`deepscope_skills`、`deepscope_skill_resources`。
 
 ## 提供的组件
 
@@ -75,8 +75,8 @@ AbstractJdbcDialect dialect = AbstractJdbcDialect.from(dataSource)
 Agent 状态持久化到数据库表。
 
 ```java
-import io.agentscope.extensions.jdbc.dialect.AbstractJdbcDialect;
-import io.agentscope.extensions.jdbc.state.JdbcAgentStateStore;
+import io.deepscope.extensions.jdbc.dialect.AbstractJdbcDialect;
+import io.deepscope.extensions.jdbc.state.JdbcAgentStateStore;
 
 AbstractJdbcDialect dialect = AbstractJdbcDialect.from(dataSource).build();  // 建表与校验在此完成
 
@@ -90,7 +90,7 @@ AgentStateStore store = new JdbcAgentStateStore(dataSource, dialect);
 工作区文件系统 KV 存储，SQL 全部来自方言层，组件本身与数据库无关。
 
 ```java
-import io.agentscope.extensions.jdbc.store.JdbcStore;
+import io.deepscope.extensions.jdbc.store.JdbcStore;
 
 BaseStore store = JdbcStore.builder(dataSource)
     .dialect(dialect)
@@ -104,7 +104,7 @@ BaseStore store = JdbcStore.builder(dataSource)
 沙箱快照以 BLOB 存储到数据库表（MySQL 为 LONGBLOB，PostgreSQL 为 BYTEA）。
 
 ```java
-import io.agentscope.extensions.jdbc.snapshot.JdbcSnapshotSpec;
+import io.deepscope.extensions.jdbc.snapshot.JdbcSnapshotSpec;
 
 SandboxSnapshotSpec spec = new JdbcSnapshotSpec(dataSource, dialect);
 ```
@@ -114,10 +114,10 @@ SandboxSnapshotSpec spec = new JdbcSnapshotSpec(dataSource, dialect);
 分布式锁，锁策略由方言决定：
 
 - **MySQL**：原生 `GET_LOCK()` / `RELEASE_LOCK()`，锁绑定 JDBC 连接，连接关闭时自动释放；lock name 超过 64 字符时自动 hash。
-- **PostgreSQL / H2 / SQLite**：基于 `agentscope_distributed_locks` 表的通用锁，不依赖数据库私有语法。
+- **PostgreSQL / H2 / SQLite**：基于 `deepscope_distributed_locks` 表的通用锁，不依赖数据库私有语法。
 
 ```java
-import io.agentscope.extensions.jdbc.sandbox.JdbcSandboxExecutionGuard;
+import io.deepscope.extensions.jdbc.sandbox.JdbcSandboxExecutionGuard;
 
 SandboxExecutionGuard guard = JdbcSandboxExecutionGuard.builder(dialect)
     .keyPrefix("myapp:lock:")
@@ -132,8 +132,8 @@ SandboxExecutionGuard guard = JdbcSandboxExecutionGuard.builder(dialect)
 skill 存储走同一套方言：实现 core 的 `AgentSkillRepository`，本模块支持的每个数据库都能直接作为 skill 通道。
 
 ```java
-import io.agentscope.core.skill.repository.AgentSkillRepository;
-import io.agentscope.extensions.jdbc.skill.JdbcAgentSkillRepository;
+import io.deepscope.core.skill.repository.AgentSkillRepository;
+import io.deepscope.extensions.jdbc.skill.JdbcAgentSkillRepository;
 
 AbstractJdbcDialect dialect = AbstractJdbcDialect.from(dataSource)
     .enableSkillTables(true)
@@ -142,7 +142,7 @@ AbstractJdbcDialect dialect = AbstractJdbcDialect.from(dataSource)
 AgentSkillRepository repo = new JdbcAgentSkillRepository(dataSource, dialect);
 ```
 
-建两张表：`agentscope_skills` 和 `agentscope_skill_resources`（复合主键 `(id, resource_path)`，外键 `ON DELETE CASCADE`）。与其他组件一样，repository 不碰 schema——表组在 build 时开启；方言没开表组就直接构造，会立刻报错。
+建两张表：`deepscope_skills` 和 `deepscope_skill_resources`（复合主键 `(id, resource_path)`，外键 `ON DELETE CASCADE`）。与其他组件一样，repository 不碰 schema——表组在 build 时开启；方言没开表组就直接构造，会立刻报错。
 
 两点行为说明：
 
@@ -151,7 +151,7 @@ AgentSkillRepository repo = new JdbcAgentSkillRepository(dataSource, dialect);
 
 #### 作用域隔离（namespace）
 
-技能名跨团队重名是常态，`agentscope_skills` 用 `namespace` 列做作用域隔离：唯一键为 **`UNIQUE(namespace, name)`**，namespace 内唯一、跨 namespace 可重名。`skill_resources` 同样带 `namespace` 列，与技能行同一事务写入。这也是 `AgentSkillRepository` 作用域隔离契约在关系型存储上的落地：**一个实例绑定一个 namespace，无参方法全部作用于绑定值**。
+技能名跨团队重名是常态，`deepscope_skills` 用 `namespace` 列做作用域隔离：唯一键为 **`UNIQUE(namespace, name)`**，namespace 内唯一、跨 namespace 可重名。`skill_resources` 同样带 `namespace` 列，与技能行同一事务写入。这也是 `AgentSkillRepository` 作用域隔离契约在关系型存储上的落地：**一个实例绑定一个 namespace，无参方法全部作用于绑定值**。
 
 ```sql
 namespace VARCHAR(64) NOT NULL DEFAULT 'default'   -- 存量行自动落入 default
@@ -184,37 +184,37 @@ teamA.save("team-b", List.of(otherSkill), false);
 
 ```sql
 -- 1. 加列（瞬时完成，存量行自动归入 default；两张表都要）
-ALTER TABLE agentscope_skills
+ALTER TABLE deepscope_skills
   ADD COLUMN namespace VARCHAR(64) NOT NULL DEFAULT 'default';
-ALTER TABLE agentscope_skill_resources
+ALTER TABLE deepscope_skill_resources
   ADD COLUMN namespace VARCHAR(64) NOT NULL DEFAULT 'default';
 
 -- 2. 仅 MySQL——把隔离边界固定为大小写敏感比较（会重建表，建议低峰执行）
-ALTER TABLE agentscope_skills
+ALTER TABLE deepscope_skills
   MODIFY COLUMN namespace VARCHAR(64) COLLATE utf8mb4_bin NOT NULL DEFAULT 'default';
-ALTER TABLE agentscope_skill_resources
+ALTER TABLE deepscope_skill_resources
   MODIFY COLUMN namespace VARCHAR(64) COLLATE utf8mb4_bin NOT NULL DEFAULT 'default';
 
 -- 3. 重建唯一索引（建议低峰执行：先删旧的单列唯一，再建复合唯一），
 --    并为资源表的 namespace 建索引
-ALTER TABLE agentscope_skills DROP INDEX name;
-ALTER TABLE agentscope_skills
+ALTER TABLE deepscope_skills DROP INDEX name;
+ALTER TABLE deepscope_skills
   ADD UNIQUE KEY uk_namespace_name (namespace, name);
-ALTER TABLE agentscope_skill_resources ADD INDEX idx_namespace (namespace);
+ALTER TABLE deepscope_skill_resources ADD INDEX idx_namespace (namespace);
 ```
 
 PostgreSQL 变体：
 
 ```sql
-ALTER TABLE agentscope_skills ADD COLUMN namespace VARCHAR(64) NOT NULL DEFAULT 'default';
-ALTER TABLE agentscope_skill_resources ADD COLUMN namespace VARCHAR(64) NOT NULL DEFAULT 'default';
-ALTER TABLE agentscope_skills DROP CONSTRAINT agentscope_skills_name_key;
-ALTER TABLE agentscope_skills ADD CONSTRAINT uk_namespace_name UNIQUE (namespace, name);
-CREATE INDEX IF NOT EXISTS agentscope_skill_resources_namespace_idx
-  ON agentscope_skill_resources (namespace);
+ALTER TABLE deepscope_skills ADD COLUMN namespace VARCHAR(64) NOT NULL DEFAULT 'default';
+ALTER TABLE deepscope_skill_resources ADD COLUMN namespace VARCHAR(64) NOT NULL DEFAULT 'default';
+ALTER TABLE deepscope_skills DROP CONSTRAINT deepscope_skills_name_key;
+ALTER TABLE deepscope_skills ADD CONSTRAINT uk_namespace_name UNIQUE (namespace, name);
+CREATE INDEX IF NOT EXISTS deepscope_skill_resources_namespace_idx
+  ON deepscope_skill_resources (namespace);
 ```
 
-H2 的旧唯一约束可以按名字 `ALTER TABLE agentscope_skills DROP CONSTRAINT <约束名>` 后重建。SQLite 不同：内联 `UNIQUE` 产生的隐式索引删不掉，需要按"建新表 → 拷数据 → 删旧表 → 改名"的标准表重建流程处理（两张表都在建新表时写好 `namespace` 列，skills 表同时写 `UNIQUE(namespace, name)`）。
+H2 的旧唯一约束可以按名字 `ALTER TABLE deepscope_skills DROP CONSTRAINT <约束名>` 后重建。SQLite 不同：内联 `UNIQUE` 产生的隐式索引删不掉，需要按"建新表 → 拷数据 → 删旧表 → 改名"的标准表重建流程处理（两张表都在建新表时写好 `namespace` 列，skills 表同时写 `UNIQUE(namespace, name)`）。
 
 启动校验只比对列不比对索引，**第 2、3 步都要做**（第 3 步拆除全局 `UNIQUE(name)`；第 2 步使 MySQL 下 namespace 比较大小写敏感）。资源表索引仅影响性能。
 
@@ -233,7 +233,7 @@ skill 仓库迁移要点：
 
 - 现行旧模块建的表已包含 `metadata_json`，原样可用；更早的旧表先补上这一列，启动报错里附有参考 DDL。
 - "原样可用"有一个例外：旧模块从不拒绝绝对路径或含 `..` 的资源路径，而新实现对读取的行做同样校验——`getSkill` 会拒绝这类行，`getAllSkills` / `getAllSkillNames` 会跳过并告警。名字本身非法的行也无法通过 API 删除，只能 `clearAllSkills` 或直接 SQL 处理。迁移前请先审计 `resource_path` 和技能名；这些值本就无法被下游安全消费。
-- 旧模块会隐式创建 `agentscope` 库（MySQL）/ schema（PostgreSQL）；新实现的表放在连接所指向的库里——把 `DataSource` 指向存量表即可。
+- 旧模块会隐式创建 `deepscope` 库（MySQL）/ schema（PostgreSQL）；新实现的表放在连接所指向的库里——把 `DataSource` 指向存量表即可。
 - `databaseName` / `schemaName` 无对应物——表跟随 DataSource 所指向的库，与基础表一致。表名可用 `skillTableName` / `skillResourcesTableName` 覆盖。相应地，`getSource()` 由 `mysql_<库名>_<表名>` / `postgresql_<schema>_<表名>` 变为 `jdbc_<skillTableName>@<namespace>`（namespace 后缀保证同一张表的不同作用域互不混淆）：以其为键的消费方（如 skill 暂存缓存命名空间）迁移后会使用新的子目录，旧目录由孤儿 GC 回收。
 
 ## 选型建议

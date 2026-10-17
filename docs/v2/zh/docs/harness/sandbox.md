@@ -78,7 +78,7 @@ agent.call(msg, RuntimeContext.builder()
 ```java
 .filesystem(new DockerFilesystemSpec()
     .image("ubuntu:24.04")
-    .snapshotSpec(new OssSnapshotSpec(ossClient, "my-bucket", "agentscope/")))
+    .snapshotSpec(new OssSnapshotSpec(ossClient, "my-bucket", "deepscope/")))
 ```
 
 `AGENTS.md` / `skills/` / `subagents/` / `knowledge/` 等宿主侧的工作区文件会在每次沙箱启动时同步进沙箱（按内容哈希增量）。你改了 `skills/` 里的脚本，下次 `call()` 沙箱里就是新版。
@@ -226,7 +226,7 @@ agent-sandbox 后端不通过 `kubectl exec` 进容器，而是访问运行时�
 | `GET /download/{path}` | 按相对路径下载文件字节 |
 | `GET /list/{path}`、`GET /exists/{path}` | 目录列表 / 存在性检查 |
 
-**文件 API 根目录必须与工作区根一致**（推荐都用 `/workspace`）。Harness 通过 `/upload` / `/download` 传输两类内容：工作区快照 tar 包（临时文件放在根目录下的 `.agentscope-tmp/`），以及 `write_file` / 文件下载涉及的单文件字节（路径在根目录之下时；Linux 对单个命令行参数有约 128 KiB 上限，走文件 API 的原生传输不受此限制）。根目录通过 `KubernetesSandboxClientOptions.fileApiBaseDir` 配置（默认 `/workspace`）；置空则退回 base64-over-exec 传输。
+**文件 API 根目录必须与工作区根一致**（推荐都用 `/workspace`）。Harness 通过 `/upload` / `/download` 传输两类内容：工作区快照 tar 包（临时文件放在根目录下的 `.deepscope-tmp/`），以及 `write_file` / 文件下载涉及的单文件字节（路径在根目录之下时；Linux 对单个命令行参数有约 128 KiB 上限，走文件 API 的原生传输不受此限制）。根目录通过 `KubernetesSandboxClientOptions.fileApiBaseDir` 配置（默认 `/workspace`）；置空则退回 base64-over-exec 传输。
 
 > 注意：agent-sandbox 上游仓库的示例运行时（`examples/python-runtime-sandbox`）用 `shlex.split` 直接 `subprocess.run`、不经过 shell，且文件 API 根目录是 `/app`——**不满足本契约**，只能作为端点形状的参考。上游 KEP-539.2 正在推进运行时接口的正式标准化（REST/gRPC 规范 + 一致性测试），未来可对齐官方规范。
 
@@ -291,7 +291,7 @@ Sandbox 内对文件的修改不会反向同步回宿主——你想取沙箱里
 
 ## 实现自己的沙箱后端
 
-需要接入 Docker 以外的隔离环境（自建远端执行器、商用沙箱 API、本地 mock 等），不需要改 Harness 源码——实现几个契约接口然后传给 `filesystem(...)` 就行。参考 `agentscope-harness` 测试里的 `InMemorySandbox` 系列，是最小可改造骨架。
+需要接入 Docker 以外的隔离环境（自建远端执行器、商用沙箱 API、本地 mock 等），不需要改 Harness 源码——实现几个契约接口然后传给 `filesystem(...)` 就行。参考 `deepscope-harness` 测试里的 `InMemorySandbox` 系列，是最小可改造骨架。
 
 ## 相关文档
 

@@ -5,7 +5,7 @@ en_link: /v1/en/docs/task/memory
 
 ## 概述
 
-记忆负责管理 AgentScope 中智能体的对话历史和上下文。AgentScope 提供两种类型的记忆：
+记忆负责管理 DeepScope 中智能体的对话历史和上下文。DeepScope 提供两种类型的记忆：
 
 - **短期记忆 (Short-term Memory)**：存储当前会话的对话历史，需要结合 Session 进行持久化和恢复
 - **长期记忆 (Long-term Memory)**：存储跨会话的用户偏好和知识，依赖外部记忆组件（如 Mem0、ReMe）自动持久化
@@ -65,8 +65,8 @@ public interface Memory extends StateModule {
 **使用示例**：
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.InMemoryMemory;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.InMemoryMemory;
 
 ReActAgent agent = ReActAgent.builder()
         .name("Assistant")
@@ -88,8 +88,8 @@ System.out.println("消息总数: " + history.size());
 短期记忆需要结合 `SessionManager` 实现持久化，以支持重启恢复会话。
 
 ```java
-import io.agentscope.core.session.JsonSession;
-import io.agentscope.core.session.SessionManager;
+import io.deepscope.core.session.JsonSession;
+import io.deepscope.core.session.SessionManager;
 
 // 创建 Agent 和 Memory
 InMemoryMemory memory = new InMemoryMemory();
@@ -114,7 +114,7 @@ sessionManager.loadIfExists();
 sessionManager.saveSession();
 ```
 
-**完整示例**：`agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/SessionExample.java`
+**完整示例**：`deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/SessionExample.java`
 
 ## 长期记忆 (Long-term Memory)
 
@@ -155,9 +155,9 @@ Mem0 的自建部署和 Platform 提供的 OpenAPI 接口不一致（端点路�
 **Platform Mem0（默认）**：
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.LongTermMemoryMode;
-import io.agentscope.core.memory.mem0.Mem0LongTermMemory;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.LongTermMemoryMode;
+import io.deepscope.core.memory.mem0.Mem0LongTermMemory;
 
 // 使用 Platform Mem0（默认，无需指定 apiType）
 Mem0LongTermMemory longTermMemory = Mem0LongTermMemory.builder()
@@ -178,10 +178,10 @@ ReActAgent agent = ReActAgent.builder()
 **自建 Mem0**：
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.LongTermMemoryMode;
-import io.agentscope.core.memory.mem0.Mem0ApiType;
-import io.agentscope.core.memory.mem0.Mem0LongTermMemory;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.LongTermMemoryMode;
+import io.deepscope.core.memory.mem0.Mem0ApiType;
+import io.deepscope.core.memory.mem0.Mem0LongTermMemory;
 
 // 使用自建 Mem0，需要指定 apiType 为 Mem0ApiType.SELF_HOSTED
 Mem0LongTermMemory selfHostedMemory = Mem0LongTermMemory.builder()
@@ -212,7 +212,7 @@ ReActAgent agent = ReActAgent.builder()
   - Platform Mem0：必需
   - 自建 Mem0：取决于您的服务配置，可能不需要
 
-**完整示例**：`agentscope-examples/documentation/advanced/src/main/java/io/agentscope/examples/advanced/Mem0Example.java`
+**完整示例**：`deepscope-examples/documentation/advanced/src/main/java/io/deepscope/examples/advanced/Mem0Example.java`
 
 **运行示例**：
 
@@ -220,27 +220,27 @@ ReActAgent agent = ReActAgent.builder()
 # Platform Mem0（默认）
 export MEM0_API_KEY=your_api_key
 export MEM0_API_BASE_URL=https://api.mem0.ai  # 可选，默认为此值
-cd agentscope-examples/documentation/advanced
-mvn exec:java -Dexec.mainClass="io.agentscope.examples.advanced.Mem0Example"
+cd deepscope-examples/documentation/advanced
+mvn exec:java -Dexec.mainClass="io.deepscope.examples.advanced.Mem0Example"
 
 # 自建 Mem0
 export MEM0_API_KEY=your_api_key  # 可选，取决于服务配置
 export MEM0_API_BASE_URL=http://localhost:8000
 export MEM0_API_TYPE=self-hosted
-cd agentscope-examples/documentation/advanced
-mvn exec:java -Dexec.mainClass="io.agentscope.examples.advanced.Mem0Example"
+cd deepscope-examples/documentation/advanced
+mvn exec:java -Dexec.mainClass="io.deepscope.examples.advanced.Mem0Example"
 ```
 
 ### ReMeLongTermMemory
 
-基于 [ReMe](https://github.com/agentscope-ai/ReMe) 的长期记忆实现。
+基于 [ReMe](https://github.com/deepscope-ai/ReMe) 的长期记忆实现。
 
 **使用示例**：
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.LongTermMemoryMode;
-import io.agentscope.core.memory.reme.ReMeLongTermMemory;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.LongTermMemoryMode;
+import io.deepscope.core.memory.reme.ReMeLongTermMemory;
 
 ReMeLongTermMemory longTermMemory = ReMeLongTermMemory.builder()
         .userId("example_user")
@@ -255,14 +255,14 @@ ReActAgent agent = ReActAgent.builder()
         .build();
 ```
 
-**完整示例**：`agentscope-examples/documentation/advanced/src/main/java/io/agentscope/examples/advanced/ReMeExample.java`
+**完整示例**：`deepscope-examples/documentation/advanced/src/main/java/io/deepscope/examples/advanced/ReMeExample.java`
 
 **运行示例**：
 
 ```bash
 # 需要配置 REME_API_BASE_URL 环境变量（可选，默认为 http://localhost:8002）
 cd examples/advanced
-mvn exec:java -Dexec.mainClass="io.agentscope.examples.advanced.ReMeExample"
+mvn exec:java -Dexec.mainClass="io.deepscope.examples.advanced.ReMeExample"
 ```
 
 ### BailianLongTermMemory
@@ -272,9 +272,9 @@ mvn exec:java -Dexec.mainClass="io.agentscope.examples.advanced.ReMeExample"
 **使用示例**：
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.LongTermMemoryMode;
-import io.agentscope.core.memory.bailian.BailianLongTermMemory;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.LongTermMemoryMode;
+import io.deepscope.core.memory.bailian.BailianLongTermMemory;
 
 BailianLongTermMemory longTermMemory = BailianLongTermMemory.builder()
         .apiKey(System.getenv("DASHSCOPE_API_KEY"))
@@ -301,7 +301,7 @@ ReActAgent agent = ReActAgent.builder()
 - `projectId`：百炼记忆片段规则 ID（可选）
 - `profileSchema`：百炼用户画像规则 ID（可选）
 
-**完整示例**：`agentscope-examples/documentation/advanced/src/main/java/io/agentscope/examples/advanced/BailianMemoryExample.java`
+**完整示例**：`deepscope-examples/documentation/advanced/src/main/java/io/deepscope/examples/advanced/BailianMemoryExample.java`
 
 **运行示例**：
 
@@ -312,8 +312,8 @@ export BAILIAN_MEMORY_LIBRARY_ID=your_library_id
 export BAILIAN_PROJECT_ID=your_project_id
 export BAILIAN_PROFILE_SCHEMA=your_profile_schema
 
-cd agentscope-examples/documentation/advanced
-mvn exec:java -Dexec.mainClass="io.agentscope.examples.advanced.BailianMemoryExample"
+cd deepscope-examples/documentation/advanced
+mvn exec:java -Dexec.mainClass="io.deepscope.examples.advanced.BailianMemoryExample"
 ```
 
 ## 相关文档

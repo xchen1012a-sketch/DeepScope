@@ -3,7 +3,7 @@ title: Studio
 en_link: /v2/en/integration/ecosystem/studio
 ---
 
-`agentscope-extensions-studio` 把 Agent 接入 [AgentScope Studio](https://github.com/agentscope-ai/agentscope-studio)：每次 Agent 调用都会被推送到 Studio，用作可视化调试、链路回放、Human-in-the-Loop 输入。
+`deepscope-extensions-studio` 把 Agent 接入 [DeepScope Studio](https://github.com/deepscope-ai/deepscope-studio)：每次 Agent 调用都会被推送到 Studio，用作可视化调试、链路回放、Human-in-the-Loop 输入。
 
 ## 何时使用
 
@@ -14,17 +14,17 @@ en_link: /v2/en/integration/ecosystem/studio
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-studio</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-studio</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## 快速上手
 
 ```java
-import io.agentscope.core.studio.StudioManager;
-import io.agentscope.core.studio.StudioMessageHook;
+import io.deepscope.core.studio.StudioManager;
+import io.deepscope.core.studio.StudioMessageHook;
 
 // 1) 初始化 Studio 连接（HTTP + WebSocket）
 StudioManager.init()
@@ -68,7 +68,7 @@ agent.call(msg).block();
 
 ```java
 @Bean
-@ConditionalOnProperty("agentscope.studio.enabled")
+@ConditionalOnProperty("deepscope.studio.enabled")
 StudioMessageHook studioHook() {
     StudioManager.init().studioUrl(url).project(project).initialize().block();
     return new StudioMessageHook(StudioManager.getClient());

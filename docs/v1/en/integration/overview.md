@@ -3,7 +3,7 @@ title: Overview
 zh_link: /v1/zh/integration/overview
 ---
 
-This section will cover third-party integrations, extensions, and ecosystem connectors for AgentScope Java.
+This section will cover third-party integrations, extensions, and ecosystem connectors for DeepScope Java.
 
 
 <Note>

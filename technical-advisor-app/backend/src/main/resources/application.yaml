@@ -61,7 +61,7 @@ logging:
   pattern:
     level: '%5p [document=%X{documentId} attempt=%X{attemptId}]'
 
-agentscope:
+deepscope:
   model:
     provider: openai
   openai:

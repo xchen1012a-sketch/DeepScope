@@ -143,7 +143,7 @@ agent.exitPlanMode(ctx);     // 等价于 plan_exit；程序入口不会触发 H
 agent.isPlanModeActive(ctx);
 ```
 
-如果用了 `agentscope-admin-spring-boot-starter`，还可以通过 admin HTTP 接口操作（`POST /v1/admin/sessions/{id}:enter-plan-mode` / `:exit-plan-mode` / `GET /v1/admin/sessions/{id}/plan`）。
+如果用了 `deepscope-admin-spring-boot-starter`，还可以通过 admin HTTP 接口操作（`POST /v1/admin/sessions/{id}:enter-plan-mode` / `:exit-plan-mode` / `GET /v1/admin/sessions/{id}/plan`）。
 
 ## 与子 agent 的关系
 
@@ -177,7 +177,7 @@ for (Task t : tasks) {
 }
 ```
 
-如果用了 `agentscope-admin-spring-boot-starter`，可以直接调 admin REST 接口：
+如果用了 `deepscope-admin-spring-boot-starter`，可以直接调 admin REST 接口：
 
 ```
 GET /v1/admin/sessions/{sessionId}/tasks

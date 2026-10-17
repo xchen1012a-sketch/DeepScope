@@ -1,12 +1,12 @@
 ---
-title: AgentScope Java v1
+title: DeepScope Java v1
 description: 构建分布式企业级智能体
 mode: custom
 toc: false
 en_link: /v1/en/intro
 ---
 
-<div className="agentscope-landing">
+<div className="deepscope-landing">
 
 <div className="hs-hero">
 
@@ -17,11 +17,11 @@ en_link: /v1/en/intro
 </h1>
 
 <p className="hs-hero__desc">
-AgentScope Java 是面向 JVM 的开源 Agent 框架。提供 ReAct 推理、Harness 工程化基础设施、多智能体编排与 MCP/A2A 协议支持，覆盖从本地原型到企业级分布式部署全链路。
+DeepScope Java 是面向 JVM 的开源 Agent 框架。提供 ReAct 推理、Harness 工程化基础设施、多智能体编排与 MCP/A2A 协议支持，覆盖从本地原型到企业级分布式部署全链路。
 </p>
 
 <div className="hs-hero__actions">
- <a href="/v1/zh/docs/harness/overview" className="hs-btn hs-btn--primary">快速开始 →</a> <a href="https://github.com/agentscope-ai/agentscope-java" className="hs-btn hs-btn--secondary"> <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.167 6.839 9.49.5.09.682-.217.682-.48 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.577.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path></svg> GitHub </a>
+ <a href="/v1/zh/docs/harness/overview" className="hs-btn hs-btn--primary">快速开始 →</a> <a href="https://github.com/xchen1012a-sketch/DeepScope" className="hs-btn hs-btn--secondary"> <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.167 6.839 9.49.5.09.682-.217.682-.48 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.577.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path></svg> GitHub </a>
 </div>
 
 <div className="hs-hero__badges">
@@ -61,7 +61,7 @@ AgentScope Java 是面向 JVM 的开源 Agent 框架。提供 ReAct 推理、Har
 <div className="hs-code-panel" id="zh-react" style={{"display": "none"}}>
 
 ```java
-import io.agentscope.core.*;
+import io.deepscope.core.*;
 var agent = ReActAgent.builder()
     .name("assistant")
     .model(new QwenConfig("qwen-plus"))
@@ -76,7 +76,7 @@ agent.call(messages).block();
 <div className="hs-code-panel" id="zh-harness">
 
 ```java
-import io.agentscope.harness.*;
+import io.deepscope.harness.*;
 var agent = HarnessAgent.builder()
     .name("coder")
     .model(new QwenConfig("qwen-plus"))
@@ -91,7 +91,7 @@ agent.call(messages, RuntimeContext.builder()
 </div>
 
 <div className="hs-install">
- <code>io.agentscope:agentscope-harness</code> <button className="hs-copy-btn" data-copy-base64="aW8uYWdlbnRzY29wZTphZ2VudHNjb3BlLWhhcm5lc3M=">复制 Maven</button>
+ <code>io.deepscope:deepscope-harness</code> <button className="hs-copy-btn" data-copy-base64="aW8uYWdlbnRzY29wZTphZ2VudHNjb3BlLWhhcm5lc3M=">复制 Maven</button>
 </div>
 
 </div>
@@ -316,7 +316,7 @@ A2A 协议支持跨进程、跨机器调用
 </h2>
 
 <p>
-从推理核心到企业部署，AgentScope Java 覆盖智能体开发全链路。
+从推理核心到企业部署，DeepScope Java 覆盖智能体开发全链路。
 </p>
 
 </div>
@@ -390,7 +390,7 @@ A2A 协议
 </h3>
 
 <p>
-可插拔 Tracer SPI，原生支持 OpenTelemetry 分布式追踪。AgentScope Studio 提供可视化调试与实时监控面板。
+可插拔 Tracer SPI，原生支持 OpenTelemetry 分布式追踪。DeepScope Studio 提供可视化调试与实时监控面板。
 </p>
  <span className="hs-card__link">查看 Studio →</span>
 </a>
@@ -420,7 +420,7 @@ A2A 协议
 </h2>
 
 <p>
-还有疑问？欢迎在 <a href="https://github.com/agentscope-ai/agentscope-java/discussions" style={{"color": "var(--hs-accent)"}}>GitHub Discussions</a> 提问。
+还有疑问？欢迎在 <a href="https://github.com/xchen1012a-sketch/DeepScope/discussions" style={{"color": "var(--hs-accent)"}}>GitHub Discussions</a> 提问。
 </p>
 
 </div>
@@ -428,7 +428,7 @@ A2A 协议
 <details className="hs-faq-item">
 
 <summary>
-AgentScope Java 需要什么 Java 版本？
+DeepScope Java 需要什么 Java 版本？
 </summary>
 
 <p>
@@ -468,7 +468,7 @@ Harness 和普通 ReActAgent 有什么区别？
 </summary>
 
 <p>
-可以。AgentScope Java 的核心模块是框架无关的 Java 库，可以直接在 Spring Boot、Quarkus、Micronaut 或任意 JVM 应用中作为依赖引入，无任何侵入性。Quarkus 可进一步利用 GraalVM 原生镜像编译实现超低延迟冷启动，适合 Serverless 场景。
+可以。DeepScope Java 的核心模块是框架无关的 Java 库，可以直接在 Spring Boot、Quarkus、Micronaut 或任意 JVM 应用中作为依赖引入，无任何侵入性。Quarkus 可进一步利用 GraalVM 原生镜像编译实现超低延迟冷启动，适合 Serverless 场景。
 </p>
 
 </details>
@@ -480,7 +480,7 @@ Harness 和普通 ReActAgent 有什么区别？
 </summary>
 
 <p>
-AgentScope Java 天然支持无状态水平扩展：将会话状态托管到 <code>RedisSession</code>，文件工作区迁移到对象存储（<code>OssFilesystemSpec</code>），任意副本均可恢复同一用户的完整上下文。结合 Kubernetes 与 HPA，可实现毫秒级弹性扩缩容。
+DeepScope Java 天然支持无状态水平扩展：将会话状态托管到 <code>RedisSession</code>，文件工作区迁移到对象存储（<code>OssFilesystemSpec</code>），任意副本均可恢复同一用户的完整上下文。结合 Kubernetes 与 HPA，可实现毫秒级弹性扩缩容。
 </p>
 
 </details>

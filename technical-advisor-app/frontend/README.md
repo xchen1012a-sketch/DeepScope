@@ -1,6 +1,6 @@
 # 技术参谋前端
 
-实际应用目录为 `technical-advisor-app`：`backend` 运行单体后端，`frontend` 用于开发和构建界面。仓库中的 AgentScope 模块提供底层能力。
+实际应用目录为 `technical-advisor-app`：`backend` 运行单体后端，`frontend` 用于开发和构建界面。仓库中的 DeepScope 模块提供底层能力。
 
 ## 本地开发
 

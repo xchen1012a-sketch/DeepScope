@@ -3,7 +3,7 @@ title: 安装
 en_link: /v1/en/docs/quickstart/installation
 ---
 
-AgentScope Java 支持多种模型、RAG 后端和扩展功能，各自需要不同的第三方 SDK。把所有依赖打包到一起会让项目变得臃肿，所以我们提供了两种引入方式：
+DeepScope Java 支持多种模型、RAG 后端和扩展功能，各自需要不同的第三方 SDK。把所有依赖打包到一起会让项目变得臃肿，所以我们提供了两种引入方式：
 
 - **All-in-one**：一个依赖搞定，默认带常用模型扩展（OpenAI / Gemini / Anthropic / DashScope / Ollama）和 MCP SDK，快速上手
 - **Core + 扩展**：最小化核心包，按需加扩展模块，适合对依赖有严格要求的场景
@@ -26,22 +26,22 @@ AgentScope Java 支持多种模型、RAG 后端和扩展功能，各自需要不
 **Maven：**
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope</artifactId>
     <version>2.0.0</version>
 </dependency>
 ```
 
 **Gradle：**
 ```gradle
-implementation 'io.agentscope:agentscope:2.0.0'
+implementation 'io.deepscope:deepscope:2.0.0'
 ```
 
 ### 默认包含的依赖
 
-All-in-one 包（`io.agentscope:agentscope`）已打包常用模型扩展及其所需第三方 SDK，**不必再额外引入模型厂商 SDK**：
+All-in-one 包（`io.deepscope:deepscope`）已打包常用模型扩展及其所需第三方 SDK，**不必再额外引入模型厂商 SDK**：
 
-- OpenAI 模型支持（`agentscope-extensions-model-openai`，原生 HTTP，无需 `openai-java`）
+- OpenAI 模型支持（`deepscope-extensions-model-openai`，原生 HTTP，无需 `openai-java`）
 - Google Gemini 模型支持（含 Google GenAI SDK）
 - Anthropic 模型支持（含 Anthropic Java SDK）
 - DashScope 模型支持（通义千问系列）
@@ -74,7 +74,7 @@ All-in-one 包（`io.agentscope:agentscope`）已打包常用模型扩展及其�
 #### 示例：用 Qdrant RAG + PDF 处理
 
 ```xml
-<!-- 在 agentscope 基础上加（仅当对应传递依赖未满足运行时需要时） -->
+<!-- 在 deepscope 基础上加（仅当对应传递依赖未满足运行时需要时） -->
 <dependency>
     <groupId>io.qdrant</groupId>
     <artifactId>client</artifactId>
@@ -87,7 +87,7 @@ All-in-one 包（`io.agentscope:agentscope`）已打包常用模型扩展及其�
 
 ### Studio 集成
 
-接入 [AgentScope Studio](https://github.com/modelscope/agentscope) 做可视化调试，需要加这些依赖：
+接入 [DeepScope Studio](https://github.com/modelscope/deepscope) 做可视化调试，需要加这些依赖：
 
 | 依赖 | Maven 坐标 |
 |-----|-----------|
@@ -100,7 +100,7 @@ All-in-one 包（`io.agentscope:agentscope`）已打包常用模型扩展及其�
 完整配置：
 
 ```xml
-<!-- 在 agentscope 基础上加 -->
+<!-- 在 deepscope 基础上加 -->
 <dependency>
     <groupId>com.squareup.okhttp3</groupId>
     <artifactId>okhttp</artifactId>
@@ -127,20 +127,20 @@ All-in-one 包（`io.agentscope:agentscope`）已打包常用模型扩展及其�
 
 ## Core + 扩展
 
-需要精细控制依赖时，用 `agentscope-core` 配合扩展模块：
+需要精细控制依赖时，用 `deepscope-core` 配合扩展模块：
 
 **Maven：**
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-core</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-core</artifactId>
     <version>2.0.0</version>
 </dependency>
 ```
 
 **Gradle：**
 ```gradle
-implementation 'io.agentscope:agentscope-core:2.0.0'
+implementation 'io.deepscope:deepscope-core:2.0.0'
 ```
 
 ### 扩展模块
@@ -149,57 +149,57 @@ implementation 'io.agentscope:agentscope-core:2.0.0'
 
 | 模块 | 功能 | Maven 坐标 |
 |-----|------|-----------|
-| [agentscope-extensions-mem0](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-mem0) | Mem0 长期记忆 | `io.agentscope:agentscope-extensions-mem0` |
-| [agentscope-extensions-reme](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-reme) | ReME 长期记忆 | `io.agentscope:agentscope-extensions-reme` |
+| [deepscope-extensions-mem0](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-mem0) | Mem0 长期记忆 | `io.deepscope:deepscope-extensions-mem0` |
+| [deepscope-extensions-reme](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-reme) | ReME 长期记忆 | `io.deepscope:deepscope-extensions-reme` |
 
 #### RAG
 
 | 模块 | 功能 | Maven 坐标 |
 |-----|------|-----------|
-| [agentscope-extensions-rag-bailian](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-rag-bailian) | 百炼 RAG | `io.agentscope:agentscope-extensions-rag-bailian` |
-| [agentscope-extensions-rag-simple](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-rag-simple) | 简单 RAG (Qdrant, Milvus, PgVector, 内存存储, Elasticsearch) | `io.agentscope:agentscope-extensions-rag-simple` |
-| [agentscope-extensions-rag-dify](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-rag-dify) | Dify RAG | `io.agentscope:agentscope-extensions-rag-dify` |
-| [agentscope-extensions-rag-ragflow](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-rag-ragflow) | RAGFlow RAG | `io.agentscope:agentscope-extensions-rag-ragflow` |
-| [agentscope-extensions-rag-haystack](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-rag-haystack) | HayStack RAG | `io.agentscope:agentscope-extensions-rag-haystack` |
+| [deepscope-extensions-rag-bailian](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-rag-bailian) | 百炼 RAG | `io.deepscope:deepscope-extensions-rag-bailian` |
+| [deepscope-extensions-rag-simple](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-rag-simple) | 简单 RAG (Qdrant, Milvus, PgVector, 内存存储, Elasticsearch) | `io.deepscope:deepscope-extensions-rag-simple` |
+| [deepscope-extensions-rag-dify](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-rag-dify) | Dify RAG | `io.deepscope:deepscope-extensions-rag-dify` |
+| [deepscope-extensions-rag-ragflow](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-rag-ragflow) | RAGFlow RAG | `io.deepscope:deepscope-extensions-rag-ragflow` |
+| [deepscope-extensions-rag-haystack](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-rag-haystack) | HayStack RAG | `io.deepscope:deepscope-extensions-rag-haystack` |
 
 #### Session 存储
 
 | 模块 | 功能 | Maven 坐标 |
 |-----|------|-----------|
-| [agentscope-extensions-session-mysql](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-session-mysql) | MySQL Session | `io.agentscope:agentscope-extensions-session-mysql` |
-| [agentscope-extensions-session-redis](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-session-redis) | Redis Session | `io.agentscope:agentscope-extensions-session-redis` |
+| [deepscope-extensions-session-mysql](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-session-mysql) | MySQL Session | `io.deepscope:deepscope-extensions-session-mysql` |
+| [deepscope-extensions-session-redis](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-session-redis) | Redis Session | `io.deepscope:deepscope-extensions-session-redis` |
 
 #### 多智能体协作
 
 | 模块 | 功能 | Maven 坐标 |
 |-----|------|-----------|
-| [agentscope-extensions-a2a-client](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-a2a-client) | A2A 客户端 | `io.agentscope:agentscope-extensions-a2a-client` |
-| [agentscope-extensions-a2a-server](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-a2a-server) | A2A 服务端 | `io.agentscope:agentscope-extensions-a2a-server` |
+| [deepscope-extensions-a2a-client](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-a2a-client) | A2A 客户端 | `io.deepscope:deepscope-extensions-a2a-client` |
+| [deepscope-extensions-a2a-server](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-a2a-server) | A2A 服务端 | `io.deepscope:deepscope-extensions-a2a-server` |
 
 #### 调度
 
 | 模块 | 功能 | Maven 坐标 |
 |-----|------|-----------|
-| [agentscope-extensions-scheduler-common](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-scheduler-common) | 调度通用模块 | `io.agentscope:agentscope-extensions-scheduler-common` |
-| [agentscope-extensions-scheduler-xxl-job](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-scheduler-xxl-job) | XXL-Job 调度 | `io.agentscope:agentscope-extensions-scheduler-xxl-job` |
-| [agentscope-extensions-scheduler-quartz](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-scheduler-quartz) | Quartz 调度 | `io.agentscope:agentscope-extensions-scheduler-quartz` |
+| [deepscope-extensions-scheduler-common](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-scheduler-common) | 调度通用模块 | `io.deepscope:deepscope-extensions-scheduler-common` |
+| [deepscope-extensions-scheduler-xxl-job](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-scheduler-xxl-job) | XXL-Job 调度 | `io.deepscope:deepscope-extensions-scheduler-xxl-job` |
+| [deepscope-extensions-scheduler-quartz](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-scheduler-quartz) | Quartz 调度 | `io.deepscope:deepscope-extensions-scheduler-quartz` |
 
 #### 用户界面
 
 | 模块 | 功能 | Maven 坐标 |
 |-----|------|-----------|
-| [agentscope-extensions-studio](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-studio) | Studio 集成 | `io.agentscope:agentscope-extensions-studio` |
-| [agentscope-extensions-agui](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-agui) | AG-UI 协议 | `io.agentscope:agentscope-extensions-agui` |
+| [deepscope-extensions-studio](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-studio) | Studio 集成 | `io.deepscope:deepscope-extensions-studio` |
+| [deepscope-extensions-agui](https://central.sonatype.com/artifact/io.deepscope/deepscope-extensions-agui) | AG-UI 协议 | `io.deepscope:deepscope-extensions-agui` |
 
 扩展模块会自动带上所需的第三方依赖，不用手动加。
 
 #### 示例：Core + Mem0 扩展
 
 ```xml
-<!-- 在 agentscope-core 基础上加 -->
+<!-- 在 deepscope-core 基础上加 -->
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-mem0</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-mem0</artifactId>
     <version>2.0.0</version>
 </dependency>
 ```
@@ -210,8 +210,8 @@ implementation 'io.agentscope:agentscope-core:2.0.0'
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-spring-boot-starter</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-spring-boot-starter</artifactId>
     <version>2.0.0</version>
 </dependency>
 ```
@@ -220,17 +220,17 @@ implementation 'io.agentscope:agentscope-core:2.0.0'
 
 | Starter | 功能 | Maven 坐标 |
 |---------|------|-----------|
-| agentscope-a2a-spring-boot-starter | A2A 集成 | `io.agentscope:agentscope-a2a-spring-boot-starter` |
-| agentscope-agui-spring-boot-starter | AG-UI 集成 | `io.agentscope:agentscope-agui-spring-boot-starter` |
-| agentscope-chat-completions-web-starter | Chat Completions Web 集成 | `io.agentscope:agentscope-chat-completions-web-starter` |
-| agentscope-nacos-spring-boot-starter | Nacos 集成 | `io.agentscope:agentscope-nacos-spring-boot-starter` |
+| deepscope-a2a-spring-boot-starter | A2A 集成 | `io.deepscope:deepscope-a2a-spring-boot-starter` |
+| deepscope-agui-spring-boot-starter | AG-UI 集成 | `io.deepscope:deepscope-agui-spring-boot-starter` |
+| deepscope-chat-completions-web-starter | Chat Completions Web 集成 | `io.deepscope:deepscope-chat-completions-web-starter` |
+| deepscope-nacos-spring-boot-starter | Nacos 集成 | `io.deepscope:deepscope-nacos-spring-boot-starter` |
 
 ### Quarkus
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-quarkus-extension</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-quarkus-extension</artifactId>
     <version>2.0.0</version>
 </dependency>
 ```
@@ -239,8 +239,8 @@ implementation 'io.agentscope:agentscope-core:2.0.0'
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-micronaut-extension</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-micronaut-extension</artifactId>
     <version>2.0.0</version>
 </dependency>
 ```

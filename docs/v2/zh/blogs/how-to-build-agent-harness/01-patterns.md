@@ -3,7 +3,7 @@ title: 如何构建 Agent Harness（一）：架构范式与责任边界
 author: 刘军
 ---
 
-这是“如何构建 Agent Harness”系列的第一篇。本文先建立 Model、Harness、Runtime、Sandbox 与 Agent Platform 的责任边界，再以 AgentScope Java 的 `HarnessAgent` 为统一入口，说明同一套 Harness 如何从本地工作区逐步演进为嵌入式服务、长任务 Worker 和多租户平台。
+这是“如何构建 Agent Harness”系列的第一篇。本文先建立 Model、Harness、Runtime、Sandbox 与 Agent Platform 的责任边界，再以 DeepScope Java 的 `HarnessAgent` 为统一入口，说明同一套 Harness 如何从本地工作区逐步演进为嵌入式服务、长任务 Worker 和多租户平台。
 
 编码 Agent 为这项工作提供了一个可观察的工程样本。在代码、文件和测试构成的环境中，模型可以通过工具持续行动，系统也可以用编译、测试和文件差异验证结果。它说明，模型能力只有经过上下文组织、任务循环、状态管理、工具执行、权限控制和结果验证，才可能稳定转化为任务结果。但编码场景不是所有企业任务的替代物。审批、交易、客服和运营任务具有不同的业务状态、权限边界和成功标准，企业不能照搬一套 Coding Agent 流程，而应复用其中可泛化的 Harness 机制。
 
@@ -100,7 +100,7 @@ Harness 因而要把概率性的模型判断嵌入确定性的系统边界。模
 
 在此基础上，可以把 `HarnessAgent` 的落地方式归纳为四种运行形态。它们最显著的差异不是模型能力，而是调用从哪里发起、状态保存在哪里、Runtime 与 Sandbox 由谁提供，以及业务应用要补齐哪些控制和验收责任。Single-Agent、Long-Horizon Agent 和 Multi-Agent 都可以采用其中任一形态；任务形态决定所需的状态与协作契约，运行形态决定这些能力部署在哪里。
 
-| 运行形态 | AgentScope 入口 | 企业直接控制的重点 | 需要补齐的运行能力 | 企业仍需承担的责任 | 更适合的条件 |
+| 运行形态 | DeepScope 入口 | 企业直接控制的重点 | 需要补齐的运行能力 | 企业仍需承担的责任 | 更适合的条件 |
 | --- | --- | --- | --- | --- | --- |
 | 本地工作区 | `HarnessAgent.builder()` + Local Filesystem | Loop、Context、Plan、工具与验证逻辑 | 本地进程、文件和开发者交互 | 任务正确性、安全配置和回归测试 | 单人开发、原型验证与可信环境 |
 | 嵌入式应用 | `call` / `streamEvents` + `RuntimeContext` | 业务入口、Session 映射、权限与事件展示 | 应用进程、共享状态和业务工具 | 多租户接入、凭证、Artifact 与 Outcome | 将 Agent 接入现有 API、工作台或 Channel |
@@ -113,17 +113,17 @@ Harness 因而要把概率性的模型判断嵌入确定性的系统边界。模
 
 ## 1.2 基于高代码框架自主构建 Harness
 
-高代码 Agent Framework 提供模型、消息、工具、Agent、状态和编排等代码级抽象，应用团队在其上定义任务循环、上下文策略、能力组合和企业集成。这里的“高代码”强调开发团队可以直接控制和扩展 Harness 机制，与依靠可视化配置或预置模板的构建入口相区分，并不表示框架路径一定更复杂或更成熟。以 AgentScope Java 为例，HarnessAgent 将工作区、状态、Memory、Context 压缩、Plan Mode、Skill、Subagent、Sandbox 和交互控制等能力组织在统一运行上下文中，使团队可以按业务需要自主构建 Harness。这里的自主构建指开发团队使用框架设计和实现 Harness，并不是 Agent 自己生成或重构 Harness。
+高代码 Agent Framework 提供模型、消息、工具、Agent、状态和编排等代码级抽象，应用团队在其上定义任务循环、上下文策略、能力组合和企业集成。这里的“高代码”强调开发团队可以直接控制和扩展 Harness 机制，与依靠可视化配置或预置模板的构建入口相区分，并不表示框架路径一定更复杂或更成熟。以 DeepScope Java 为例，HarnessAgent 将工作区、状态、Memory、Context 压缩、Plan Mode、Skill、Subagent、Sandbox 和交互控制等能力组织在统一运行上下文中，使团队可以按业务需要自主构建 Harness。这里的自主构建指开发团队使用框架设计和实现 Harness，并不是 Agent 自己生成或重构 Harness。
 
 Framework 路径的核心价值是任务语义控制。企业可以决定每轮 Context 怎样组成、哪些错误可以重试、计划何时生成和更新、何时请求审批、怎样创建子任务，以及什么证据算完成。与之对应，Framework 提供的是构建材料，不会自动补齐多租户隔离、状态恢复、Sandbox、安全策略、评估基线和业务验收。
 
-一个最小 AgentScope Harness 可以先确定三件事：使用什么模型、Agent 在哪个 Workspace 工作、一次调用属于哪个用户和 Session。
+一个最小 DeepScope Harness 可以先确定三件事：使用什么模型、Agent 在哪个 Workspace 工作、一次调用属于哪个用户和 Session。
 
 ```java
 HarnessAgent agent = HarnessAgent.builder()
     .name("remediation-agent")
     .model(model)
-    .workspace(Paths.get(".agentscope/workspace"))
+    .workspace(Paths.get(".deepscope/workspace"))
     .build();
 
 agent.call(message, RuntimeContext.builder()
@@ -138,13 +138,13 @@ agent.call(message, RuntimeContext.builder()
 
 ### 1.2.1 按业务需求组合 Harness 能力
 
-AgentScope 使用 Builder、Middleware 和工作区资产逐步叠加能力。下面的示例在最小 Agent 上增加计划、Todo、上下文压缩、大工具结果卸载和 E2B Sandbox：
+DeepScope 使用 Builder、Middleware 和工作区资产逐步叠加能力。下面的示例在最小 Agent 上增加计划、Todo、上下文压缩、大工具结果卸载和 E2B Sandbox：
 
 ```java
 HarnessAgent agent = HarnessAgent.builder()
     .name("remediation-agent")
     .model(model)
-    .workspace(Paths.get(".agentscope/workspace"))
+    .workspace(Paths.get(".deepscope/workspace"))
     .enablePlanMode()
     .enableTaskList()
     .compaction(CompactionConfig.builder()
@@ -159,7 +159,7 @@ HarnessAgent agent = HarnessAgent.builder()
 
 真正的构建工作不在于调用多少 Builder 方法，而在于定义这些能力之间的契约：
 
-| 能力 | AgentScope 中的构建入口 | 应用团队需要决定什么 |
+| 能力 | DeepScope 中的构建入口 | 应用团队需要决定什么 |
 | --- | --- | --- |
 | 指令与上下文 | AGENTS.md、附加 Context、Middleware | 指令层级、动态信息、Token 预算和冲突规则 |
 | 状态与记忆 | Workspace、StateStore、Memory、Compaction | Session / Task 边界、写入规则、恢复和多租户隔离 |
@@ -179,7 +179,7 @@ HarnessAgent agent = HarnessAgent.builder()
 flowchart TB
     C[API、Web、App、IDE 与业务事件] --> G[企业 Agent 接入层<br/>身份·租户·配额·路由]
     G --> Q[Task Service 与任务队列]
-    Q --> W[AgentScope Worker 集群]
+    Q --> W[DeepScope Worker 集群]
 
     subgraph H[应用团队自主构建的 Harness]
         L[Agent Loop 与 Planning]
@@ -290,7 +290,7 @@ void run(Task task) {
 
 ### 1.4.3 长任务服务的责任边界
 
-AgentScope Harness 负责一轮任务如何规划、行动、压缩上下文、调用子 Agent 和保持 Session 连续；企业 Runtime 负责队列、并发、租约、超时、节点故障与事件保留；Sandbox 负责限制文件、进程、网络、Secret 和资源；Verifier 根据真实环境证据判定 Outcome。四者可以部署在同一服务，也可以拆分，但接口与责任必须清晰。
+DeepScope Harness 负责一轮任务如何规划、行动、压缩上下文、调用子 Agent 和保持 Session 连续；企业 Runtime 负责队列、并发、租约、超时、节点故障与事件保留；Sandbox 负责限制文件、进程、网络、Secret 和资源；Verifier 根据真实环境证据判定 Outcome。四者可以部署在同一服务，也可以拆分，但接口与责任必须清晰。
 
 ```mermaid
 flowchart TB

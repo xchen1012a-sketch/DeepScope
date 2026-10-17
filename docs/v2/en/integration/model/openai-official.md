@@ -5,15 +5,15 @@ zh_link: /v2/zh/integration/model/openai-official
 
 # OpenAI Official Model
 
-`agentscope-extensions-model-openai-official` integrates OpenAI models through the official OpenAI Java SDK. It currently supports only the Responses API; support for the Chat Completions API may be added in the future.
+`deepscope-extensions-model-openai-official` integrates OpenAI models through the official OpenAI Java SDK. It currently supports only the Responses API; support for the Chat Completions API may be added in the future.
 
 ## Add the dependency
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-openai-official</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-model-openai-official</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -33,7 +33,7 @@ ReActAgent agent = ReActAgent.builder()
 Use the builder when you need a custom base URL, or a multi-agent formatter:
 
 ```java
-import io.agentscope.extensions.model.openaiofficial.OpenAIResponsesChatModel;
+import io.deepscope.extensions.model.openaiofficial.OpenAIResponsesChatModel;
 
 OpenAIResponsesChatModel model = OpenAIResponsesChatModel.builder()
     .apiKey(System.getenv("OPENAI_API_KEY"))
@@ -51,7 +51,7 @@ Enable provider-executed built-in tools for the Responses API with `serverTools`
 ```java
 import com.openai.models.responses.Tool;
 import com.openai.models.responses.WebSearchTool;
-import io.agentscope.extensions.model.openaiofficial.tool.OpenAIServerTool;
+import io.deepscope.extensions.model.openaiofficial.tool.OpenAIServerTool;
 
 OpenAIResponsesChatModel model = OpenAIResponsesChatModel.builder()
     .apiKey(System.getenv("OPENAI_API_KEY"))
@@ -79,14 +79,14 @@ Spring Boot applications can use the OpenAI Official starter:
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-openai-official-spring-boot-starter</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-openai-official-spring-boot-starter</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ```yaml
-agentscope:
+deepscope:
   model:
     provider: openai-official
   openai-official:
@@ -115,4 +115,4 @@ Responses-specific parameters are available through `GenerateOptions.additionalB
 
 `store` controls server-side response storage and defaults to `false`. To use OpenAI's server-side conversation chaining, store the first response, read its ID from response metadata (`openai.response.id`), and pass that ID as `previous_response_id` in a later request. When `previous_response_id` is used, send only the new turn's input rather than repeating the full conversation history.
 
-Native structured output is always enabled (`supportsNativeStructuredOutput()` returns `true`). The SDK retry is disabled (`maxRetries=0`); retry is managed by AgentScope.
+Native structured output is always enabled (`supportsNativeStructuredOutput()` returns `true`). The SDK retry is disabled (`maxRetries=0`); retry is managed by DeepScope.

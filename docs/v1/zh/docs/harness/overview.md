@@ -3,7 +3,7 @@ title: 概览
 en_link: /v1/en/docs/harness/overview
 ---
 
-`agentscope-harness` 在 `agentscope-core` 的 `ReActAgent` 之上，通过 Hook 和 Toolkit 两个扩展点，装配出一套面向**长期稳定运行**的工程化基础设施。用户入口只有一个类：`HarnessAgent`。
+`deepscope-harness` 在 `deepscope-core` 的 `ReActAgent` 之上，通过 Hook 和 Toolkit 两个扩展点，装配出一套面向**长期稳定运行**的工程化基础设施。用户入口只有一个类：`HarnessAgent`。
 
 裸的 `ReActAgent` 只有"请求-推理-工具-回复"一轮循环。harness 要回答的是另一组问题：**下一轮怎么办、下一天怎么办、上下文爆了怎么办、状态丢了怎么办、任务太重怎么办**。它不替换推理循环，而是在循环的关键时机插入 hook、为模型补上一组基础工具，把这些问题的默认工程答案打包好。
 
@@ -13,20 +13,20 @@ en_link: /v1/en/docs/harness/overview
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-harness</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-harness</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
-下面这个示例演示 harness 的三个核心价值：**工作区驱动的人格**、**会话持久化**（同一 `sessionId` 的第二轮对话能记得第一轮的内容）、**显式启用对话压缩**。第一次运行时会在 `${cwd}/.agentscope/workspace/` 自动生成 `AGENTS.md`，之后的运行复用。
+下面这个示例演示 harness 的三个核心价值：**工作区驱动的人格**、**会话持久化**（同一 `sessionId` 的第二轮对话能记得第一轮的内容）、**显式启用对话压缩**。第一次运行时会在 `${cwd}/.deepscope/workspace/` 自动生成 `AGENTS.md`，之后的运行复用。
 
 ```java
 public class QuickstartExample {
 
     public static void main(String[] args) throws Exception {
         // 1. 准备工作区：第一次运行生成 AGENTS.md，后续运行复用
-        Path workspace = Paths.get(".agentscope/workspace");
+        Path workspace = Paths.get(".deepscope/workspace");
         initWorkspaceIfAbsent(workspace);
 
         // 2. 构建模型
@@ -90,7 +90,7 @@ public class QuickstartExample {
 }
 ```
 
-完整可运行版本：[`agentscope-examples/agents/harness-examples/harness-quickstart/src/main/java/io/agentscope/harness/example/QuickstartExample.java`](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/agents/harness-examples/harness-quickstart/src/main/java/io/agentscope/harness/example/QuickstartExample.java)
+完整可运行版本：[`deepscope-examples/agents/harness-examples/harness-quickstart/src/main/java/io/deepscope/harness/example/QuickstartExample.java`](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/agents/harness-examples/harness-quickstart/src/main/java/io/deepscope/harness/example/QuickstartExample.java)
 
 运行：
 
@@ -98,18 +98,18 @@ public class QuickstartExample {
 export DASHSCOPE_API_KEY=your_key_here
 
 # 首次运行需要把依赖模块 install 到本地仓库（跳过 javadoc 与 spotless）
-mvn -pl agentscope-examples/agents/harness-examples/harness-quickstart -am install \
+mvn -pl deepscope-examples/agents/harness-examples/harness-quickstart -am install \
     -DskipTests -Dspotless.check.skip=true -Dmaven.javadoc.skip=true -q
 
 # 执行 main
-mvn -pl agentscope-examples/agents/harness-examples/harness-quickstart exec:java \
-    -Dexec.mainClass=io.agentscope.harness.example.QuickstartExample \
+mvn -pl deepscope-examples/agents/harness-examples/harness-quickstart exec:java \
+    -Dexec.mainClass=io.deepscope.harness.example.QuickstartExample \
     -Dspotless.check.skip=true -q
 ```
 
 **运行后观察**：
 
-- `.agentscope/workspace/AGENTS.md` 被自动创建 —— 这就是 agent 的人格来源
+- `.deepscope/workspace/AGENTS.md` 被自动创建 —— 这就是 agent 的人格来源
 - 第二轮提问"我叫什么"能答出来，因为同一 `sessionId=demo-session` 的第二次 `call()` 在开头通过 `bindRuntimeContext` 自动从 `Session` 加载了第一轮的状态
 - 多聊几轮触发压缩（消息数 ≥ 30）后，可以在 `workspace/memory/YYYY-MM-DD.md` 看到 LLM 提炼出来的事实流水账；后台的 `MemoryMaintenanceScheduler` 会继续把它合并到 `MEMORY.md`
 - 下次重启进程、只要 `sessionId` 不变，agent 依然记得这一切

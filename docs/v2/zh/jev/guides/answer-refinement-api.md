@@ -15,10 +15,10 @@ title: "Agent 最终草稿审核与修订"
 `client` 初始化见[客户端接入](/v2/zh/jev/guides/client)。检查使用 `assistant_answer` 与 `supporting_context`，后者由已配对的成功工具结果构成：
 
 ```java
-import io.agentscope.extensions.judge.jev.JevJudge;
-import io.agentscope.extensions.judge.jev.NoulQuestion;
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.integration.JevResponseMiddleware;
+import io.deepscope.extensions.judge.jev.JevJudge;
+import io.deepscope.extensions.judge.jev.NoulQuestion;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.integration.JevResponseMiddleware;
 import java.time.Duration;
 import java.util.List;
 
@@ -46,7 +46,7 @@ SHADOW 只评审原稿，不改写、不阻止发布；完成校准后将模式�
 `model` 和 `toolkit` 沿用应用的模型及工具配置：
 
 ```java
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.HarnessAgent;
 
 var agent = HarnessAgent.builder()
     .name("refund-answer-review")
@@ -72,7 +72,7 @@ var agent = HarnessAgent.builder()
 [JevIntegrationExample](/examples/jev/source/JevIntegrationExample.java.txt)提供上述完整退款场景。按[构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后执行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevIntegrationExample
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevIntegrationExample
 ```
 
 案例使用预设生成与评审结果，断言最终文本保留 `seven days`，生成模型共调用三次：检索工具建议、原始回答、纯文本修订。修订调用的工具列表必须为空。这验证流程接线，不代表真实模型准确率或修订成功率。

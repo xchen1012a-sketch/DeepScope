@@ -3,7 +3,7 @@ title: Bailian Memory
 zh_link: /v2/zh/integration/memory/bailian
 ---
 
-`agentscope-extensions-memory-bailian` integrates with Alibaba Cloud Bailian's long-term memory service. It is fully managed and supports advanced retrieval features such as rerank, judge, and rewrite.
+`deepscope-extensions-memory-bailian` integrates with Alibaba Cloud Bailian's long-term memory service. It is fully managed and supports advanced retrieval features such as rerank, judge, and rewrite.
 
 ## When to use
 
@@ -15,16 +15,16 @@ zh_link: /v2/zh/integration/memory/bailian
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-memory-bailian</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-memory-bailian</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## Quickstart
 
 ```java
-import io.agentscope.core.memory.bailian.BailianLongTermMemory;
+import io.deepscope.core.memory.bailian.BailianLongTermMemory;
 
 try (BailianLongTermMemory memory = BailianLongTermMemory.builder()
         .apiKey(System.getenv("DASHSCOPE_API_KEY"))

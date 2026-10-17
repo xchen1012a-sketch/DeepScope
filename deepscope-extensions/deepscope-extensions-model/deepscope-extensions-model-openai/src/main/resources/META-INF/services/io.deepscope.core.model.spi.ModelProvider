@@ -1,0 +1,5 @@
+io.deepscope.extensions.model.openai.OpenAIModelProvider
+io.deepscope.extensions.model.openai.compat.kimi.KimiModelProvider
+io.deepscope.extensions.model.openai.compat.minimax.MiniMaxModelProvider
+io.deepscope.extensions.model.openai.compat.glm.GLMModelProvider
+io.deepscope.extensions.model.openai.compat.deepseek.DeepSeekModelProvider

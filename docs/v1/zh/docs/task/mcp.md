@@ -3,7 +3,7 @@ title: MCP
 en_link: /v1/en/docs/task/mcp
 ---
 
-AgentScope Java 提供对 MCP (Model Context Protocol) 的完整支持，使智能体能够连接到外部工具服务器并使用 MCP 生态系统中的工具。
+DeepScope Java 提供对 MCP (Model Context Protocol) 的完整支持，使智能体能够连接到外部工具服务器并使用 MCP 生态系统中的工具。
 
 ## 什么是 MCP？
 
@@ -16,7 +16,7 @@ MCP 是用于将 AI 应用程序连接到外部数据源和工具的标准协议
 
 ## 传输类型
 
-AgentScope 支持三种 MCP 传输机制：
+DeepScope 支持三种 MCP 传输机制：
 
 | 传输     | 使用场景           | 连接方式        | 状态   |
 |----------|-------------------|----------------|--------|
@@ -29,8 +29,8 @@ AgentScope 支持三种 MCP 传输机制：
 ### 1. 连接到 MCP 服务器
 
 ```java
-import io.agentscope.core.tool.mcp.McpClientBuilder;
-import io.agentscope.core.tool.mcp.McpClientWrapper;
+import io.deepscope.core.tool.mcp.McpClientBuilder;
+import io.deepscope.core.tool.mcp.McpClientWrapper;
 
 // StdIO 传输 - 连接到本地 MCP 服务器
 McpClientWrapper mcpClient = McpClientBuilder.create("filesystem-mcp")
@@ -42,7 +42,7 @@ McpClientWrapper mcpClient = McpClientBuilder.create("filesystem-mcp")
 ### 2. 注册 MCP 工具
 
 ```java
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.core.tool.Toolkit;
 
 Toolkit toolkit = new Toolkit();
 
@@ -53,8 +53,8 @@ toolkit.registerMcpClient(mcpClient).block();
 ### 3. 在智能体中配置 MCP
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.InMemoryMemory;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.InMemoryMemory;
 
 ReActAgent agent = ReActAgent.builder()
         .name("Assistant")
@@ -324,25 +324,25 @@ toolkit.removeMcpClient("filesystem-mcp").block();
 
 ## Higress AI Gateway 集成
 
-AgentScope 提供了 Higress AI Gateway 扩展，支持通过 Higress 网关统一访问 MCP 工具，并利用语义检索能力自动选择最合适的工具。
+DeepScope 提供了 Higress AI Gateway 扩展，支持通过 Higress 网关统一访问 MCP 工具，并利用语义检索能力自动选择最合适的工具。
 
 
 ### 添加依赖
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-higress</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-higress</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ### 基本使用
 
 ```java
-import io.agentscope.extensions.higress.HigressMcpClientBuilder;
-import io.agentscope.extensions.higress.HigressMcpClientWrapper;
-import io.agentscope.extensions.higress.HigressToolkit;
+import io.deepscope.extensions.higress.HigressMcpClientBuilder;
+import io.deepscope.extensions.higress.HigressMcpClientWrapper;
+import io.deepscope.extensions.higress.HigressToolkit;
 
 // 1. 创建 Higress MCP 客户端
 HigressMcpClientWrapper higressClient = HigressMcpClientBuilder
@@ -374,15 +374,15 @@ HigressMcpClientWrapper higressClient = HigressMcpClientBuilder
 ### Higress 示例
 
 查看完整的 Higress 示例：
-- `agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/HigressToolExample.java`
+- `deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/HigressToolExample.java`
 
 ## 完整示例
 
 查看完整的 MCP 示例：
-- `agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/McpToolExample.java`
+- `deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/McpToolExample.java`
 
 运行示例：
 ```bash
-cd agentscope-examples/documentation/quickstart
-mvn exec:java -Dexec.mainClass="io.agentscope.examples.quickstart.McpToolExample"
+cd deepscope-examples/documentation/quickstart
+mvn exec:java -Dexec.mainClass="io.deepscope.examples.quickstart.McpToolExample"
 ```

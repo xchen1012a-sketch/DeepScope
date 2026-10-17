@@ -3,7 +3,7 @@ title: 百炼记忆
 en_link: /v2/en/integration/memory/bailian
 ---
 
-`agentscope-extensions-memory-bailian` 接入阿里云百炼的长期记忆服务，提供云端托管、企业级的语义记忆能力，支持 rerank、judge、rewrite 等检索增强特性。
+`deepscope-extensions-memory-bailian` 接入阿里云百炼的长期记忆服务，提供云端托管、企业级的语义记忆能力，支持 rerank、judge、rewrite 等检索增强特性。
 
 ## 何时使用
 
@@ -15,16 +15,16 @@ en_link: /v2/en/integration/memory/bailian
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-memory-bailian</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-memory-bailian</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## 快速上手
 
 ```java
-import io.agentscope.core.memory.bailian.BailianLongTermMemory;
+import io.deepscope.core.memory.bailian.BailianLongTermMemory;
 
 try (BailianLongTermMemory memory = BailianLongTermMemory.builder()
         .apiKey(System.getenv("DASHSCOPE_API_KEY"))

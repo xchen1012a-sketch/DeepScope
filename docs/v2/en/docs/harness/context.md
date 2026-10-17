@@ -27,9 +27,9 @@ At call entry, the Agent restores the session's committed working state and acce
 Configure a shared Builder at application startup. Build and close an Agent for each direct request, keeping the same identity and storage configuration when continuing a conversation:
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.message.UserMessage;
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.message.UserMessage;
+import io.deepscope.harness.agent.HarnessAgent;
 import java.nio.file.Path;
 
 HarnessAgent.Builder agentBuilder = HarnessAgent.builder()
@@ -37,7 +37,7 @@ HarnessAgent.Builder agentBuilder = HarnessAgent.builder()
         .agentId("change-assistant")
         .model("dashscope:qwen-plus")
         .sysPrompt("Investigate changes, implement fixes, and report supporting evidence.")
-        .workspace(Path.of(".agentscope/workspace"));
+        .workspace(Path.of(".deepscope/workspace"));
 
 // Apply the optional Builder settings below before sharing it with request handlers.
 // In a request handler, use authenticated and authorized user/session identities.
@@ -77,7 +77,7 @@ Workspace material is loaded once per Agent call. It includes project rules, env
 Use `contextSource` for information that should be read before **each reasoning request**. For the export fix, this could be the current change record and the applicable report format. The example returns a fixed illustrative snapshot; replace the body with an authorized asynchronous lookup using `request.userId()` and `request.sessionId()`.
 
 ```java
-import io.agentscope.harness.agent.context.ContextBlock;
+import io.deepscope.harness.agent.context.ContextBlock;
 import java.util.List;
 import reactor.core.publisher.Mono;
 
@@ -130,7 +130,7 @@ The `todo_write` tool updates `TaskContextState`. Each reasoning request uses th
 Enable additional projections when the application maintains a task objective, requirements, or verification results:
 
 ```java
-import io.agentscope.harness.agent.context.TaskContextOptions;
+import io.deepscope.harness.agent.context.TaskContextOptions;
 
 agentBuilder.taskContext(TaskContextOptions.builder()
         .includeRequirements()
@@ -162,8 +162,8 @@ Todo completion reports progress. A confirmed requirement records authorization;
 By now the request includes much more than conversation: instructions, tool schemas, current state, and references all need space. Harness budgets the complete request and reserves room for the model's response. Configure an explicit cap when your provider's effective limit differs from the model metadata:
 
 ```java
-import io.agentscope.harness.agent.context.ContextPolicy;
-import io.agentscope.harness.agent.context.ContextTokenEstimator;
+import io.deepscope.harness.agent.context.ContextPolicy;
+import io.deepscope.harness.agent.context.ContextTokenEstimator;
 
 agentBuilder.contextPolicy(new ContextPolicy(
         24000, // Maximum input tokens; 0 derives the limit from the model window.
@@ -186,7 +186,7 @@ System instructions and `required()` materials are not directly evicted. If the 
 An export diagnostic may produce a huge log in a single tool result. Harness's default offloading pass runs **before the next model reasoning call**. It writes oversized text to workspace storage, then replaces it in working context with a head/tail preview and a path the Agent can read on demand. A failed write does not replace the original with a broken pointer.
 
 ```java
-import io.agentscope.harness.agent.memory.compaction.ToolResultEvictionConfig;
+import io.deepscope.harness.agent.memory.compaction.ToolResultEvictionConfig;
 
 agentBuilder.toolResultEviction(ToolResultEvictionConfig.builder()
         .maxResultChars(80000)
@@ -205,7 +205,7 @@ These are the defaults: results exceeding 80,000 characters are eligible, and th
 Conversation compaction addresses repeated rounds of work. Its lightweight passes first truncate old tool arguments when configured and prune sufficiently large aggregates of older tool output. If the remaining history meets the message or token trigger, it summarizes a prefix and keeps a recent tail, preserving tool-call/result boundaries.
 
 ```java
-import io.agentscope.harness.agent.memory.compaction.CompactionConfig;
+import io.deepscope.harness.agent.memory.compaction.CompactionConfig;
 
 agentBuilder.compaction(CompactionConfig.builder()
         .triggerMessages(30)
@@ -257,7 +257,7 @@ Use stable agent/user/session identity and the same storage backend on the next 
 The default source timeout is five seconds; a loading failure fails request preparation. For optional material, configure omission explicitly:
 
 ```java
-import io.agentscope.harness.agent.context.SourceFailurePolicy;
+import io.deepscope.harness.agent.context.SourceFailurePolicy;
 import java.time.Duration;
 
 agentBuilder.contextSource(
@@ -301,9 +301,9 @@ One `agent.call()` may involve several reasoning steps and tool executions, each
 Configure a `ContextPolicy` observer before building the Agent. This example retains the budget from earlier in this guide and prints each preparation's result, retained items, and transformations. Once you create an Agent with `agentBuilder.build()`, calling `call` or consuming `streamEvents` triggers the observer.
 
 ```java
-import io.agentscope.harness.agent.context.ContextManifest;
-import io.agentscope.harness.agent.context.ContextPolicy;
-import io.agentscope.harness.agent.context.ContextTokenEstimator;
+import io.deepscope.harness.agent.context.ContextManifest;
+import io.deepscope.harness.agent.context.ContextPolicy;
+import io.deepscope.harness.agent.context.ContextTokenEstimator;
 
 agentBuilder.contextPolicy(new ContextPolicy(
         24000, 4096, 1024,
@@ -344,11 +344,11 @@ An early build failure can leave the item list empty, both token figures at `-1`
 If your application already consumes `streamEvents`, handle the `context_build` custom event in that same stream. There is no need to start another Agent call just to obtain a Manifest. This example shows a complete subscription; keep your existing handlers for text and tool events alongside it.
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.event.CustomEvent;
-import io.agentscope.core.message.UserMessage;
-import io.agentscope.harness.agent.HarnessAgent;
-import io.agentscope.harness.agent.context.ContextManifest;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.event.CustomEvent;
+import io.deepscope.core.message.UserMessage;
+import io.deepscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.context.ContextManifest;
 
 RuntimeContext ctx = RuntimeContext.builder()
         .userId("alice").sessionId("export-fix-001").build();

@@ -3,7 +3,7 @@ title: Higress
 zh_link: /v2/zh/integration/infrastructure/higress
 ---
 
-`agentscope-extensions-higress` brings tools published as MCP (Model Context Protocol) on [Higress](https://higress.io/) into AgentScope. Higress handles tool search, auth, rate-limiting, and observability at the gateway layer; the Agent only invokes the resulting tools.
+`deepscope-extensions-higress` brings tools published as MCP (Model Context Protocol) on [Higress](https://higress.io/) into DeepScope. Higress handles tool search, auth, rate-limiting, and observability at the gateway layer; the Agent only invokes the resulting tools.
 
 ## When to use
 
@@ -14,18 +14,18 @@ zh_link: /v2/zh/integration/infrastructure/higress
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-higress</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-higress</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## Quickstart
 
 ```java
-import io.agentscope.extensions.higress.HigressMcpClientBuilder;
-import io.agentscope.extensions.higress.HigressMcpClientWrapper;
-import io.agentscope.extensions.higress.HigressToolkit;
+import io.deepscope.extensions.higress.HigressMcpClientBuilder;
+import io.deepscope.extensions.higress.HigressMcpClientWrapper;
+import io.deepscope.extensions.higress.HigressToolkit;
 
 // 1) Create a client against an MCP endpoint published by Higress
 HigressMcpClientWrapper client = HigressMcpClientBuilder

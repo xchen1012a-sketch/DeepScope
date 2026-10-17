@@ -141,7 +141,7 @@ HarnessAgent agent = HarnessAgent.builder()
     .build();
 
 // agent 可随时调用 memory_search
-MemoryIndex index = new MemoryIndex(workspaceAgentScopeDir);
+MemoryIndex index = new MemoryIndex(workspaceDeepScopeDir);
 index.open();
 List<MemoryIndex.SearchHit> hits = index.search("数据库迁移", 10);
 // hit: { path, lineNumber, content, rank }

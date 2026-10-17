@@ -8,5 +8,5 @@ en_link: /v2/en/integration/ecosystem/overview
 | 扩展 | 用途 |
 | --- | --- |
 | [Chat Completions Web](/v2/zh/integration/ecosystem/chat-completions-web) | 把 Agent 暴露成 OpenAI Chat Completions 兼容接口 |
-| [Studio](/v2/zh/integration/ecosystem/studio) | 把 Agent 接入 AgentScope Studio，便于可视化调试 |
+| [Studio](/v2/zh/integration/ecosystem/studio) | 把 Agent 接入 DeepScope Studio，便于可视化调试 |
 | [Training](/v2/zh/integration/ecosystem/training) | 把生产流量自动采样喂给训练后端，闭环优化 |

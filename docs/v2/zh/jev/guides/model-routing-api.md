@@ -13,9 +13,9 @@ title: "在一次 Agent 调用内选择模型"
 ## 1. 注册候选及能力约束
 
 ```java
-import io.agentscope.core.model.Model;
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.example.JevModelRouterMiddleware;
+import io.deepscope.core.model.Model;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.example.JevModelRouterMiddleware;
 import java.time.Duration;
 import java.util.Set;
 
@@ -49,7 +49,7 @@ var router = JevModelRouterMiddleware.builder(client)
 ## 2. 保留原模型作为回退路径
 
 ```java
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.HarnessAgent;
 
 var agent = HarnessAgent.builder()
     .name("support-analysis")
@@ -80,7 +80,7 @@ var agent = HarnessAgent.builder()
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP`：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevHarnessScenarios routing
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevHarnessScenarios routing
 ```
 
 用例用预设 Choice 结果运行上表五种情况，并检查每次 Agent 调用只判断一次。它验证路由边界与粘性，不调用真实生成模型，不能据此比较模型成本或任务质量。[完整源码](/examples/jev/source/JevHarnessScenarios.java.txt)

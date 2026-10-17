@@ -12,14 +12,14 @@ title: "压缩工具历史并恢复归档"
 
 ## 1. 定义可处理历史与保护范围
 
-需要 `agentscope-extensions-jev` 与 `agentscope-harness` 同版本依赖。JEV 模块的 Harness 依赖为 optional，仅使用客户端或 Judge 的应用不必引入 Harness。
+需要 `deepscope-extensions-jev` 与 `deepscope-harness` 同版本依赖。JEV 模块的 Harness 依赖为 optional，仅使用客户端或 Judge 的应用不必引入 Harness。
 
 ```java
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.context.FileJevContextArchive;
-import io.agentscope.extensions.judge.jev.context.JevContextCompactor;
-import io.agentscope.harness.agent.HarnessAgent;
-import io.agentscope.harness.agent.memory.compaction.CompactionConfig;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.context.FileJevContextArchive;
+import io.deepscope.extensions.judge.jev.context.JevContextCompactor;
+import io.deepscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.memory.compaction.CompactionConfig;
 import java.time.Duration;
 import java.util.Set;
 
@@ -114,7 +114,7 @@ Service 归档使用 `SharedWorkspacePaths.resolveSessionDataPath` 下的 `jev-c
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后运行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevContextCompactionExample
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevContextCompactionExample
 ```
 
 案例使用真实 HarnessAgent、脚本模型和合成 JEV 响应：旧文件读取成对归档，当前测试证据及“不能修改生成文件”约束保留，模型调用一次，再恢复 6 条原始消息。显式使用 `InMemoryAgentStateStore`，重复运行不复用默认持久会话，不重新派发历史工具。

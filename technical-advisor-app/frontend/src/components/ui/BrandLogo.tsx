@@ -18,7 +18,7 @@ import { useId } from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * DeepScope 品牌矢量 Logo（DS Monogram Prism，沿用 AgentScope 原有青蓝-电光蓝-靛紫渐变色系）。
+ * DeepScope 品牌矢量 Logo（DS Monogram Prism，沿用 DeepScope 原有青蓝-电光蓝-靛紫渐变色系）。
  */
 export function BrandLogo({
   className,

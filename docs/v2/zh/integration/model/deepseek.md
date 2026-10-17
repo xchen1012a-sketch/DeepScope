@@ -3,15 +3,15 @@ title: DeepSeek
 en_link: /v2/en/integration/model/deepseek
 ---
 
-`agentscope-extensions-model-openai` 通过 OpenAI 兼容模型栈提供 DeepSeek 的一等支持。引入 OpenAI 模型扩展模块后，可以通过 `ModelRegistry` 使用 `deepseek:<model>`。
+`deepscope-extensions-model-openai` 通过 OpenAI 兼容模型栈提供 DeepSeek 的一等支持。引入 OpenAI 模型扩展模块后，可以通过 `ModelRegistry` 使用 `deepseek:<model>`。
 
 ## 添加依赖
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-openai</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-model-openai</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -26,16 +26,16 @@ ReActAgent agent = ReActAgent.builder()
     .build();
 ```
 
-Provider 默认使用 `https://api.deepseek.com`，发送请求前会去掉 `deepseek:` 前缀，并使用 `io.agentscope.extensions.model.openai.compat.deepseek` 下的 DeepSeek formatter。
+Provider 默认使用 `https://api.deepseek.com`，发送请求前会去掉 `deepseek:` 前缀，并使用 `io.deepscope.extensions.model.openai.compat.deepseek` 下的 DeepSeek formatter。
 
 ## 思考模式
 
 通过 `ModelCreationContext` 解析模型时可以开启 DeepSeek 思考模式：
 
 ```java
-import io.agentscope.core.model.Model;
-import io.agentscope.core.model.ModelCreationContext;
-import io.agentscope.core.model.ModelRegistry;
+import io.deepscope.core.model.Model;
+import io.deepscope.core.model.ModelCreationContext;
+import io.deepscope.core.model.ModelRegistry;
 
 Model model = ModelRegistry.resolve(
     "deepseek:deepseek-v4-flash",
@@ -50,6 +50,6 @@ Model model = ModelRegistry.resolve(
 
 DeepSeek 兼容 formatter 会保留 DeepSeek 兼容的消息字段，包括 `system` 角色和支持的 `name` 字段。它会对所有 assistant 轮次完整回传 `reasoning_content`——包括框架合成的、不含思考内容的消息，这类消息会被补齐空字符串，避免携带 `tools` 的请求被 HTTP 400 拒绝。
 
-DeepSeek 稳定端点默认不使用工具 schema 的 `strict` 字段，因此默认 formatter 会省略 `strict`，即使工具注册时开启了严格 schema 校验。结构化输出默认使用 AgentScope 的 fallback 行为；只有在你明确确认兼容端点支持 native structured output 时才需要手动开启。
+DeepSeek 稳定端点默认不使用工具 schema 的 `strict` 字段，因此默认 formatter 会省略 `strict`，即使工具注册时开启了严格 schema 校验。结构化输出默认使用 DeepScope 的 fallback 行为；只有在你明确确认兼容端点支持 native structured output 时才需要手动开启。
 
 使用 beta 或其他兼容端点时，可以通过 `ModelCreationContext` 传入 `baseUrl`、`endpointPath`、生成参数或 formatter 覆盖。

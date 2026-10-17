@@ -14,44 +14,44 @@
  * limitations under the License.
  */
 
-package io.agentscope.examples.jev;
+package io.deepscope.examples.jev;
 
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.event.AgentResultEvent;
-import io.agentscope.core.message.ContentBlock;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.core.message.ToolUseBlock;
-import io.agentscope.core.message.UserMessage;
-import io.agentscope.core.model.ChatModelBase;
-import io.agentscope.core.model.ChatResponse;
-import io.agentscope.core.model.GenerateOptions;
-import io.agentscope.core.model.ToolSchema;
-import io.agentscope.core.permission.PermissionContextState;
-import io.agentscope.core.permission.PermissionMode;
-import io.agentscope.core.rag.Knowledge;
-import io.agentscope.core.rag.model.Document;
-import io.agentscope.core.rag.model.DocumentMetadata;
-import io.agentscope.core.rag.model.RetrieveConfig;
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.extensions.judge.jev.Answer;
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.JevGuardrail;
-import io.agentscope.extensions.judge.jev.JevJudge;
-import io.agentscope.extensions.judge.jev.NoulAnswer;
-import io.agentscope.extensions.judge.jev.NoulQuestion;
-import io.agentscope.extensions.judge.jev.ScoreAnswer;
-import io.agentscope.extensions.judge.jev.ScoreQuestion;
-import io.agentscope.extensions.judge.jev.SystemOneRequest;
-import io.agentscope.extensions.judge.jev.SystemOneResult;
-import io.agentscope.extensions.judge.jev.application.JevCandidateSelector;
-import io.agentscope.extensions.judge.jev.evaluation.Evaluator;
-import io.agentscope.extensions.judge.jev.evaluation.JevEvaluationRunner;
-import io.agentscope.extensions.judge.jev.evaluation.JevEvaluator;
-import io.agentscope.extensions.judge.jev.integration.JevKnowledge;
-import io.agentscope.extensions.judge.jev.integration.JevKnowledgeTool;
-import io.agentscope.extensions.judge.jev.integration.JevResponseMiddleware;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.event.AgentResultEvent;
+import io.deepscope.core.message.ContentBlock;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.core.message.ToolUseBlock;
+import io.deepscope.core.message.UserMessage;
+import io.deepscope.core.model.ChatModelBase;
+import io.deepscope.core.model.ChatResponse;
+import io.deepscope.core.model.GenerateOptions;
+import io.deepscope.core.model.ToolSchema;
+import io.deepscope.core.permission.PermissionContextState;
+import io.deepscope.core.permission.PermissionMode;
+import io.deepscope.core.rag.Knowledge;
+import io.deepscope.core.rag.model.Document;
+import io.deepscope.core.rag.model.DocumentMetadata;
+import io.deepscope.core.rag.model.RetrieveConfig;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.extensions.judge.jev.Answer;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.JevGuardrail;
+import io.deepscope.extensions.judge.jev.JevJudge;
+import io.deepscope.extensions.judge.jev.NoulAnswer;
+import io.deepscope.extensions.judge.jev.NoulQuestion;
+import io.deepscope.extensions.judge.jev.ScoreAnswer;
+import io.deepscope.extensions.judge.jev.ScoreQuestion;
+import io.deepscope.extensions.judge.jev.SystemOneRequest;
+import io.deepscope.extensions.judge.jev.SystemOneResult;
+import io.deepscope.extensions.judge.jev.application.JevCandidateSelector;
+import io.deepscope.extensions.judge.jev.evaluation.Evaluator;
+import io.deepscope.extensions.judge.jev.evaluation.JevEvaluationRunner;
+import io.deepscope.extensions.judge.jev.evaluation.JevEvaluator;
+import io.deepscope.extensions.judge.jev.integration.JevKnowledge;
+import io.deepscope.extensions.judge.jev.integration.JevKnowledgeTool;
+import io.deepscope.extensions.judge.jev.integration.JevResponseMiddleware;
 import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -140,7 +140,7 @@ public final class JevIntegrationExample {
                             boolean found = false;
                             for (Msg m : messages)
                                 for (ContentBlock c : m.getContent())
-                                    if (c instanceof io.agentscope.core.message.ToolResultBlock t)
+                                    if (c instanceof io.deepscope.core.message.ToolResultBlock t)
                                         for (ContentBlock o : t.getOutput())
                                             if (o instanceof TextBlock text
                                                     && text.getText().contains("seven days"))

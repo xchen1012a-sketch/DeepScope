@@ -15,9 +15,9 @@ title: "独立应用中的审核与有限修订"
 `judge` 的初始化见[应用组件配置](/v2/zh/jev/guides/application-api#初始化)。输入检查接收原始请求；输出检查接收包含 `request`、`evidence`、`draft` 的状态。定义问题时必须对应这些字段：
 
 ```java
-import io.agentscope.extensions.judge.jev.JevJudge;
-import io.agentscope.extensions.judge.jev.NoulQuestion;
-import io.agentscope.extensions.judge.jev.application.JevDraftPipeline;
+import io.deepscope.extensions.judge.jev.JevJudge;
+import io.deepscope.extensions.judge.jev.NoulQuestion;
+import io.deepscope.extensions.judge.jev.application.JevDraftPipeline;
 import java.time.Duration;
 import java.util.List;
 import reactor.core.publisher.Flux;
@@ -81,7 +81,7 @@ if (outcome.publishedText() != null) {
 [JevApplicationScenarios](/examples/jev/source/JevApplicationScenarios.java.txt)的 `draft` 场景提供上述请求、证据和两份草稿。按[构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP` 后执行：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevApplicationScenarios draft
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevApplicationScenarios draft
 ```
 
 案例验证三条路径：错误草稿经过一次修订后发布；相同修订稿停止且不发布；输入被拒时不调用生成器。对应断言在示例模块的 `JevApplicationScenariosTest` 中。生成与判断均为预设，没有测量真实模型的审核准确率和响应时间。

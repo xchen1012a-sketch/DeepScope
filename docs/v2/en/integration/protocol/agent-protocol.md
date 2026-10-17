@@ -3,7 +3,7 @@ title: Agent Protocol
 zh_link: /v2/zh/integration/protocol/agent-protocol
 ---
 
-`agentscope-extensions-agent-protocol` exposes AgentScope's [Harness Agent](/v2/en/docs/harness/architecture) as a standard [Agent Protocol](https://agentprotocol.ai/) HTTP API, letting external systems (CI, other agent platforms, automation jobs) submit "tasks" using a uniform contract — no need to know the implementation details.
+`deepscope-extensions-agent-protocol` exposes DeepScope's [Harness Agent](/v2/en/docs/harness/architecture) as a standard [Agent Protocol](https://agentprotocol.ai/) HTTP API, letting external systems (CI, other agent platforms, automation jobs) submit "tasks" using a uniform contract — no need to know the implementation details.
 
 ## When to use
 
@@ -14,7 +14,7 @@ zh_link: /v2/zh/integration/protocol/agent-protocol
 
 ## Protocol layering
 
-AgentScope uses different protocols for different trust / UX boundaries:
+DeepScope uses different protocols for different trust / UX boundaries:
 
 | Layer | Role |
 | --- | --- |
@@ -26,9 +26,9 @@ AgentScope uses different protocols for different trust / UX boundaries:
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-agent-protocol</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-agent-protocol</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -40,11 +40,11 @@ The module is delivered as a Spring Boot auto-configuration. In a Spring Boot ap
 2. Enable in `application.yml`:
 
 ```yaml
-agentscope:
+deepscope:
   agent-protocol:
     enabled: true
     # optional — control-plane TaskRecord directory (not an execution agent's workspace)
-    # task-store-path: ${user.dir}/.agentscope/agent-protocol
+    # task-store-path: ${user.dir}/.deepscope/agent-protocol
 ```
 
 The `/tasks` REST endpoints are then registered automatically.
@@ -53,8 +53,8 @@ The `/tasks` REST endpoints are then registered automatically.
 
 `AgentProtocolTaskStore` persists protocol task metadata (`TaskRecord` for submit / resume /
 snapshot) through a dedicated `ProtocolTaskRepository`. By default that repository is rooted at
-`agentscope.agent-protocol.task-store-path` (`${user.dir}/.agentscope/agent-protocol`), under the
-synthetic bucket `agents/_agentscope_protocol/tasks/`.
+`deepscope.agent-protocol.task-store-path` (`${user.dir}/.deepscope/agent-protocol`), under the
+synthetic bucket `agents/_deepscope_protocol/tasks/`.
 
 This path is **independent** of each `HarnessAgent`'s own `WorkspaceManager` (MEMORY, sessions,
 skills). Multi-agent factories may give each agent a different `.workspace(...)`; protocol
@@ -230,7 +230,7 @@ While the remote agent waits for tool confirmation, the snapshot reports `status
 
 `GET /tasks/{taskId}/events`
 
-Server-Sent Events of agent progress. Requires `agentscope.agent-protocol.streaming-enabled=true` (default).
+Server-Sent Events of agent progress. Requires `deepscope.agent-protocol.streaming-enabled=true` (default).
 
 Reconnect / resume:
 
@@ -273,7 +273,7 @@ Both are additive: a client that ignores them keeps reading the flat fields (`te
 }
 ```
 
-`tool_call_id` is also accepted as an alias for `toolCallId`. Requires `agentscope.agent-protocol.hitl-enabled=true` (default). On success returns `{ "task_id", "status": "running" }`.
+`tool_call_id` is also accepted as an alias for `toolCallId`. Requires `deepscope.agent-protocol.hitl-enabled=true` (default). On success returns `{ "task_id", "status": "running" }`.
 
 How remote HITL interacts with a calling parent harness is documented under [Remote authorization](/v2/en/docs/harness/subagent#remote-authorization).
 
@@ -281,16 +281,16 @@ How remote HITL interacts with a calling parent harness is documented under [Rem
 
 | Property | Type | Default | Notes |
 | --- | --- | --- | --- |
-| `agentscope.agent-protocol.enabled` | boolean | `false` | Whether to register the `/tasks` REST endpoints |
-| `agentscope.agent-protocol.streaming-enabled` | boolean | `true` | Expose SSE `GET /tasks/{id}/events` |
-| `agentscope.agent-protocol.hitl-enabled` | boolean | `true` | Pause tasks for tool confirmation and accept `/resume` |
-| `agentscope.agent-protocol.sse-replay-buffer-size` | int | `256` | Per-task replay buffer for late SSE subscribers |
-| `agentscope.agent-protocol.sse-timeout-ms` | long | `10800000` | Max SSE subscription duration (ms) |
+| `deepscope.agent-protocol.enabled` | boolean | `false` | Whether to register the `/tasks` REST endpoints |
+| `deepscope.agent-protocol.streaming-enabled` | boolean | `true` | Expose SSE `GET /tasks/{id}/events` |
+| `deepscope.agent-protocol.hitl-enabled` | boolean | `true` | Pause tasks for tool confirmation and accept `/resume` |
+| `deepscope.agent-protocol.sse-replay-buffer-size` | int | `256` | Per-task replay buffer for late SSE subscribers |
+| `deepscope.agent-protocol.sse-timeout-ms` | long | `10800000` | Max SSE subscription duration (ms) |
 
 Example:
 
 ```yaml
-agentscope:
+deepscope:
   agent-protocol:
     enabled: true
     streaming-enabled: true

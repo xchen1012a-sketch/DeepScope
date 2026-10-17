@@ -1,6 +1,6 @@
 ---
 title: V1 迁移指南
-description: 从 AgentScope Java 1.x 升级到 2.0 的完整迁移指南
+description: 从 DeepScope Java 1.x 升级到 2.0 的完整迁移指南
 en_link: /v2/en/docs/change-log
 ---
 
@@ -11,7 +11,7 @@ en_link: /v2/en/docs/change-log
 </Tip>
 
 
-AgentScope Java 2.0 版本尽量保持了对 1.x 版本的兼容，确保大部分用户的平滑升级，但同时 2.0 版本也带来了 API 层面的不兼容变更。本页分为两部分：
+DeepScope Java 2.0 版本尽量保持了对 1.x 版本的兼容，确保大部分用户的平滑升级，但同时 2.0 版本也带来了 API 层面的不兼容变更。本页分为两部分：
 
 - **迁移指南** —— 对 1.x 的变更，按紧迫度再分两层：
   - **Part A · 必须迁移** —— 不改会编译失败或运行抛异常
@@ -38,29 +38,29 @@ AgentScope Java 2.0 版本尽量保持了对 1.x 版本的兼容，确保大部�
 
 | 2.0 中已删除 | 替代方案 |
 |---|---|
-| `io.agentscope.core.session.SessionManager` | `.stateStore(AgentStateStore)` |
-| `io.agentscope.core.pipeline.*`（`Pipeline`、`Pipelines`、`SequentialPipeline`、`FanoutPipeline`、`MsgHub`） | middleware + 子 agent + event stream |
-| `io.agentscope.core.model.tts.*`（14 个文件：DashScope TTS / Realtime TTS / `AudioPlayer` 等） | 直接对接上游 TTS SDK |
-| `io.agentscope.core.model.StructuredOutputReminder` | 不再需要，模型层原生支持 |
-| `io.agentscope.core.agent.StructuredOutputCapableAgent` | 不再需要，能力已内联到 `ReActAgent` |
-| `io.agentscope.core.hook.PendingToolRecoveryHook` | `Builder.enablePendingToolRecovery(boolean)` |
-| `io.agentscope.core.hook.TTSHook` | 随 TTS 模块删除 |
+| `io.deepscope.core.session.SessionManager` | `.stateStore(AgentStateStore)` |
+| `io.deepscope.core.pipeline.*`（`Pipeline`、`Pipelines`、`SequentialPipeline`、`FanoutPipeline`、`MsgHub`） | middleware + 子 agent + event stream |
+| `io.deepscope.core.model.tts.*`（14 个文件：DashScope TTS / Realtime TTS / `AudioPlayer` 等） | 直接对接上游 TTS SDK |
+| `io.deepscope.core.model.StructuredOutputReminder` | 不再需要，模型层原生支持 |
+| `io.deepscope.core.agent.StructuredOutputCapableAgent` | 不再需要，能力已内联到 `ReActAgent` |
+| `io.deepscope.core.hook.PendingToolRecoveryHook` | `Builder.enablePendingToolRecovery(boolean)` |
+| `io.deepscope.core.hook.TTSHook` | 随 TTS 模块删除 |
 
 #### A.3 模型提供商迁出 core
 
-OpenAI、Gemini、Anthropic、DashScope、Ollama 的 Chat Model 实现不再打包在 `agentscope-core` 中。core 现在只保留共享模型契约，例如 `Model`、`ChatModelBase`、`Formatter`、`ModelRegistry` 和 `ModelProvider` SPI。
+OpenAI、Gemini、Anthropic、DashScope、Ollama 的 Chat Model 实现不再打包在 `deepscope-core` 中。core 现在只保留共享模型契约，例如 `Model`、`ChatModelBase`、`Formatter`、`ModelRegistry` 和 `ModelProvider` SPI。
 
 如果 v1 代码从 core import 具体模型提供商类，需要改为引入对应模型扩展模块：
 
 | v1 import / 依赖 | v2 替代方案 |
 |---|---|
-| `io.agentscope.core.model.OpenAIChatModel` | 引入 `agentscope-extensions-model-openai`；import `io.agentscope.extensions.model.openai.OpenAIChatModel` |
-| `io.agentscope.core.model.GeminiChatModel` | 引入 `agentscope-extensions-model-gemini`；import `io.agentscope.extensions.model.gemini.GeminiChatModel` |
-| `io.agentscope.core.model.AnthropicChatModel` | 引入 `agentscope-extensions-model-anthropic`；import `io.agentscope.extensions.model.anthropic.AnthropicChatModel` |
-| `io.agentscope.core.model.DashScopeChatModel` | 引入 `agentscope-extensions-model-dashscope`；import `io.agentscope.extensions.model.dashscope.DashScopeChatModel` |
-| `io.agentscope.core.model.OllamaChatModel` | 引入 `agentscope-extensions-model-ollama`；import `io.agentscope.extensions.model.ollama.OllamaChatModel` |
-| `io.agentscope.core.formatter.<provider>.*` | `io.agentscope.extensions.model.<provider>.formatter.*` |
-| `io.agentscope.core.credential.<Provider>Credential` | `io.agentscope.extensions.model.<provider>.credential.<Provider>Credential` |
+| `io.deepscope.core.model.OpenAIChatModel` | 引入 `deepscope-extensions-model-openai`；import `io.deepscope.extensions.model.openai.OpenAIChatModel` |
+| `io.deepscope.core.model.GeminiChatModel` | 引入 `deepscope-extensions-model-gemini`；import `io.deepscope.extensions.model.gemini.GeminiChatModel` |
+| `io.deepscope.core.model.AnthropicChatModel` | 引入 `deepscope-extensions-model-anthropic`；import `io.deepscope.extensions.model.anthropic.AnthropicChatModel` |
+| `io.deepscope.core.model.DashScopeChatModel` | 引入 `deepscope-extensions-model-dashscope`；import `io.deepscope.extensions.model.dashscope.DashScopeChatModel` |
+| `io.deepscope.core.model.OllamaChatModel` | 引入 `deepscope-extensions-model-ollama`；import `io.deepscope.extensions.model.ollama.OllamaChatModel` |
+| `io.deepscope.core.formatter.<provider>.*` | `io.deepscope.extensions.model.<provider>.formatter.*` |
+| `io.deepscope.core.credential.<Provider>Credential` | `io.deepscope.extensions.model.<provider>.credential.<Provider>Credential` |
 
 `ModelRegistry` 字符串 id 仍然可用，但前提是对应模型扩展模块已经在 classpath 中：
 
@@ -75,12 +75,12 @@ Spring Boot 应用应使用对应模型提供商的 starter，而不是依赖 co
 
 | 模型提供商 | Spring Boot starter |
 |---|---|
-| OpenAI | `agentscope-openai-spring-boot-starter` |
-| OpenAI Official | `agentscope-openai-official-spring-boot-starter` |
-| DashScope | `agentscope-dashscope-spring-boot-starter` |
-| Gemini | `agentscope-gemini-spring-boot-starter` |
-| Anthropic | `agentscope-anthropic-spring-boot-starter` |
-| Ollama | `agentscope-ollama-spring-boot-starter` |
+| OpenAI | `deepscope-openai-spring-boot-starter` |
+| OpenAI Official | `deepscope-openai-official-spring-boot-starter` |
+| DashScope | `deepscope-dashscope-spring-boot-starter` |
+| Gemini | `deepscope-gemini-spring-boot-starter` |
+| Anthropic | `deepscope-anthropic-spring-boot-starter` |
+| Ollama | `deepscope-ollama-spring-boot-starter` |
 
 详见 → [模型](/v2/zh/docs/building-blocks/model)、[模型提供商](/v2/zh/integration/overview)
 
@@ -91,14 +91,14 @@ Spring Boot 应用应使用对应模型提供商的 starter，而不是依赖 co
 | `AgentMetaState` | `AgentState` |
 | `StateModule` | **删除** |
 | `StatePersistence` | **删除**，改用 `AgentStateStore` |
-| `ToolkitState` | `io.agentscope.core.state.legacy.ToolkitState`（仅兼容） |
+| `ToolkitState` | `io.deepscope.core.state.legacy.ToolkitState`（仅兼容） |
 | （新增） | `Task`、`TaskContextState`、`ToolContextState`、`PlanModeContextState`、`ReadCacheEntry` |
 
-凡是从 `io.agentscope.core.state` import `AgentMetaState`、`StateModule`、`StatePersistence`、`ToolkitState` 的代码都会编译失败。详见 → [上下文](/v2/zh/docs/building-blocks/context)
+凡是从 `io.deepscope.core.state` import `AgentMetaState`、`StateModule`、`StatePersistence`、`ToolkitState` 的代码都会编译失败。详见 → [上下文](/v2/zh/docs/building-blocks/context)
 
 #### A.5 `PlanNotebook` 已删除 —— 改用 `HarnessAgent.enablePlanMode()`
 
-整个 `io.agentscope.core.plan` 包（`PlanNotebook`、`Plan`、`SubTask`、`PlanStorage`、`PlanToHint` 及相关类）已完整删除，无 deprecated 桥接。
+整个 `io.deepscope.core.plan` 包（`PlanNotebook`、`Plan`、`SubTask`、`PlanStorage`、`PlanToHint` 及相关类）已完整删除，无 deprecated 桥接。
 
 **变更说明**：v1 的 `PlanNotebook` 将计划建模为结构化的 `Plan` + `SubTask` 对象，带状态机（todo → in_progress → done → abandoned）和 8 个工具函数。v2 的替代方案是完全不同的设计思路 —— plan mode 是一个**只读的调查设计阶段**，agent 在一个纯 markdown 文件中完成方案设计，然后才获得写权限。
 
@@ -146,7 +146,7 @@ v1 中容忍的非法组合（例如 `USER` 携带 `ToolUseBlock`）现在会在
 TracerRegistry.register(TelemetryTracer.builder().tracer(tracer).build());
 ```
 
-在当前 2.0 源码中，`TelemetryTracer` 位于 `agentscope-extensions-studio` 模块，而不是 `agentscope-core`。Studio 集成仍会使用它，但仅仅为了恢复应用级 tracing 而引入 Studio 扩展并不是推荐迁移方式。`Tracer` 接口与 `TracerRegistry` 都已标记为待删除。
+在当前 2.0 源码中，`TelemetryTracer` 位于 `deepscope-extensions-studio` 模块，而不是 `deepscope-core`。Studio 集成仍会使用它，但仅仅为了恢复应用级 tracing 而引入 Studio 扩展并不是推荐迁移方式。`Tracer` 接口与 `TracerRegistry` 都已标记为待删除。
 
 应用 tracing 应改用标准 OpenTelemetry 组件：
 
@@ -176,7 +176,7 @@ Middleware 从 `GlobalOpenTelemetry` 读取 SDK，因此必须先注册 SDK，�
 
 #### B.2 Hook → Middleware
 
-整个 `io.agentscope.core.hook` 包 —— 包括 `Hook` 接口、`HookEvent`、`HookEventType` 与所有 `*Event` 类 —— 均标 `@Deprecated(forRemoval = true, since = "2.0.0")`。原有 import 仍能编译，`Builder.hook(...)` / `.hooks(...)` 仍可调用（由 `LegacyHookDispatcher` 桥接），v1 代码不会立刻 break。推荐改用 `io.agentscope.core.middleware`：
+整个 `io.deepscope.core.hook` 包 —— 包括 `Hook` 接口、`HookEvent`、`HookEventType` 与所有 `*Event` 类 —— 均标 `@Deprecated(forRemoval = true, since = "2.0.0")`。原有 import 仍能编译，`Builder.hook(...)` / `.hooks(...)` 仍可调用（由 `LegacyHookDispatcher` 桥接），v1 代码不会立刻 break。推荐改用 `io.deepscope.core.middleware`：
 
 - `MiddlewareBase` 提供 6 个 stage：洋葱型 `onAgent` / `onReasoning` / `onActing` / `onModelCall`，管道型 `onSystemPrompt`，通知型 `onAgentStateReady`
 - Builder：`.middleware(MiddlewareBase)` 与 `.middlewares(List<? extends MiddlewareBase>)`
@@ -186,7 +186,7 @@ Middleware 从 `GlobalOpenTelemetry` 读取 SDK，因此必须先注册 SDK，�
 
 #### B.3 `Memory` → `AgentStateStore` + `AgentState`
 
-- `io.agentscope.core.memory.Memory` 接口与所有实现（`InMemoryMemory`、`LongTermMemory` 等）均标 `@Deprecated(forRemoval = true, since = "2.0.0")`
+- `io.deepscope.core.memory.Memory` 接口与所有实现（`InMemoryMemory`、`LongTermMemory` 等）均标 `@Deprecated(forRemoval = true, since = "2.0.0")`
 - `Memory` 不再 `extends StateModule`；新增 `saveTo(AgentStateStore, userId, sessionId)` / `loadFrom(AgentStateStore, userId, sessionId)` 作桥接，方便现有实现继续通过 `AgentStateStore` 走持久化
 - 新模型：
   - **会话历史**保存在 `AgentState.getContext()`
@@ -210,7 +210,7 @@ v1 中通过 `Hook` + 各种 `*ChunkEvent` 拼装文本 / 工具增量的代码�
 
 ##### `stream()` → `streamEvents()`（与 Python 2.0 对齐）
 
-Python 2.0 的 `agent.reply_stream()` 只返回一种事件流签名（`AsyncGenerator[AgentEvent, None]`），对应 Java 的细粒度 `io.agentscope.core.event.AgentEvent` 体系。为了与之对齐，Java 端的粗粒度 `Flux<Event> stream(...)` API 在 2.0.0 全部 `@Deprecated`：
+Python 2.0 的 `agent.reply_stream()` 只返回一种事件流签名（`AsyncGenerator[AgentEvent, None]`），对应 Java 的细粒度 `io.deepscope.core.event.AgentEvent` 体系。为了与之对齐，Java 端的粗粒度 `Flux<Event> stream(...)` API 在 2.0.0 全部 `@Deprecated`：
 
 - **方法（`forRemoval = true`，将在未来大版本如 2.1 中清理）**
   - `StreamableAgent.stream(...)` —— 接口上的全部 11 个 `stream(...)` 重载（默认方法 + 抽象方法）
@@ -219,7 +219,7 @@ Python 2.0 的 `agent.reply_stream()` 只返回一种事件流签名（`AsyncGen
   - `HarnessAgent.stream(...)` —— 9 个重载（3 个接口 `@Override` + 6 个 `RuntimeContext` 变体）。`HarnessAgent` 新增 `streamEvents(Msg/List<Msg>[, RuntimeContext])` 4 个方法，内部委托到 `ReActAgent.streamEvents(...)` 并复用沙箱生命周期 `acquireForCall` / `releaseForCall`
   - `ReActAgent.streamEvents(..., RuntimeContext)` 新增 —— 对齐 `call(..., RuntimeContext)` 的 context 透传形态
 - **类型（软弃用，暂不 `forRemoval`）**
-  - `io.agentscope.core.agent.Event`、`EventType`、`EventSource`
+  - `io.deepscope.core.agent.Event`、`EventType`、`EventSource`
   - 这些类目前仍被 harness（子 agent 事件转发：`SubAgentTool` / `SubagentEventBus` / `DefaultAgentManager` / `AgentSpawnTool`）、AGUI、A2A、chat-completions-web、kotlin extension 等内部模块作为事件总线 / 适配器的输入消费。等这些模块完成迁移到 `AgentEvent` 后再翻成 `forRemoval = true`，避免一次性把下游全打成警告
   - `HarnessAgent.streamEvents(...)` 会转发子 agent 事件（`source` 非空路径），远程 Agent Protocol 子 agent 在 `remoteStreaming` 开启时同样支持
 
@@ -249,7 +249,7 @@ agent.streamEvents(new UserMessage("Hello"))
 
 #### B.7 core 内置 Shell / File 工具：不再 deprecated
 
-- `io.agentscope.core.tool.coding.*`（`ShellCommandTool`、`CommandValidator`、`UnixCommandValidator`、`WindowsCommandValidator`）与 `io.agentscope.core.tool.file.*`（`ReadFileTool`、`WriteFileTool`、`FileToolUtils`）自 2.0.0-RC1 起**不再标 `@Deprecated`**
+- `io.deepscope.core.tool.coding.*`（`ShellCommandTool`、`CommandValidator`、`UnixCommandValidator`、`WindowsCommandValidator`）与 `io.deepscope.core.tool.file.*`（`ReadFileTool`、`WriteFileTool`、`FileToolUtils`）自 2.0.0-RC1 起**不再标 `@Deprecated`**
 - 这些工具直接在宿主机进程上执行命令和读写文件。对于不需要 workspace / 沙箱隔离的 `ReActAgent` 用户，它们是给 agent 添加 shell 和文件访问能力的推荐方式：
 
 ```java
@@ -293,8 +293,8 @@ ReActAgent agent = ReActAgent.builder()
   - 统一基类：`ToolBase` / `AgentTool`
   - 工具组：`ToolGroup` / `ToolGroupScope` / `MetaToolFactory` —— 按需激活；保留的 `basic` 组始终在线
   - 注解驱动：`ReflectiveFunctionTool` + `@Tool` / `@ToolParam`；`Toolkit#registerTool(Object)` 反射注册任意带注解的方法
-  - 内置任务工具：`io.agentscope.core.tool.builtin.TodoTools.todoWrite`（与 `TaskReminderMiddleware` 配合）
-- **Permission 系统**（新包 `io.agentscope.core.permission`）：
+  - 内置任务工具：`io.deepscope.core.tool.builtin.TodoTools.todoWrite`（与 `TaskReminderMiddleware` 配合）
+- **Permission 系统**（新包 `io.deepscope.core.permission`）：
   - `PermissionEngine`、`PermissionRule`、`PermissionMode`（`DEFAULT` / `ACCEPT_EDITS` / `EXPLORE` / `BYPASS` / `DONT_ASK`）、`PermissionBehavior`
   - 每次 tool 调用前自动经 `PermissionEngine`：允许 / 用户审批 / 拒绝；HITL 决策回流到 `UserConfirmResultEvent`
 
@@ -302,7 +302,7 @@ ReActAgent agent = ReActAgent.builder()
 
 ### 模型容错与凭据
 
-- 新包：`io.agentscope.core.credential` —— 共享 credential 契约与 `ModelCard`；特定模型提供商的 credential 随对应模型扩展模块提供
+- 新包：`io.deepscope.core.credential` —— 共享 credential 契约与 `ModelCard`；特定模型提供商的 credential 随对应模型扩展模块提供
 - `ModelRegistry`：在对应模型扩展模块位于 classpath 时，按 `"provider:model"` 字符串解析（如 `dashscope:qwen-max`、`openai:gpt-5`）
 - Builder 新增：`.model(String)`、`.maxRetries(int)`、`.fallbackModel(Model)` / `.fallbackModel(String)`、`.stopOnReject(boolean)` —— 主模型失败自动重试 / 切换备用模型
 

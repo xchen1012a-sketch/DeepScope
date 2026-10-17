@@ -1,36 +1,36 @@
 ---
-title: AgentScope Java v2
-description: Build your own Agent application with the AgentScope Harness SDK, or use managed Agent services through AgentScope Service with platform-managed runtimes.
+title: DeepScope Java v2
+description: Build your own Agent application with the DeepScope Harness SDK, or use managed Agent services through DeepScope Service with platform-managed runtimes.
 mode: custom
 toc: false
 zh_link: /v2/zh/intro
 ---
 
-<div className="agentscope-landing agentscope-home">
+<div className="deepscope-landing deepscope-home">
 
 <section className="hs-home-hero" aria-labelledby="home-title">
 <div className="hs-home-copy">
-<p className="hs-home-eyebrow">AGENTSCOPE 2.0 <span>JAVA</span></p>
+<p className="hs-home-eyebrow">DEEPSCOPE 2.0 <span>JAVA</span></p>
 <h1 id="home-title">Build agents that work.<br /><span>Make them a service.</span></h1>
 <p className="hs-home-lead">Build your own Agent application with the Harness SDK, or use managed Agents through the Service platform. Let the platform manage runtimes while your application accesses specialist capabilities and deliverables through APIs.</p>
 <div className="hs-hero__actions">
 <a href="/v2/en/docs/quickstart" className="hs-btn hs-btn--primary">Build with Harness <span aria-hidden="true">→</span></a>
 <a href="/v2/en/service/index" className="hs-btn hs-btn--secondary">Explore Service <span aria-hidden="true">→</span></a>
 </div>
-<a className="hs-home-source" href="https://github.com/agentscope-ai/agentscope-java">Source on GitHub <span aria-hidden="true">↗</span></a>
+<a className="hs-home-source" href="https://github.com/xchen1012a-sketch/DeepScope">Source on GitHub <span aria-hidden="true">↗</span></a>
 </div>
 
 <div className="hs-home-platforms">
 <a className="hs-home-platform hs-home-platform--harness" href="/v2/en/docs/harness/architecture">
 <span className="hs-home-label">SDK · BUILD YOUR OWN</span>
-<h2>AgentScope Harness <span aria-hidden="true">↗</span></h2>
+<h2>DeepScope Harness <span aria-hidden="true">↗</span></h2>
 <p>Embed the SDK in your application, combine context, workspaces, and tools, and customize Agent behavior while managing your own deployment.</p>
 <div className="hs-home-tags"><span>Context</span><span>Tools & sandboxes</span><span>Persistent sessions</span></div>
 </a>
 <div className="hs-home-connector">Two approaches to choose or combine</div>
 <a className="hs-home-platform hs-home-platform--service" href="/v2/en/service/index">
 <span className="hs-home-label">PLATFORM · MANAGED SERVICE</span>
-<h2>AgentScope Service <span aria-hidden="true">↗</span></h2>
+<h2>DeepScope Service <span aria-hidden="true">↗</span></h2>
 <p>Start with the recommended self-hosted deployment, configure Managed Agents built on HarnessAgent, and integrate through APIs. Service manages runtimes centrally, so each Agent application needs no separate runtime service to build and maintain.</p>
 <div className="hs-home-tags"><span>Agent as a Service</span><span>Tasks · Interaction · Delivery</span></div>
 </a>
@@ -40,12 +40,12 @@ zh_link: /v2/zh/intro
 <section className="hs-home-section" aria-labelledby="capabilities-title">
 <div className="hs-home-section-heading">
 <h2 id="capabilities-title">Build your own or use a managed service?</h2>
-<p>Choose the Harness SDK for deep customization in application code. Choose Service to focus on business integration while the platform runs your Agents. Managed Agents in Service are built on the AgentScope HarnessAgent core, so both approaches share the same execution core.</p>
+<p>Choose the Harness SDK for deep customization in application code. Choose Service to focus on business integration while the platform runs your Agents. Managed Agents in Service are built on the DeepScope HarnessAgent core, so both approaches share the same execution core.</p>
 </div>
 <div className="hs-home-capabilities">
 <div className="hs-home-product">
 <span className="hs-home-label">HARNESS</span>
-<h2>AgentScope Harness</h2>
+<h2>DeepScope Harness</h2>
 <p>For teams embedding Agents in Java or Spring Boot and customizing runtime behavior. HarnessAgent provides reasoning and tool loops, workspaces, context, skills, and sessions. Compose these capabilities in code and own your application's deployment and operations.</p>
 <div className="hs-home-features"><a className="hs-home-feature" href="/v2/en/docs/harness/context"><h3>Context & workspaces<span aria-hidden="true">↗</span></h3><p>Build context at each reasoning step, compact long task histories, and load memory, skills, and working files as needed.</p></a>
 <a className="hs-home-feature" href="/v2/en/docs/harness/architecture"><h3>Tools, sandboxes & collaboration<span aria-hidden="true">↗</span></h3><p>Connect Java tools and MCP, choose an execution environment, and delegate independent work to subagents.</p></a>
@@ -53,7 +53,7 @@ zh_link: /v2/zh/intro
 </div>
 <div className="hs-home-product">
 <span className="hs-home-label">SERVICE</span>
-<h2>AgentScope Service</h2>
+<h2>DeepScope Service</h2>
 <p>For teams using Agent capabilities through APIs and reducing repeated runtime work. Configure instructions, models, tools, and resources to publish a managed Agent service. The platform handles execution, sessions, and tasks; your application focuses on business data, user experience, and acceptance.</p>
 <div className="hs-home-features"><a className="hs-home-feature" href="/v2/en/service/usecases"><h3>Start with a business task<span aria-hidden="true">↗</span></h3><p>Bring Agents into SaaS pages, business processes, or scheduled work. Design the service around its inputs and deliverables.</p></a>
 <a className="hs-home-feature" href="/v2/en/service/service-api"><h3>From invocation to delivery<span aria-hidden="true">↗</span></h3><p>Submit tasks or conversations, follow snapshots and events, handle human interaction, and retrieve results and files.</p></a>
@@ -88,7 +88,7 @@ var builder = HarnessAgent.builder()
     .name("notes-assistant")
     .agentId("notes-assistant")
     .model("dashscope:qwen-plus")
-    .workspace(Path.of(".agentscope/workspace"));
+    .workspace(Path.of(".deepscope/workspace"));
 
 try (var agent = builder.build()) {
     var context = RuntimeContext.builder()
@@ -105,12 +105,12 @@ try (var agent = builder.build()) {
 
 ```bash
 SESSION_ID=$(curl --fail-with-body -sS "$BASE_URL/api/v1/agent-sessions" \
-  -H "X-API-Key: $AGENTSCOPE_API_KEY" -H 'Content-Type: application/json' \
+  -H "X-API-Key: $DEEPSCOPE_API_KEY" -H 'Content-Type: application/json' \
   -H 'Idempotency-Key: notes-session-001' \
   --data "$(jq -n --arg id "$AGENT_ID" '{target:{type:"agent",id:$id}}')" \
   | jq -er '.id')
 curl "$BASE_URL/api/v1/agent-sessions/$SESSION_ID/turns" \
-  -H "X-API-Key: $AGENTSCOPE_API_KEY" -H 'Content-Type: application/json' \
+  -H "X-API-Key: $DEEPSCOPE_API_KEY" -H 'Content-Type: application/json' \
   -H 'Idempotency-Key: notes-request-001' \
   --data '{"message":"Summarize the tasks and open questions."}'
 ```
@@ -168,7 +168,7 @@ curl "$BASE_URL/api/v1/agent-sessions/$SESSION_ID/turns" \
 <section className="hs-home-faq" aria-labelledby="faq-title">
 <h2 id="faq-title">Before you start</h2>
 <div><details className="hs-faq-item"><summary>How do HarnessAgent and ReActAgent relate?</summary><p>ReActAgent provides reasoning, tools, messages, permissions, and middleware. HarnessAgent uses the same ReAct loop and adds workspaces, memory, skills, subagents, and session management. Start with HarnessAgent, or use ReActAgent directly to assemble your own runtime.</p></details>
-<details className="hs-faq-item"><summary>Must Harness and Service be used together?</summary><p>You can choose either: develop and run your own Agent application with the Harness SDK, or configure a Managed Agent directly in Service without first building an SDK application. Managed Agents in Service are built on the AgentScope HarnessAgent core, with the platform managing Agent runtimes centrally. Existing Harness applications can also connect as External Agents, keeping their own processes while using the platform's publishing and invocation capabilities.</p></details>
+<details className="hs-faq-item"><summary>Must Harness and Service be used together?</summary><p>You can choose either: develop and run your own Agent application with the Harness SDK, or configure a Managed Agent directly in Service without first building an SDK application. Managed Agents in Service are built on the DeepScope HarnessAgent core, with the platform managing Agent runtimes centrally. Existing Harness applications can also connect as External Agents, keeping their own processes while using the platform's publishing and invocation capabilities.</p></details>
 <details className="hs-faq-item"><summary>Does refreshing a page restart the task?</summary><p>Snapshots and event cursors restore recorded messages, tool results, and progress. Resuming execution is a separate operation. Continuing interrupted work requires the relevant session operation, and checkpoints do not undo external side effects.</p></details>
 <details className="hs-faq-item"><summary>What runtime do I need?</summary><p>The Java Harness requires JDK 17 or later and credentials for your chosen model. Tools can run locally or in a configured sandbox. Self-hosting is currently recommended for Service. Deploy the platform, configure models and tools, then run your first Managed Agent.</p></details></div>
 </section>

@@ -8,7 +8,7 @@ title: "评测自己的 Harness 与判断后端"
 
 “先查订单，未发货再退款”中，一个判断器即使拒绝了全部危险调用，也可能把所有正常退款一起拦住。应同时观察错误放行、正常调用受阻和额外等待时间，才能判断接管是否有价值。
 
-[退款防护对比用例](/examples/jev/tool-guard/README.md.txt)提供 160 条合成数据、数据划分、标注理由、离线行为测试与 JEV/Qwen 实测记录，代码和结果集中在 `agentscope-examples/jev/benchmarks/tool-guard`。它的命令行参数与下表通用基准不同，请按其 README 运行；[功能文档末尾](/v2/zh/jev/guides/tool-guard-api#退款场景对比测试)保留简明结果。
+[退款防护对比用例](/examples/jev/tool-guard/README.md.txt)提供 160 条合成数据、数据划分、标注理由、离线行为测试与 JEV/Qwen 实测记录，代码和结果集中在 `deepscope-examples/jev/benchmarks/tool-guard`。它的命令行参数与下表通用基准不同，请按其 README 运行；[功能文档末尾](/v2/zh/jev/guides/tool-guard-api#退款场景对比测试)保留简明结果。
 
 ## 选择评估对象
 
@@ -32,17 +32,17 @@ title: "评测自己的 Harness 与判断后端"
 | 阶段路由 | [JevPhaseRoutingBenchmark](/examples/jev/source/JevPhaseRoutingBenchmark.java.txt) | [phase-routing-cases.jsonl](/examples/jev/data/phase-routing-cases.jsonl.txt) |
 | 浏览器可见动作 | [JevBrowserBenchmark](/examples/jev/source/JevBrowserBenchmark.java.txt) | [browser-cases.jsonl](/examples/jev/data/browser-cases.jsonl.txt) |
 
-这些程序回放固定判断输入，不运行完整生产任务。金标只用于判分，不发送给后端。原始数据位于 `agentscope-examples/jev/src/test/resources/jev`。
+这些程序回放固定判断输入，不运行完整生产任务。金标只用于判分，不发送给后端。原始数据位于 `deepscope-examples/jev/src/test/resources/jev`。
 
 ## 运行基线与同题对照
 
 先按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP`。以轨迹评估为例：
 
 ```bash
-JEV_DATA="agentscope-examples/jev/src/test/resources/jev/trace-cases.jsonl"
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevTraceBenchmark \
+JEV_DATA="deepscope-examples/jev/src/test/resources/jev/trace-cases.jsonl"
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevTraceBenchmark \
   --baseline "$JEV_DATA" /tmp/trace-baseline.json
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevTraceBenchmark \
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevTraceBenchmark \
   --offline "$JEV_DATA" /tmp/trace-offline.json
 ```
 
@@ -51,9 +51,9 @@ java -cp "$JEV_CP" io.agentscope.examples.jev.JevTraceBenchmark \
 真实后端必须显式启用，模型名和端点由你选择：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevTraceBenchmark \
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevTraceBenchmark \
   --live-jev "$JEV_DATA" /tmp/trace-jev.json jev-latest
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevTraceBenchmark \
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevTraceBenchmark \
   --live-qwen "$JEV_DATA" /tmp/trace-qwen.json "$QWEN_MODEL" "$QWEN_ENDPOINT"
 ```
 

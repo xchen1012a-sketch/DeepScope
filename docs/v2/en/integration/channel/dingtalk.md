@@ -3,7 +3,7 @@ title: DingTalk Channel
 zh_link: /v2/zh/integration/channel/dingtalk
 ---
 
-`agentscope-extensions-channel-dingtalk` connects your Agent to DingTalk (钉钉). It supports two reception modes: **Stream** (default) — a persistent WebSocket that receives bot messages in real time without exposing a public webhook endpoint — and **HTTP callback** — DingTalk POSTs each message to your Spring application, signed with your App Secret.
+`deepscope-extensions-channel-dingtalk` connects your Agent to DingTalk (钉钉). It supports two reception modes: **Stream** (default) — a persistent WebSocket that receives bot messages in real time without exposing a public webhook endpoint — and **HTTP callback** — DingTalk POSTs each message to your Spring application, signed with your App Secret.
 
 ## When to use
 
@@ -15,9 +15,9 @@ zh_link: /v2/zh/integration/channel/dingtalk
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-channel-dingtalk</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-channel-dingtalk</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 

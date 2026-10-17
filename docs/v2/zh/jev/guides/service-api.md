@@ -1,5 +1,5 @@
 ---
-title: "在 AgentScope Service 中配置 JEV"
+title: "在 DeepScope Service 中配置 JEV"
 ---
 
 使用 session 的 `agentOverrides.jev` 为各用途设置模式、版本和预算。Service 在构建 Harness Agent 时装配对应能力；需要业务数据的能力，还要由宿主在每次运行上下文中提供数据源。
@@ -53,9 +53,9 @@ JEV 密钥由服务部署环境提供；本页 JSON 只配置用途。工具必�
 | retrieval | 检索证据工具 | 检索 Source 和 ACL |
 | browser | 只读浏览器工具 | 独占会话 Source 和独立验证器 |
 
-各用途完整配置见对应功能页：[轨迹评估](/v2/zh/jev/guides/trace-evaluation-api#service-配置和记录)、[压缩](/v2/zh/jev/guides/context-compaction-api#service-配置)、[监督](/v2/zh/jev/guides/supervision-api#service-配置与追踪)、[代码评审](/v2/zh/jev/guides/code-review-api#service-配置)、[检索](/v2/zh/jev/guides/evidence-pipeline-api#agentscope-service)、[阶段路由](/v2/zh/jev/guides/phase-routing-api#agentscope-service)、[浏览器](/v2/zh/jev/guides/browser-execution-api#agentscope-service)。监督也只支持 OFF/SHADOW。
+各用途完整配置见对应功能页：[轨迹评估](/v2/zh/jev/guides/trace-evaluation-api#service-配置和记录)、[压缩](/v2/zh/jev/guides/context-compaction-api#service-配置)、[监督](/v2/zh/jev/guides/supervision-api#service-配置与追踪)、[代码评审](/v2/zh/jev/guides/code-review-api#service-配置)、[检索](/v2/zh/jev/guides/evidence-pipeline-api#deepscope-service)、[阶段路由](/v2/zh/jev/guides/phase-routing-api#deepscope-service)、[浏览器](/v2/zh/jev/guides/browser-execution-api#deepscope-service)。监督也只支持 OFF/SHADOW。
 
-`routing.models` 为简单模型列表；配置 `routes` 时使用阶段路由，两者不能混用。服务端 `agentscope.jev.allowed-models` 配置允许的模型 ID，未经允许的模型不能通过 session 配置引入。简单列表路径对工具能力采用保守回退；需要完整能力与配额约束时提供阶段路由目录。
+`routing.models` 为简单模型列表；配置 `routes` 时使用阶段路由，两者不能混用。服务端 `deepscope.jev.allowed-models` 配置允许的模型 ID，未经允许的模型不能通过 session 配置引入。简单列表路径对工具能力采用保守回退；需要完整能力与配额约束时提供阶段路由目录。
 
 ## 3. 给同一客服增加回答审核
 

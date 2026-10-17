@@ -3,7 +3,7 @@ title: Custom Workflow
 zh_link: /v1/zh/docs/multi-agent/workflow
 ---
 
-> **Note:** The former Spring Boot example module `agentscope-examples/multiagent-patterns/` was removed during the 2.0 package refactor. Use the code snippets on this page as the reference implementation. For other runnable samples, see `agentscope-examples/documentation/`.
+> **Note:** The former Spring Boot example module `deepscope-examples/multiagent-patterns/` was removed during the 2.0 package refactor. Use the code snippets on this page as the reference implementation. For other runnable samples, see `deepscope-examples/documentation/`.
 
 In the **custom workflow** pattern, you define your own execution flow using **Spring AI Alibaba StateGraph**. You have full control over the graph structure—sequential steps, conditional branches, loops, and parallel execution. Nodes can be **deterministic** (e.g. vector search, DB query), **LLM-based** (e.g. rewrite, classify), or **agentic** (an agent with tools). State is passed between nodes via a shared state map with configurable strategies (replace, append).
 
@@ -14,7 +14,7 @@ This pattern is useful when standard patterns (Pipeline, Routing, Subagents, etc
 - **Full control over graph structure**: You define nodes and edges; the framework does not impose a fixed topology.
 - **Mix deterministic and agentic steps**: Some nodes run without an LLM (e.g. retrieve, list_tables); others call a model or an agent with tools.
 - **Explicit state**: Each node reads and updates state (e.g. `question`, `rewritten_query`, `documents`, `messages`). Key strategies (replace vs append) control how state is merged.
-- **Composable**: You can use other patterns as nodes—for example, an AgentScopeAgent (or a Pipeline) as a single node in the graph.
+- **Composable**: You can use other patterns as nodes—for example, an DeepScopeAgent (or a Pipeline) as a single node in the graph.
 
 ## When to use
 
@@ -31,7 +31,7 @@ The project uses **Spring AI Alibaba** `StateGraph` and `CompiledGraph`. Core st
 1. **Define state and strategies**: Create a `StateGraph` with a name and a supplier of `Map<String, KeyStrategy>`. Use `ReplaceStrategy` for single-value keys (e.g. `question`, `rewritten_query`) and `AppendStrategy` for lists or message history (e.g. `messages`).
 2. **Add nodes**: Each node is either:
    - A **function node**: `NodeAction` (sync or async via `node_async(...)`). It receives `OverAllState`, returns a `Map<String, Object>` of state updates. Can be pure logic (e.g. vector search) or an ad-hoc LLM call (e.g. rewrite).
-   - An **agent node**: `AgentScopeAgent.asNode()`. The agent receives state (e.g. via `instruction` with `{input}` or from state contents) and returns updates (e.g. `messages`).
+   - An **agent node**: `DeepScopeAgent.asNode()`. The agent receives state (e.g. via `instruction` with `{input}` or from state contents) and returns updates (e.g. `messages`).
 3. **Add edges**: `addEdge(START, "first_node")`, `addEdge("node_a", "node_b")`, `addEdge("last_node", END)`. For conditional routing you use conditional edges (not shown in the examples below).
 4. **Compile and invoke**: `graph.compile()` returns a `CompiledGraph`; you invoke it with an initial state map and read the final state (e.g. `messages`, `answer`) from the result.
 
@@ -44,7 +44,7 @@ START → rewrite → retrieve → prepare_agent → rag_agent → END
 - **rewrite**: LLM rewrites the query for better retrieval (function node with Model).
 - **retrieve**: Vector similarity search, no LLM (function node using Knowledge).
 - **prepare_agent**: Formats context and question into a prompt (deterministic function node).
-- **rag_agent**: AgentScopeAgent (ReActAgent) with context and optional tools (e.g. `get_latest_news`).
+- **rag_agent**: DeepScopeAgent (ReActAgent) with context and optional tools (e.g. `get_latest_news`).
 
 **Example: SQL workflow (conceptual)**
 
@@ -55,14 +55,14 @@ START → list_tables → call_get_schema → get_schema → generate_query → 
 - **list_tables**: Lists DB tables (function node using SqlTools).
 - **call_get_schema**: LLM decides which table(s) to get schema for (function node).
 - **get_schema**: Executes schema lookup (function node).
-- **generate_query**: AgentScopeAgent with `sql_db_list_tables`, `sql_db_schema`, `sql_db_query` tools; generates and runs SELECT.
+- **generate_query**: DeepScopeAgent with `sql_db_list_tables`, `sql_db_schema`, `sql_db_query` tools; generates and runs SELECT.
 
 ## Example project
 
 | Package   | Flow | Description |
 |-----------|------|-------------|
-| **ragagent** | Query → Rewrite → Retrieve → Prepare → Agent → Response | RAG: rewrite query, vector retrieve, then ReActAgent with context and `get_latest_news` tool. Uses AgentScope Model, Knowledge (embedding + store), and AgentScopeAgent. |
-| **sqlagent** | START → list_tables → get_schema → generate_query → END | SQL: list tables, get schema for relevant tables, then ReActAgent with SQL tools (list_tables, schema, query). Uses H2 in-memory and AgentScopeAgent. |
+| **ragagent** | Query → Rewrite → Retrieve → Prepare → Agent → Response | RAG: rewrite query, vector retrieve, then ReActAgent with context and `get_latest_news` tool. Uses DeepScope Model, Knowledge (embedding + store), and DeepScopeAgent. |
+| **sqlagent** | START → list_tables → get_schema → generate_query → END | SQL: list tables, get schema for relevant tables, then ReActAgent with SQL tools (list_tables, schema, query). Uses H2 in-memory and DeepScopeAgent. |
 
 **Configuration**:
 

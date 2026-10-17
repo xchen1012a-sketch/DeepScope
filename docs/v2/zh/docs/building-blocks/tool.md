@@ -8,15 +8,15 @@ en_link: /v2/en/docs/building-blocks/tool
 
 Tool 是 agent 与外部世界交互的方式 —— 执行业务操作、调用 API、读写数据等。每个 tool 通过 JSON Schema 暴露给 LLM，agent 通过统一接口完成调用。
 
-AgentScope 把 tool 相关的构件组织成三个概念：
+DeepScope 把 tool 相关的构件组织成三个概念：
 
 - **Tool** —— 任意实现 `AgentTool` 接口（通常通过继承 `ToolBase`）或在普通类的方法上标注 `@Tool` 注解的对象。Java 端把后者称为 *reflective function tool*，由 `Toolkit#registerTool(Object)` 自动反射注册。
 - **Toolkit** —— 容器，负责注册 tool、MCP 客户端与 skill，向模型暴露它们的 JSON schema，并把每次工具调用分发到对应的 tool 对象。
 - **Tool Group** —— 一组带名称的 tool / MCP / skill 集合，可以作为整体激活或停用。Agent 在运行时通过内置 meta tool 切换 group，让上下文保持聚焦。
 
 ```java
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.builtin.TodoTools;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.builtin.TodoTools;
 
 Toolkit toolkit = new Toolkit();
 toolkit.registerTool(new TodoTools());
@@ -27,7 +27,7 @@ toolkit.registerTool(new MyCustomTools());
 
 ## Java Tool
 
-Java tool 是任意满足 `AgentTool` 契约的对象。AgentScope 同时提供了一个 `ToolBase` 抽象基类用于显式建模带参数 schema 的 tool，以及一个反射适配器用于把普通方法包装成 tool。
+Java tool 是任意满足 `AgentTool` 契约的对象。DeepScope 同时提供了一个 `ToolBase` 抽象基类用于显式建模带参数 schema 的 tool，以及一个反射适配器用于把普通方法包装成 tool。
 
 ### AgentTool / ToolBase 接口
 
@@ -58,7 +58,7 @@ Java tool 是任意满足 `AgentTool` 契约的对象。AgentScope 同时提供�
 
 ### 使用内置 Tool
 
-AgentScope 当前提供以下内置 tool：
+DeepScope 当前提供以下内置 tool：
 
 | Tool | 说明 | 只读 |
 |------|------|------|
@@ -68,7 +68,7 @@ AgentScope 当前提供以下内置 tool：
 
 ```java
 Toolkit toolkit = new Toolkit();
-toolkit.registerTool(new io.agentscope.core.tool.builtin.TodoTools());
+toolkit.registerTool(new io.deepscope.core.tool.builtin.TodoTools());
 ```
 
 
@@ -84,9 +84,9 @@ Toolkit 在出现额外 tool group 或 skill 时会自动注册 `reset_tools` me
 最轻量的写法：在普通类的方法上标注 `@Tool` 与 `@ToolParam`，然后通过 `Toolkit#registerTool(Object)` 反射注册。框架自动从 Java 类型推导 JSON schema，从 `description` 取面向 agent 的说明。
 
 ```java
-import io.agentscope.core.tool.Tool;
-import io.agentscope.core.tool.ToolParam;
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.core.tool.Tool;
+import io.deepscope.core.tool.ToolParam;
+import io.deepscope.core.tool.Toolkit;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -127,13 +127,13 @@ toolkit.registerTool(new SimpleTools());
 需要自定义权限策略、外部执行或更复杂的 schema 时，继承 `ToolBase`：
 
 ```java
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.core.message.ToolResultBlock;
-import io.agentscope.core.permission.PermissionBehavior;
-import io.agentscope.core.permission.PermissionContextState;
-import io.agentscope.core.permission.PermissionDecision;
-import io.agentscope.core.tool.ToolBase;
-import io.agentscope.core.tool.ToolCallParam;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.core.message.ToolResultBlock;
+import io.deepscope.core.permission.PermissionBehavior;
+import io.deepscope.core.permission.PermissionContextState;
+import io.deepscope.core.permission.PermissionDecision;
+import io.deepscope.core.tool.ToolBase;
+import io.deepscope.core.tool.ToolCallParam;
 import java.util.List;
 import java.util.Map;
 import reactor.core.publisher.Mono;
@@ -185,9 +185,9 @@ public class WebSearchTool extends ToolBase {
 创建外部执行 tool 只需把 `externalTool` 设为 `true`，不必实现 `callAsync`：
 
 ```java
-import io.agentscope.core.permission.PermissionContextState;
-import io.agentscope.core.permission.PermissionDecision;
-import io.agentscope.core.tool.ToolBase;
+import io.deepscope.core.permission.PermissionContextState;
+import io.deepscope.core.permission.PermissionDecision;
+import io.deepscope.core.tool.ToolBase;
 import java.util.List;
 import java.util.Map;
 import reactor.core.publisher.Mono;
@@ -218,7 +218,7 @@ public class HumanApprovalTool extends ToolBase {
 }
 ```
 
-完整可运行示例：`agentscope-examples/documentation/.../tool/ToolBaseExample.java`、`tool/ToolExecutionContextExample.java`。
+完整可运行示例：`deepscope-examples/documentation/.../tool/ToolBaseExample.java`、`tool/ToolExecutionContextExample.java`。
 
 ## 接收 Context
 
@@ -255,8 +255,8 @@ public String runTask(ToolEmitter emitter) {
 「用户自定义 POJO」的判定：参数没有 `@ToolParam`、不是基本类型、不是 `ContentBlock` / `Msg`、不在 `java.*` / `javax.*` 包下。其余参数（带 `@ToolParam` 或属于上述兜底类型）从 LLM 提供的 JSON 输入按名称取值。
 
 ```java
-import io.agentscope.core.tool.Tool;
-import io.agentscope.core.tool.ToolParam;
+import io.deepscope.core.tool.Tool;
+import io.deepscope.core.tool.ToolParam;
 
 public record UserContext(String username, String locale) {}
 
@@ -284,16 +284,16 @@ RuntimeContext ctx =
 agent.call(List.of(new UserMessage("Greet me.")), ctx).block();
 ```
 
-模型不需要把 `userCtx` 写进 JSON 参数——schema 里也不会出现它。完整示例：`agentscope-examples/documentation/.../tool/ToolExecutionContextExample.java`。
+模型不需要把 `userCtx` 写进 JSON 参数——schema 里也不会出现它。完整示例：`deepscope-examples/documentation/.../tool/ToolExecutionContextExample.java`。
 
 ### `ToolBase.callAsync` 中访问
 
 继承 `ToolBase` 的 tool 通过 `ToolCallParam` 取 context：
 
 ```java
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.tool.ToolBase;
-import io.agentscope.core.tool.ToolCallParam;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.tool.ToolBase;
+import io.deepscope.core.tool.ToolCallParam;
 import reactor.core.publisher.Mono;
 
 public class TenantAwareTool extends ToolBase {
@@ -303,7 +303,7 @@ public class TenantAwareTool extends ToolBase {
     }
 
     @Override
-    public Mono<io.agentscope.core.message.ToolResultBlock> callAsync(ToolCallParam param) {
+    public Mono<io.deepscope.core.message.ToolResultBlock> callAsync(ToolCallParam param) {
         RuntimeContext rc = param.getRuntimeContext();
         String tenantId = rc != null ? rc.getUserId() : null;
         TenantConfig cfg = rc != null ? rc.get(TenantConfig.class) : null;
@@ -320,7 +320,7 @@ public class TenantAwareTool extends ToolBase {
 
 ## MCP
 
-AgentScope 集成 [Model Context Protocol (MCP)](https://modelcontextprotocol.io/)，让 agent 可以接入任意 MCP 兼容的工具提供方。框架自动处理协议协商、工具发现与结果转换。
+DeepScope 集成 [Model Context Protocol (MCP)](https://modelcontextprotocol.io/)，让 agent 可以接入任意 MCP 兼容的工具提供方。框架自动处理协议协商、工具发现与结果转换。
 
 支持三种连接方式：
 
@@ -340,9 +340,9 @@ MCP tool 在 toolkit 中以 `mcp__{server_name}__{tool_name}` 命名，避免冲
 <Tab title="STDIO">
 
 ```java
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.mcp.McpClientBuilder;
-import io.agentscope.core.tool.mcp.McpClientWrapper;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.mcp.McpClientBuilder;
+import io.deepscope.core.tool.mcp.McpClientWrapper;
 
 McpClientWrapper filesystem =
         McpClientBuilder.create("filesystem")
@@ -360,9 +360,9 @@ toolkit.registerMcpClient(filesystem).block();
 <Tab title="Streamable HTTP">
 
 ```java
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.mcp.McpClientBuilder;
-import io.agentscope.core.tool.mcp.McpClientWrapper;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.mcp.McpClientBuilder;
+import io.deepscope.core.tool.mcp.McpClientWrapper;
 
 McpClientWrapper weather =
         McpClientBuilder.create("weather")
@@ -381,8 +381,8 @@ toolkit.registerMcpClient(weather).block();
 <Tab title="SSE">
 
 ```java
-import io.agentscope.core.tool.mcp.McpClientBuilder;
-import io.agentscope.core.tool.mcp.McpClientWrapper;
+import io.deepscope.core.tool.mcp.McpClientBuilder;
+import io.deepscope.core.tool.mcp.McpClientWrapper;
 
 McpClientWrapper search =
         McpClientBuilder.create("search")
@@ -400,7 +400,7 @@ toolkit.registerMcpClient(search).block();
 </Tabs>
 
 
-完整运行示例：`agentscope-examples/documentation/.../mcp/McpStdioExample.java`、`mcp/McpSseExample.java`、`mcp/McpStreamableHttpExample.java`。
+完整运行示例：`deepscope-examples/documentation/.../mcp/McpStdioExample.java`、`mcp/McpSseExample.java`、`mcp/McpStreamableHttpExample.java`。
 
 ## Skill
 
@@ -413,8 +413,8 @@ Skill 是基于 markdown 的指令集，无需写新工具代码即可拓展 age
 通过 `ReActAgent.builder().skillRepository(...)` 直接挂载一个或多个 `AgentSkillRepository`。Builder 在 `build()` 时自动装配 `DynamicSkillMiddleware`，每次 `call()` 都会按 skill 来源刷新 skill prompt 与 tool group：
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.skill.repository.FileSystemSkillRepository;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.skill.repository.FileSystemSkillRepository;
 import java.nio.file.Paths;
 
 ReActAgent agent =
@@ -428,7 +428,7 @@ ReActAgent agent =
 
 多次调用 `skillRepository(...)` 按调用顺序追加（低 → 高优先级），同名 skill 后者覆盖前者；如需替换整批，调用 `skillRepositories(List<AgentSkillRepository>)`。
 
-参考实现：`agentscope-examples/documentation/.../skill/AgentSkillExample.java`、`skill/SkillWithToolGroupExample.java`。
+参考实现：`deepscope-examples/documentation/.../skill/AgentSkillExample.java`、`skill/SkillWithToolGroupExample.java`。
 
 ### Skill 的工作方式
 
@@ -437,7 +437,7 @@ ReActAgent agent =
 初始化阶段：
 
 - Toolkit 扫描所有注册的 skill 来源，收集每个 skill 的名称、描述与目录。
-- 自动把内置查看器工具 `load_skill_through_path`（实现位于 `io.agentscope.core.skill.SkillToolFactory`）作为无分组、始终可见的工具注册。
+- 自动把内置查看器工具 `load_skill_through_path`（实现位于 `io.deepscope.core.skill.SkillToolFactory`）作为无分组、始终可见的工具注册。
 - 组装一段 system prompt 片段，列出可用 skill（仅名称与描述），并指示 agent 通过 `load_skill_through_path` 读取完整内容。
 
 运行时阶段，agent 用两个必填参数调用查看器：
@@ -476,10 +476,10 @@ Skill 只提供指令，真正的执行依赖 agent 已有的 tool。如果 skil
 - **`ReActAgent`** —— 注册 `ShellCommandTool` 到 toolkit：
 
 ```java
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.coding.ShellCommandTool;
-import io.agentscope.core.tool.file.ReadFileTool;
-import io.agentscope.core.tool.file.WriteFileTool;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.coding.ShellCommandTool;
+import io.deepscope.core.tool.file.ReadFileTool;
+import io.deepscope.core.tool.file.WriteFileTool;
 
 Toolkit toolkit = new Toolkit();
 toolkit.registerTool(new ShellCommandTool());
@@ -503,8 +503,8 @@ ReActAgent agent =
 `SkillToolGroup` 把一组 tool 绑定到某个 skill name —— agent 加载该 skill 时 tool group 自动激活，未加载时 tool 不出现在模型 schema 中，减少上下文噪音。
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tool.Toolkit;
 
 Toolkit toolkit = new Toolkit();
 
@@ -535,7 +535,7 @@ ReActAgent agent =
 
 当 agent 通过 `load_skill_through_path` 加载名为 `data-analysis` 的 skill 时，`analysis-tools` group 自动激活，其中的 tool 立即可用。配合 `enableMetaTool(true)`，模型还可以通过 `reset_tools` 主动管理 tool group 的激活状态。
 
-参考实现：`agentscope-examples/documentation/.../skill/SkillWithToolGroupExample.java`。
+参考实现：`deepscope-examples/documentation/.../skill/SkillWithToolGroupExample.java`。
 
 ## 自我管理 Tool
 
@@ -546,10 +546,10 @@ ReActAgent agent =
 `ToolGroup` 是带名称的 tool / MCP / skill 集合。把 group 注册到 `Toolkit` 后再用 builder 启用 meta tool：
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.ToolGroup;
-import io.agentscope.core.tool.ToolGroupScope;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.ToolGroup;
+import io.deepscope.core.tool.ToolGroupScope;
 
 Toolkit toolkit = new Toolkit();
 toolkit.registerTool(new BasicTools());
@@ -654,7 +654,7 @@ Agent 如何在 ReAct 循环中编排 tool 调用
 
 Agent 构建时复制工具注册表和注册元数据；已有工具实例仍按引用共享，因此自定义工具需要自行保证并发安全。构建某个 Agent 时添加的 Hook、知识库等工具不会覆盖其他 Agent 的注册。
 
-调用期间不要通过修改共享 Toolkit 注入外部工具或切换会话的工具组。使用 `io.agentscope.core.tool.ToolRequestConfig` 描述本次请求的工具视图：
+调用期间不要通过修改共享 Toolkit 注入外部工具或切换会话的工具组。使用 `io.deepscope.core.tool.ToolRequestConfig` 描述本次请求的工具视图：
 
 ```java
 ToolRequestConfig tools = new ToolRequestConfig(
@@ -670,4 +670,4 @@ agent.streamEvents(messages, ctx).subscribe(this::handleEvent);
 
 `Toolkit.callTool` 和 `callTools` 同样读取显式传入的 RuntimeContext。无配置的 `getTool(name)` 查看原始注册表；需要请求视图时使用 `getTool(name, config)`。工具组激活状态保存在会话的 `ToolContextState`，流式工具回调绑定本次调用。
 
-需要按用户或会话加载技能的仓库实现 Core 中的 `io.agentscope.core.skill.repository.RuntimeContextSkillRepository`。Core 和 Harness 都将当前上下文传给仓库。动态 Skill 视图按内容签名缓存，并发缓存未命中共享一次完整的资源物化；淘汰后重建视图使用新目录，保留运行中执行所引用的文件。缓存淘汰只限制保留的 SkillBox 数量，不限制磁盘占用：自动生成的目录保留到 JVM 退出时清理。调用方指定的工作目录由调用方负责清理；不要在仍有执行引用资源时删除它。
+需要按用户或会话加载技能的仓库实现 Core 中的 `io.deepscope.core.skill.repository.RuntimeContextSkillRepository`。Core 和 Harness 都将当前上下文传给仓库。动态 Skill 视图按内容签名缓存，并发缓存未命中共享一次完整的资源物化；淘汰后重建视图使用新目录，保留运行中执行所引用的文件。缓存淘汰只限制保留的 SkillBox 数量，不限制磁盘占用：自动生成的目录保留到 JVM 退出时清理。调用方指定的工作目录由调用方负责清理；不要在仍有执行引用资源时删除它。

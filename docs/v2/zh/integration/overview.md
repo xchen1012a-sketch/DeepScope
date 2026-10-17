@@ -3,31 +3,31 @@ title: 概览
 en_link: /v2/en/integration/overview
 ---
 
-本节汇总 AgentScope Java 与第三方系统、生态服务的集成扩展。每个扩展都是 `agentscope-extensions/` 下的独立 Maven 模块，按需引入即可。
+本节汇总 DeepScope Java 与第三方系统、生态服务的集成扩展。每个扩展都是 `deepscope-extensions/` 下的独立 Maven 模块，按需引入即可。
 
 按主题分为以下几组：
 
 ## 模型提供商
 
-所有模型提供商已经迁移到独立模型扩展模块中，`agentscope-core` 只保留共享模型契约。完整模型创建方式、Spring Boot 配置、formatter、credential 和高级 registry 行为见 [模型文档](/v2/zh/docs/building-blocks/model)。
+所有模型提供商已经迁移到独立模型扩展模块中，`deepscope-core` 只保留共享模型契约。完整模型创建方式、Spring Boot 配置、formatter、credential 和高级 registry 行为见 [模型文档](/v2/zh/docs/building-blocks/model)。
 
 | 提供商 | Maven artifact | `ModelRegistry` id | 标准环境变量 | 文档 |
 |--------|----------------|--------------------|--------------|------|
-| OpenAI | `agentscope-extensions-model-openai` | `openai:<model>` | `OPENAI_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/openai">OpenAI</a> |
-| OpenAI Official | `agentscope-extensions-model-openai-official` | `openai-official:<model>` | `OPENAI_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/openai-official">OpenAI Official</a> |
-| DeepSeek | `agentscope-extensions-model-openai` | `deepseek:<model>` | `DEEPSEEK_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/deepseek">DeepSeek</a> |
-| GLM | `agentscope-extensions-model-openai` | `glm:<model>` | `ZAI_API_KEY` / `GLM_API_KEY` / `ZHIPUAI_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/glm">GLM</a> |
-| Kimi | `agentscope-extensions-model-openai` | `kimi:<model>` | `MOONSHOT_API_KEY` / `KIMI_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/kimi">Kimi</a> |
-| MiniMax | `agentscope-extensions-model-openai` | `minimax:<model>` | `MINIMAX_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/minimax">MiniMax</a> |
-| DashScope | `agentscope-extensions-model-dashscope` | `dashscope:<model>` / `qwen*` | `DASHSCOPE_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/dashscope">DashScope</a> |
-| Gemini | `agentscope-extensions-model-gemini` | `gemini:<model>` | `GEMINI_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/gemini">Gemini</a> |
-| Anthropic | `agentscope-extensions-model-anthropic` | `anthropic:<model>` | `ANTHROPIC_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/anthropic">Anthropic</a> |
-| Ollama | `agentscope-extensions-model-ollama` | `ollama:<model>` | `OLLAMA_BASE_URL`（可选） | <a class="reference internal" href="/v2/zh/integration/model/ollama">Ollama</a> |
+| OpenAI | `deepscope-extensions-model-openai` | `openai:<model>` | `OPENAI_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/openai">OpenAI</a> |
+| OpenAI Official | `deepscope-extensions-model-openai-official` | `openai-official:<model>` | `OPENAI_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/openai-official">OpenAI Official</a> |
+| DeepSeek | `deepscope-extensions-model-openai` | `deepseek:<model>` | `DEEPSEEK_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/deepseek">DeepSeek</a> |
+| GLM | `deepscope-extensions-model-openai` | `glm:<model>` | `ZAI_API_KEY` / `GLM_API_KEY` / `ZHIPUAI_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/glm">GLM</a> |
+| Kimi | `deepscope-extensions-model-openai` | `kimi:<model>` | `MOONSHOT_API_KEY` / `KIMI_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/kimi">Kimi</a> |
+| MiniMax | `deepscope-extensions-model-openai` | `minimax:<model>` | `MINIMAX_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/minimax">MiniMax</a> |
+| DashScope | `deepscope-extensions-model-dashscope` | `dashscope:<model>` / `qwen*` | `DASHSCOPE_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/dashscope">DashScope</a> |
+| Gemini | `deepscope-extensions-model-gemini` | `gemini:<model>` | `GEMINI_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/gemini">Gemini</a> |
+| Anthropic | `deepscope-extensions-model-anthropic` | `anthropic:<model>` | `ANTHROPIC_API_KEY` | <a class="reference internal" href="/v2/zh/integration/model/anthropic">Anthropic</a> |
+| Ollama | `deepscope-extensions-model-ollama` | `ollama:<model>` | `OLLAMA_BASE_URL`（可选） | <a class="reference internal" href="/v2/zh/integration/model/ollama">Ollama</a> |
 
 
 <Note>
 
-`agentscope-extensions-model-e2e-tests` 是仓库测试模块，不是面向用户的模型集成依赖。
+`deepscope-extensions-model-e2e-tests` 是仓库测试模块，不是面向用户的模型集成依赖。
 
 </Note>
 
@@ -46,10 +46,10 @@ en_link: /v2/en/integration/overview
 隔离的代码执行环境，所有 `SandboxFilesystemSpec` 实现。Docker 内置在 harness 中，其余为独立扩展模块。
 
 - Docker — 内置默认，无需额外依赖
-- [Kubernetes](/v2/zh/docs/harness/sandbox) — `agentscope-extensions-sandbox-kubernetes`
-- [AgentRun（阿里云）](/v2/zh/docs/harness/sandbox) — `agentscope-extensions-sandbox-agentrun`
-- [Daytona](/v2/zh/docs/harness/sandbox) — `agentscope-extensions-sandbox-daytona`
-- [E2B](/v2/zh/docs/harness/sandbox) — `agentscope-extensions-sandbox-e2b`
+- [Kubernetes](/v2/zh/docs/harness/sandbox) — `deepscope-extensions-sandbox-kubernetes`
+- [AgentRun（阿里云）](/v2/zh/docs/harness/sandbox) — `deepscope-extensions-sandbox-agentrun`
+- [Daytona](/v2/zh/docs/harness/sandbox) — `deepscope-extensions-sandbox-daytona`
+- [E2B](/v2/zh/docs/harness/sandbox) — `deepscope-extensions-sandbox-e2b`
 
 ## 记忆（Memory）
 
@@ -109,12 +109,12 @@ en_link: /v2/en/integration/overview
 运行环境、语言生态、调试与训练流水线。
 
 - [Chat Completions Web](/v2/zh/integration/ecosystem/chat-completions-web)
-- [AgentScope Studio](/v2/zh/integration/ecosystem/studio)
+- [DeepScope Studio](/v2/zh/integration/ecosystem/studio)
 - [在线训练（Training）](/v2/zh/integration/ecosystem/training)
 
 
 <Note>
 
-若你正在使用 Spring Boot，绝大多数扩展都有对应的 `agentscope-spring-boot-starter-*` 一键接入版本，可减少手动装配代码。
+若你正在使用 Spring Boot，绝大多数扩展都有对应的 `deepscope-spring-boot-starter-*` 一键接入版本，可减少手动装配代码。
 
 </Note>

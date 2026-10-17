@@ -3,7 +3,7 @@ title: Feishu Channel
 zh_link: /v2/zh/integration/channel/feishu
 ---
 
-`agentscope-extensions-channel-feishu` connects your Agent to Feishu / Lark (飞书) via the **Event Subscription v2** callback mechanism. A Spring `@RestController` receives webhook callbacks, optionally decrypts encrypted payloads, and dispatches messages through the Gateway.
+`deepscope-extensions-channel-feishu` connects your Agent to Feishu / Lark (飞书) via the **Event Subscription v2** callback mechanism. A Spring `@RestController` receives webhook callbacks, optionally decrypts encrypted payloads, and dispatches messages through the Gateway.
 
 ## When to use
 
@@ -14,9 +14,9 @@ zh_link: /v2/zh/integration/channel/feishu
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-channel-feishu</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-channel-feishu</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 

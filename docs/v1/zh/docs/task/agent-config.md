@@ -5,7 +5,7 @@ en_link: /v1/en/docs/task/agent-config
 
 ## 概述
 
-Agent 是 AgentScope 框架的核心抽象，代表一个具有自主决策能力的智能体。它将大语言模型（LLM）的推理能力、记忆系统、工具调用等功能有机整合在一起，使得开发者能够构建具有感知、思考、行动能力的 AI 应用。
+Agent 是 DeepScope 框架的核心抽象，代表一个具有自主决策能力的智能体。它将大语言模型（LLM）的推理能力、记忆系统、工具调用等功能有机整合在一起，使得开发者能够构建具有感知、思考、行动能力的 AI 应用。
 
 
 一个完整的 Agent 由以下核心组件构成：
@@ -239,12 +239,12 @@ ExecutionConfig modelConfig = ExecutionConfig.builder()
 
 在 `ReActAgent` 的推理阶段（ReasoningPipeline），会将此配置注入到 `GenerateOptions` 中：
 
-```128:129:src/main/java/io/agentscope/core/ReActAgent.java
+```128:129:src/main/java/io/deepscope/core/ReActAgent.java
     private final ExecutionConfig modelExecutionConfig;
     private final ExecutionConfig toolExecutionConfig;
 ```
 
-```366:372:src/main/java/io/agentscope/core/ReActAgent.java
+```366:372:src/main/java/io/deepscope/core/ReActAgent.java
     private GenerateOptions buildGenerateOptions() {
         GenerateOptions.Builder builder = GenerateOptions.builder();
         if (modelExecutionConfig != null) {
@@ -286,7 +286,7 @@ ExecutionConfig toolConfig = ExecutionConfig.builder()
 
 在 `ReActAgent` 的执行阶段（ActingPipeline），调用 `toolkit.callTools()` 时传入此配置：
 
-```548:554:src/main/java/io/agentscope/core/ReActAgent.java
+```548:554:src/main/java/io/deepscope/core/ReActAgent.java
             return toolkit.callTools(
                             toolCalls, toolExecutionConfig, ReActAgent.this, toolExecutionContext)
                     .flatMapMany(responses -> processToolResults(toolCalls, responses))
@@ -431,7 +431,7 @@ ReActAgent agent = ReActAgent.builder()
 
 ### 10. Formatter 配置
 
-Formatter 负责在 AgentScope 格式和模型 API 格式之间转换。
+Formatter 负责在 DeepScope 格式和模型 API 格式之间转换。
 
 ```java
 .model(DashScopeChatModel.builder()
@@ -479,27 +479,27 @@ SkillBox skillBox = new SkillBox(new Toolkit());
 以下示例展示了所有核心配置项的完整用法：
 
 ```java
-package io.agentscope.tutorial;
+package io.deepscope.tutorial;
 
-import io.agentscope.core.ReActAgent;
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.model.GenerateOptions;
-import io.agentscope.core.model.StructuredOutputReminder;
-import io.agentscope.core.model.ExecutionConfig;
-import io.agentscope.core.tool.Tool;
-import io.agentscope.core.tool.ToolParam;
-import io.agentscope.core.tool.Toolkit;
-import io.agentscope.core.tool.ToolExecutionContext;
-import io.agentscope.core.hook.Hook;
-import io.agentscope.core.hook.HookEvent;
-import io.agentscope.core.plan.PlanNotebook;
-import io.agentscope.core.skill.AgentSkill;
-import io.agentscope.core.skill.SkillBox;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.model.GenerateOptions;
+import io.deepscope.core.model.StructuredOutputReminder;
+import io.deepscope.core.model.ExecutionConfig;
+import io.deepscope.core.tool.Tool;
+import io.deepscope.core.tool.ToolParam;
+import io.deepscope.core.tool.Toolkit;
+import io.deepscope.core.tool.ToolExecutionContext;
+import io.deepscope.core.hook.Hook;
+import io.deepscope.core.hook.HookEvent;
+import io.deepscope.core.plan.PlanNotebook;
+import io.deepscope.core.skill.AgentSkill;
+import io.deepscope.core.skill.SkillBox;
 import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.List;

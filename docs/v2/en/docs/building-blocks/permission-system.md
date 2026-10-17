@@ -6,7 +6,7 @@ zh_link: /v2/zh/docs/building-blocks/permission-system
 
 ## Overview
 
-The permission system (`io.agentscope.core.permission`) intercepts every tool call the agent makes and produces one of three decisions: **ALLOW**, **DENY**, or **ASK** (request user confirmation).
+The permission system (`io.deepscope.core.permission`) intercepts every tool call the agent makes and produces one of three decisions: **ALLOW**, **DENY**, or **ASK** (request user confirmation).
 
 It combines static configuration with dynamic runtime analysis. Three components together decide the outcome:
 
@@ -92,7 +92,7 @@ Deny rules and dangerous-path checks are **non-bypassable** — they apply even 
 
 ## Permission Mode
 
-The `PermissionMode` enum (`io.agentscope.core.permission.PermissionMode`) supports the following modes:
+The `PermissionMode` enum (`io.deepscope.core.permission.PermissionMode`) supports the following modes:
 
 | Mode | Behaviour | Use case |
 |------|-----------|----------|
@@ -111,9 +111,9 @@ Set the mode on the agent builder via `permissionContext(...)`:
 <Tab title="Initial config">
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.permission.PermissionContextState;
-import io.agentscope.core.permission.PermissionMode;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.permission.PermissionContextState;
+import io.deepscope.core.permission.PermissionMode;
 
 PermissionContextState permCtx =
         PermissionContextState.builder()
@@ -135,9 +135,9 @@ ReActAgent agent =
 <Tab title="ACCEPT_EDITS with working dir">
 
 ```java
-import io.agentscope.core.permission.AdditionalWorkingDirectory;
-import io.agentscope.core.permission.PermissionContextState;
-import io.agentscope.core.permission.PermissionMode;
+import io.deepscope.core.permission.AdditionalWorkingDirectory;
+import io.deepscope.core.permission.PermissionContextState;
+import io.deepscope.core.permission.PermissionMode;
 
 PermissionContextState permCtx =
         PermissionContextState.builder()
@@ -173,10 +173,10 @@ Each rule has the fields below. When the engine evaluates a rule, it calls the t
 **At init time** — pass rules through `PermissionContextState.builder()`:
 
 ```java
-import io.agentscope.core.permission.PermissionBehavior;
-import io.agentscope.core.permission.PermissionContextState;
-import io.agentscope.core.permission.PermissionMode;
-import io.agentscope.core.permission.PermissionRule;
+import io.deepscope.core.permission.PermissionBehavior;
+import io.deepscope.core.permission.PermissionContextState;
+import io.deepscope.core.permission.PermissionMode;
+import io.deepscope.core.permission.PermissionRule;
 
 PermissionContextState permCtx =
         PermissionContextState.builder()
@@ -202,7 +202,7 @@ PermissionContextState permCtx =
 **At runtime via suggested rules** — when the permission system returns ASK, it auto-generates suggested rules based on the current invocation. Pass the accepted rules in `ConfirmResult` and the agent will write them into the engine:
 
 ```java
-import io.agentscope.core.event.ConfirmResult;
+import io.deepscope.core.event.ConfirmResult;
 
 // ASK decisions carry suggested rules on the PermissionDecision (visible to
 // permission hooks), not on the ToolUseBlock. At the resume layer, accept the
@@ -213,7 +213,7 @@ ConfirmResult result =
                 /* toolCall  = */ toolCall);
 ```
 
-Runnable examples: `agentscope-examples/documentation/.../tool/PermissionContextExample.java`, `hitl/PermissionHITLExample.java`.
+Runnable examples: `deepscope-examples/documentation/.../tool/PermissionContextExample.java`, `hitl/PermissionHITLExample.java`.
 
 ## Built-in checks
 
@@ -224,9 +224,9 @@ Every tool implements `checkPermissions(toolInput, context)` (on `ToolBase`) —
 A custom tool can override `checkPermissions()` for its own logic:
 
 ```java
-import io.agentscope.core.permission.PermissionDecision;
-import io.agentscope.core.tool.ToolBase;
-import io.agentscope.core.tool.ToolExecutionContext;
+import io.deepscope.core.permission.PermissionDecision;
+import io.deepscope.core.tool.ToolBase;
+import io.deepscope.core.tool.ToolExecutionContext;
 import java.util.Map;
 import reactor.core.publisher.Mono;
 
@@ -281,17 +281,17 @@ When the permission engine returns an ASK decision for a tool call, the agent pa
 4. Build `ConfirmResult` objects and attach them to the resume message via metadata
 
 ```java
-import io.agentscope.core.event.ConfirmResult;
-import io.agentscope.core.message.GenerateReason;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.ToolCallState;
-import io.agentscope.core.message.ToolUseBlock;
-import io.agentscope.core.message.UserMessage;
-import io.agentscope.core.permission.PermissionBehavior;
-import io.agentscope.core.permission.PermissionContextState;
-import io.agentscope.core.permission.PermissionMode;
-import io.agentscope.core.permission.PermissionRule;
+import io.deepscope.core.event.ConfirmResult;
+import io.deepscope.core.message.GenerateReason;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.ToolCallState;
+import io.deepscope.core.message.ToolUseBlock;
+import io.deepscope.core.message.UserMessage;
+import io.deepscope.core.permission.PermissionBehavior;
+import io.deepscope.core.permission.PermissionContextState;
+import io.deepscope.core.permission.PermissionMode;
+import io.deepscope.core.permission.PermissionRule;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -368,12 +368,12 @@ See [Middleware — Stop agent when all tools are denied](/v2/en/docs/building-b
 When using `streamEvents()`, you don't need to extract `ToolUseBlock`s from the returned `Msg` — the event stream delivers a `RequireUserConfirmEvent` that carries the pending tool calls directly:
 
 ```java
-import io.agentscope.core.event.AgentEvent;
-import io.agentscope.core.event.ConfirmResult;
-import io.agentscope.core.event.RequireUserConfirmEvent;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.ToolUseBlock;
+import io.deepscope.core.event.AgentEvent;
+import io.deepscope.core.event.ConfirmResult;
+import io.deepscope.core.event.RequireUserConfirmEvent;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.ToolUseBlock;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -438,7 +438,7 @@ PermissionContextState headless =
 // ASK-rule hits are auto-denied — no blocking wait
 ```
 
-Full runnable example: `agentscope-examples/documentation/.../hitl/PermissionHITLExample.java`.
+Full runnable example: `deepscope-examples/documentation/.../hitl/PermissionHITLExample.java`.
 
 ## Common recipes
 
@@ -472,8 +472,8 @@ ReActAgent explorer =
 <Tab title="Unattended automation">
 
 ```java
-import io.agentscope.core.permission.PermissionBehavior;
-import io.agentscope.core.permission.PermissionRule;
+import io.deepscope.core.permission.PermissionBehavior;
+import io.deepscope.core.permission.PermissionRule;
 
 PermissionContextState ci =
         PermissionContextState.builder()

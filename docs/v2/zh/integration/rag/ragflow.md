@@ -3,7 +3,7 @@ title: RAGFlow
 en_link: /v2/en/integration/rag/ragflow
 ---
 
-`agentscope-extensions-rag-ragflow` 接入 [RAGFlow](https://ragflow.io/)。RAGFlow 在文档解析侧做得比较深（OCR、表格识别、知识图谱增强），适合非结构化文档比例高的场景。
+`deepscope-extensions-rag-ragflow` 接入 [RAGFlow](https://ragflow.io/)。RAGFlow 在文档解析侧做得比较深（OCR、表格识别、知识图谱增强），适合非结构化文档比例高的场景。
 
 ## 何时使用
 
@@ -14,18 +14,18 @@ en_link: /v2/en/integration/rag/ragflow
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-rag-ragflow</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-rag-ragflow</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
 ## 快速上手
 
 ```java
-import io.agentscope.core.rag.integration.ragflow.RAGFlowConfig;
-import io.agentscope.core.rag.integration.ragflow.RAGFlowKnowledge;
-import io.agentscope.core.rag.model.RetrieveConfig;
+import io.deepscope.core.rag.integration.ragflow.RAGFlowConfig;
+import io.deepscope.core.rag.integration.ragflow.RAGFlowKnowledge;
+import io.deepscope.core.rag.model.RetrieveConfig;
 
 RAGFlowConfig config = RAGFlowConfig.builder()
     .apiKey("ragflow-xxxxxxxx")

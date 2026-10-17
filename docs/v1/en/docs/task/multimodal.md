@@ -20,7 +20,7 @@ Multimodal capabilities enable Agents to understand and generate images, audio, 
 
 ### ContentBlock Architecture
 
-AgentScope uses a unified ContentBlock system to handle all types of content:
+DeepScope uses a unified ContentBlock system to handle all types of content:
 
 ```
 ContentBlock (Base Class)
@@ -46,7 +46,7 @@ Two media source methods are supported:
 ### Step 1: Create Media Content Blocks
 
 ```java
-import io.agentscope.core.message.*;
+import io.deepscope.core.message.*;
 import java.util.Base64;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -116,9 +116,9 @@ Msg multiImageMsg = Msg.builder()
 ### Step 3: Configure Vision Agent
 
 ```java
-import io.agentscope.core.ReActAgent;
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
 
 ReActAgent agent = ReActAgent.builder()
     .name("VisionAssistant")
@@ -145,14 +145,14 @@ System.out.println(response.getTextContent());
 ## Complete Example
 
 ```java
-package io.agentscope.examples;
+package io.deepscope.examples;
 
-import io.agentscope.core.ReActAgent;
-import io.agentscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.message.*;
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.tool.Toolkit;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.extensions.model.dashscope.formatter.DashScopeChatFormatter;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.message.*;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.tool.Toolkit;
 import java.util.List;
 
 public class VisionExample {
@@ -232,6 +232,6 @@ DashScopeChatModel.builder()
 
 ## More Resources
 
-- **Complete Example Code**: [VisionExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/documentation/quickstart/src/main/java/io/agentscope/examples/quickstart/VisionExample.java)
+- **Complete Example Code**: [VisionExample.java](https://github.com/xchen1012a-sketch/DeepScope/blob/main/deepscope-examples/documentation/quickstart/src/main/java/io/deepscope/examples/quickstart/VisionExample.java)
 - **Message Mechanism**: [message.md](/v1/en/docs/quickstart/key-concepts) - Learn about message structure
 - **Model Configuration**: [model.md](/v1/en/docs/task/model) - Learn about model configuration options

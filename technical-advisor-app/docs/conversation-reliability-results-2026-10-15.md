@@ -35,14 +35,14 @@
 - 保存链路补充集成测试：兜底后迟到提交与新运行并存、409冲突、数据库写失败保留快照并重试，均通过；最终会话Controller17项、persister12项。
 - `mvn -B -T1 clean verify -Dnet.bytebuddy.experimental=true`首轮在backend失败：308项中0断言失败、1个JUnit临时目录清理错误。之前的核心、Harness及扩展模块均通过；失败后分发子模块未执行。不能把该命令写成一次全量通过。
 - 单独复跑该用例通过后，检查确认缺少对原生异步记忆写入的等待。只给`AdvisorAgentControllerTest`补9行测试收尾，使用已有`MemoryBackgroundTasks.awaitQuiescence`并断言成功，未改业务代码或禁用清理。
-- 修正后的backend完整308项通过，0失败、0错误、0跳过；其中智能体Controller24项通过。`backend-and-downstream-verify.log`构建成功，同时验证依赖BOM和分发父模块；该轮按`%regex[io/agentscope/advisor/.*Test.class]`运行完整应用测试，不重复已通过的其他模块测试。
-- 首轮未执行的`agentscope-all`和`agentscope-bom`已单独连同依赖完成verify，构建成功；该轮重跑AG-UI处理器23、协调器12、文件工具21，共56项通过，见`distribution-verify.log`。MVC不在该分发包依赖中，其14项已在`full-verify.log`和`admission-fence-green.log`通过；相关SDK回归合计70项。修复后没有再次从头执行整仓clean verify，不将分段结果表述成一次全量通过。
+- 修正后的backend完整308项通过，0失败、0错误、0跳过；其中智能体Controller24项通过。`backend-and-downstream-verify.log`构建成功，同时验证依赖BOM和分发父模块；该轮按`%regex[io/deepscope/advisor/.*Test.class]`运行完整应用测试，不重复已通过的其他模块测试。
+- 首轮未执行的`deepscope-all`和`deepscope-bom`已单独连同依赖完成verify，构建成功；该轮重跑AG-UI处理器23、协调器12、文件工具21，共56项通过，见`distribution-verify.log`。MVC不在该分发包依赖中，其14项已在`full-verify.log`和`admission-fence-green.log`通过；相关SDK回归合计70项。修复后没有再次从头执行整仓clean verify，不将分段结果表述成一次全量通过。
 
 最终复验命令（仓库根目录）：
 
 ```sh
-mvn -B -T1 -pl technical-advisor-app/backend,agentscope-dependencies-bom,agentscope-distribution -am verify '-Dtest=%regex[io/agentscope/advisor/.*Test.class]' -Dsurefire.failIfNoSpecifiedTests=false -Dnet.bytebuddy.experimental=true
-mvn -B -T1 -pl agentscope-distribution/agentscope-all,agentscope-distribution/agentscope-bom -am verify -Dtest=AguiRequestProcessorTest,AguiResumeCoordinatorTest,AguiMvcControllerTest,FilesystemToolTest -Dsurefire.failIfNoSpecifiedTests=false -Dnet.bytebuddy.experimental=true
+mvn -B -T1 -pl technical-advisor-app/backend,deepscope-dependencies-bom,deepscope-distribution -am verify '-Dtest=%regex[io/deepscope/advisor/.*Test.class]' -Dsurefire.failIfNoSpecifiedTests=false -Dnet.bytebuddy.experimental=true
+mvn -B -T1 -pl deepscope-distribution/deepscope-all,deepscope-distribution/deepscope-bom -am verify -Dtest=AguiRequestProcessorTest,AguiResumeCoordinatorTest,AguiMvcControllerTest,FilesystemToolTest -Dsurefire.failIfNoSpecifiedTests=false -Dnet.bytebuddy.experimental=true
 ```
 
 日志及任务前副本保存在`/tmp/advisor-reliability-ZFDFmP`。该目录是临时证据，系统可能清理；长期结论以本文件和执行记录为准。

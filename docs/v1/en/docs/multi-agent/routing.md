@@ -3,7 +3,7 @@ title: Routing
 zh_link: /v1/zh/docs/multi-agent/routing
 ---
 
-> **Note:** The former Spring Boot example module `agentscope-examples/multiagent-patterns/` was removed during the 2.0 package refactor. Use the code snippets on this page as the reference implementation. For other runnable samples, see `agentscope-examples/documentation/`.
+> **Note:** The former Spring Boot example module `deepscope-examples/multiagent-patterns/` was removed during the 2.0 package refactor. Use the code snippets on this page as the reference implementation. For other runnable samples, see `deepscope-examples/documentation/`.
 
 In the **router** pattern, a routing step classifies the input and directs it to specialized agents. Zero or more specialists can be invoked (e.g. in parallel), and results are synthesized into a single response. This is useful when you have distinct **verticals**—separate knowledge domains that each have their own agent (e.g. GitHub, Notion, Slack).
 
@@ -14,7 +14,7 @@ The router decomposes the query, specialist agents are invoked (single or parall
 Key characteristics:
 
 - **Classification step**: The router (e.g. an LLM or rule-based classifier) determines which specialist(s) to call and what sub-query to send to each.
-- **Specialist agents**: Each vertical has its own agent (e.g. GitHub expert, Notion expert, Slack expert) implemented as **AgentScopeAgent** with AgentScope tools.
+- **Specialist agents**: Each vertical has its own agent (e.g. GitHub expert, Notion expert, Slack expert) implemented as **DeepScopeAgent** with DeepScope tools.
 - **Synthesis**: Raw results from specialists are merged into one coherent answer (e.g. by a final LLM call).
 
 Use the router pattern when you have clear input categories, need to query multiple sources (optionally in parallel), and want a single combined response.
@@ -27,15 +27,15 @@ Query → Router (classify) → [Agent A] → Synthesize → Combined answer
                     ↘ [Agent C] ↗
 ```
 
-The AgentScope example provides two variants: **Simple** (single routing agent + service-layer synthesis) and **Graph** (StateGraph wrapping preprocess / routing / postprocess). Both use AgentScope `DashScopeChatModel` and **AgentScopeAgent** for each specialist (GitHub, Notion, Slack) with stub tools (`GitHubStubTools`, `NotionStubTools`, `SlackStubTools`).
+The DeepScope example provides two variants: **Simple** (single routing agent + service-layer synthesis) and **Graph** (StateGraph wrapping preprocess / routing / postprocess). Both use DeepScope `DashScopeChatModel` and **DeepScopeAgent** for each specialist (GitHub, Notion, Slack) with stub tools (`GitHubStubTools`, `NotionStubTools`, `SlackStubTools`).
 
 ### Simple vs Graph comparison
 
 | Aspect | Simple | Graph |
 |--------|--------|--------|
-| **Entry** | `RouterService.run(query)` calls `AgentScopeRoutingAgent.invoke(query)` internally | `RoutingGraphService.run(query)` calls `CompiledGraph.invoke(Map.of("input", query))` internally |
+| **Entry** | `RouterService.run(query)` calls `DeepScopeRoutingAgent.invoke(query)` internally | `RoutingGraphService.run(query)` calls `CompiledGraph.invoke(Map.of("input", query))` internally |
 | **Flow** | One invoke does: classify → parallel specialists → framework merge; then RouterService optionally runs one LLM synthesis | Graph: START → preprocess → **routing (subgraph)** → postprocess → END; inside routing it is still classify → parallel specialists → merge |
-| **State** | Managed inside `AgentScopeRoutingAgent`; RouterService reads `xxx_key`, `xxx_input`, `RoutingMergeNode.DEFAULT_MERGED_OUTPUT_KEY` from returned `OverAllState` | Explicit StateGraph keys: `input`, `query`, `messages`, `preprocess_metadata`, `merged_result`, `final_answer`, `postprocess_metadata`, and each specialist `xxx_key`; each key has a `KeyStrategy` (Replace/Append) |
+| **State** | Managed inside `DeepScopeRoutingAgent`; RouterService reads `xxx_key`, `xxx_input`, `RoutingMergeNode.DEFAULT_MERGED_OUTPUT_KEY` from returned `OverAllState` | Explicit StateGraph keys: `input`, `query`, `messages`, `preprocess_metadata`, `merged_result`, `final_answer`, `postprocess_metadata`, and each specialist `xxx_key`; each key has a `KeyStrategy` (Replace/Append) |
 | **Extensibility** | No graph; you cannot insert custom nodes before/after routing | You can add logic in preprocess/postprocess (validation, tracing, formatting); you can add nodes or conditional edges |
 | **Return** | `RouterResult(query, classifications, results, finalAnswer)` with classification list and raw specialist outputs | `RoutingGraphResult(query, state, finalAnswer)` with full graph state for debugging or downstream use |
 
@@ -45,14 +45,14 @@ The AgentScope example provides two variants: **Simple** (single routing agent +
 
 ### Design points
 
-- **Single call for routing**: Callers use only `RouterService.run(query)`; inside, **AgentScopeRoutingAgent** runs one `invoke(query)` that does classify, parallel specialists, and framework merge.
+- **Single call for routing**: Callers use only `RouterService.run(query)`; inside, **DeepScopeRoutingAgent** runs one `invoke(query)` that does classify, parallel specialists, and framework merge.
 - **Synthesis optional**: If the routing framework has written `RoutingMergeNode.DEFAULT_MERGED_OUTPUT_KEY`, that value is used as the final answer; otherwise **RouterService** runs one more LLM call with the same `Model` to synthesize specialist results into one reply.
 
-### Code structure (package `io.agentscope.examples.routing.simple`)
+### Code structure (package `io.deepscope.examples.routing.simple`)
 
 | Class | Role |
 |-------|------|
-| **RoutingConfig** | Defines `Model`, three specialist **AgentScopeAgent**s (github, notion, slack), **AgentScopeRoutingAgent** (router), and **RouterService** |
+| **RoutingConfig** | Defines `Model`, three specialist **DeepScopeAgent**s (github, notion, slack), **DeepScopeRoutingAgent** (router), and **RouterService** |
 | **RouterService** | `run(query)`: invokes router.invoke → collects classifications and specialist outputs from state → uses merged value or calls `synthesize()` → returns **RouterResult** |
 | **Classification** | One routing decision: `source` (specialist name), `query` (sub-query sent to that specialist) |
 | **AgentOutput** | One specialist output: `source`, `result` (text) |
@@ -61,13 +61,13 @@ The AgentScope example provides two variants: **Simple** (single routing agent +
 ### Beans and conventions
 
 1. **Model**: One `Model` bean (e.g. `DashScopeChatModel`) shared by the router and all specialists.
-2. **Specialist AgentScopeAgent**: One per vertical, with:
+2. **Specialist DeepScopeAgent**: One per vertical, with:
    - `name` / `description`: used by the router for classification;
    - **instruction**: template with placeholder `{agentName_input}` (e.g. `{github_input}`), filled at runtime by the routing node with the sub-query;
    - **outputKey**: state key where this specialist’s result is written, e.g. `github_key`, `notion_key`, `slack_key`;
    - **Toolkit**: stub tools for that vertical (e.g. `GitHubStubTools` with `search_code`, `search_issues`).
-3. **AgentScopeRoutingAgent**: `AgentScopeRoutingAgent.builder().model(...).subAgents(List.of(githubAgent, notionAgent, slackAgent)).build()`; internally it does classify + parallel specialist calls + writes to each `outputKey` and merge key.
-4. **RouterService**: Holds `Model` and `AgentScopeRoutingAgent`; after `run(query)`, if synthesis is needed it formats specialist results into a prompt and calls the model once to produce `finalAnswer`.
+3. **DeepScopeRoutingAgent**: `DeepScopeRoutingAgent.builder().model(...).subAgents(List.of(githubAgent, notionAgent, slackAgent)).build()`; internally it does classify + parallel specialist calls + writes to each `outputKey` and merge key.
+4. **RouterService**: Holds `Model` and `DeepScopeRoutingAgent`; after `run(query)`, if synthesis is needed it formats specialist results into a prompt and calls the model once to produce `finalAnswer`.
 
 ### RouterService.run logic (summary)
 
@@ -82,14 +82,14 @@ The AgentScope example provides two variants: **Simple** (single routing agent +
 
 ### Design points
 
-- **Routing as embedded subgraph**: The overall flow is a **StateGraph**; the “routing” step is not a single bean call but the **compiled subgraph** returned by **AgentScopeRoutingAgent.getAndCompileGraph()** used as one node; inside that subgraph it is still classify → parallel specialists → merge.
+- **Routing as embedded subgraph**: The overall flow is a **StateGraph**; the “routing” step is not a single bean call but the **compiled subgraph** returned by **DeepScopeRoutingAgent.getAndCompileGraph()** used as one node; inside that subgraph it is still classify → parallel specialists → merge.
 - **Explicit pre- and post-processing**: **PreprocessNode** and **PostprocessNode** run before and after the routing node for validation, normalization, tracing, and formatting; state flows through the whole graph for easier extension and observability.
 
-### Code structure (package `io.agentscope.examples.routing.graph`)
+### Code structure (package `io.deepscope.examples.routing.graph`)
 
 | Class | Role |
 |-------|------|
-| **RoutingGraphConfig** | Defines three specialist **AgentScopeAgent**s and **AgentScopeRoutingAgent**; builds **StateGraph** (preprocess → routing → postprocess), defines **KeyStrategy** per state key; exposes **CompiledGraph** and **RoutingGraphService** |
+| **RoutingGraphConfig** | Defines three specialist **DeepScopeAgent**s and **DeepScopeRoutingAgent**; builds **StateGraph** (preprocess → routing → postprocess), defines **KeyStrategy** per state key; exposes **CompiledGraph** and **RoutingGraphService** |
 | **PreprocessNode** | `NodeAction`: reads `input`/`query` from state → validates non-empty, length ≥ 3 → normalizes (trim, truncate to 2000 chars) → writes `input`, `messages`, `preprocess_metadata` (traceId, timestamp) |
 | **PostprocessNode** | `NodeAction`: reads `RoutingMergeNode.DEFAULT_MERGED_OUTPUT_KEY` and `preprocess_metadata` → formats into `final_answer` with traceId/timestamp → writes `postprocess_metadata` |
 | **RoutingGraphService** | `run(query)`: `invoke(Map.of("input", query))` → reads `final_answer` from state (or `merged_result` if absent) → returns **RoutingGraphResult(query, state, finalAnswer)** |

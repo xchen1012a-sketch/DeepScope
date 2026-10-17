@@ -20,11 +20,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-parent</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-parent</artifactId>
     <packaging>pom</packaging>
     <version>${revision}</version>
-    <name>AgentScope Java - Parent</name>
+    <name>DeepScope Java - Parent</name>
 
     <properties>
         <revision>2.0.5-SNAPSHOT</revision>
@@ -55,27 +55,27 @@
     </properties>
 
     <modules>
-        <module>agentscope-core</module>
-        <module>agentscope-harness</module>
-        <module>agentscope-extensions</module>
-        <module>agentscope-examples</module>
+        <module>deepscope-core</module>
+        <module>deepscope-harness</module>
+        <module>deepscope-extensions</module>
+        <module>deepscope-examples</module>
         <module>technical-advisor-app/backend</module>
-        <module>agentscope-dependencies-bom</module>
-        <module>agentscope-distribution</module>
+        <module>deepscope-dependencies-bom</module>
+        <module>deepscope-distribution</module>
     </modules>
 
-    <description>AgentScope Java: Agent-Oriented Programming for Building LLM Applications</description>
-    <url>https://github.com/agentscope-ai/agentscope-java</url>
+    <description>DeepScope Java: Agent-Oriented Programming for Building LLM Applications</description>
+    <url>https://github.com/xchen1012a-sketch/DeepScope</url>
 
     <scm>
-        <connection>git@github.com:agentscope-ai/agentscope-java.git</connection>
-        <developerConnection>git@github.com:agentscope-ai/agentscope-java.git</developerConnection>
-        <url>https://github.com/agentscope-ai/agentscope-java</url>
+        <connection>git@github.com:xchen1012a-sketch/DeepScope.git</connection>
+        <developerConnection>git@github.com:xchen1012a-sketch/DeepScope.git</developerConnection>
+        <url>https://github.com/xchen1012a-sketch/DeepScope</url>
     </scm>
 
     <organization>
-        <name>Alibaba</name>
-        <url>https://agentscope.io</url>
+        <name>DeepScope</name>
+        <url>https://github.com/xchen1012a-sketch/DeepScope</url>
     </organization>
 
     <licenses>
@@ -88,11 +88,10 @@
 
     <developers>
         <developer>
-            <id>AgentScopeTeam</id>
-            <name>AgentScopeTeam</name>
-            <email>agentscope.team@gmail.com</email>
-            <organization>Alibaba</organization>
-            <organizationUrl>https://agentscope.io</organizationUrl>
+            <id>DeepScopeTeam</id>
+            <name>DeepScopeTeam</name>
+            <organization>DeepScope</organization>
+            <organizationUrl>https://github.com/xchen1012a-sketch/DeepScope</organizationUrl>
         </developer>
     </developers>
 
@@ -134,15 +133,15 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>io.agentscope</groupId>
-                <artifactId>agentscope-dependencies-bom</artifactId>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-dependencies-bom</artifactId>
                 <version>${revision}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>io.agentscope</groupId>
-                <artifactId>agentscope-bom</artifactId>
+                <groupId>io.deepscope</groupId>
+                <artifactId>deepscope-bom</artifactId>
                 <version>${revision}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -292,10 +291,10 @@
                     <!--
                         Phase 0: redirect HarnessAgent's default JsonSession root into the
                         build directory so test runs don't pollute (or get polluted by)
-                        ~/.agentscope/state/. Production callers ignore this property.
+                        ~/.deepscope/state/. Production callers ignore this property.
                     -->
                     <systemPropertyVariables>
-                        <agentscope.state.home>${project.build.directory}/test-state-home</agentscope.state.home>
+                        <deepscope.state.home>${project.build.directory}/test-state-home</deepscope.state.home>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -387,7 +386,7 @@
                         <configuration>
                             <publishingServerId>central</publishingServerId>
                             <excludeArtifacts>
-                                <artifact>agentscope-examples</artifact>
+                                <artifact>deepscope-examples</artifact>
                                 <artifact>documentation</artifact>
                             </excludeArtifacts>
                         </configuration>

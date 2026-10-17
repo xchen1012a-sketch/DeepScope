@@ -30,4 +30,4 @@ coverage:
         target: 60%
         threshold: 5%
 ignore:
-  - "agentscope-examples/**/*"
+  - "deepscope-examples/**/*"

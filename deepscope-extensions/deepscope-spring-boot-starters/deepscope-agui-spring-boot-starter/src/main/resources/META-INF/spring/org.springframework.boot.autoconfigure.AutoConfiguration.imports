@@ -1,0 +1,3 @@
+io.deepscope.spring.boot.agui.common.AguiAgentRegistryAutoConfiguration
+io.deepscope.spring.boot.agui.mvc.DeepscopeAguiMvcAutoConfiguration
+io.deepscope.spring.boot.agui.webflux.DeepscopeAguiWebFluxAutoConfiguration

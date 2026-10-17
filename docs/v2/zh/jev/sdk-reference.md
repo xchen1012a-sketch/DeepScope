@@ -2,9 +2,9 @@
 title: "API 与包索引"
 ---
 
-通过本页查找导入位置。基础依赖是 `io.agentscope:agentscope-extensions-jev`，与项目 BOM 使用同一版本；Harness 集成另外依赖同版本 `agentscope-harness`。
+通过本页查找导入位置。基础依赖是 `io.deepscope:deepscope-extensions-jev`，与项目 BOM 使用同一版本；Harness 集成另外依赖同版本 `deepscope-harness`。
 
-| 包（前缀 `io.agentscope.extensions.judge.jev`） | 主要入口 | 使用说明 |
+| 包（前缀 `io.deepscope.extensions.judge.jev`） | 主要入口 | 使用说明 |
 |---|---|---|
 | 根包 | JevClient、SystemOneRequest、JevJudge、JevExecution、JevGuardrail | [客户端](/v2/zh/jev/guides/client)、[评审定义](/v2/zh/jev/guides/judge-api) |
 | example | JevToolSelectionMiddleware、JevAutoModeMiddleware、JevModelRouterMiddleware | [运行模式](/v2/zh/jev/guides/harness-runtime) |
@@ -18,7 +18,7 @@ title: "API 与包索引"
 | integration | JevResponseMiddleware、JevKnowledge、JevKnowledgeTool | [回答审核](/v2/zh/jev/guides/answer-refinement-api)、[Knowledge 适配](/v2/zh/jev/guides/knowledge-adapter-api) |
 | application | JevCandidateSelector、JevCustomerSupport、JevRag、JevDraftPipeline、JevSupervisor、JevContextPlanner、JevMemoryGate、JevStageRouter、JevTeamPlanner、JevBrowserPlanner | [应用组件](/v2/zh/jev/guides/application-api) |
 
-`example` 是三个可复用中间件的现有包名。可运行案例另在 `agentscope-examples/jev`，使用 `io.agentscope.examples.jev` 包，不需要将 examples 加为生产依赖。
+`example` 是三个可复用中间件的现有包名。可运行案例另在 `deepscope-examples/jev`，使用 `io.deepscope.examples.jev` 包，不需要将 examples 加为生产依赖。
 
 例如，给退款工具增加派发前检查，导入 `example.JevAutoModeMiddleware`；审核最终回答，导入 `integration.JevResponseMiddleware`；只评审一份已有草稿，则用根包的 `JevJudge`。先按任务选择功能页，再从本表查找导入位置。
 

@@ -3,7 +3,7 @@ title: AG-UI Protocol
 zh_link: /v1/zh/docs/task/agui
 ---
 
-AG-UI is a frontend-backend communication protocol for exposing agents to web frontends. With AG-UI, you can quickly integrate AgentScope agents with compatible frontend frameworks.
+AG-UI is a frontend-backend communication protocol for exposing agents to web frontends. With AG-UI, you can quickly integrate DeepScope agents with compatible frontend frameworks.
 
 ---
 
@@ -13,8 +13,8 @@ AG-UI is a frontend-backend communication protocol for exposing agents to web fr
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-agui-spring-boot-starter</artifactId>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-agui-spring-boot-starter</artifactId>
 </dependency>
 
 <dependency>
@@ -76,7 +76,7 @@ public class AgentConfiguration {
 
 ```yaml
 # application.yml
-agentscope:
+deepscope:
   agui:
     path-prefix: /agui
     cors-enabled: true
@@ -152,12 +152,12 @@ function App() {
 
 ## Example Project
 
-See complete example at [agentscope-examples/documentation](https://github.com/agentscope-ai/agentscope-java/tree/main/agentscope-examples/documentation):
+See complete example at [deepscope-examples/documentation](https://github.com/xchen1012a-sketch/DeepScope/tree/main/deepscope-examples/documentation):
 
 ```bash
 export DASHSCOPE_API_KEY=your-key
-cd agentscope-examples/documentation
-mvn spring-boot:run -Dspring-boot.run.mainClass=io.agentscope.examples.documentation2.agui.AguiExampleApplication
+cd deepscope-examples/documentation
+mvn spring-boot:run -Dspring-boot.run.mainClass=io.deepscope.examples.documentation2.agui.AguiExampleApplication
 ```
 
 Visit http://localhost:8080 to see the demo.

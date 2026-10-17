@@ -15,15 +15,15 @@ title: "采集并评估 Agent 轨迹"
 依赖及凭据见[客户端接入](/v2/zh/jev/guides/client)。下面先使用一个固定快照说明输入结构：
 
 ```java
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.UserMessage;
-import io.agentscope.core.message.AssistantMessage;
-import io.agentscope.core.message.ToolUseBlock;
-import io.agentscope.core.message.ToolResultMessage;
-import io.agentscope.core.model.ToolSchema;
-import io.agentscope.extensions.judge.jev.evaluation.JevTrace;
-import io.agentscope.extensions.judge.jev.evaluation.JevTraceEvaluator;
-import io.agentscope.extensions.judge.jev.evaluation.JevTraceMetrics;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.UserMessage;
+import io.deepscope.core.message.AssistantMessage;
+import io.deepscope.core.message.ToolUseBlock;
+import io.deepscope.core.message.ToolResultMessage;
+import io.deepscope.core.model.ToolSchema;
+import io.deepscope.extensions.judge.jev.evaluation.JevTrace;
+import io.deepscope.extensions.judge.jev.evaluation.JevTraceEvaluator;
+import io.deepscope.extensions.judge.jev.evaluation.JevTraceMetrics;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -98,12 +98,12 @@ var comparison = extendedEvaluator.evaluate(labelled);
 这里 `model` 和 `toolkit` 沿用已有生成模型及业务工具；注册观察器后正常调用 Agent 即可。
 
 ```java
-import io.agentscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.HarnessAgent;
 
-var options = new io.agentscope.extensions.judge.jev.JevExecution.Options(
-    io.agentscope.extensions.judge.jev.JevExecution.Mode.SHADOW, Duration.ofSeconds(5), "orders-v1",
+var options = new io.deepscope.extensions.judge.jev.JevExecution.Options(
+    io.deepscope.extensions.judge.jev.JevExecution.Mode.SHADOW, Duration.ofSeconds(5), "orders-v1",
     (ctx, record) -> System.out.println(record));
-var observer = new io.agentscope.extensions.judge.jev.evaluation.JevTraceEvaluationMiddleware(
+var observer = new io.deepscope.extensions.judge.jev.evaluation.JevTraceEvaluationMiddleware(
     evaluator, options, 100_000,
     (ctx, report) -> System.out.println(report.results()));
 var agent = HarnessAgent.builder().name("observed-order-agent")
@@ -144,10 +144,10 @@ var agent = HarnessAgent.builder().name("observed-order-agent")
 ## 批量报告与对照
 
 ```java
-var cases = List.of(new io.agentscope.extensions.judge.jev.evaluation.JevTraceRunner.Case("orders", trace,
-    Map.of("tool_choice", new io.agentscope.extensions.judge.jev.evaluation.JevTraceRunner.Expected(null, "correct"),
-           "grounded", new io.agentscope.extensions.judge.jev.evaluation.JevTraceRunner.Expected(true, null))));
-var report = new io.agentscope.extensions.judge.jev.evaluation.JevTraceRunner().run(evaluator, cases, 4).block();
+var cases = List.of(new io.deepscope.extensions.judge.jev.evaluation.JevTraceRunner.Case("orders", trace,
+    Map.of("tool_choice", new io.deepscope.extensions.judge.jev.evaluation.JevTraceRunner.Expected(null, "correct"),
+           "grounded", new io.deepscope.extensions.judge.jev.evaluation.JevTraceRunner.Expected(true, null))));
+var report = new io.deepscope.extensions.judge.jev.evaluation.JevTraceRunner().run(evaluator, cases, 4).block();
 ```
 
 相同样本 ID 不可重复。报告保留输入顺序，按指标和场景汇总。本例可把工具选择标成 correct、回答依据标成通过；金标不进入模型请求。准确率分母为该指标全部有金标样本，包含错误、弃权、跳过及无法判分项；没有金标时不可解读 accuracy。延迟为每个完整样本评估的实测墙钟耗时，P50/P95 使用 nearest-rank；数据集另有总耗时。用量按实际请求累计一次，`responsesWithUsage < requests` 时总成本不完整。
@@ -161,7 +161,7 @@ var report = new io.agentscope.extensions.judge.jev.evaluation.JevTraceRunner().
 按[统一构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP`：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevTraceEvaluationExample
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevTraceEvaluationExample
 ```
 
 兼容使用旧命令的页面时，也可将 classpath 写到 `/tmp/jev-trace-cp.txt`；新例子统一使用 `JEV_CP`。

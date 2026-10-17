@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2024-2026 the original author or authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.deepscope</groupId>
+        <artifactId>deepscope-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <name>DeepScope Java - Extensions</name>
+    <artifactId>deepscope-extensions</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>deepscope-spring-boot-starters</module>
+        <module>deepscope-extensions-protocol</module>
+        <module>deepscope-extensions-mem</module>
+        <module>deepscope-extensions-oss</module>
+        <module>deepscope-extensions-cos</module>
+        <module>deepscope-extensions-redis</module>
+        <module>deepscope-extensions-mysql</module>
+        <module>deepscope-extensions-postgresql</module>
+        <module>deepscope-extensions-mongodb</module>
+        <module>deepscope-extensions-jdbc</module>
+        <module>deepscope-extensions-rag</module>
+        <module>deepscope-extensions-model</module>
+        <module>deepscope-extensions-higress</module>
+        <module>deepscope-extensions-nacos</module>
+        <module>deepscope-extensions-skills</module>
+        <module>deepscope-extensions-studio</module>
+        <module>deepscope-extensions-judge</module>
+        <module>deepscope-extensions-scheduler</module>
+        <module>deepscope-extensions-training</module>
+        <module>deepscope-extensions-channel</module>
+        <module>deepscope-extensions-sandbox</module>
+    </modules>
+</project>

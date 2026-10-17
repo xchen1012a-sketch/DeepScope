@@ -3,9 +3,9 @@ title: 管道
 en_link: /v1/en/docs/multi-agent/pipeline
 ---
 
-> **说明：** 原先的 Spring Boot 示例模块 `agentscope-examples/multiagent-patterns/` 已在 2.0 包重构中移除。请以本文中的代码片段作为参考实现。其他可运行示例见 `agentscope-examples/documentation/`。
+> **说明：** 原先的 Spring Boot 示例模块 `deepscope-examples/multiagent-patterns/` 已在 2.0 包重构中移除。请以本文中的代码片段作为参考实现。其他可运行示例见 `deepscope-examples/documentation/`。
 
-本示例使用 **Spring AI Alibaba** 的流式智能体（**SequentialAgent**、**ParallelAgent**、**LoopAgent**）与 **AgentScopeAgent** 子智能体及 AgentScope 的 **DashScopeChatModel**（`Model`）。各管道由基于 ReActAgent 的 AgentScopeAgent 构建，并通过 `PipelineService` 调用。
+本示例使用 **Spring AI Alibaba** 的流式智能体（**SequentialAgent**、**ParallelAgent**、**LoopAgent**）与 **DeepScopeAgent** 子智能体及 DeepScope 的 **DashScopeChatModel**（`Model`）。各管道由基于 ReActAgent 的 DeepScopeAgent 构建，并通过 `PipelineService` 调用。
 
 ## 前置条件
 
@@ -20,8 +20,8 @@ en_link: /v1/en/docs/multi-agent/pipeline
 ```java
 package com.alibaba.cloud.ai.examples.multiagents.pipeline;
 
-import io.agentscope.extensions.model.dashscope.DashScopeChatModel;
-import io.agentscope.core.model.Model;
+import io.deepscope.extensions.model.dashscope.DashScopeChatModel;
+import io.deepscope.core.model.Model;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -50,11 +50,11 @@ public class PipelineModelConfig {
 ```java
 package com.alibaba.cloud.ai.examples.multiagents.pipeline.sequential;
 
-import com.alibaba.cloud.ai.agent.agentscope.AgentScopeAgent;
+import com.alibaba.cloud.ai.agent.deepscope.DeepScopeAgent;
 import com.alibaba.cloud.ai.graph.agent.flow.agent.SequentialAgent;
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.model.Model;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.model.Model;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -82,7 +82,7 @@ public class SequentialPipelineConfig {
 				.description("Converts natural language to MySQL SQL")
 				.sysPrompt(SQL_GENERATOR_PROMPT)
 				.memory(new InMemoryMemory());
-		AgentScopeAgent sqlGenerateAgent = AgentScopeAgent.fromBuilder(sqlGenBuilder)
+		DeepScopeAgent sqlGenerateAgent = DeepScopeAgent.fromBuilder(sqlGenBuilder)
 				.name("sql_generator")
 				.description("Converts natural language to MySQL SQL")
 				.instruction("{input}")
@@ -96,7 +96,7 @@ public class SequentialPipelineConfig {
 				.description("Scores SQL against user intent")
 				.sysPrompt(SQL_RATER_PROMPT)
 				.memory(new InMemoryMemory());
-		AgentScopeAgent sqlRatingAgent = AgentScopeAgent.fromBuilder(sqlRaterBuilder)
+		DeepScopeAgent sqlRatingAgent = DeepScopeAgent.fromBuilder(sqlRaterBuilder)
 				.name("sql_rater")
 				.description("Scores SQL against user intent")
 				.instruction("Here's the generated SQL:\n {sql}.\n\n Here's the original user request:\n {input}.")
@@ -127,11 +127,11 @@ public class SequentialPipelineConfig {
 ```java
 package com.alibaba.cloud.ai.examples.multiagents.pipeline.parallel;
 
-import com.alibaba.cloud.ai.agent.agentscope.AgentScopeAgent;
+import com.alibaba.cloud.ai.agent.deepscope.DeepScopeAgent;
 import com.alibaba.cloud.ai.graph.agent.flow.agent.ParallelAgent;
-import io.agentscope.core.ReActAgent;
-import io.agentscope.core.memory.InMemoryMemory;
-import io.agentscope.core.model.Model;
+import io.deepscope.core.ReActAgent;
+import io.deepscope.core.memory.InMemoryMemory;
+import io.deepscope.core.model.Model;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -166,7 +166,7 @@ public class ParallelPipelineConfig {
 				.description("Researches from technology perspective")
 				.sysPrompt(TECH_RESEARCH_PROMPT)
 				.memory(new InMemoryMemory());
-		AgentScopeAgent techResearcher = AgentScopeAgent.fromBuilder(techBuilder)
+		DeepScopeAgent techResearcher = DeepScopeAgent.fromBuilder(techBuilder)
 				.name("tech_researcher")
 				.description("Researches from technology perspective")
 				.instruction("Research the following topic: {input}.")
@@ -180,7 +180,7 @@ public class ParallelPipelineConfig {
 				.description("Researches from finance perspective")
 				.sysPrompt(FINANCE_RESEARCH_PROMPT)
 				.memory(new InMemoryMemory());
-		AgentScopeAgent financeResearcher = AgentScopeAgent.fromBuilder(financeBuilder)
+		DeepScopeAgent financeResearcher = DeepScopeAgent.fromBuilder(financeBuilder)
 				.name("finance_researcher")
 				.description("Researches from finance perspective")
 				.instruction("Research the following topic: {input}.")
@@ -194,7 +194,7 @@ public class ParallelPipelineConfig {
 				.description("Researches from market perspective")
 				.sysPrompt(MARKET_RESEARCH_PROMPT)
 				.memory(new InMemoryMemory());
-		AgentScopeAgent marketResearcher = AgentScopeAgent.fromBuilder(marketBuilder)
+		DeepScopeAgent marketResearcher = DeepScopeAgent.fromBuilder(marketBuilder)
 				.name("market_researcher")
 				.description("Researches from market perspective")
 				.instruction("Research the following topic: {input}.")
@@ -224,7 +224,7 @@ public class ParallelPipelineConfig {
 
 ### 实现
 
-`LoopPipelineConfig` 中构建的 SQL 生成器与 SQL 评分器 AgentScopeAgent 与 `SequentialPipelineConfig` 相同（相同 prompt、`instruction`、`outputKey`）。然后将它们包在一个 **SequentialAgent** 中，再包在带条件循环策略的 **LoopAgent** 中：
+`LoopPipelineConfig` 中构建的 SQL 生成器与 SQL 评分器 DeepScopeAgent 与 `SequentialPipelineConfig` 相同（相同 prompt、`instruction`、`outputKey`）。然后将它们包在一个 **SequentialAgent** 中，再包在带条件循环策略的 **LoopAgent** 中：
 
 ```java
 SequentialAgent sqlAgent = SequentialAgent.builder()

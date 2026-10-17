@@ -13,8 +13,8 @@ SHADOW 会实际发起判断并记录建议，同时把原输入继续交给后�
 ## 1. 为这项用途设置预算和版本
 
 ```java
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.example.JevAutoModeMiddleware;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.example.JevAutoModeMiddleware;
 import java.time.Duration;
 
 var options = new JevExecution.Options(
@@ -58,7 +58,7 @@ Record 不包含消息全文、工具参数、密钥或原始错误。宿主可�
 按[案例构建步骤](/v2/zh/jev/guides/agent-integration-example#构建一次运行多个案例)设置 `JEV_CP`：
 
 ```bash
-java -cp "$JEV_CP" io.agentscope.examples.jev.JevHarnessExample
+java -cp "$JEV_CP" io.deepscope.examples.jev.JevHarnessExample
 ```
 
 这个离线例子对相同的工具选择、防护与路由输入依次运行三种模式。观察输出可以看到 SHADOW 的拒绝建议仍进入模拟派发，ENFORCE 才产生拒绝工具结果。[完整源码](/examples/jev/source/JevHarnessExample.java.txt)

@@ -3,15 +3,15 @@ title: GLM
 zh_link: /v2/zh/integration/model/glm
 ---
 
-`agentscope-extensions-model-openai` provides first-class GLM (Zhipu AI / Z.AI) support through the OpenAI-compatible model stack. Add the OpenAI model extension module, then use `glm:<model>` with `ModelRegistry`.
+`deepscope-extensions-model-openai` provides first-class GLM (Zhipu AI / Z.AI) support through the OpenAI-compatible model stack. Add the OpenAI model extension module, then use `glm:<model>` with `ModelRegistry`.
 
 ## Add the dependency
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-model-openai</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-model-openai</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -26,17 +26,17 @@ ReActAgent agent = ReActAgent.builder()
     .build();
 ```
 
-The provider defaults to `https://open.bigmodel.cn/api/paas/v4`, strips the `glm:` prefix before sending the model name, and uses the GLM formatter from `io.agentscope.extensions.model.openai.compat.glm`.
+The provider defaults to `https://open.bigmodel.cn/api/paas/v4`, strips the `glm:` prefix before sending the model name, and uses the GLM formatter from `io.deepscope.extensions.model.openai.compat.glm`.
 
 ## Thinking mode
 
 Pass GLM thinking options through `GenerateOptions` when resolving the model:
 
 ```java
-import io.agentscope.core.model.GenerateOptions;
-import io.agentscope.core.model.Model;
-import io.agentscope.core.model.ModelCreationContext;
-import io.agentscope.core.model.ModelRegistry;
+import io.deepscope.core.model.GenerateOptions;
+import io.deepscope.core.model.Model;
+import io.deepscope.core.model.ModelCreationContext;
+import io.deepscope.core.model.ModelRegistry;
 import java.util.Map;
 
 Model model = ModelRegistry.resolve(
@@ -61,6 +61,6 @@ GLM only supports `max_tokens`, so `max_completion_tokens` is mapped to `max_tok
 
 GLM only accepts `tool_choice=auto`. Forced choices are degraded to `auto`; `ToolChoice.None` removes tools from the request to preserve the no-tool-call contract.
 
-Structured output uses the normal AgentScope fallback behavior by default because GLM `response_format` only supports `json_object`. Only enable native structured output when you have confirmed the target endpoint supports the behavior you need.
+Structured output uses the normal DeepScope fallback behavior by default because GLM `response_format` only supports `json_object`. Only enable native structured output when you have confirmed the target endpoint supports the behavior you need.
 
 For compatible or self-hosted endpoints, pass `baseUrl`, `endpointPath`, generation options, or formatter overrides through `ModelCreationContext`.

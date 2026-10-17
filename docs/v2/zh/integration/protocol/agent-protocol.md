@@ -3,18 +3,18 @@ title: Agent Protocol
 en_link: /v2/en/integration/protocol/agent-protocol
 ---
 
-`agentscope-extensions-agent-protocol` 把 AgentScope 的 [Harness Agent](/v2/zh/docs/harness/architecture) 暴露为 [Agent Protocol](https://agentprotocol.ai/) 标准 HTTP 接口，让外部系统（CI、其他 Agent 平台、自动化任务）可以用统一的方式提交"任务"，无需关心你的 Agent 实现细节。
+`deepscope-extensions-agent-protocol` 把 DeepScope 的 [Harness Agent](/v2/zh/docs/harness/architecture) 暴露为 [Agent Protocol](https://agentprotocol.ai/) 标准 HTTP 接口，让外部系统（CI、其他 Agent 平台、自动化任务）可以用统一的方式提交"任务"，无需关心你的 Agent 实现细节。
 
 ## 何时使用
 
 - 想让 Agent 像云函数一样被远程调度。
 - 已有团队在用 Agent Protocol 客户端，想直接接进去。
-- 把 AgentScope Harness Agent 嵌进 Spring Boot 服务，自动暴露 `/tasks` REST 端点。
+- 把 DeepScope Harness Agent 嵌进 Spring Boot 服务，自动暴露 `/tasks` REST 端点。
 - 作为 [远程子 agent](/v2/zh/docs/harness/subagent#远程子-agent) 的托管端，供另一个 Harness 父代理通过 HTTP 调用。
 
 ## 协议分层
 
-AgentScope 用不同协议覆盖不同信任边界 / 交互面：
+DeepScope 用不同协议覆盖不同信任边界 / 交互面：
 
 | 层级 | 角色 |
 | --- | --- |
@@ -26,9 +26,9 @@ AgentScope 用不同协议覆盖不同信任边界 / 交互面：
 
 ```xml
 <dependency>
-    <groupId>io.agentscope</groupId>
-    <artifactId>agentscope-extensions-agent-protocol</artifactId>
-    <version>${agentscope.version}</version>
+    <groupId>io.deepscope</groupId>
+    <artifactId>deepscope-extensions-agent-protocol</artifactId>
+    <version>${deepscope.version}</version>
 </dependency>
 ```
 
@@ -40,11 +40,11 @@ AgentScope 用不同协议覆盖不同信任边界 / 交互面：
 2. 在 `application.yml` 里启用：
 
 ```yaml
-agentscope:
+deepscope:
   agent-protocol:
     enabled: true
     # 可选 —— 协议控制面 TaskRecord 目录（不是执行 Agent 的 workspace）
-    # task-store-path: ${user.dir}/.agentscope/agent-protocol
+    # task-store-path: ${user.dir}/.deepscope/agent-protocol
 ```
 
 随后会自动注册 `/tasks` 系列 REST 接口。
@@ -52,9 +52,9 @@ agentscope:
 ### 控制面 vs 执行 workspace
 
 `AgentProtocolTaskStore` 通过独立的 `ProtocolTaskRepository` 持久化协议任务元数据（submit / resume /
-snapshot 用的 `TaskRecord`）。默认根目录为 `agentscope.agent-protocol.task-store-path`
-（`${user.dir}/.agentscope/agent-protocol`），落在合成桶
-`agents/_agentscope_protocol/tasks/` 下。
+snapshot 用的 `TaskRecord`）。默认根目录为 `deepscope.agent-protocol.task-store-path`
+（`${user.dir}/.deepscope/agent-protocol`），落在合成桶
+`agents/_deepscope_protocol/tasks/` 下。
 
 该路径与每个 `HarnessAgent` 自己的 `WorkspaceManager`（MEMORY、sessions、skills）**相互独立**。
 多 agent 的 `AgentFactory` 可以为每个 agent 配置不同的 `.workspace(...)`；协议侧按 `task_id`
@@ -229,7 +229,7 @@ RuntimeContext.builder()
 
 `GET /tasks/{taskId}/events`
 
-以 Server-Sent Events 推送 agent 进度。需要 `agentscope.agent-protocol.streaming-enabled=true`（默认开启）。
+以 Server-Sent Events 推送 agent 进度。需要 `deepscope.agent-protocol.streaming-enabled=true`（默认开启）。
 
 断线重连 / 续订：
 
@@ -272,7 +272,7 @@ RuntimeContext.builder()
 }
 ```
 
-`tool_call_id` 也可作为 `toolCallId` 的别名。需要 `agentscope.agent-protocol.hitl-enabled=true`（默认开启）。成功响应：`{ "task_id", "status": "running" }`。
+`tool_call_id` 也可作为 `toolCallId` 的别名。需要 `deepscope.agent-protocol.hitl-enabled=true`（默认开启）。成功响应：`{ "task_id", "status": "running" }`。
 
 与调用方父 harness 的 HITL 交互见 [远程授权](/v2/zh/docs/harness/subagent#远程授权)。
 
@@ -280,16 +280,16 @@ RuntimeContext.builder()
 
 | `application.yml` 键 | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| `agentscope.agent-protocol.enabled` | boolean | `false` | 是否注册 `/tasks` REST 端点 |
-| `agentscope.agent-protocol.streaming-enabled` | boolean | `true` | 是否暴露 SSE `GET /tasks/{id}/events` |
-| `agentscope.agent-protocol.hitl-enabled` | boolean | `true` | 是否因工具确认暂停任务并接受 `/resume` |
-| `agentscope.agent-protocol.sse-replay-buffer-size` | int | `256` | 每个任务的 SSE 回放缓冲区大小 |
-| `agentscope.agent-protocol.sse-timeout-ms` | long | `10800000` | SSE 订阅最长持续时间（毫秒） |
+| `deepscope.agent-protocol.enabled` | boolean | `false` | 是否注册 `/tasks` REST 端点 |
+| `deepscope.agent-protocol.streaming-enabled` | boolean | `true` | 是否暴露 SSE `GET /tasks/{id}/events` |
+| `deepscope.agent-protocol.hitl-enabled` | boolean | `true` | 是否因工具确认暂停任务并接受 `/resume` |
+| `deepscope.agent-protocol.sse-replay-buffer-size` | int | `256` | 每个任务的 SSE 回放缓冲区大小 |
+| `deepscope.agent-protocol.sse-timeout-ms` | long | `10800000` | SSE 订阅最长持续时间（毫秒） |
 
 示例：
 
 ```yaml
-agentscope:
+deepscope:
   agent-protocol:
     enabled: true
     streaming-enabled: true

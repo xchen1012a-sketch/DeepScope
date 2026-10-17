@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-package io.agentscope.examples.jev;
+package io.deepscope.examples.jev;
 
-import io.agentscope.core.agent.RuntimeContext;
-import io.agentscope.core.event.AgentResultEvent;
-import io.agentscope.core.message.Msg;
-import io.agentscope.core.message.MsgRole;
-import io.agentscope.core.message.TextBlock;
-import io.agentscope.core.message.ToolResultBlock;
-import io.agentscope.core.message.ToolResultState;
-import io.agentscope.core.message.ToolUseBlock;
-import io.agentscope.core.model.ChatModelBase;
-import io.agentscope.core.model.ChatResponse;
-import io.agentscope.core.model.GenerateOptions;
-import io.agentscope.core.model.ToolSchema;
-import io.agentscope.extensions.judge.jev.Answer;
-import io.agentscope.extensions.judge.jev.JevExecution;
-import io.agentscope.extensions.judge.jev.NoulAnswer;
-import io.agentscope.extensions.judge.jev.SystemOneResult;
-import io.agentscope.extensions.judge.jev.Usage;
-import io.agentscope.extensions.judge.jev.context.FileJevContextArchive;
-import io.agentscope.extensions.judge.jev.context.JevContextArchive;
-import io.agentscope.extensions.judge.jev.context.JevContextCompactor;
-import io.agentscope.harness.agent.HarnessAgent;
-import io.agentscope.harness.agent.memory.MemoryConfig;
-import io.agentscope.harness.agent.memory.compaction.CompactionConfig;
+import io.deepscope.core.agent.RuntimeContext;
+import io.deepscope.core.event.AgentResultEvent;
+import io.deepscope.core.message.Msg;
+import io.deepscope.core.message.MsgRole;
+import io.deepscope.core.message.TextBlock;
+import io.deepscope.core.message.ToolResultBlock;
+import io.deepscope.core.message.ToolResultState;
+import io.deepscope.core.message.ToolUseBlock;
+import io.deepscope.core.model.ChatModelBase;
+import io.deepscope.core.model.ChatResponse;
+import io.deepscope.core.model.GenerateOptions;
+import io.deepscope.core.model.ToolSchema;
+import io.deepscope.extensions.judge.jev.Answer;
+import io.deepscope.extensions.judge.jev.JevExecution;
+import io.deepscope.extensions.judge.jev.NoulAnswer;
+import io.deepscope.extensions.judge.jev.SystemOneResult;
+import io.deepscope.extensions.judge.jev.Usage;
+import io.deepscope.extensions.judge.jev.context.FileJevContextArchive;
+import io.deepscope.extensions.judge.jev.context.JevContextArchive;
+import io.deepscope.extensions.judge.jev.context.JevContextCompactor;
+import io.deepscope.harness.agent.HarnessAgent;
+import io.deepscope.harness.agent.memory.MemoryConfig;
+import io.deepscope.harness.agent.memory.compaction.CompactionConfig;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -125,7 +125,7 @@ public final class JevContextCompactionExample {
                             List<Msg> messages, List<ToolSchema> tools, GenerateOptions options) {
                         modelCalls.incrementAndGet();
                         String serialized =
-                                io.agentscope.core.util.JsonUtils.getJsonCodec().toJson(messages);
+                                io.deepscope.core.util.JsonUtils.getJsonCodec().toJson(messages);
                         if (serialized.contains("obsolete file contents")
                                 || !serialized.contains("expected count 3")
                                 || !serialized.contains("Never edit generated files"))
@@ -159,7 +159,7 @@ public final class JevContextCompactionExample {
                         .name("compaction-demo")
                         .sysPrompt("Use only the supplied evidence.")
                         .model(model)
-                        .stateStore(new io.agentscope.core.state.InMemoryAgentStateStore())
+                        .stateStore(new io.deepscope.core.state.InMemoryAgentStateStore())
                         .workspace(workspace)
                         .memory(
                                 MemoryConfig.builder()

@@ -1,6 +1,6 @@
 ---
 title: V1 Migration Guide
-description: Complete migration guide from AgentScope Java 1.x to 2.0
+description: Complete migration guide from DeepScope Java 1.x to 2.0
 zh_link: /v2/zh/docs/change-log
 ---
 
@@ -11,7 +11,7 @@ Looking for per-version change records? See [Release Notes](/v2/en/docs/others/r
 </Tip>
 
 
-AgentScope Java 2.0 aims to preserve compatibility with 1.x where possible so that most users can upgrade smoothly. That said, 2.0 does introduce API-level changes. This page splits those changes into two sections:
+DeepScope Java 2.0 aims to preserve compatibility with 1.x where possible so that most users can upgrade smoothly. That said, 2.0 does introduce API-level changes. This page splits those changes into two sections:
 
 - **Migration Guide** — what changes against 1.x, in two tiers:
   - **Part A · Required** — your code will fail to compile or throw at runtime if you don't migrate
@@ -38,29 +38,29 @@ Detail → [Context](/v2/en/docs/building-blocks/context)
 
 | Removed in 2.0 | Replacement |
 |---|---|
-| `io.agentscope.core.session.SessionManager` | Configure `.stateStore(AgentStateStore)` on the agent builder; persistence happens automatically per `(userId, sessionId)` |
-| `io.agentscope.core.pipeline.*` — `Pipeline`, `Pipelines`, `SequentialPipeline`, `FanoutPipeline`, `MsgHub` | Compose middleware + sub-agents + the event stream for multi-agent orchestration. See the subagent guide → [Subagent](/v2/en/docs/harness/subagent) |
-| `io.agentscope.core.model.tts.*` (14 files, DashScope TTS / Realtime TTS / `AudioPlayer`, etc.) | Core no longer ships TTS. Integrate the upstream provider SDK directly if you need TTS |
-| `io.agentscope.core.model.StructuredOutputReminder` | No longer needed — structured output is handled natively at the model layer |
-| `io.agentscope.core.agent.StructuredOutputCapableAgent` | Removed — structured output capability is inlined into `ReActAgent` with native model-layer support |
-| `io.agentscope.core.hook.PendingToolRecoveryHook` | Use `Builder.enablePendingToolRecovery(boolean)` |
-| `io.agentscope.core.hook.TTSHook` | Removed alongside the TTS module |
+| `io.deepscope.core.session.SessionManager` | Configure `.stateStore(AgentStateStore)` on the agent builder; persistence happens automatically per `(userId, sessionId)` |
+| `io.deepscope.core.pipeline.*` — `Pipeline`, `Pipelines`, `SequentialPipeline`, `FanoutPipeline`, `MsgHub` | Compose middleware + sub-agents + the event stream for multi-agent orchestration. See the subagent guide → [Subagent](/v2/en/docs/harness/subagent) |
+| `io.deepscope.core.model.tts.*` (14 files, DashScope TTS / Realtime TTS / `AudioPlayer`, etc.) | Core no longer ships TTS. Integrate the upstream provider SDK directly if you need TTS |
+| `io.deepscope.core.model.StructuredOutputReminder` | No longer needed — structured output is handled natively at the model layer |
+| `io.deepscope.core.agent.StructuredOutputCapableAgent` | Removed — structured output capability is inlined into `ReActAgent` with native model-layer support |
+| `io.deepscope.core.hook.PendingToolRecoveryHook` | Use `Builder.enablePendingToolRecovery(boolean)` |
+| `io.deepscope.core.hook.TTSHook` | Removed alongside the TTS module |
 
 #### A.3 Model providers moved out of core
 
-OpenAI, Gemini, Anthropic, DashScope, and Ollama chat model implementations are no longer packaged in `agentscope-core`. Core now keeps only shared model contracts such as `Model`, `ChatModelBase`, `Formatter`, `ModelRegistry`, and the `ModelProvider` SPI.
+OpenAI, Gemini, Anthropic, DashScope, and Ollama chat model implementations are no longer packaged in `deepscope-core`. Core now keeps only shared model contracts such as `Model`, `ChatModelBase`, `Formatter`, `ModelRegistry`, and the `ModelProvider` SPI.
 
 If your v1 code imported provider classes from core, replace them with the matching model extension module:
 
 | v1 import / dependency | v2 replacement |
 |---|---|
-| `io.agentscope.core.model.OpenAIChatModel` | Add `agentscope-extensions-model-openai`; import `io.agentscope.extensions.model.openai.OpenAIChatModel` |
-| `io.agentscope.core.model.GeminiChatModel` | Add `agentscope-extensions-model-gemini`; import `io.agentscope.extensions.model.gemini.GeminiChatModel` |
-| `io.agentscope.core.model.AnthropicChatModel` | Add `agentscope-extensions-model-anthropic`; import `io.agentscope.extensions.model.anthropic.AnthropicChatModel` |
-| `io.agentscope.core.model.DashScopeChatModel` | Add `agentscope-extensions-model-dashscope`; import `io.agentscope.extensions.model.dashscope.DashScopeChatModel` |
-| `io.agentscope.core.model.OllamaChatModel` | Add `agentscope-extensions-model-ollama`; import `io.agentscope.extensions.model.ollama.OllamaChatModel` |
-| `io.agentscope.core.formatter.<provider>.*` | `io.agentscope.extensions.model.<provider>.formatter.*` |
-| `io.agentscope.core.credential.<Provider>Credential` | `io.agentscope.extensions.model.<provider>.credential.<Provider>Credential` |
+| `io.deepscope.core.model.OpenAIChatModel` | Add `deepscope-extensions-model-openai`; import `io.deepscope.extensions.model.openai.OpenAIChatModel` |
+| `io.deepscope.core.model.GeminiChatModel` | Add `deepscope-extensions-model-gemini`; import `io.deepscope.extensions.model.gemini.GeminiChatModel` |
+| `io.deepscope.core.model.AnthropicChatModel` | Add `deepscope-extensions-model-anthropic`; import `io.deepscope.extensions.model.anthropic.AnthropicChatModel` |
+| `io.deepscope.core.model.DashScopeChatModel` | Add `deepscope-extensions-model-dashscope`; import `io.deepscope.extensions.model.dashscope.DashScopeChatModel` |
+| `io.deepscope.core.model.OllamaChatModel` | Add `deepscope-extensions-model-ollama`; import `io.deepscope.extensions.model.ollama.OllamaChatModel` |
+| `io.deepscope.core.formatter.<provider>.*` | `io.deepscope.extensions.model.<provider>.formatter.*` |
+| `io.deepscope.core.credential.<Provider>Credential` | `io.deepscope.extensions.model.<provider>.credential.<Provider>Credential` |
 
 `ModelRegistry` string ids still work, but only when the matching extension module is on the classpath:
 
@@ -75,12 +75,12 @@ Spring Boot applications should use the provider-specific starters instead of re
 
 | Provider | Spring Boot starter |
 |---|---|
-| OpenAI | `agentscope-openai-spring-boot-starter` |
-| OpenAI Official | `agentscope-openai-official-spring-boot-starter` |
-| DashScope | `agentscope-dashscope-spring-boot-starter` |
-| Gemini | `agentscope-gemini-spring-boot-starter` |
-| Anthropic | `agentscope-anthropic-spring-boot-starter` |
-| Ollama | `agentscope-ollama-spring-boot-starter` |
+| OpenAI | `deepscope-openai-spring-boot-starter` |
+| OpenAI Official | `deepscope-openai-official-spring-boot-starter` |
+| DashScope | `deepscope-dashscope-spring-boot-starter` |
+| Gemini | `deepscope-gemini-spring-boot-starter` |
+| Anthropic | `deepscope-anthropic-spring-boot-starter` |
+| Ollama | `deepscope-ollama-spring-boot-starter` |
 
 Detail → [Model](/v2/en/docs/building-blocks/model), [Model Providers](/v2/en/integration/overview)
 
@@ -91,14 +91,14 @@ Detail → [Model](/v2/en/docs/building-blocks/model), [Model Providers](/v2/en/
 | `AgentMetaState` | `AgentState` |
 | `StateModule` | **removed** — no longer a superclass for `Memory`, `Toolkit`, etc. |
 | `StatePersistence` | **removed** — replaced by the `AgentStateStore` abstraction |
-| `ToolkitState` | Moved to `io.agentscope.core.state.legacy.ToolkitState` (kept for compatibility only — do not reference in new code) |
+| `ToolkitState` | Moved to `io.deepscope.core.state.legacy.ToolkitState` (kept for compatibility only — do not reference in new code) |
 | (new) | `Task`, `TaskContextState`, `ToolContextState`, `PlanModeContextState`, `ReadCacheEntry` |
 
-Any code that imports `AgentMetaState`, `StateModule`, `StatePersistence`, or `ToolkitState` from `io.agentscope.core.state` will fail to compile. Detail → [Context](/v2/en/docs/building-blocks/context)
+Any code that imports `AgentMetaState`, `StateModule`, `StatePersistence`, or `ToolkitState` from `io.deepscope.core.state` will fail to compile. Detail → [Context](/v2/en/docs/building-blocks/context)
 
 #### A.5 `PlanNotebook` removed — use `HarnessAgent.enablePlanMode()`
 
-The entire `io.agentscope.core.plan` package (`PlanNotebook`, `Plan`, `SubTask`, `PlanStorage`, `PlanToHint`, and related classes) has been removed with no deprecated bridge.
+The entire `io.deepscope.core.plan` package (`PlanNotebook`, `Plan`, `SubTask`, `PlanStorage`, `PlanToHint`, and related classes) has been removed with no deprecated bridge.
 
 **What changed**: `PlanNotebook` modeled plans as structured `Plan` + `SubTask` objects with a state machine (todo → in_progress → done → abandoned) and 8 tool functions. The v2 replacement is a fundamentally different design — plan mode is now a **read-only investigation phase** where the agent designs an approach in a plain markdown file before gaining write access.
 
@@ -146,7 +146,7 @@ The old tracing setup registered a framework-level `Tracer` globally:
 TracerRegistry.register(TelemetryTracer.builder().tracer(tracer).build());
 ```
 
-In the current 2.0 source tree, `TelemetryTracer` lives in the `agentscope-extensions-studio` module rather than `agentscope-core`. It remains available for the Studio integration, but adding the Studio extension solely to restore application-wide tracing is not the recommended migration. The `Tracer` interface and `TracerRegistry` are deprecated for removal.
+In the current 2.0 source tree, `TelemetryTracer` lives in the `deepscope-extensions-studio` module rather than `deepscope-core`. It remains available for the Studio integration, but adding the Studio extension solely to restore application-wide tracing is not the recommended migration. The `Tracer` interface and `TracerRegistry` are deprecated for removal.
 
 Configure tracing through standard OpenTelemetry components instead:
 
@@ -176,7 +176,7 @@ Detail → [Skill](/v2/en/docs/harness/skill)
 
 #### B.2 Hook → Middleware
 
-The entire `io.agentscope.core.hook` package — the `Hook` interface, `HookEvent`, `HookEventType`, and all `*Event` classes — is `@Deprecated(forRemoval = true, since = "2.0.0")`. Existing imports still compile, and `Builder.hook(...)` / `.hooks(...)` are kept callable via `LegacyHookDispatcher` so v1 code does not break overnight. The recommended extension surface is now `io.agentscope.core.middleware`:
+The entire `io.deepscope.core.hook` package — the `Hook` interface, `HookEvent`, `HookEventType`, and all `*Event` classes — is `@Deprecated(forRemoval = true, since = "2.0.0")`. Existing imports still compile, and `Builder.hook(...)` / `.hooks(...)` are kept callable via `LegacyHookDispatcher` so v1 code does not break overnight. The recommended extension surface is now `io.deepscope.core.middleware`:
 
 - `MiddlewareBase` exposes six stages: the onion-shaped `onAgent` / `onReasoning` / `onActing` / `onModelCall`, the pipeline-shaped `onSystemPrompt`, and the notification-shaped `onAgentStateReady`.
 - Builder methods: `.middleware(MiddlewareBase)` and `.middlewares(List<? extends MiddlewareBase>)`.
@@ -186,7 +186,7 @@ Detail → [Middleware](/v2/en/docs/building-blocks/middleware)
 
 #### B.3 `Memory` → `AgentStateStore` + `AgentState`
 
-- The `io.agentscope.core.memory.Memory` interface and every implementation (`InMemoryMemory`, `LongTermMemory`, …) are `@Deprecated(forRemoval = true, since = "2.0.0")`.
+- The `io.deepscope.core.memory.Memory` interface and every implementation (`InMemoryMemory`, `LongTermMemory`, …) are `@Deprecated(forRemoval = true, since = "2.0.0")`.
 - `Memory` no longer extends `StateModule`. It gains `saveTo(AgentStateStore, userId, sessionId)` / `loadFrom(AgentStateStore, userId, sessionId)` as a bridge so existing implementations can still round-trip through an `AgentStateStore`.
 - Recommended model:
   - **Conversation history** lives on `AgentState.getContext()`.
@@ -210,7 +210,7 @@ Detail → [Message & Event](/v2/en/docs/building-blocks/message-and-event)
 
 ##### `stream()` → `streamEvents()` (alignment with Python 2.0)
 
-Python 2.0's `agent.reply_stream()` exposes a single streaming signature (`AsyncGenerator[AgentEvent, None]`) that maps directly to Java's fine-grained `io.agentscope.core.event.AgentEvent` hierarchy. To match it, the coarse-grained `Flux<Event> stream(...)` API on the Java side is `@Deprecated` as of 2.0.0:
+Python 2.0's `agent.reply_stream()` exposes a single streaming signature (`AsyncGenerator[AgentEvent, None]`) that maps directly to Java's fine-grained `io.deepscope.core.event.AgentEvent` hierarchy. To match it, the coarse-grained `Flux<Event> stream(...)` API on the Java side is `@Deprecated` as of 2.0.0:
 
 - **Methods (`forRemoval = true`, going away next minor)**
   - `StreamableAgent.stream(...)` — all 11 `stream(...)` overloads on the interface (defaults + abstract)
@@ -219,7 +219,7 @@ Python 2.0's `agent.reply_stream()` exposes a single streaming signature (`Async
   - `HarnessAgent.stream(...)` — 9 overloads (3 interface `@Override`s + 6 `RuntimeContext` variants). `HarnessAgent` gains 4 new `streamEvents(Msg/List<Msg>[, RuntimeContext])` methods that delegate to `ReActAgent.streamEvents(...)` while reusing the sandbox lifecycle `acquireForCall` / `releaseForCall`
   - `ReActAgent.streamEvents(..., RuntimeContext)` added — mirrors `call(..., RuntimeContext)` for context propagation
 - **Types (soft deprecation, no `forRemoval` yet)**
-  - `io.agentscope.core.agent.Event`, `EventType`, `EventSource`
+  - `io.deepscope.core.agent.Event`, `EventType`, `EventSource`
   - Still consumed internally by the harness (subagent event forwarding: `SubAgentTool` / `SubagentEventBus` / `DefaultAgentManager` / `AgentSpawnTool`), AGUI, A2A, chat-completions-web, and Kotlin extension modules as the event-bus / adapter input. They will be flipped to `forRemoval = true` only after those modules migrate to `AgentEvent`, so the entire downstream is not warning-flooded in a single release.
   - Subagent events are forwarded on `HarnessAgent.streamEvents(...)` with a non-null `source` path (including remote Agent Protocol children when `remoteStreaming` is enabled).
 
@@ -249,7 +249,7 @@ agent.streamEvents(new UserMessage("Hello"))
 
 #### B.7 Core shell / file tools — no longer deprecated
 
-- `io.agentscope.core.tool.coding.*` (`ShellCommandTool`, `CommandValidator`, `UnixCommandValidator`, `WindowsCommandValidator`) and `io.agentscope.core.tool.file.*` (`ReadFileTool`, `WriteFileTool`, `FileToolUtils`) are **no longer `@Deprecated`** as of 2.0.0-RC1.
+- `io.deepscope.core.tool.coding.*` (`ShellCommandTool`, `CommandValidator`, `UnixCommandValidator`, `WindowsCommandValidator`) and `io.deepscope.core.tool.file.*` (`ReadFileTool`, `WriteFileTool`, `FileToolUtils`) are **no longer `@Deprecated`** as of 2.0.0-RC1.
 - These tools run commands and read/write files directly against the host process. For `ReActAgent` users who don't need workspace / sandbox isolation, they are the recommended way to give the agent shell and file access:
 
 ```java
@@ -293,8 +293,8 @@ Tool execution is the main extension surface in 2.0, and the permission system s
   - Unified base classes: `ToolBase` / `AgentTool`
   - Tool groups: `ToolGroup` / `ToolGroupScope` / `MetaToolFactory` — activate on demand; the reserved `basic` group is always on
   - Annotation-driven registration: `ReflectiveFunctionTool` + `@Tool` / `@ToolParam`; `Toolkit#registerTool(Object)` reflectively registers any annotated methods
-  - Built-in task tool: `io.agentscope.core.tool.builtin.TodoTools.todoWrite` (pairs with `TaskReminderMiddleware`)
-- **Permission system** (new package `io.agentscope.core.permission`):
+  - Built-in task tool: `io.deepscope.core.tool.builtin.TodoTools.todoWrite` (pairs with `TaskReminderMiddleware`)
+- **Permission system** (new package `io.deepscope.core.permission`):
   - `PermissionEngine`, `PermissionRule`, `PermissionMode` (`DEFAULT` / `ACCEPT_EDITS` / `EXPLORE` / `BYPASS` / `DONT_ASK`), `PermissionBehavior`
   - Every tool call goes through `PermissionEngine`: allow / require user confirmation / deny. HITL decisions flow back as `UserConfirmResultEvent`.
 
@@ -302,7 +302,7 @@ Detail → [Tool](/v2/en/docs/building-blocks/tool), [Permission System](/v2/en/
 
 ### Model fault tolerance and credentials
 
-- New package `io.agentscope.core.credential` — shared credential contracts and `ModelCard`; provider-specific credentials live with the model extension modules
+- New package `io.deepscope.core.credential` — shared credential contracts and `ModelCard`; provider-specific credentials live with the model extension modules
 - `ModelRegistry` resolves models from `"provider:model"` strings when the matching model extension module is on the classpath (e.g. `dashscope:qwen-max`, `openai:gpt-5`)
 - Builder additions: `.model(String)`, `.maxRetries(int)`, `.fallbackModel(Model)` / `.fallbackModel(String)`, `.stopOnReject(boolean)` — primary-model failure auto-retries and falls back
 
