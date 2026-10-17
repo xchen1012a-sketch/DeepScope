@@ -17,6 +17,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { ProcessStateIcon } from './ProcessStateIcon';
 import { ProcessStatusLabel } from './ProcessStatusLabel';
 import { ProcessDetails } from './ProcessDetails';
@@ -38,13 +39,13 @@ export function ToolLine({ block, onInspect }: { block: ConversationBlock; onIns
   return <div aria-busy={running} className="rounded-lg">
     <button type="button" aria-expanded={onInspect ? undefined : open} aria-haspopup={onInspect ? 'dialog' : undefined}
       onClick={event => onInspect ? onInspect(block, event.currentTarget) : setOpen(value => !value)}
-      className="flex min-h-9 w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] text-slate-500 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300">
+      className="group flex min-h-9 w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] text-slate-500 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300">
       <ProcessStateIcon state={description.hasFailure ? 'failed' : tool.status} />
       <ProcessStatusLabel active={running}>{t(description.titleKey)}</ProcessStatusLabel>
       {description.target ? <span className="min-w-0 truncate text-[12.5px] text-slate-500">{description.target}</span> : null}
       <span className="flex-1" />
       {duration ? <span className="shrink-0 text-xs tabular-nums text-slate-400">{duration}</span> : null}
-      <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+      <ChevronRight aria-hidden="true" className={cn("h-3.5 w-3.5 shrink-0 text-slate-300 opacity-40 transition-all group-hover:opacity-100 group-hover:text-slate-500", open && "rotate-90 opacity-100 text-slate-500")} />
     </button>
     {!onInspect && open ? <div className="pl-8 pr-2 py-2"><ProcessDetails block={block} /></div> : null}
   </div>;

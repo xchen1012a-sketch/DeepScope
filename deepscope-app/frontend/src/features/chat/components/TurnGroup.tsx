@@ -82,7 +82,7 @@ export function TurnGroup({ turn, forcedOpen, highlight, renderBlock, activityEn
       return <ProcessMotionContext.Provider key={block.anchor} value={block.anchor === focus}><div className={cn(process && collapsible && !open && !first && 'hidden')}>
         {first && collapsible ? trigger : null}
         {!process || !collapsible || open ? <div className="space-y-1">
-          {isAction(block) && groups[index - 1]?.[0].kind !== 'advisor_message' ? <p data-process-description className="py-1 text-[13px] leading-6 text-slate-500">{
+          {isAction(block) && groups[index - 1]?.[0].kind !== 'advisor_message' ? <p data-process-description className="pt-1.5 pb-0.5 text-[11px] font-medium text-slate-400 tracking-wide">{
             [...new Set(group.map(item => item.kind === 'dispatch' ? 'spawn' : item.tool ? toolPresentation(item.tool.name, item.tool.args ?? '').action : undefined))]
               .map(action => t(`chat.flow.stepActions.${action ?? 'other'}`)).join(' · ')
           }</p> : null}

@@ -16,7 +16,7 @@
 
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bot, ChevronDown, FileText } from 'lucide-react';
+import { Bot, ChevronDown } from 'lucide-react';
 import type { FactItem } from '@/api/advisor';
 import { cn } from '@/lib/utils';
 import { formatClockTime, formatRunDuration, subagentDurationMs } from '../conversationModel';
@@ -72,12 +72,8 @@ export function SubagentView({ record, onBack }: { record: SubagentRecord; onBac
     }
     if (block.kind === 'tool_call') return <ToolLine block={block} />;
     return (
-      <div className="mt-2.5 rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 shadow-2xs">
-        <div className="mb-2 flex items-center gap-1.5 text-[11.5px] font-medium text-slate-600">
-          <FileText className="h-3.5 w-3.5 text-indigo-500" />
-          <span>{t('chat.timelineKind.deliverable', { defaultValue: '交付物' })}</span>
-        </div>
-        <Markdown text={block.text ?? ''} internalIds={internalIds} className="text-[13px] leading-relaxed text-slate-700" />
+      <div className="mt-2.5 rounded-lg border border-slate-100 bg-slate-50/60 p-3 text-[13px] leading-relaxed text-slate-700">
+        <Markdown text={block.text ?? ''} internalIds={internalIds} />
       </div>
     );
   };
@@ -122,10 +118,19 @@ export function SubagentView({ record, onBack }: { record: SubagentRecord; onBac
               ) : null}
             </dl>
             {record.facts.length > 0 ? <FactList facts={record.facts} /> : null}
-            {turn.process.length === 0 && !turn.finalText ? (
+            {record.status === 'running' && turn.process.length === 0 ? (
+              <div className="space-y-2 py-1">
+                <ThinkingLine text={record.task ? `正在执行与深度分析: ${record.task}...` : t('chat.activity.analyzing')} streaming={true} />
+              </div>
+            ) : turn.process.length === 0 && !turn.finalText ? (
               <p className="py-2 text-[12.5px] leading-relaxed text-slate-400">{t('chat.process.noSteps')}</p>
             ) : (
-              <TurnGroup turn={turn} forcedOpen highlight={null} renderBlock={renderBlock} />
+              <div className="space-y-2">
+                <TurnGroup turn={turn} forcedOpen highlight={null} renderBlock={renderBlock} />
+                {record.status === 'running' && record.steps[record.steps.length - 1]?.kind !== 'thinking' ? (
+                  <ThinkingLine text={record.task ? `正在执行与深度分析: ${record.task}...` : t('chat.activity.analyzing')} streaming={true} />
+                ) : null}
+              </div>
             )}
           </div>
         )}
