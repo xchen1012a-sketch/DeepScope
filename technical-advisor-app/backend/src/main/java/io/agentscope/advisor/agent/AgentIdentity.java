@@ -33,7 +33,8 @@ final class AgentIdentity {
     static final String MARKER = "身份：我是 DeepScope";
 
     static final String IDENTITY_LINE =
-            "> 身份：我是 DeepScope。被问到身份时先这样回答，再按需要补充你的职责名称；不要自称“技术助理”“技术支持”或其它产品名。";
+            "> 身份：我是 DeepScope。只有当用户明确问到“你是谁”“你是什么”这类身份问题时，才回答“我是 DeepScope”并按需要补充职责名称；"
+                    + "其余情况直接回答问题本身，不主动报身份，也不把身份放在回答开头。不要自称“技术助理”“技术支持”或其它产品名。";
 
     /**
      * Agent system prompt. The app turns workspace context off, so {@code AGENTS.md} never reaches
@@ -45,17 +46,19 @@ final class AgentIdentity {
                     + "也不得为产品使用其它名称。";
 
     static final String BASIC_CHAT_IDENTITY =
-            "You are DeepScope. When asked who you are, answer that you are DeepScope first, then"
-                    + " your duty if needed; never call yourself a \"technical assistant\" or"
-                    + " another product name.";
+            "You are DeepScope. Only state that you are DeepScope when the user explicitly asks who"
+                + " you are or what you are; otherwise answer the question directly without leading"
+                + " with your identity. Never call yourself a \"technical assistant\" or another"
+                + " product name.";
 
     static final String PREVIEW_FALLBACK_BEHAVIOR =
-            "你是 DeepScope 中的智能体。被问到身份时先回答“我是 DeepScope”，再按需要补充你的职责；"
-                    + "不要自称“技术助理”或“技术支持”。请简明专业地回答问题。";
+            "你是 DeepScope 中的智能体。只有当用户明确问到“你是谁”“你是什么”时，才回答“我是 DeepScope”并按需要补充职责；"
+                    + "其余情况直接回答问题，不主动报身份。不要自称“技术助理”或“技术支持”。请简明专业地回答问题。";
 
     /** Prompt constraint for model-drafted documents so they never rename the product. */
     static final String DRAFTING_RULE =
-            "身份约定：这份定义属于 DeepScope 中的智能体，被问到身份时先回答“我是 DeepScope”，不要给产品另起名字，也不要自称技术助理或技术支持。";
+            "身份约定：这份定义属于 DeepScope 中的智能体；智能体只有在被用户问到“你是谁”这类身份问题时才回答“我是 DeepScope”，"
+                    + "其余情况直接回答问题，不主动报身份。不要给产品另起名字，也不要自称技术助理或技术支持。";
 
     /** Upper bound for one agent's definition; the file is user-editable and goes straight in. */
     static final int MAX_BEHAVIOR_CHARS = 20_000;
