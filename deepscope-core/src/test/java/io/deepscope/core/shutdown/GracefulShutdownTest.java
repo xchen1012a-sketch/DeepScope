@@ -433,6 +433,9 @@ class GracefulShutdownTest {
         void resetForTesting() {
             TestableAgent agent = createTestAgent("agent-1");
             manager.registerRequest(agent, agent.control);
+            manager.setConfig(
+                    new GracefulShutdownConfig(
+                            Duration.ofMillis(100), PartialReasoningPolicy.DISCARD));
             manager.performGracefulShutdown();
 
             manager.resetForTesting();
@@ -440,6 +443,8 @@ class GracefulShutdownTest {
             assertEquals(ShutdownState.RUNNING, manager.getState());
             assertEquals(0, manager.getActiveRequestCount());
             assertTrue(manager.isAcceptingRequests());
+            assertNull(manager.getConfig().shutdownTimeout());
+            assertEquals(PartialReasoningPolicy.SAVE, manager.getConfig().partialReasoningPolicy());
         }
 
         @Test
