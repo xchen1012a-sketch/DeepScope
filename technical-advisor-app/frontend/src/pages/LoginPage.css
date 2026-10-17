@@ -32,7 +32,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: url('/login/approved-reference.png') 0 0 / 100% 100% no-repeat;
+  background: url('/images/login-illustration.png') 0 0 / 100% 100% no-repeat;
   clip-path: polygon(93.6% 26%, 100% 26%, 100% 100%, 93.6% 100%);
   mask-image: linear-gradient(to right, transparent 93.6%, #000 99%);
   pointer-events: none;

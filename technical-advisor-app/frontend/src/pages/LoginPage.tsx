@@ -62,7 +62,7 @@ export default function LoginPage() {
   return <main className="login-screen">
     <div className="login-layout">
       <div className="login-hero-art" aria-hidden="true">
-        <img src="/login/approved-reference.png" alt="" draggable={false} />
+        <img src="/images/login-illustration.png" alt="" draggable={false} />
       </div>
       <button type="button" className="login-language"
         onClick={() => void i18n.changeLanguage(isChinese ? 'en' : 'zh-CN')}>
