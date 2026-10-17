@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bot } from 'lucide-react';
+import { Bot, ChevronDown, FileText } from 'lucide-react';
 import type { FactItem } from '@/api/advisor';
+import { cn } from '@/lib/utils';
 import { formatClockTime, formatRunDuration, subagentDurationMs } from '../conversationModel';
 import { buildSubagentTurn, type ConversationBlock } from '../model/blocks';
 import type { SubagentRecord } from '../useAdvisorConversation';
@@ -51,12 +52,12 @@ function FactList({ facts }: { facts: FactItem[] }) {
 }
 
 /**
- * 子智能体自己的视图：与主对话同一套思考行、工具行和紧凑回合，顶部可返回列表。
- * 一次性任务只读——这里没有输入区；进行中的思考与工具随父运行转发的子事件即时更新，
- * 刷新后按落下来的记录回放任务、事实、总结、起止时间与耗时。
+ * 子智能体自己的视图：完整内聚在单一可折叠卡片内，符合 Claude Code 大厂规范。
+ * 点击卡片头部可折叠/展开；所有思考、工具调用以及文字回复交付物均严格封存在卡片容器内。
  */
 export function SubagentView({ record, onBack }: { record: SubagentRecord; onBack: () => void }) {
   const { t } = useTranslation();
+  const [expanded, setExpanded] = useState(true);
   const now = useNowTicker(record.status === 'running');
   const duration = formatRunDuration(subagentDurationMs(record, now));
   const internalIds = record.facts.map(fact => fact.id);
@@ -70,44 +71,65 @@ export function SubagentView({ record, onBack }: { record: SubagentRecord; onBac
       return <ThinkingLine text={block.thinkingText ?? ''} streaming={record.status === 'running' && isCurrentThinking} />;
     }
     if (block.kind === 'tool_call') return <ToolLine block={block} />;
-    return <Markdown text={block.text ?? ''} internalIds={internalIds} className="text-[13.5px] leading-relaxed text-slate-700" />;
+    return (
+      <div className="mt-2.5 rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 shadow-2xs">
+        <div className="mb-2 flex items-center gap-1.5 text-[11.5px] font-medium text-slate-600">
+          <FileText className="h-3.5 w-3.5 text-indigo-500" />
+          <span>{t('chat.timelineKind.deliverable', { defaultValue: '交付物' })}</span>
+        </div>
+        <Markdown text={block.text ?? ''} internalIds={internalIds} className="text-[13px] leading-relaxed text-slate-700" />
+      </div>
+    );
   };
   return (
     <div className="space-y-3">
       <button type="button" onClick={onBack} className="text-[12.5px] text-slate-500 hover:text-slate-800">
         {t('chat.flow.back')}
       </button>
-      <div className="rounded-xl border border-border bg-white px-3.5 py-3">
-        <div className="flex items-center gap-2">
-          <Bot className="h-3.5 w-3.5 shrink-0 text-indigo-600" />
-          <span className="min-w-0 truncate text-[13px] font-medium text-slate-800">{record.name}</span>
-          <StatusChip status={record.status} />
-          {duration ? <span className="ml-auto shrink-0 font-mono text-[11px] text-slate-400">{duration}</span> : null}
-        </div>
-        {record.task ? <p className="mt-1.5 text-[12.5px] leading-relaxed text-slate-500">{record.task}</p> : null}
-        <dl className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11.5px] text-slate-400">
-          <div className="flex gap-1">
-            <dt>{t('chat.subagent.started')}</dt>
-            <dd className="font-mono">{record.startedAt !== undefined ? formatClockTime(record.startedAt) : '—'}</dd>
+      <div className="rounded-xl border border-border/80 bg-white shadow-xs overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setExpanded(prev => !prev)}
+          className="w-full px-3.5 py-3 text-left transition-colors hover:bg-slate-50/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
+          aria-expanded={expanded}
+        >
+          <div className="flex items-center gap-2">
+            <Bot className="h-3.5 w-3.5 shrink-0 text-indigo-600" />
+            <span className="min-w-0 truncate text-[13px] font-medium text-slate-800">{record.name}</span>
+            <StatusChip status={record.status} />
+            {duration ? <span className="ml-auto shrink-0 font-mono text-[11px] text-slate-400">{duration}</span> : null}
+            <ChevronDown className={cn("h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200", expanded ? "rotate-180" : "")} />
           </div>
-          <div className="flex gap-1">
-            <dt>{t('chat.subagent.ended')}</dt>
-            <dd className="font-mono">{record.endedAt !== undefined ? formatClockTime(record.endedAt) : '—'}</dd>
+          {record.task ? <p className="mt-1.5 text-[12.5px] leading-relaxed text-slate-500 line-clamp-2">{record.task}</p> : null}
+        </button>
+
+        {expanded && (
+          <div className="border-t border-border/60 px-3.5 py-3 space-y-3 bg-white">
+            <dl className="flex flex-wrap gap-x-4 gap-y-1 text-[11.5px] text-slate-400">
+              <div className="flex gap-1">
+                <dt>{t('chat.subagent.started')}</dt>
+                <dd className="font-mono">{record.startedAt !== undefined ? formatClockTime(record.startedAt) : '—'}</dd>
+              </div>
+              <div className="flex gap-1">
+                <dt>{t('chat.subagent.ended')}</dt>
+                <dd className="font-mono">{record.endedAt !== undefined ? formatClockTime(record.endedAt) : '—'}</dd>
+              </div>
+              {duration ? (
+                <div className="flex gap-1">
+                  <dt>{t('chat.subagent.duration')}</dt>
+                  <dd className="font-mono">{duration}</dd>
+                </div>
+              ) : null}
+            </dl>
+            {record.facts.length > 0 ? <FactList facts={record.facts} /> : null}
+            {turn.process.length === 0 && !turn.finalText ? (
+              <p className="py-2 text-[12.5px] leading-relaxed text-slate-400">{t('chat.process.noSteps')}</p>
+            ) : (
+              <TurnGroup turn={turn} forcedOpen highlight={null} renderBlock={renderBlock} />
+            )}
           </div>
-          {duration ? (
-            <div className="flex gap-1">
-              <dt>{t('chat.subagent.duration')}</dt>
-              <dd className="font-mono">{duration}</dd>
-            </div>
-          ) : null}
-        </dl>
+        )}
       </div>
-      {record.facts.length > 0 ? <FactList facts={record.facts} /> : null}
-      {turn.process.length === 0 && !turn.finalText ? (
-        <p className="text-[12.5px] leading-relaxed text-slate-400">{t('chat.process.noSteps')}</p>
-      ) : (
-        <TurnGroup turn={turn} forcedOpen highlight={null} renderBlock={renderBlock} />
-      )}
     </div>
   );
 }
