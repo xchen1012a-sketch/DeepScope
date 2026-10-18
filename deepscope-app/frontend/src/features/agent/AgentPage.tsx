@@ -33,7 +33,17 @@ import { AgentEditProvider } from './AgentEditProvider';
 import { useAgentEditGuard } from './agentEditGuard';
 const AgentCreationPage = lazy(() => import('./AgentCreationPage'));
 
-interface AgentListItem { id: string; name: string; description: string; draft: boolean; enabled?: boolean; canEdit?: boolean; canDelete?: boolean }
+interface AgentListItem {
+  id: string;
+  name: string;
+  description: string;
+  draft: boolean;
+  enabled?: boolean;
+  canEdit?: boolean;
+  canDelete?: boolean;
+  isPublic?: boolean;
+  isOwner?: boolean;
+}
 
 export default function AgentPage() {
   return <AgentEditProvider><AgentBrowser /></AgentEditProvider>;
@@ -102,7 +112,13 @@ function AgentBrowser() {
         {overview.isError ? <div className="px-2 py-3 text-sm text-red-600"><p>{t('agent.management.listError')}</p><button type="button" className="mt-1 text-indigo-600" onClick={() => { void overview.refetch(); }}>{t('agent.management.retry')}</button></div> : null}
         {visible.map(item => <button key={`${item.draft ? 'draft' : 'agent'}:${item.id}`} type="button" aria-pressed={item.draft ? draftId === item.id : agentId === item.id} onClick={() => { if ((item.draft && draftId === item.id) || (!item.draft && agentId === item.id)) return; go(item.draft ? `/agent/creation/${encodeURIComponent(item.id)}` : `/agent/${encodeURIComponent(item.id)}`); }} className={cn('flex h-14 w-full items-center gap-2.5 rounded-lg px-3 text-left transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300', (item.draft ? draftId === item.id : agentId === item.id) && 'bg-indigo-50 text-indigo-700 hover:bg-indigo-50')}>
           <Bot aria-hidden="true" className="h-4 w-4 shrink-0 text-slate-400" />
-          <span className="min-w-0 flex-1"><span className="block truncate text-sm font-medium">{item.name || t('agent.management.unnamed')}</span><span className="block truncate text-xs text-slate-500">{item.draft ? t('agent.management.unfinished') : item.description}</span></span>
+          <span className="min-w-0 flex-1">
+            <span className="flex items-center gap-1.5 truncate text-sm font-medium">
+              <span className="truncate">{item.name || t('agent.management.unnamed')}</span>
+              {item.isPublic ? <Badge tone="success" className="px-1.5 py-0 text-[10px] leading-tight">{t('agent.publicBadge')}</Badge> : null}
+            </span>
+            <span className="block truncate text-xs text-slate-500">{item.draft ? t('agent.management.unfinished') : item.description}</span>
+          </span>
         </button>)}
         {!overview.isPending && !overview.isError && visible.length === 0 ? <p className="px-3 py-4 text-sm text-slate-500">{t(overview.params.q ? 'agent.management.noMatches' : 'agent.empty')}</p> : null}
       </div>
@@ -134,7 +150,12 @@ function AgentBrowser() {
             columns={[
               { id: 'name', header: t('agent.field.name'), cell: item => <span className="font-semibold text-slate-900">{item.name || t('agent.management.unnamed')}</span> },
               { id: 'description', header: t('agent.field.description'), cell: item => <p className="line-clamp-2 max-w-md text-xs text-slate-500">{item.description || t('agent.management.noDescription')}</p> },
-              { id: 'type', header: t('agent.management.listType'), cell: item => <Badge tone={item.draft ? 'warning' : 'default'}>{t(item.draft ? 'agent.management.unfinished' : 'agent.personal')}</Badge> },
+              { id: 'type', header: t('agent.management.listType'), cell: item => (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <Badge tone={item.draft ? 'warning' : 'default'}>{t(item.draft ? 'agent.management.unfinished' : 'agent.personal')}</Badge>
+                  {item.isPublic ? <Badge tone="success">{t('agent.publicBadge')}</Badge> : null}
+                </div>
+              ) },
               { id: 'status', header: t('agent.management.status'), headerClassName: 'whitespace-nowrap', cell: item => <Badge tone={item.draft ? 'warning' : item.enabled === false ? 'default' : 'success'}>{t(item.draft ? 'agent.management.unfinished' : item.enabled === false ? 'agent.management.disabled' : 'agent.management.enabled')}</Badge> },
             ]}
             actions={item => [{

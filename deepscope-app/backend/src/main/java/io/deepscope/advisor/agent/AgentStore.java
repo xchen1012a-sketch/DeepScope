@@ -49,7 +49,8 @@ public final class AgentStore {
             String stateDir,
             long createdAt,
             long updatedAt,
-            boolean enabled) {
+            boolean enabled,
+            boolean isPublic) {
         public AgentRow(
                 String agentId,
                 String name,
@@ -70,13 +71,39 @@ public final class AgentStore {
                     stateDir,
                     createdAt,
                     updatedAt,
-                    true);
+                    true,
+                    false);
+        }
+
+        public AgentRow(
+                String agentId,
+                String name,
+                String description,
+                String origin,
+                String ownerUserId,
+                String workspaceDir,
+                String stateDir,
+                long createdAt,
+                long updatedAt,
+                boolean enabled) {
+            this(
+                    agentId,
+                    name,
+                    description,
+                    origin,
+                    ownerUserId,
+                    workspaceDir,
+                    stateDir,
+                    createdAt,
+                    updatedAt,
+                    enabled,
+                    false);
         }
     }
 
     private static final String SELECT_COLUMNS =
             "agent_id, name, description, origin, owner_user_id, workspace_dir, state_dir,"
-                    + " created_at, updated_at, enabled";
+                    + " created_at, updated_at, enabled, is_public";
 
     private final DataSource dataSource;
     private final Path agentsRoot;
@@ -93,14 +120,26 @@ public final class AgentStore {
      */
     public AgentRow create(String name, String description, String ownerUserId)
             throws SQLException {
-        return createWithId(UUID.randomUUID().toString(), name, description, ownerUserId);
+        return create(name, description, ownerUserId, false);
+    }
+
+    public AgentRow create(String name, String description, String ownerUserId, boolean isPublic)
+            throws SQLException {
+        return createWithId(UUID.randomUUID().toString(), name, description, ownerUserId, isPublic);
     }
 
     public AgentRow createWithId(
             String agentId, String name, String description, String ownerUserId)
             throws SQLException {
+        return createWithId(agentId, name, description, ownerUserId, false);
+    }
+
+    public AgentRow createWithId(
+            String agentId, String name, String description, String ownerUserId, boolean isPublic)
+            throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            return createWithId(connection, agentId, name, description, ownerUserId, "active");
+            return createWithId(
+                    connection, agentId, name, description, ownerUserId, "active", isPublic);
         }
     }
 
@@ -111,6 +150,18 @@ public final class AgentStore {
             String description,
             String ownerUserId,
             String lifecycle)
+            throws SQLException {
+        return createWithId(connection, agentId, name, description, ownerUserId, lifecycle, false);
+    }
+
+    AgentRow createWithId(
+            Connection connection,
+            String agentId,
+            String name,
+            String description,
+            String ownerUserId,
+            String lifecycle,
+            boolean isPublic)
             throws SQLException {
         if (agentId == null || agentId.isBlank()) {
             throw new IllegalArgumentException("Agent ID must not be blank");
@@ -127,7 +178,7 @@ public final class AgentStore {
                 connection.prepareStatement(
                         "INSERT INTO advisor_agents (agent_id, name, description, origin,"
                             + " owner_user_id, workspace_dir, state_dir, created_at, updated_at,"
-                            + " lifecycle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                            + " lifecycle, is_public) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
             statement.setString(1, agentId);
             statement.setString(2, resolvedName);
             statement.setString(3, resolvedDescription);
@@ -138,6 +189,7 @@ public final class AgentStore {
             statement.setLong(8, now);
             statement.setLong(9, now);
             statement.setString(10, lifecycle);
+            statement.setInt(11, isPublic ? 1 : 0);
             statement.executeUpdate();
         }
         return new AgentRow(
@@ -149,7 +201,9 @@ public final class AgentStore {
                 workspaceDir,
                 stateDir,
                 now,
-                now);
+                now,
+                true,
+                isPublic);
     }
 
     /** All rows, used by the provisioner at startup. */
@@ -192,7 +246,8 @@ public final class AgentStore {
                         + " FROM advisor_agents"
                         + (isAdmin
                                 ? " WHERE lifecycle = 'active'"
-                                : " WHERE lifecycle = 'active' AND owner_user_id = ?")
+                                : " WHERE lifecycle = 'active' AND (is_public = 1 OR owner_user_id"
+                                        + " IS NULL OR owner_user_id = ?)")
                         + (enabledOnly ? " AND enabled = 1" : "")
                         + " ORDER BY created_at";
         try (Connection connection = dataSource.getConnection();
@@ -230,7 +285,10 @@ public final class AgentStore {
                                 "created_at, agent_id")
                         .where("lifecycle = 'active'")
                         .where(
-                                allOwners ? "1 = 1" : "owner_user_id = ?",
+                                allOwners
+                                        ? "1 = 1"
+                                        : "(is_public = 1 OR owner_user_id IS NULL OR owner_user_id"
+                                                + " = ?)",
                                 allOwners ? new Object[0] : new Object[] {userId})
                         .search(query, List.of("name", "description"));
         if (enabledOnly) sql.where("enabled = 1");
@@ -307,13 +365,35 @@ public final class AgentStore {
         }
     }
 
+    public boolean update(
+            String agentId, String name, String description, boolean enabled, boolean isPublic)
+            throws SQLException {
+        try (var connection = dataSource.getConnection();
+                var statement =
+                        connection.prepareStatement(
+                                "UPDATE advisor_agents SET name = ?, description = ?, enabled = ?,"
+                                        + " is_public = ?, updated_at = ? WHERE agent_id = ? AND"
+                                        + " lifecycle = 'active'")) {
+            statement.setString(1, name);
+            statement.setString(2, description);
+            statement.setInt(3, enabled ? 1 : 0);
+            statement.setInt(4, isPublic ? 1 : 0);
+            statement.setLong(5, System.currentTimeMillis());
+            statement.setString(6, agentId);
+            return statement.executeUpdate() > 0;
+        }
+    }
+
     /** Edit rights: personal rows belong to their owner — admins may edit anything (TDS 3.4). */
     public static boolean canView(AgentRow agent, String userId, boolean isAdmin) {
-        return isAdmin || userId.equals(agent.ownerUserId());
+        return isAdmin
+                || agent.isPublic()
+                || agent.ownerUserId() == null
+                || userId.equals(agent.ownerUserId());
     }
 
     public static boolean canEdit(AgentRow agent, String userId, boolean isAdmin) {
-        return isAdmin || agent.ownerUserId() != null && agent.ownerUserId().equals(userId);
+        return isAdmin || (agent.ownerUserId() != null && agent.ownerUserId().equals(userId));
     }
 
     private static AgentRow fromCurrentRow(ResultSet rows) throws SQLException {
@@ -327,6 +407,7 @@ public final class AgentStore {
                 rows.getString("state_dir"),
                 rows.getLong("created_at"),
                 rows.getLong("updated_at"),
-                rows.getInt("enabled") == 1);
+                rows.getInt("enabled") == 1,
+                rows.getInt("is_public") == 1);
     }
 }

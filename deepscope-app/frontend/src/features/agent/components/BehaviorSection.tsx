@@ -31,6 +31,9 @@ export function BehaviorSection({
   readOnlyReason,
   fileQuery,
   compact = false,
+  extraDirty = false,
+  extraValid = true,
+  onSaveExtra,
 }: {
   agentId: string;
   compact?: boolean;
@@ -38,12 +41,17 @@ export function BehaviorSection({
   readOnlyReason: string;
   /** 页面级查询：与详情请求并行发出，仅在行为页签激活时启用。 */
   fileQuery: UseQueryResult<AgentFileContent, Error>;
+  extraDirty?: boolean;
+  extraValid?: boolean;
+  onSaveExtra?: () => Promise<unknown>;
 }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [content, setContent] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [generateOpen, setGenerateOpen] = useState(false);
+  const [extraSaved, setExtraSaved] = useState(false);
+  const [extraSaving, setExtraSaving] = useState(false);
 
   useEffect(() => {
     if (fileQuery.data) setContent(fileQuery.data.content);
@@ -64,6 +72,24 @@ export function BehaviorSection({
 
   const dirty = canEdit && fileQuery.data !== undefined && content !== fileQuery.data.content;
   useAgentEditor('behavior', { dirty, busy: saveMutation.isPending || generateMutation.isPending, save: () => saveMutation.mutateAsync(content), discard: () => setContent(fileQuery.data?.content ?? '') });
+
+  const isDirty = dirty || extraDirty;
+  const canSave = isDirty && extraValid && !saveMutation.isPending && !extraSaving;
+
+  const handleSave = async () => {
+    if (dirty) {
+      setConfirmOpen(true);
+    } else if (extraDirty && onSaveExtra) {
+      setExtraSaving(true);
+      try {
+        await onSaveExtra();
+        setExtraSaved(true);
+        setTimeout(() => setExtraSaved(false), 3000);
+      } finally {
+        setExtraSaving(false);
+      }
+    }
+  };
 
   return (
     <section>
@@ -98,10 +124,10 @@ export function BehaviorSection({
               <Button size="sm" variant="outline" disabled={generateMutation.isPending} onClick={() => setGenerateOpen(true)}>
                 {t('agent.behavior.generate')}
               </Button>
-              <Button size="sm" disabled={!dirty || saveMutation.isPending} onClick={() => setConfirmOpen(true)}>
+              <Button size="sm" disabled={!canSave} onClick={handleSave}>
                 {t('agent.behavior.save')}
               </Button>
-              {saveMutation.isSuccess && !dirty ? (
+              {(saveMutation.isSuccess && !dirty) || (extraSaved && !extraDirty) ? (
                 <span className="text-[12px] text-emerald-600">{t('agent.infoSaved')}</span>
               ) : null}
               {generateMutation.isError ? (
@@ -128,8 +154,15 @@ export function BehaviorSection({
         confirmText={t('agent.behavior.save')}
         isConfirming={saveMutation.isPending}
         onClose={() => setConfirmOpen(false)}
-        onConfirm={() => {
+        onConfirm={async () => {
           setConfirmOpen(false);
+          if (extraDirty && onSaveExtra) {
+            try {
+              await onSaveExtra();
+            } catch {
+              /* Ignore failure from extra save callback. */
+            }
+          }
           saveMutation.mutate(content);
         }}
       />

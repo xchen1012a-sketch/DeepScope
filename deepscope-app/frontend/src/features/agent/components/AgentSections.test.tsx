@@ -15,6 +15,7 @@
  */
 
 // @vitest-environment jsdom
+import { useState } from 'react';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
@@ -419,5 +420,48 @@ describe('Agent Management Optimization Points', () => {
     expect(onChangeTools).toHaveBeenCalledWith(['t1']);
     fireEvent.click(screen.getByRole('checkbox', { name: 'Code Reviewer' }));
     expect(onChangeSkills).toHaveBeenCalledWith(['sk1']);
+  });
+
+  it('BehaviorSection unifies extra basics save and enables bottom save button without AGENTS.md modification', async () => {
+    const fakeQuery = {
+      data: { content: 'Original content', path: 'AGENTS.md' },
+      isPending: false,
+      isError: false,
+    } as unknown as ReturnType<typeof import('@tanstack/react-query').useQuery>;
+
+    let onSaveExtraCallCount = 0;
+
+    function TestHarness() {
+      const [extraDirty, setExtraDirty] = useState(false);
+      return (
+        <div>
+          <button onClick={() => setExtraDirty(true)}>make dirty</button>
+          <BehaviorSection
+            agentId="a1"
+            canEdit={true}
+            readOnlyReason=""
+            fileQuery={fakeQuery as any}
+            extraDirty={extraDirty}
+            extraValid={true}
+            onSaveExtra={async () => {
+              onSaveExtraCallCount++;
+              setExtraDirty(false);
+            }}
+          />
+        </div>
+      );
+    }
+
+    renderWithProviders(<TestHarness />, 'zh-CN');
+
+    const saveButton = screen.getByRole('button', { name: '保存' }) as HTMLButtonElement;
+    expect(saveButton.disabled).toBe(true);
+
+    fireEvent.click(screen.getByText('make dirty'));
+    expect(saveButton.disabled).toBe(false);
+
+    fireEvent.click(saveButton);
+    expect(onSaveExtraCallCount).toBe(1);
+    expect(await screen.findByText(/已保存/)).toBeTruthy();
   });
 });

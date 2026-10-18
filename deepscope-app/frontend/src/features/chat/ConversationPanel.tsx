@@ -578,9 +578,6 @@ export function ConversationPanel({
                       {renderBlock(turn.user)}
                     </BlockFrame>
                   ) : null}
-                  {routeByTurn.get(turn.turn)?.mode === 'basic' ? (
-                    <p className="text-xs text-slate-400">{t(routeByTurn.get(turn.turn)?.reasonCode === 'bound_agent_unavailable' ? 'chat.basicFallbackBound' : 'chat.basicFallback')}</p>
-                  ) : null}
                   <TurnGroup
                     turn={turn}
                     forcedOpen={forcedOpen.includes(turn.turn)}

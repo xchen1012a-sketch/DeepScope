@@ -33,6 +33,9 @@ export interface AgentSummary {
   mine: boolean;
   canEdit: boolean;
   enabled?: boolean;
+  isPublic?: boolean;
+  isOwner?: boolean;
+  ownerUserId?: string | null;
   counts: AgentCounts;
 }
 
@@ -72,6 +75,8 @@ export interface CreateAgentInput {
   description: string;
   /** 复制起点的智能体 id；缺省为空白开始。 */
   copyFromAgentId?: string;
+  /** 是否共享给全体人员 */
+  isPublic?: boolean;
 }
 
 /** 工作区文件树（扁平路径清单，前端组树）。 */
@@ -130,7 +135,7 @@ export function getAgent(agentId: string): Promise<AgentDetail> {
 
 export async function updateAgent(
   agentId: string,
-  input: { name?: string; description?: string; enabled?: boolean },
+  input: { name?: string; description?: string; enabled?: boolean; isPublic?: boolean },
 ): Promise<AgentDetail> {
   const response = await apiResponse(agentPath(agentId), {
     method: 'PATCH',

@@ -127,6 +127,13 @@ public class AdvisorAgentController {
         return out;
     }
 
+    private static boolean isOwnerOrPublic(AgentStore.AgentRow agent, String userId) {
+        return agent != null
+                && (agent.isPublic()
+                        || agent.ownerUserId() == null
+                        || userId.equals(agent.ownerUserId()));
+    }
+
     @GetMapping("/api/advisor/agents/available")
     public List<Map<String, Object>> available(HttpServletRequest request) throws SQLException {
         var account = ApiAuthenticationFilter.account(request).orElseThrow();
@@ -134,7 +141,7 @@ public class AdvisorAgentController {
             var selected = visibleAgent(request.getParameter("agentId"), account);
             return selected == null
                             || !selected.enabled()
-                            || !account.userId().equals(selected.ownerUserId())
+                            || !isOwnerOrPublic(selected, account.userId())
                     ? List.of()
                     : List.of(availableView(selected));
         }
@@ -168,7 +175,9 @@ public class AdvisorAgentController {
                 "description",
                 agent.description(),
                 "origin",
-                agent.origin());
+                agent.origin(),
+                "isPublic",
+                agent.isPublic());
     }
 
     @GetMapping("/api/advisor/agents/{agentId}")
@@ -194,8 +203,19 @@ public class AdvisorAgentController {
         String copyId = text(body, "copyFromAgentId");
         AgentStore.AgentRow source = copyId == null ? null : visibleAgent(copyId, account);
         if (copyId != null && source == null) return ResponseEntity.notFound().build();
+        boolean canShare =
+                access.allowed(account, io.deepscope.advisor.access.AccessPoints.AGENT_SHARE)
+                        || access.seesAll(
+                                account, io.deepscope.advisor.access.AccessPoints.AGENT_MANAGE);
+        boolean isPublic =
+                body != null
+                        && body.containsKey("isPublic")
+                        && Boolean.TRUE.equals(body.get("isPublic"));
+        if (isPublic && !canShare) {
+            isPublic = false;
+        }
         AgentStore.AgentRow agent =
-                agents.create(name, text(body, "description"), account.userId());
+                agents.create(name, text(body, "description"), account.userId(), isPublic);
         try {
             if (source != null) workspace.copy(source, agent);
             provisioner.register(agent);
@@ -240,14 +260,30 @@ public class AdvisorAgentController {
                 body != null && body.containsKey("enabled")
                         ? Boolean.TRUE.equals(body.get("enabled"))
                         : agent.enabled();
+        boolean canShare =
+                access.allowed(account, io.deepscope.advisor.access.AccessPoints.AGENT_SHARE)
+                        || access.seesAll(
+                                account, io.deepscope.advisor.access.AccessPoints.AGENT_MANAGE);
+        boolean isPublic =
+                body != null && body.containsKey("isPublic")
+                        ? Boolean.TRUE.equals(body.get("isPublic"))
+                        : agent.isPublic();
+        if (isPublic != agent.isPublic() && !canShare) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         agents.update(
-                agentId, name.strip(), description == null ? "" : description.strip(), enabled);
+                agentId,
+                name.strip(),
+                description == null ? "" : description.strip(),
+                enabled,
+                isPublic);
         AgentStore.AgentRow updated = agents.find(agentId).orElseThrow();
         try {
             if (updated.enabled()) provisioner.register(updated);
             else provisioner.unregister(agentId);
         } catch (IOException | SQLException | RuntimeException error) {
-            agents.update(agentId, agent.name(), agent.description(), agent.enabled());
+            agents.update(
+                    agentId, agent.name(), agent.description(), agent.enabled(), agent.isPublic());
             throw error;
         }
         return ResponseEntity.ok(agentView(updated, account));
@@ -425,7 +461,7 @@ public class AdvisorAgentController {
                 var selected = visibleAgent(selectedId, account);
                 if (selected == null
                         || !selected.enabled()
-                        || !account.userId().equals(selected.ownerUserId()))
+                        || !isOwnerOrPublic(selected, account.userId()))
                     return ResponseEntity.notFound().build();
                 bindWhenIdle(sessionId, session.agentId(), selected.agentId());
                 var result = lockedRouteView(selected, "访客选择智能体，本轮仅使用其挂载能力");
@@ -437,7 +473,7 @@ public class AdvisorAgentController {
         }
         if (session.agentId() != null) {
             var bound = visibleAgent(session.agentId(), account);
-            if (bound != null && bound.enabled() && account.userId().equals(bound.ownerUserId())) {
+            if (bound != null && bound.enabled() && isOwnerOrPublic(bound, account.userId())) {
                 return ResponseEntity.ok(lockedRouteView(bound, "会话已锁定该智能体"));
             }
             if (body != null && Boolean.TRUE.equals(body.get("allowBasic"))) {
@@ -686,6 +722,8 @@ public class AdvisorAgentController {
         view.put("createdAt", agent.createdAt());
         view.put("updatedAt", agent.updatedAt());
         view.put("mine", account.userId().equals(agent.ownerUserId()));
+        view.put("isOwner", account.userId().equals(agent.ownerUserId()));
+        view.put("isPublic", agent.isPublic());
         view.put(
                 "canEdit",
                 access.allowed(account, "agent.edit")

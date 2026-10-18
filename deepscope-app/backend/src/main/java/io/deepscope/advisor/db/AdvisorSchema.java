@@ -120,6 +120,9 @@ public final class AdvisorSchema {
                     "ALTER TABLE advisor_agents ADD COLUMN IF NOT EXISTS enabled INTEGER NOT NULL"
                             + " DEFAULT 1");
             statement.execute(
+                    "ALTER TABLE advisor_agents ADD COLUMN IF NOT EXISTS is_public INTEGER NOT NULL"
+                            + " DEFAULT 0");
+            statement.execute(
                     "CREATE TABLE IF NOT EXISTS advisor_events (session_id TEXT NOT NULL REFERENCES"
                         + " advisor_sessions(session_id) ON DELETE CASCADE, seq INTEGER NOT NULL,"
                         + " turn INTEGER NOT NULL, type TEXT NOT NULL, payload TEXT NOT NULL,"

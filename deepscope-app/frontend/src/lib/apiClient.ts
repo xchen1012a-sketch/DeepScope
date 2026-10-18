@@ -31,16 +31,34 @@ export class ApiError extends Error {
 }
 
 export function getToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
+  try {
+    return typeof localStorage !== 'undefined' && typeof localStorage?.getItem === 'function'
+      ? localStorage.getItem(TOKEN_KEY)
+      : null;
+  } catch {
+    return null;
+  }
 }
 
 export function saveToken(token: string) {
-  localStorage.setItem(TOKEN_KEY, token);
+  try {
+    if (typeof localStorage !== 'undefined' && typeof localStorage?.setItem === 'function') {
+      localStorage.setItem(TOKEN_KEY, token);
+    }
+  } catch {
+    /* Browser storage is optional. */
+  }
 }
 
 export function clearToken() {
   clearTabDrafts();
-  localStorage.removeItem(TOKEN_KEY);
+  try {
+    if (typeof localStorage !== 'undefined' && typeof localStorage?.removeItem === 'function') {
+      localStorage.removeItem(TOKEN_KEY);
+    }
+  } catch {
+    /* Browser storage is optional. */
+  }
   clearAccountIdentity();
 }
 

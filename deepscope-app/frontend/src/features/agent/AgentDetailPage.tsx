@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Suspense, lazy, useEffect, useState, type ComponentType } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useRef, useState, type ComponentType } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -28,6 +28,7 @@ import {
   Wrench,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Input, Textarea } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -39,6 +40,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { agentKeys, deleteAgent, getAgent, readAgentFile, updateAgent, type AgentDetail } from '@/api/agent';
+import { can } from '@/api/auth';
 import { createSession } from '@/api/advisor';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Copy, MoreHorizontal, Play } from 'lucide-react';
@@ -68,6 +70,8 @@ export default function AgentDetailPage() {
   const [section, setSection] = useState<SectionId>('behavior');
   const [focusedTab, setFocusedTab] = useState<SectionId>('behavior');
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [infoState, setInfoState] = useState({ dirty: false, valid: true });
+  const infoSaveRef = useRef<(() => Promise<unknown>) | null>(null);
   const agentQuery = useQuery({ queryKey: agentKeys.agent(agentId ?? ''), queryFn: () => getAgent(agentId ?? ''), enabled: Boolean(agentId) });
   const behaviorFileQuery = useQuery({ queryKey: agentKeys.file(agentId ?? '', 'AGENTS.md'), queryFn: () => readAgentFile(agentId ?? '', 'AGENTS.md'), enabled: Boolean(agentId) });
   const start = useMutation({ mutationFn: () => createSession(agentId) });
@@ -100,6 +104,11 @@ export default function AgentDetailPage() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <h2 className="break-words text-xl font-semibold text-slate-900">{agent.name}</h2>
+        {agent.isPublic ? (
+          <Badge tone="success">{t('agent.publicBadge')}</Badge>
+        ) : (
+          <Badge tone="default">{t('agent.privateBadge')}</Badge>
+        )}
       </div>
       <div className="flex items-center gap-2"><Button size="sm" disabled={start.isPending || agent.enabled === false} onClick={() => request(() => start.mutate())}><Play className="h-3.5 w-3.5" />{t('agent.management.start')}</Button>
         <DropdownMenu.Root>
@@ -143,8 +152,22 @@ export default function AgentDetailPage() {
     }}>{sections.map(item => <button key={item.id} type="button" role="tab" tabIndex={focusedTab === item.id ? 0 : -1} onFocus={() => setFocusedTab(item.id)} id={`agent-tab-${item.id}`} aria-selected={section === item.id} aria-controls={`agent-panel-${item.id}`} onClick={() => { if (section !== item.id) setSection(item.id); }} className={cn('flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm text-slate-500 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300', section === item.id && 'bg-indigo-50 text-indigo-700')}><item.icon aria-hidden="true" className="h-4 w-4" />{item.label}</button>)}</div>
     <div role="tabpanel" id={`agent-panel-${section}`} aria-labelledby={`agent-tab-${section}`}>
       <div className={cn(section === 'behavior' ? 'block space-y-5' : 'hidden')} aria-hidden={section !== 'behavior'}>
-        <AgentInfoCard agent={agent} />
-        <BehaviorSection key={agent.agentId} agentId={agent.agentId} canEdit={agent.canEdit} readOnlyReason={readOnlyReason} fileQuery={behaviorFileQuery} compact />
+        <AgentInfoCard
+          agent={agent}
+          onStateChange={setInfoState}
+          saveRef={infoSaveRef}
+        />
+        <BehaviorSection
+          key={agent.agentId}
+          agentId={agent.agentId}
+          canEdit={agent.canEdit}
+          readOnlyReason={readOnlyReason}
+          fileQuery={behaviorFileQuery}
+          compact
+          extraDirty={infoState.dirty}
+          extraValid={infoState.valid}
+          onSaveExtra={() => (infoSaveRef.current ? infoSaveRef.current() : Promise.resolve())}
+        />
       </div>
       <div className={cn(section === 'skills' ? 'block' : 'hidden')} aria-hidden={section !== 'skills'}>
         <SkillSelectionSection agentId={agent.agentId} canEdit={agent.canEdit} />
@@ -176,32 +199,126 @@ function SectionSkeleton() {
   );
 }
 
-/** Editable display fields use the same mutation as the standalone detail page. */
-function AgentInfoCard({ agent }: { agent: AgentDetail }) {
+function AgentInfoCard({
+  agent,
+  onStateChange,
+  saveRef,
+}: {
+  agent: AgentDetail;
+  onStateChange?: (state: { dirty: boolean; valid: boolean }) => void;
+  saveRef?: React.MutableRefObject<(() => Promise<unknown>) | null>;
+}) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [name, setName] = useState(agent.name);
   const [description, setDescription] = useState(agent.description);
-  const dirty = agent.canEdit && (name !== agent.name || description !== agent.description);
-  useEffect(() => { if (!dirty) { setName(agent.name); setDescription(agent.description); } }, [agent.name, agent.description, dirty]);
+  const [isPublic, setIsPublic] = useState(agent.isPublic ?? false);
+  const canShare = can('agent.share') || can('agent.manage');
+  const valid = Boolean(name.trim());
+  const dirty =
+    agent.canEdit &&
+    (name !== agent.name ||
+      description !== agent.description ||
+      (canShare && isPublic !== (agent.isPublic ?? false)));
+
+  useEffect(() => {
+    onStateChange?.({ dirty, valid });
+  }, [dirty, valid, onStateChange]);
+
+  useEffect(() => {
+    if (!dirty) {
+      setName(agent.name);
+      setDescription(agent.description);
+      setIsPublic(agent.isPublic ?? false);
+    }
+  }, [agent.name, agent.description, agent.isPublic, dirty]);
+
   const updateMutation = useMutation({
-    mutationFn: (input: { name: string; description: string }) => updateAgent(agent.agentId, input),
-    onSuccess: result => { setName(result.name); setDescription(result.description); queryClient.setQueryData(agentKeys.agent(agent.agentId), result); queryClient.invalidateQueries({ queryKey: agentKeys.agents }); },
+    mutationFn: (input: { name: string; description: string; isPublic?: boolean }) =>
+      updateAgent(agent.agentId, input),
+    onSuccess: (result) => {
+      setName(result.name);
+      setDescription(result.description);
+      setIsPublic(result.isPublic ?? false);
+      queryClient.setQueryData(agentKeys.agent(agent.agentId), result);
+      queryClient.invalidateQueries({ queryKey: agentKeys.agents });
+    },
   });
-  const save = async () => {
+
+  const save = useCallback(async () => {
     if (!name.trim()) throw new Error('Invalid name');
-    return updateMutation.mutateAsync({ name: name.trim(), description: description.trim() });
-  };
-  useAgentEditor('agent-info', { dirty, busy: updateMutation.isPending, save, discard: () => { setName(agent.name); setDescription(agent.description); } });
-  return <section className="space-y-3">
-    <div className="grid gap-4 sm:grid-cols-2">
-      <div><label className="mb-1.5 block text-xs font-medium text-slate-600" htmlFor="agent-info-name">{t('agent.field.name')}</label><Input id="agent-info-name" value={name} maxLength={120} disabled={!agent.canEdit || updateMutation.isPending} onChange={event => setName(event.target.value)} /></div>
-      <div><label className="mb-1.5 block text-xs font-medium text-slate-600" htmlFor="agent-info-description">{t('agent.field.description')}</label><Textarea id="agent-info-description" value={description} maxLength={400} disabled={!agent.canEdit || updateMutation.isPending} rows={1} className="min-h-10 py-2" onChange={event => setDescription(event.target.value)} /></div>
-    </div>
-    {!agent.canEdit ? <p className="text-xs text-amber-700">{t('agent.readonlyHintOther')}</p> : null}
-    {updateMutation.isError ? <p role="alert" className="text-sm text-red-600">{t('agent.management.saveFailed')}</p> : null}
-    {dirty ? <Button size="sm" variant="outline" disabled={!name.trim() || updateMutation.isPending} onClick={() => void save().catch(() => undefined)}>{t('agent.saveInfo')}</Button> : null}
-  </section>;
+    return updateMutation.mutateAsync({
+      name: name.trim(),
+      description: description.trim(),
+      ...(canShare && isPublic !== (agent.isPublic ?? false) ? { isPublic } : {}),
+    });
+  }, [name, description, canShare, isPublic, agent.isPublic, updateMutation]);
+
+  useEffect(() => {
+    if (saveRef) {
+      saveRef.current = save;
+    }
+  }, [saveRef, save]);
+
+  useAgentEditor('agent-info', {
+    dirty,
+    busy: updateMutation.isPending,
+    save,
+    discard: () => {
+      setName(agent.name);
+      setDescription(agent.description);
+      setIsPublic(agent.isPublic ?? false);
+    },
+  });
+
+  return (
+    <section className="space-y-3">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="mb-1.5 block text-xs font-medium text-slate-600" htmlFor="agent-info-name">
+            {t('agent.field.name')}
+          </label>
+          <Input
+            id="agent-info-name"
+            value={name}
+            maxLength={120}
+            disabled={!agent.canEdit || updateMutation.isPending}
+            onChange={(event) => setName(event.target.value)}
+          />
+        </div>
+        <div>
+          <label className="mb-1.5 block text-xs font-medium text-slate-600" htmlFor="agent-info-description">
+            {t('agent.field.description')}
+          </label>
+          <Textarea
+            id="agent-info-description"
+            value={description}
+            maxLength={400}
+            disabled={!agent.canEdit || updateMutation.isPending}
+            rows={1}
+            className="min-h-10 py-2"
+            onChange={(event) => setDescription(event.target.value)}
+          />
+        </div>
+      </div>
+      {agent.canEdit && canShare ? (
+        <div className="space-y-1 pt-1">
+          <label className="flex items-center gap-2 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              checked={isPublic}
+              disabled={updateMutation.isPending}
+              onChange={(e) => setIsPublic(e.target.checked)}
+            />
+            {t('agent.shareWithAll')}
+          </label>
+          <p className="text-xs leading-5 text-slate-500">{t('agent.shareWithAllHelp')}</p>
+        </div>
+      ) : null}
+      {!agent.canEdit ? <p className="text-xs text-amber-700">{t('agent.readonlyHintOther')}</p> : null}
+      {updateMutation.isError ? <p role="alert" className="text-sm text-red-600">{t('agent.management.saveFailed')}</p> : null}
+    </section>
+  );
 }
 
 /** 只读清单页签（技能/工具/知识库）。 */

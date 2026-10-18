@@ -22,6 +22,7 @@ public final class AccessPoints {
 
     public static final String CHAT = "chat.use";
     public static final String AGENT_VIEW = "agent.view";
+    public static final String AGENT_SHARE = "agent.share";
     public static final String AGENT_MANAGE = "agent.manage";
     public static final String SKILL_MANAGE = "skill.manage";
     public static final String TOOL_MANAGE = "tool.manage";
@@ -45,6 +46,7 @@ public final class AccessPoints {
                             leaf("agent.create", "创建", "Create"),
                             leaf("agent.edit", "编辑", "Edit"),
                             leaf("agent.delete", "删除", "Delete"),
+                            leaf(AGENT_SHARE, "设为全员共享", "Share with all users"),
                             leaf(AGENT_MANAGE, "管理全部（含跨用户资源）", "Manage all owners")),
                     node(
                             "skill",

@@ -369,6 +369,55 @@ class AdvisorAgentControllerTest {
     }
 
     @Test
+    void publicAgentIsVisibleAndUsableByOthersButNotEditable() throws Exception {
+        byte[] body =
+                mvc.perform(
+                                post("/api/advisor/agents")
+                                        .header("Authorization", carolBearer)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(
+                                                "{\"name\":\"公共助手\",\"description\":\"全员共用\",\"isPublic\":true}"))
+                        .andExpect(status().isCreated())
+                        .andExpect(jsonPath("$.isPublic").value(true))
+                        .andExpect(jsonPath("$.canEdit").value(true))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsByteArray();
+        String agentId =
+                json.readTree(new String(body, StandardCharsets.UTF_8)).get("agentId").asText();
+
+        // Dave can see it in list
+        mvc.perform(get("/api/advisor/agents").header("Authorization", daveBearer))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].agentId").value(agentId))
+                .andExpect(jsonPath("$[0].isPublic").value(true))
+                .andExpect(jsonPath("$[0].canEdit").value(false));
+
+        // Dave can see it in available agents
+        mvc.perform(get("/api/advisor/agents/available").header("Authorization", daveBearer))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].agentId").value(agentId))
+                .andExpect(jsonPath("$[0].isPublic").value(true));
+
+        // Dave can see it in details, but canEdit is false and isOwner is false
+        mvc.perform(get("/api/advisor/agents/" + agentId).header("Authorization", daveBearer))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isPublic").value(true))
+                .andExpect(jsonPath("$.canEdit").value(false))
+                .andExpect(jsonPath("$.isOwner").value(false));
+
+        // Dave cannot edit or delete it
+        mvc.perform(
+                        patch("/api/advisor/agents/" + agentId)
+                                .header("Authorization", daveBearer)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"name\":\"篡改公共\"}"))
+                .andExpect(status().isForbidden());
+        mvc.perform(delete("/api/advisor/agents/" + agentId).header("Authorization", daveBearer))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void lockedSessionRoutesToItsBoundAgentWithoutAModelCall() throws Exception {
         String agentId = createPersonalAgent(carolBearer);
         String sessionId = sessions.create(carolUserId, null, agentId).sessionId();

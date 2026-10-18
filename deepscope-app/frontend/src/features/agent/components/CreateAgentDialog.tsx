@@ -31,6 +31,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+import { can } from '@/api/auth';
 import { createAgent, generateBehavior, type AgentDetail, type AgentSummary } from '@/api/agent';
 
 type StartPoint = 'blank' | 'copy';
@@ -66,6 +67,8 @@ export function CreateAgentDialog({
   const [description, setDescription] = useState(
     () => (copyFrom ? agents.find((agent) => agent.agentId === copyFrom)?.description ?? '' : ''),
   );
+  const [isPublic, setIsPublic] = useState(false);
+  const canShare = can('agent.share') || can('agent.manage');
 
   // 复制方式默认选中第一个候选；列表晚于对话框打开到达时补上默认值。
   useEffect(() => {
@@ -90,6 +93,7 @@ export function CreateAgentDialog({
       setName('');
       setDescription('');
     }
+    setIsPublic(false);
     setStep(2);
   };
 
@@ -101,6 +105,7 @@ export function CreateAgentDialog({
       name: trimmedName,
       description: trimmedDescription,
       ...(startPoint === 'copy' && copySource ? { copyFromAgentId: copySource } : {}),
+      ...(canShare ? { isPublic } : {}),
     });
     if (startPoint === 'blank' && trimmedDescription) {
       try {
@@ -241,6 +246,20 @@ export function CreateAgentDialog({
                 onChange={(event) => setDescription(event.target.value)}
               />
             </div>
+            {canShare ? (
+              <div className="space-y-1 pt-1">
+                <label className="flex items-center gap-2 text-sm text-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={isPublic}
+                    disabled={createMutation.isPending}
+                    onChange={(e) => setIsPublic(e.target.checked)}
+                  />
+                  {t('agent.shareWithAll')}
+                </label>
+                <p className="text-xs leading-5 text-slate-500">{t('agent.shareWithAllHelp')}</p>
+              </div>
+            ) : null}
           </DialogBody>
         )}
 

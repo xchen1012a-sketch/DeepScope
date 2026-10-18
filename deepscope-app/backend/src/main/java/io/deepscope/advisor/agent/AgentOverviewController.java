@@ -75,7 +75,11 @@ public final class AgentOverviewController {
                                     "canEdit",
                                     owner && (item.draft() ? create : edit),
                                     "canDelete",
-                                    owner && (item.draft() ? create : delete));
+                                    owner && (item.draft() ? create : delete),
+                                    "isPublic",
+                                    item.isPublic(),
+                                    "isOwner",
+                                    account.userId().equals(item.ownerUserId()));
                         });
     }
 }

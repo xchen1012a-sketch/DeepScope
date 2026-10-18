@@ -39,7 +39,8 @@ public class AgentOverviewStore {
             String description,
             boolean draft,
             boolean enabled,
-            String ownerUserId) {}
+            String ownerUserId,
+            boolean isPublic) {}
 
     public PageResult<Item> page(
             String userId, boolean allAgents, boolean allDrafts, String search, int page, int size)
@@ -47,16 +48,18 @@ public class AgentOverviewStore {
         var query =
                 new JdbcPage.Query(
                                 "SELECT * FROM (SELECT agent_id AS id, name, description,"
-                                    + " owner_user_id, 0 AS draft, enabled FROM advisor_agents"
-                                    + " WHERE lifecycle = 'active' UNION ALL SELECT draft_id AS id,"
-                                    + " name, COALESCE(NULLIF(purpose, ''), description) AS"
-                                    + " description, owner_user_id, 1 AS draft, 0 AS enabled FROM"
+                                    + " owner_user_id, 0 AS draft, enabled, is_public FROM"
+                                    + " advisor_agents WHERE lifecycle = 'active' UNION ALL SELECT"
+                                    + " draft_id AS id, name, COALESCE(NULLIF(purpose, ''),"
+                                    + " description) AS description, owner_user_id, 1 AS draft, 0"
+                                    + " AS enabled, 0 AS is_public FROM"
                                     + " advisor_agent_creation_drafts WHERE activation_state ="
                                     + " 'draft') overview",
                                 "LOWER(name), draft, id")
                         .where(
-                                "((draft = 0 AND (? = TRUE OR owner_user_id = ?)) OR (draft = 1 AND"
-                                        + " (? = TRUE OR owner_user_id = ?)))",
+                                "((draft = 0 AND (? = TRUE OR is_public = 1 OR owner_user_id IS"
+                                    + " NULL OR owner_user_id = ?)) OR (draft = 1 AND (? = TRUE OR"
+                                    + " owner_user_id = ?)))",
                                 allAgents,
                                 userId,
                                 allDrafts,
@@ -79,7 +82,8 @@ public class AgentOverviewStore {
                                                 rows.getString("description"),
                                                 rows.getInt("draft") == 1,
                                                 rows.getInt("enabled") == 1,
-                                                rows.getString("owner_user_id")));
+                                                rows.getString("owner_user_id"),
+                                                rows.getInt("is_public") == 1));
                         }
                         return items;
                     });
