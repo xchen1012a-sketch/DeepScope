@@ -28,7 +28,7 @@ import { DataTable, type DataTableColumn } from '@/components/DataTable';
 import { ConfirmActionDialog, ConfirmDeleteDialog } from '@/components/ConfirmDeleteDialog';
 import { activateModel, deleteModel, duplicateModel, modelError, modelKeys, modelLabel, testModel, type ModelEndpoint, type ModelKind, type ModelProviderPreset } from '@/api/model';
 import { ModelEditorDrawer } from './components/ModelEditorDrawer';
-import { can } from '@/api/auth';
+import { can, getUserId } from '@/api/auth';
 
 export default function SettingsPage() {
   const { t, i18n } = useTranslation();
@@ -81,10 +81,16 @@ export default function SettingsPage() {
       setCopying(null);
     }
   }
+  const currentUserId = getUserId();
+  const isOwner = (model: ModelEndpoint) => can('settings.manage') || (model.ownerUserId ? model.ownerUserId === currentUserId : true);
   function confirm(model: ModelEndpoint, actionType: 'activate' | 'delete') { action.reset(); setConfirmation({ action: actionType, model }); }
   const columns: DataTableColumn<ModelEndpoint>[] = [
     { id: 'model', header: t(key + 'modelColumn'), headerClassName: 'pl-6', cellClassName: 'pl-6', cell: model => <div className="min-w-44">
-      <div className="flex items-center gap-2"><span className="font-semibold text-slate-900">{modelLabel(model)}</span>{model.current ? <Badge tone="info">{t(key + 'defaultBadge')}</Badge> : null}</div>
+      <div className="flex items-center gap-2">
+        <span className="font-semibold text-slate-900">{modelLabel(model)}</span>
+        {model.current ? <Badge tone="info">{t(key + 'defaultBadge')}</Badge> : null}
+        {model.isPublic ? <Badge tone="success">{t(key + 'publicBadge')}</Badge> : <Badge tone="neutral">{t(key + 'privateBadge')}</Badge>}
+      </div>
       <p className="mt-1 font-mono text-xs text-slate-400">{model.modelName}</p>
     </div> },
     { id: 'provider', header: t('modelSettings.providerLabel'), cell: model => <span className="text-sm text-slate-600">{model.providerName || t(`modelSettings.provider.${model.provider}`)}</span> },
@@ -117,11 +123,11 @@ export default function SettingsPage() {
     />
     <DataTable columns={columns}
         actions={model => [
-          { id: 'configure', label: t(key + 'configure'), hidden: !can('model.edit'), onClick: () => setEditor({ model, kind }) },
-          { id: 'copy', label: t(key + 'copyConfig'), hidden: !can('model.copy'), disabled: copying !== null, loading: copying === model.endpointId, onClick: () => void copy(model) },
-          { id: 'test', label: t(key + 'test'), hidden: !can('model.test'), overflow: true, loading: test.isPending && test.variables === model.endpointId, disabled: test.isPending || action.isPending, onClick: () => { setNotice(''); test.mutate(model.endpointId); } },
-          { id: 'default', label: t(key + 'setDefault'), overflow: true, hidden: model.current || !can('model.edit'), disabled: action.isPending, onClick: () => confirm(model, 'activate') },
-          { id: 'delete', label: t('modelSettings.delete'), hidden: !can('model.delete'), overflow: true, tone: 'danger', disabled: model.current || action.isPending, onClick: () => confirm(model, 'delete') },
+          { id: 'configure', label: t(key + 'configure'), hidden: !can('model.edit') || !isOwner(model), onClick: () => setEditor({ model, kind }) },
+          { id: 'copy', label: t(key + 'copyConfig'), hidden: !can('model.copy') || !isOwner(model), disabled: copying !== null, loading: copying === model.endpointId, onClick: () => void copy(model) },
+          { id: 'test', label: t(key + 'test'), hidden: !can('model.test') || !isOwner(model), overflow: true, loading: test.isPending && test.variables === model.endpointId, disabled: test.isPending || action.isPending, onClick: () => { setNotice(''); test.mutate(model.endpointId); } },
+          { id: 'default', label: t(key + 'setDefault'), overflow: true, hidden: model.current || !can('model.edit') || !isOwner(model), disabled: action.isPending, onClick: () => confirm(model, 'activate') },
+          { id: 'delete', label: t('modelSettings.delete'), hidden: !can('model.delete') || !isOwner(model), overflow: true, tone: 'danger', disabled: model.current || action.isPending, onClick: () => confirm(model, 'delete') },
         ]}
         data={models} keyExtractor={model => model.endpointId} isLoading={query.isPending} error={query.isError ? t(key + 'loadError') : undefined} onRetry={() => { void query.refetch(); }}
         emptyTitle={t(key + (search || provider ? 'noResults' : kind === 'chat' ? 'emptyChat' : 'emptyEmbedding'))}

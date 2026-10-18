@@ -47,6 +47,7 @@ export function ModelEditorDrawer({ kind, model, onClose, onSaved }: {
     displayName: model?.displayName ?? '',
     baseUrl: model ? model.baseUrl || providerPresets[model.provider].baseUrl : '',
     secret: '', replaceSecret: !model, makeCurrent: false,
+    isPublic: model?.isPublic ?? false,
     knowledgePdf: model?.knowledgePdf ?? false,
   };
   const scope = `model:${kind}:${model?.endpointId ?? 'new'}`;
@@ -93,6 +94,7 @@ export function ModelEditorDrawer({ kind, model, onClose, onSaved }: {
       baseUrl: draft.baseUrl.trim(),
       ...(draft.replaceSecret ? { secret: draft.secret.trim() } : {}),
       ...(model ? { endpointId: model.endpointId } : {}), makeCurrent: draft.makeCurrent,
+      isPublic: draft.isPublic,
       ...(kind === 'chat' ? { knowledgePdf: draft.knowledgePdf ?? model?.knowledgePdf ?? false } : {}),
     };
   }
@@ -171,6 +173,10 @@ export function ModelEditorDrawer({ kind, model, onClose, onSaved }: {
           </div>
           {!model?.current ? <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={draft.makeCurrent} disabled={busy} onChange={e => change({ makeCurrent: e.target.checked }, false)} />{t(key + (kind === 'chat' ? 'setDefaultChat' : 'setDefaultEmbedding'))}</label> : null}
           {draft.makeCurrent ? <p className="text-xs leading-5 text-slate-500">{t(key + (kind === 'chat' ? 'defaultImpact' : 'embeddingImpact'))}</p> : null}
+          {can('model.share') || can('settings.manage') ? <div className="space-y-1">
+            <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={draft.isPublic} disabled={busy} onChange={e => change({ isPublic: e.target.checked }, false)} />{t(key + 'shareWithAll')}</label>
+            <p className="text-xs leading-5 text-slate-500">{t(key + 'shareWithAllHelp')}</p>
+          </div> : null}
           {kind === 'chat' ? <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={draft.knowledgePdf ?? model?.knowledgePdf ?? false} disabled={busy} onChange={e => change({ knowledgePdf: e.target.checked })} />{t(key + 'knowledgePdf')}</label>
             <p className="text-xs leading-5 text-slate-500">{t(key + 'knowledgePdfHelp')}</p>

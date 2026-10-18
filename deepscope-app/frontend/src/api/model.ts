@@ -33,6 +33,8 @@ export interface ModelEndpoint {
   current: boolean;
   knowledgePdf?: boolean;
   dimensions?: number | null;
+  ownerUserId?: string | null;
+  isPublic?: boolean;
   lastTestStatus?: 'passed' | 'failed' | null;
   lastTestAt?: number | null;
   lastTestElapsedMs?: number | null;
@@ -46,6 +48,7 @@ export interface ModelInput {
   baseUrl: string;
   secret?: string;
   makeCurrent?: boolean;
+  isPublic?: boolean;
   knowledgePdf?: boolean;
   endpointId?: string;
 }

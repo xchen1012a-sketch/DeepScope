@@ -47,13 +47,42 @@ public final class SavedChatModelSource implements ChatModelSource {
     public Optional<Model> forSession(String sessionId) {
         if (sessions == null || sessionId == null) return current();
         try {
-            String endpointId =
-                    sessions.find(sessionId)
-                            .map(
-                                    io.deepscope.advisor.session.SessionStore.SessionRow
-                                            ::modelEndpointId)
-                            .orElse(null);
-            return forEndpoint(endpointId);
+            var sessionOpt = sessions.find(sessionId);
+            if (sessionOpt.isEmpty()) return current();
+            var session = sessionOpt.get();
+            String endpointId = session.modelEndpointId();
+            if (endpointId != null) {
+                var endpoint =
+                        catalog.find(endpointId)
+                                .filter(value -> ModelCatalog.CHAT.equals(value.kind()))
+                                .orElse(null);
+                if (endpoint != null) {
+                    if (endpoint.isPublic()
+                            || endpoint.ownerUserId() == null
+                            || (endpoint.ownerUserId() != null
+                                    && endpoint.ownerUserId().equals(session.ownerUserId()))) {
+                        return Optional.of(
+                                client.chat(
+                                        endpoint, catalog.contextWindow(endpointId).orElse(null)));
+                    }
+                    log.warn(
+                            "Session {} model {} is private to user {} and cannot be accessed by"
+                                    + " session owner {}",
+                            sessionId,
+                            endpointId,
+                            endpoint.ownerUserId(),
+                            session.ownerUserId());
+                }
+            }
+            var userDefault = catalog.current(ModelCatalog.CHAT, session.ownerUserId(), false);
+            if (userDefault.isPresent()) {
+                var endpoint = userDefault.get();
+                return Optional.of(
+                        client.chat(
+                                endpoint,
+                                catalog.contextWindow(endpoint.endpointId()).orElse(null)));
+            }
+            return Optional.empty();
         } catch (SQLException error) {
             throw new IllegalStateException("Session model could not be read", error);
         }

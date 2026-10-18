@@ -26,7 +26,7 @@ import { i18nResources } from '@/i18n/resources';
 import SettingsPage from './SettingsPage';
 import { setAccountIdentity, clearAccountIdentity } from '@/lib/accountIdentity';
 import { clearTabDrafts } from '@/lib/tabDraftStorage';
-vi.mock('@/api/auth', () => ({ can: () => true }));
+vi.mock('@/api/auth', () => ({ can: () => true, getUserId: () => 'test-user', getUsername: () => 'test-user', isAdmin: () => true }));
 
 vi.mock('@/lib/apiClient', async (original) => ({
   ...await original<typeof import('@/lib/apiClient')>(),

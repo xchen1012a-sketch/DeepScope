@@ -27,6 +27,7 @@ public final class AccessPoints {
     public static final String TOOL_MANAGE = "tool.manage";
     public static final String KNOWLEDGE_VIEW = "knowledge.view";
     public static final String KNOWLEDGE_MANAGE = "knowledge.manage";
+    public static final String MODEL_SHARE = "model.share";
     public static final String SETTINGS = "settings.manage";
     public static final String RBAC = "rbac.manage";
 
@@ -80,6 +81,7 @@ public final class AccessPoints {
                             leaf("model.view", "查看", "View"),
                             leaf("model.create", "接入/获取模型", "Connect / discover"),
                             leaf("model.edit", "配置/设为默认", "Configure / set default"),
+                            leaf(MODEL_SHARE, "设为全员共享", "Share with all users"),
                             leaf("model.test", "测试连接", "Test connection"),
                             leaf("model.copy", "复制完整配置（含密钥）", "Copy configuration including key"),
                             leaf("model.delete", "删除", "Delete"),

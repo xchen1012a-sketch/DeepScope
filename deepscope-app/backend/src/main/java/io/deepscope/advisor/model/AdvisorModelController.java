@@ -88,8 +88,15 @@ public class AdvisorModelController {
      * for all users without requiring admin management permissions.
      */
     @GetMapping("/api/advisor/models/active")
-    public ResponseEntity<Map<String, Object>> active() throws SQLException {
-        var current = catalog.current(ModelCatalog.CHAT);
+    public ResponseEntity<Map<String, Object>> active(HttpServletRequest request)
+            throws SQLException {
+        var account = ApiAuthenticationFilter.account(request).orElse(null);
+        String userId = account != null ? account.userId() : null;
+        boolean seesAll =
+                account != null
+                        && access.seesAll(
+                                account, io.deepscope.advisor.access.AccessPoints.SETTINGS);
+        var current = catalog.current(ModelCatalog.CHAT, userId, seesAll);
         if (current.isEmpty()) {
             return ResponseEntity.ok(
                     Map.of(
@@ -125,7 +132,13 @@ public class AdvisorModelController {
         if (forbidden(request)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        var current = catalog.current(ModelCatalog.CHAT);
+        var account = ApiAuthenticationFilter.account(request).orElse(null);
+        String userId = account != null ? account.userId() : null;
+        boolean seesAll =
+                account != null
+                        && access.seesAll(
+                                account, io.deepscope.advisor.access.AccessPoints.SETTINGS);
+        var current = catalog.current(ModelCatalog.CHAT, userId, seesAll);
         if (current.isPresent() && catalog.contextWindow(current.get().endpointId()).isEmpty()) {
             refreshContextWindow(current.get());
         }
@@ -134,13 +147,15 @@ public class AdvisorModelController {
                 "defaults",
                 Map.of(
                         "chat",
-                        views(catalog.current(ModelCatalog.CHAT).stream().toList()),
+                        views(
+                                catalog.current(ModelCatalog.CHAT, userId, seesAll).stream()
+                                        .toList()),
                         "embedding",
-                        views(catalog.current(ModelCatalog.EMBEDDING).stream().toList())));
-        body.put("chat", views(catalog.list(ModelCatalog.CHAT, request.getParameter("q"))));
-        body.put(
-                "embedding",
-                views(catalog.list(ModelCatalog.EMBEDDING, request.getParameter("q"))));
+                        views(
+                                catalog.current(ModelCatalog.EMBEDDING, userId, seesAll).stream()
+                                        .toList())));
+        body.put("chat", views(catalog.listVisible(ModelCatalog.CHAT, userId, seesAll)));
+        body.put("embedding", views(catalog.listVisible(ModelCatalog.EMBEDDING, userId, seesAll)));
         ModelCatalog.UsagePolicy usage = catalog.usage();
         body.put(
                 "usage",
@@ -159,21 +174,29 @@ public class AdvisorModelController {
         if (kind == null) kind = ModelCatalog.CHAT;
         if (!ModelCatalog.CHAT.equals(kind) && !ModelCatalog.EMBEDDING.equals(kind))
             return ResponseEntity.badRequest().build();
+        var account = ApiAuthenticationFilter.account(request).orElse(null);
+        String userId = account != null ? account.userId() : null;
+        boolean seesAll =
+                account != null
+                        && access.seesAll(
+                                account, io.deepscope.advisor.access.AccessPoints.SETTINGS);
         var rows =
-                catalog.page(
+                catalog.pageVisible(
                         kind,
                         request.getParameter("provider"),
                         request.getParameter("q"),
                         io.deepscope.advisor.db.JdbcPage.page(request),
                         io.deepscope.advisor.db.JdbcPage.size(request),
-                        request.getParameter("presetId"));
+                        request.getParameter("presetId"),
+                        userId,
+                        seesAll);
         var body = new LinkedHashMap<String, Object>();
         body.put("items", views(rows.items()));
         body.put("page", rows.page());
         body.put("size", rows.size());
         body.put("total", rows.total());
         body.put("totalPages", rows.totalPages());
-        var defaults = views(catalog.current(kind).stream().toList());
+        var defaults = views(catalog.current(kind, userId, seesAll).stream().toList());
         body.put("defaultModel", defaults.isEmpty() ? null : defaults.get(0));
         return ResponseEntity.ok(body);
     }
@@ -199,6 +222,14 @@ public class AdvisorModelController {
         if (forbidden(request)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         var endpoint = catalog.find(endpointId).orElse(null);
         if (endpoint == null) return ResponseEntity.notFound().build();
+        var account = ApiAuthenticationFilter.account(request).orElse(null);
+        if (account != null
+                && !access.manage(account, io.deepscope.advisor.access.AccessPoints.SETTINGS)) {
+            if (endpoint.ownerUserId() != null
+                    && !endpoint.ownerUserId().equals(account.userId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
         var preset = ModelProviderPresets.identify(endpoint.provider(), endpoint.baseUrl());
         Map<String, Object> config = new LinkedHashMap<>();
         config.put("provider", endpoint.provider());
@@ -210,6 +241,7 @@ public class AdvisorModelController {
         config.put("baseUrl", endpoint.baseUrl());
         config.put("modelName", endpoint.modelName());
         config.put("secret", endpoint.secret());
+        config.put("isPublic", endpoint.isPublic());
         return ResponseEntity.ok().header("Cache-Control", "no-store").body(config);
     }
 
@@ -222,9 +254,25 @@ public class AdvisorModelController {
         if (forbidden(request)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         var source = catalog.find(endpointId).orElse(null);
         if (source == null) return ResponseEntity.notFound().build();
+        var account = ApiAuthenticationFilter.account(request).orElse(null);
+        if (account != null
+                && !access.manage(account, io.deepscope.advisor.access.AccessPoints.SETTINGS)) {
+            if (source.ownerUserId() != null && !source.ownerUserId().equals(account.userId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
         String name = text(body, "displayName");
         if (name == null) name = catalog.metadata(endpointId).get("displayName") + " 副本";
-        var copy = catalog.insert(draft(Map.of(), source), source.dimensions(), name, false);
+        String userId = account != null ? account.userId() : null;
+        var copy =
+                catalog.insert(
+                        draft(Map.of(), source),
+                        source.dimensions(),
+                        name,
+                        false,
+                        null,
+                        userId,
+                        false);
         var contextWindow = catalog.contextWindow(endpointId);
         if (contextWindow.isPresent())
             catalog.saveContextWindow(copy.endpointId(), contextWindow.get());
@@ -236,6 +284,24 @@ public class AdvisorModelController {
         if (forbidden(request)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         var original = id == null ? null : catalog.find(id).orElse(null);
         if (id != null && original == null) return ResponseEntity.notFound().build();
+        var account = ApiAuthenticationFilter.account(request).orElse(null);
+        String userId = account != null ? account.userId() : null;
+        boolean canManageSettings =
+                account != null
+                        && access.manage(
+                                account, io.deepscope.advisor.access.AccessPoints.SETTINGS);
+        boolean canShare =
+                canManageSettings
+                        || (account != null
+                                && access.allowed(
+                                        account,
+                                        io.deepscope.advisor.access.AccessPoints.MODEL_SHARE));
+
+        if (original != null && !canManageSettings) {
+            if (original.ownerUserId() != null && !original.ownerUserId().equals(userId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
         if (unsafeSecretReuse(body, original))
             return problem(HttpStatus.BAD_REQUEST, "更改连接地址或协议后请重新填写密钥");
         if (original != null
@@ -271,6 +337,15 @@ public class AdvisorModelController {
                 && (result.dimensions() == null || result.dimensions() < 1))
             return problem(HttpStatus.BAD_GATEWAY, "向量响应无效");
         boolean current = Boolean.TRUE.equals(body.get("makeCurrent"));
+        boolean isPublic = false;
+        if (body.containsKey("isPublic")) {
+            boolean requestedPublic = Boolean.TRUE.equals(body.get("isPublic"));
+            isPublic = canShare && requestedPublic;
+        } else if (original != null) {
+            isPublic = original.isPublic();
+        } else if (canShare && current) {
+            isPublic = true;
+        }
         String name = text(body, "displayName");
         if (name == null)
             name =
@@ -281,9 +356,21 @@ public class AdvisorModelController {
             var endpoint =
                     original == null
                             ? catalog.insert(
-                                    draft, result.dimensions(), name, current, knowledgePdf)
+                                    draft,
+                                    result.dimensions(),
+                                    name,
+                                    current,
+                                    knowledgePdf,
+                                    userId,
+                                    isPublic)
                             : catalog.update(
-                                    id, draft, result.dimensions(), name, current, knowledgePdf);
+                                    id,
+                                    draft,
+                                    result.dimensions(),
+                                    name,
+                                    current,
+                                    knowledgePdf,
+                                    isPublic);
             catalog.recordTest(endpoint.endpointId(), result, elapsed);
             if (ModelCatalog.CHAT.equals(endpoint.kind())) refreshContextWindow(endpoint);
             return ResponseEntity.status(original == null ? HttpStatus.CREATED : HttpStatus.OK)
@@ -315,6 +402,14 @@ public class AdvisorModelController {
         if (forbidden(request)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         var endpoint = catalog.find(endpointId).orElse(null);
         if (endpoint == null) return ResponseEntity.notFound().build();
+        var account = ApiAuthenticationFilter.account(request).orElse(null);
+        if (account != null
+                && !access.manage(account, io.deepscope.advisor.access.AccessPoints.SETTINGS)) {
+            if (endpoint.ownerUserId() != null
+                    && !endpoint.ownerUserId().equals(account.userId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
         var draft = draft(Map.of(), endpoint);
         long started = System.nanoTime();
         var raw = probe.check(draft);
@@ -480,6 +575,14 @@ public class AdvisorModelController {
         if (forbidden(request)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         var endpoint = catalog.find(endpointId).orElse(null);
         if (endpoint == null) return ResponseEntity.notFound().build();
+        var account = ApiAuthenticationFilter.account(request).orElse(null);
+        if (account != null
+                && !access.manage(account, io.deepscope.advisor.access.AccessPoints.SETTINGS)) {
+            if (endpoint.ownerUserId() != null
+                    && !endpoint.ownerUserId().equals(account.userId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
         var draft = draft(Map.of(), endpoint);
         long started = System.nanoTime();
         var raw = probe.check(draft);
@@ -498,7 +601,16 @@ public class AdvisorModelController {
     public ResponseEntity<?> delete(@PathVariable String endpointId, HttpServletRequest request)
             throws SQLException {
         if (forbidden(request)) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        if (catalog.find(endpointId).isEmpty()) return ResponseEntity.notFound().build();
+        var endpoint = catalog.find(endpointId).orElse(null);
+        if (endpoint == null) return ResponseEntity.notFound().build();
+        var account = ApiAuthenticationFilter.account(request).orElse(null);
+        if (account != null
+                && !access.manage(account, io.deepscope.advisor.access.AccessPoints.SETTINGS)) {
+            if (endpoint.ownerUserId() != null
+                    && !endpoint.ownerUserId().equals(account.userId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
         try {
             catalog.delete(endpointId);
         } catch (IllegalArgumentException conflict) {
@@ -628,6 +740,8 @@ public class AdvisorModelController {
         view.put("baseUrl", endpoint.baseUrl());
         view.put("secretMask", ModelCatalog.mask(endpoint.secret()));
         view.put("current", endpoint.current());
+        view.put("ownerUserId", endpoint.ownerUserId());
+        view.put("isPublic", endpoint.isPublic());
         view.put(
                 "knowledgePdf",
                 catalog.knowledgePdf()

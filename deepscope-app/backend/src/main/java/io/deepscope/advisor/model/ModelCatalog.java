@@ -74,7 +74,7 @@ public final class ModelCatalog {
     }
 
     public Endpoint insertCurrent(EndpointDraft draft, Integer dimensions) throws SQLException {
-        return insert(draft, dimensions, draft.modelName(), true);
+        return insert(draft, dimensions, draft.modelName(), true, null, null, true);
     }
 
     public Optional<Endpoint> knowledgePdf() throws SQLException {
@@ -151,7 +151,7 @@ public final class ModelCatalog {
     public Endpoint insert(
             EndpointDraft draft, Integer dimensions, String displayName, boolean current)
             throws SQLException {
-        return insert(draft, dimensions, displayName, current, null);
+        return insert(draft, dimensions, displayName, current, null, null, current);
     }
 
     public Endpoint insert(
@@ -161,18 +161,30 @@ public final class ModelCatalog {
             boolean current,
             Boolean knowledgePdf)
             throws SQLException {
+        return insert(draft, dimensions, displayName, current, knowledgePdf, null, current);
+    }
+
+    public Endpoint insert(
+            EndpointDraft draft,
+            Integer dimensions,
+            String displayName,
+            boolean current,
+            Boolean knowledgePdf,
+            String ownerUserId,
+            boolean isPublic)
+            throws SQLException {
         String id = UUID.randomUUID().toString();
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             try {
                 if (current) {
-                    clearCurrent(connection, draft.kind());
+                    clearCurrent(connection, draft.kind(), ownerUserId, isPublic);
                 }
                 try (PreparedStatement statement =
                         connection.prepareStatement(
                                 "INSERT INTO advisor_model_endpoints"
-                                    + " (endpoint_id,kind,provider,model_name,base_url,secret,current_flag,dimensions,created_at,updated_at,display_name)"
-                                    + " VALUES (?,?,?,?,?,?,?,?,?,?,?)")) {
+                                    + " (endpoint_id,kind,provider,model_name,base_url,secret,current_flag,dimensions,created_at,updated_at,display_name,owner_user_id,is_public)"
+                                    + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
                     statement.setString(1, id);
                     statement.setString(2, draft.kind());
                     statement.setString(3, draft.provider());
@@ -184,6 +196,8 @@ public final class ModelCatalog {
                     statement.setLong(9, System.currentTimeMillis());
                     statement.setLong(10, System.currentTimeMillis());
                     statement.setString(11, displayName);
+                    statement.setString(12, ownerUserId);
+                    statement.setInt(13, isPublic ? 1 : 0);
                     statement.executeUpdate();
                 }
                 assignKnowledgePdf(connection, id, knowledgePdf);
@@ -203,7 +217,7 @@ public final class ModelCatalog {
             String displayName,
             boolean makeCurrent)
             throws SQLException {
-        return update(id, draft, dimensions, displayName, makeCurrent, null);
+        return update(id, draft, dimensions, displayName, makeCurrent, null, null);
     }
 
     public Endpoint update(
@@ -214,17 +228,30 @@ public final class ModelCatalog {
             boolean makeCurrent,
             Boolean knowledgePdf)
             throws SQLException {
+        return update(id, draft, dimensions, displayName, makeCurrent, knowledgePdf, null);
+    }
+
+    public Endpoint update(
+            String id,
+            EndpointDraft draft,
+            Integer dimensions,
+            String displayName,
+            boolean makeCurrent,
+            Boolean knowledgePdf,
+            Boolean isPublic)
+            throws SQLException {
         Endpoint original = find(id).orElseThrow();
+        boolean publicFlag = isPublic != null ? isPublic : original.isPublic();
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             try {
                 if (makeCurrent) {
-                    clearCurrent(connection, draft.kind());
+                    clearCurrent(connection, draft.kind(), original.ownerUserId(), publicFlag);
                 }
                 try (PreparedStatement statement =
                         connection.prepareStatement(
                                 "UPDATE advisor_model_endpoints SET"
-                                    + " model_name=?,base_url=?,secret=?,dimensions=?,display_name=?,current_flag=?,updated_at=?,context_window=NULL,provider=?"
+                                    + " model_name=?,base_url=?,secret=?,dimensions=?,display_name=?,current_flag=?,updated_at=?,context_window=NULL,provider=?,is_public=?"
                                     + " WHERE endpoint_id=?")) {
                     statement.setString(1, draft.modelName());
                     statement.setString(2, draft.baseUrl() == null ? "" : draft.baseUrl());
@@ -234,7 +261,8 @@ public final class ModelCatalog {
                     statement.setInt(6, makeCurrent || original.current() ? 1 : 0);
                     statement.setLong(7, System.currentTimeMillis());
                     statement.setString(8, draft.provider());
-                    statement.setString(9, id);
+                    statement.setInt(9, publicFlag ? 1 : 0);
+                    statement.setString(10, id);
                     statement.executeUpdate();
                 }
                 assignKnowledgePdf(connection, id, knowledgePdf);
@@ -277,6 +305,8 @@ public final class ModelCatalog {
                 result.put(
                         "displayName",
                         name == null || name.isBlank() ? rows.getString("model_name") : name);
+                result.put("ownerUserId", rows.getString("owner_user_id"));
+                result.put("isPublic", rows.getInt("is_public") == 1);
                 result.put("lastTestStatus", rows.getString("last_test_status"));
                 result.put("lastTestAt", rows.getObject("last_test_at"));
                 result.put("lastTestElapsedMs", rows.getObject("last_test_elapsed_ms"));
@@ -291,7 +321,8 @@ public final class ModelCatalog {
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             try {
-                clearCurrent(connection, endpoint.kind());
+                clearCurrent(
+                        connection, endpoint.kind(), endpoint.ownerUserId(), endpoint.isPublic());
                 try (PreparedStatement statement =
                         connection.prepareStatement(
                                 "UPDATE advisor_model_endpoints SET current_flag = 1, updated_at ="
@@ -444,17 +475,121 @@ public final class ModelCatalog {
         }
     }
 
-    public Optional<Endpoint> current(String kind) throws SQLException {
+    public List<Endpoint> listVisible(String kind, String userId, boolean seesAll)
+            throws SQLException {
+        if (seesAll) {
+            return list(kind);
+        }
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement statement =
                         connection.prepareStatement(
                                 "SELECT * FROM advisor_model_endpoints WHERE kind = ? AND"
-                                        + " current_flag = 1")) {
+                                        + " (is_public = 1 OR (owner_user_id IS NOT NULL AND"
+                                        + " owner_user_id = ?)) ORDER BY created_at")) {
             statement.setString(1, kind);
+            statement.setString(2, userId == null ? "" : userId);
             try (ResultSet rows = statement.executeQuery()) {
-                return rows.next() ? Optional.of(endpoint(rows)) : Optional.empty();
+                List<Endpoint> endpoints = new ArrayList<>();
+                while (rows.next()) {
+                    endpoints.add(endpoint(rows));
+                }
+                return endpoints;
             }
         }
+    }
+
+    public io.deepscope.advisor.db.PageResult<Endpoint> pageVisible(
+            String kind,
+            String provider,
+            String query,
+            int page,
+            int size,
+            String presetId,
+            String userId,
+            boolean seesAll)
+            throws SQLException {
+        var sql =
+                new io.deepscope.advisor.db.JdbcPage.Query(
+                                "SELECT * FROM advisor_model_endpoints", "created_at, endpoint_id")
+                        .equal("kind", kind)
+                        .equal("provider", provider)
+                        .search(query, List.of("model_name", "display_name"));
+        if (!seesAll) {
+            sql.where(
+                    "(is_public = 1 OR (owner_user_id IS NOT NULL AND owner_user_id = ?))",
+                    userId == null ? "" : userId);
+        }
+        if (presetId != null && !presetId.isBlank()) {
+            var preset =
+                    ModelProviderPresets.find(presetId)
+                            .orElseThrow(() -> new IllegalArgumentException("服务商无效"));
+            if (!preset.id().equals("custom")) {
+                sql.equal("provider", preset.provider());
+                sql.where("RTRIM(base_url, '/') = ?", preset.baseUrl().replaceAll("/+$", ""));
+            } else {
+                sql.equal("provider", "custom");
+            }
+        }
+        try (var connection = dataSource.getConnection()) {
+            return io.deepscope.advisor.db.JdbcPage.fetch(
+                    connection,
+                    sql,
+                    page,
+                    size,
+                    statement -> {
+                        var endpoints = new ArrayList<Endpoint>();
+                        try (var rows = statement.executeQuery()) {
+                            while (rows.next()) endpoints.add(endpoint(rows));
+                        }
+                        return endpoints;
+                    });
+        }
+    }
+
+    public Optional<Endpoint> current(String kind) throws SQLException {
+        return current(kind, null, true);
+    }
+
+    public Optional<Endpoint> current(String kind, String userId, boolean seesAll)
+            throws SQLException {
+        if (userId != null && !userId.isBlank()) {
+            try (Connection connection = dataSource.getConnection();
+                    PreparedStatement statement =
+                            connection.prepareStatement(
+                                    "SELECT * FROM advisor_model_endpoints WHERE kind = ? AND"
+                                            + " current_flag = 1 AND owner_user_id = ?")) {
+                statement.setString(1, kind);
+                statement.setString(2, userId);
+                try (ResultSet rows = statement.executeQuery()) {
+                    if (rows.next()) return Optional.of(endpoint(rows));
+                }
+            }
+        }
+        try (Connection connection = dataSource.getConnection();
+                PreparedStatement statement =
+                        connection.prepareStatement(
+                                "SELECT * FROM advisor_model_endpoints WHERE kind = ? AND"
+                                    + " current_flag = 1 AND (is_public = 1 OR owner_user_id IS"
+                                    + " NULL OR owner_user_id = '') ORDER BY updated_at DESC LIMIT"
+                                    + " 1")) {
+            statement.setString(1, kind);
+            try (ResultSet rows = statement.executeQuery()) {
+                if (rows.next()) return Optional.of(endpoint(rows));
+            }
+        }
+        if (seesAll) {
+            try (Connection connection = dataSource.getConnection();
+                    PreparedStatement statement =
+                            connection.prepareStatement(
+                                    "SELECT * FROM advisor_model_endpoints WHERE kind = ? AND"
+                                        + " current_flag = 1 ORDER BY updated_at DESC LIMIT 1")) {
+                statement.setString(1, kind);
+                try (ResultSet rows = statement.executeQuery()) {
+                    if (rows.next()) return Optional.of(endpoint(rows));
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     public Optional<Endpoint> find(String endpointId) throws SQLException {
@@ -512,18 +647,43 @@ public final class ModelCatalog {
         return secret.substring(0, 3) + "••••" + secret.substring(secret.length() - 4);
     }
 
-    private static void clearCurrent(Connection connection, String kind) throws SQLException {
-        try (PreparedStatement statement =
-                connection.prepareStatement(
-                        "UPDATE advisor_model_endpoints SET current_flag = 0 WHERE kind = ?")) {
-            statement.setString(1, kind);
-            statement.executeUpdate();
+    private static void clearCurrent(
+            Connection connection, String kind, String ownerUserId, boolean isPublic)
+            throws SQLException {
+        if (isPublic || ownerUserId == null || ownerUserId.isBlank()) {
+            try (PreparedStatement statement =
+                    connection.prepareStatement(
+                            "UPDATE advisor_model_endpoints SET current_flag = 0 WHERE kind = ? AND"
+                                    + " (is_public = 1 OR owner_user_id IS NULL OR owner_user_id ="
+                                    + " '')")) {
+                statement.setString(1, kind);
+                statement.executeUpdate();
+            }
+        } else {
+            try (PreparedStatement statement =
+                    connection.prepareStatement(
+                            "UPDATE advisor_model_endpoints SET current_flag = 0 WHERE kind = ? AND"
+                                    + " is_public = 0 AND owner_user_id = ?")) {
+                statement.setString(1, kind);
+                statement.setString(2, ownerUserId);
+                statement.executeUpdate();
+            }
         }
     }
 
     private static Endpoint endpoint(ResultSet rows) throws SQLException {
         int dimensions = rows.getInt("dimensions");
         boolean missing = rows.wasNull();
+        String ownerUserId = null;
+        try {
+            ownerUserId = rows.getString("owner_user_id");
+        } catch (SQLException ignored) {
+        }
+        boolean isPublic = false;
+        try {
+            isPublic = rows.getInt("is_public") == 1;
+        } catch (SQLException ignored) {
+        }
         return new Endpoint(
                 rows.getString("endpoint_id"),
                 rows.getString("kind"),
@@ -532,7 +692,9 @@ public final class ModelCatalog {
                 rows.getString("base_url"),
                 rows.getString("secret"),
                 rows.getInt("current_flag") == 1,
-                missing ? null : dimensions);
+                missing ? null : dimensions,
+                ownerUserId,
+                isPublic);
     }
 
     public record EndpointDraft(
@@ -546,7 +708,31 @@ public final class ModelCatalog {
             String baseUrl,
             String secret,
             boolean current,
-            Integer dimensions) {}
+            Integer dimensions,
+            String ownerUserId,
+            boolean isPublic) {
+        public Endpoint(
+                String endpointId,
+                String kind,
+                String provider,
+                String modelName,
+                String baseUrl,
+                String secret,
+                boolean current,
+                Integer dimensions) {
+            this(
+                    endpointId,
+                    kind,
+                    provider,
+                    modelName,
+                    baseUrl,
+                    secret,
+                    current,
+                    dimensions,
+                    null,
+                    false);
+        }
+    }
 
     public record UsagePolicy(int turnTokenLimit, int dailyTaskLimit, int ratePerMinute) {
         public static UsagePolicy unlimited() {

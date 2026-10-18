@@ -93,8 +93,10 @@ public final class SessionStore {
                             "INSERT INTO advisor_sessions (session_id, owner_user_id, title,"
                                 + " status, agent_id, created_at, updated_at, model_endpoint_id)"
                                 + " VALUES (?, ?, ?, ?, ?, ?, ?, (SELECT endpoint_id FROM"
-                                + " advisor_model_endpoints WHERE kind='chat' AND"
-                                + " current_flag=1))")) {
+                                + " advisor_model_endpoints WHERE kind='chat' AND current_flag=1"
+                                + " AND (is_public=1 OR (owner_user_id IS NOT NULL AND"
+                                + " owner_user_id=?)) ORDER BY CASE WHEN owner_user_id=? THEN 0"
+                                + " ELSE 1 END LIMIT 1))")) {
                 statement.setString(1, sessionId);
                 statement.setString(2, ownerUserId);
                 statement.setString(3, resolvedTitle);
@@ -102,6 +104,8 @@ public final class SessionStore {
                 statement.setString(5, agentId);
                 statement.setLong(6, now);
                 statement.setLong(7, now);
+                statement.setString(8, ownerUserId == null ? "" : ownerUserId);
+                statement.setString(9, ownerUserId == null ? "" : ownerUserId);
                 statement.executeUpdate();
             }
         }

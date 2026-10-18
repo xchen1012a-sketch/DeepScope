@@ -301,6 +301,16 @@ public final class AdvisorSchema {
                     "ALTER TABLE advisor_model_endpoints ADD COLUMN IF NOT EXISTS last_test_message"
                             + " TEXT NULL");
             statement.execute(
+                    "ALTER TABLE advisor_model_endpoints ADD COLUMN IF NOT EXISTS owner_user_id"
+                            + " TEXT NULL");
+            statement.execute(
+                    "ALTER TABLE advisor_model_endpoints ADD COLUMN IF NOT EXISTS is_public"
+                            + " INTEGER NOT NULL DEFAULT 0");
+            statement.execute(
+                    "UPDATE advisor_model_endpoints SET owner_user_id = (SELECT user_id FROM"
+                            + " accounts WHERE role='admin' ORDER BY created_at LIMIT 1) WHERE"
+                            + " owner_user_id IS NULL");
+            statement.execute(
                     "ALTER TABLE advisor_sessions ADD COLUMN IF NOT EXISTS model_endpoint_id TEXT"
                             + " NULL REFERENCES advisor_model_endpoints(endpoint_id) ON DELETE"
                             + " RESTRICT");

@@ -81,6 +81,11 @@ export function getUsername(): string {
   return account?.username || '';
 }
 
+export function getUserId(): string {
+  const account = getAccountIdentity(getToken());
+  return account?.userId || '';
+}
+
 export function getRoles(): string[] {
   return getAccountIdentity(getToken())?.roles || [];
 }

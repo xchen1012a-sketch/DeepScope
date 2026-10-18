@@ -54,19 +54,33 @@ public final class SessionModelController {
         var session =
                 sessions.find(sessionId).filter(row -> row.ownerUserId().equals(account.userId()));
         if (session.isEmpty()) return ResponseEntity.notFound().build();
+        boolean seesAll = access.seesAll(account, AccessPoints.SETTINGS);
         var selected =
                 session.get().modelEndpointId() == null
-                        ? catalog.current(ModelCatalog.CHAT)
-                        : catalog.find(session.get().modelEndpointId());
+                        ? catalog.current(ModelCatalog.CHAT, account.userId(), seesAll)
+                        : catalog.find(session.get().modelEndpointId())
+                                .filter(e -> ModelCatalog.CHAT.equals(e.kind()))
+                                .filter(
+                                        e ->
+                                                seesAll
+                                                        || e.isPublic()
+                                                        || e.ownerUserId() == null
+                                                        || (e.ownerUserId() != null
+                                                                && e.ownerUserId()
+                                                                        .equals(account.userId())));
         Map<String, Object> view = new LinkedHashMap<>();
-        view.put("endpointId", session.get().modelEndpointId());
+        view.put("endpointId", selected.map(ModelCatalog.Endpoint::endpointId).orElse(null));
         if (selected.isPresent()) {
             var endpoint = selected.get();
             view.put("modelName", endpoint.modelName());
             view.put("displayName", catalog.metadata(endpoint.endpointId()).get("displayName"));
             view.put("contextWindow", catalog.contextWindow(endpoint.endpointId()).orElse(0));
         }
-        view.put("choices", access.manage(account, AccessPoints.SETTINGS) ? choices() : List.of());
+        view.put(
+                "choices",
+                access.manage(account, AccessPoints.SETTINGS)
+                        ? choices(account.userId(), seesAll)
+                        : List.of());
         return ResponseEntity.ok(view);
     }
 
@@ -86,23 +100,36 @@ public final class SessionModelController {
         String endpointId = value instanceof String id && !id.isBlank() ? id : null;
         if (value != null && endpointId == null)
             return ResponseEntity.badRequest().body(Map.of("message", "Invalid model"));
-        if (endpointId != null
-                && catalog.find(endpointId)
-                        .filter(row -> ModelCatalog.CHAT.equals(row.kind()))
-                        .isEmpty())
-            return ResponseEntity.badRequest().body(Map.of("message", "Chat model is unavailable"));
+        if (endpointId != null) {
+            var target =
+                    catalog.find(endpointId)
+                            .filter(row -> ModelCatalog.CHAT.equals(row.kind()))
+                            .orElse(null);
+            if (target == null)
+                return ResponseEntity.badRequest()
+                        .body(Map.of("message", "Chat model is unavailable"));
+            boolean seesAll = access.seesAll(account, AccessPoints.SETTINGS);
+            if (!seesAll
+                    && !target.isPublic()
+                    && target.ownerUserId() != null
+                    && !target.ownerUserId().equals(account.userId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message", "无权使用该模型"));
+            }
+        }
         sessions.selectModel(sessionId, account.userId(), endpointId);
         return get(sessionId, request);
     }
 
-    private List<Map<String, Object>> choices() throws SQLException {
+    private List<Map<String, Object>> choices(String userId, boolean seesAll) throws SQLException {
         List<Map<String, Object>> result = new java.util.ArrayList<>();
-        for (var endpoint : catalog.list(ModelCatalog.CHAT)) {
+        for (var endpoint : catalog.listVisible(ModelCatalog.CHAT, userId, seesAll)) {
             Map<String, Object> choice = new LinkedHashMap<>();
             choice.put("endpointId", endpoint.endpointId());
             choice.put("modelName", endpoint.modelName());
             choice.put("displayName", catalog.metadata(endpoint.endpointId()).get("displayName"));
             choice.put("current", endpoint.current());
+            choice.put("isPublic", endpoint.isPublic());
             result.add(choice);
         }
         return result;
