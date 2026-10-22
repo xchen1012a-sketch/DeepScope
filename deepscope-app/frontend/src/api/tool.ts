@@ -212,6 +212,8 @@ export interface ImportToolsInput {
   content: string;
   address?: string;
   addressOverride?: string;
+  name?: string;
+  description?: string;
   permission?: ToolPermission;
   chosenOperations?: string[];
   duplicateActions?: Record<string, DuplicateAction>;
@@ -256,6 +258,8 @@ export function previewTools(input: {
   content: string;
   address?: string;
   addressOverride?: string;
+  name?: string;
+  description?: string;
   boundToolId?: string;
   mcpToolId?: string;
 }): Promise<ToolPreviewItem[]> {
@@ -269,20 +273,37 @@ export function updateToolPermission(toolId: string, permission: ToolPermission)
   });
 }
 
+export interface ToolSaveResult {
+  /** Present when the backend accepted the save and applies it in the background. */
+  requestId?: string;
+  status?: 'pending' | 'running' | 'applied' | 'apply_failed' | 'validation_failed';
+  errorMessage?: string;
+  tool?: CatalogTool;
+}
+
 export function updateTool(
   toolId: string,
   input: UpdateToolInput,
   expectedRevision?: number,
-): Promise<CatalogTool> {
+): Promise<ToolSaveResult> {
   const headers: Record<string, string> = {};
   if (expectedRevision !== undefined) {
     headers['If-Match'] = String(expectedRevision);
   }
-  return apiFetch<CatalogTool>(`/api/advisor/tools/${encodeURIComponent(toolId)}`, {
-    method: 'PATCH',
-    body: JSON.stringify(input),
-    headers,
-  });
+  return apiFetch<ToolSaveResult>(
+    `/api/advisor/tools/${encodeURIComponent(toolId)}?async=true`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(input),
+      headers,
+    },
+  );
+}
+
+export function fetchToolChange(requestId: string): Promise<ToolSaveResult> {
+  return apiFetch<ToolSaveResult>(
+    `/api/advisor/tool-changes/${encodeURIComponent(requestId)}`,
+  );
 }
 
 export function deleteTool(toolId: string, expectedRevision?: number): Promise<void> {

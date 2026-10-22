@@ -179,6 +179,12 @@ public final class AdvisorSchema {
                             + " PRIMARY KEY, owner_user_id TEXT NOT NULL, ciphertext TEXT NOT NULL,"
                             + " nonce TEXT NOT NULL, created_at BIGINT NOT NULL)");
             statement.execute(
+                    "ALTER TABLE advisor_tool_credentials ADD COLUMN IF NOT EXISTS dek_wrapped TEXT"
+                            + " NULL");
+            statement.execute(
+                    "ALTER TABLE advisor_tool_credentials ADD COLUMN IF NOT EXISTS dek_key_id TEXT"
+                            + " NULL");
+            statement.execute(
                     "CREATE TABLE IF NOT EXISTS advisor_tool_change_requests (owner_user_id TEXT"
                         + " NOT NULL, request_key TEXT NOT NULL, digest TEXT NOT NULL, result_json"
                         + " TEXT NOT NULL, created_at BIGINT NOT NULL, PRIMARY KEY(owner_user_id,"

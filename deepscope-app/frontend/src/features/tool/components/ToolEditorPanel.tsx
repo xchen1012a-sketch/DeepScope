@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/input';
+import { AppSelect } from '@/components/ui/select';
 import {
   Dialog,
   DialogBody,
@@ -29,6 +30,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import {
+  fetchToolChange,
   updateTool,
   type CatalogTool,
   type ToolAuthConfig,
@@ -55,6 +57,9 @@ export function ToolEditorPanel({ tool, open, onClose, onSaved }: ToolEditorPane
   const [auth, setAuth] = useState<ToolAuthConfig>({ action: 'keep', type: 'none' });
   const [isConfirmingDiscard, setIsConfirmingDiscard] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [applyingRequestId, setApplyingRequestId] = useState<string | null>(null);
+  const callbacks = useRef({ onSaved, onClose, t });
+  callbacks.current = { onSaved, onClose, t };
 
   useEffect(() => {
     if (open && tool) {
@@ -67,8 +72,46 @@ export function ToolEditorPanel({ tool, open, onClose, onSaved }: ToolEditorPane
       setAuth({ action: 'keep', type: 'none' });
       setIsConfirmingDiscard(false);
       setErrorMsg(null);
+      setApplyingRequestId(null);
     }
   }, [open, tool]);
+
+  // The save response returns as soon as the definition is committed. Verification and the agent
+  // runtime refresh happen server-side, so the panel follows the change instead of holding the
+  // request open.
+  useEffect(() => {
+    if (!applyingRequestId) return;
+    let cancelled = false;
+    const tick = async () => {
+      try {
+        const status = await fetchToolChange(applyingRequestId);
+        if (cancelled) return;
+        const next = status.status ?? 'pending';
+        if (next === 'applied') {
+          setApplyingRequestId(null);
+          callbacks.current.onSaved();
+          callbacks.current.onClose();
+        } else if (next === 'validation_failed' || next === 'apply_failed') {
+          setApplyingRequestId(null);
+          setErrorMsg(
+            callbacks.current.t('tool.editor.applyFailed', {
+              defaultValue: '已保存，但应用失败：{{message}}',
+              message: status.errorMessage ?? '',
+            }),
+          );
+          callbacks.current.onSaved();
+        }
+      } catch {
+        // A transient poll failure is not a save failure; the next tick tries again.
+      }
+    };
+    void tick();
+    const timer = setInterval(tick, 1500);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [applyingRequestId]);
 
   const isDirty = Boolean(
     tool &&
@@ -99,14 +142,21 @@ export function ToolEditorPanel({ tool, open, onClose, onSaved }: ToolEditorPane
         tool.revision,
       );
     },
-    onSuccess: () => {
-      onSaved();
-      onClose();
+    onSuccess: (result) => {
+      if (result?.requestId) {
+        setApplyingRequestId(result.requestId);
+        onSaved();
+      } else {
+        onSaved();
+        onClose();
+      }
     },
     onError: (err: unknown) => {
       setErrorMsg(toolFailure(err, t));
     },
   });
+
+  const busy = saveMutation.isPending || Boolean(applyingRequestId);
 
   if (!tool) return null;
 
@@ -142,7 +192,7 @@ export function ToolEditorPanel({ tool, open, onClose, onSaved }: ToolEditorPane
                 className="w-full rounded-lg border border-border px-3 py-2 text-sm"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                disabled={saveMutation.isPending}
+                disabled={busy}
               />
             </div>
 
@@ -156,7 +206,7 @@ export function ToolEditorPanel({ tool, open, onClose, onSaved }: ToolEditorPane
                 rows={2}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                disabled={saveMutation.isPending}
+                disabled={busy}
               />
             </div>
 
@@ -164,22 +214,23 @@ export function ToolEditorPanel({ tool, open, onClose, onSaved }: ToolEditorPane
             {tool.origin === 'http' ? (
               <div className="grid grid-cols-4 gap-3">
                 <div className="col-span-1">
-                  <label className="mb-1.5 block text-[13px] font-medium text-slate-700" htmlFor="tool-edit-method">
+                  <label className="mb-1.5 block text-[13px] font-medium text-slate-700">
                     {t('tool.editor.httpMethod', '方法')}
                   </label>
-                  <select
-                    id="tool-edit-method"
-                    className="w-full rounded-lg border border-border px-2 py-2 text-sm"
+                  <AppSelect
+                    className="w-full"
+                    aria-label={t('tool.editor.httpMethod', '方法')}
                     value={httpMethod}
-                    onChange={(e) => setHttpMethod(e.target.value)}
-                    disabled={saveMutation.isPending}
-                  >
-                    <option value="GET">GET</option>
-                    <option value="POST">POST</option>
-                    <option value="PUT">PUT</option>
-                    <option value="DELETE">DELETE</option>
-                    <option value="PATCH">PATCH</option>
-                  </select>
+                    onChange={setHttpMethod}
+                    disabled={busy}
+                    options={[
+                      { value: 'GET', label: 'GET' },
+                      { value: 'POST', label: 'POST' },
+                      { value: 'PUT', label: 'PUT' },
+                      { value: 'DELETE', label: 'DELETE' },
+                      { value: 'PATCH', label: 'PATCH' },
+                    ]}
+                  />
                 </div>
                 <div className="col-span-3">
                   <label className="mb-1.5 block text-[13px] font-medium text-slate-700" htmlFor="tool-edit-url">
@@ -190,7 +241,7 @@ export function ToolEditorPanel({ tool, open, onClose, onSaved }: ToolEditorPane
                     className="w-full rounded-lg border border-border px-3 py-2 text-sm"
                     value={httpUrl}
                     onChange={(e) => setHttpUrl(e.target.value)}
-                    disabled={saveMutation.isPending}
+                    disabled={busy}
                   />
                 </div>
               </div>
@@ -206,27 +257,28 @@ export function ToolEditorPanel({ tool, open, onClose, onSaved }: ToolEditorPane
                 rows={5}
                 value={inputSchema}
                 onChange={(e) => setInputSchema(e.target.value)}
-                disabled={saveMutation.isPending || tool.origin === 'mcp'}
+                disabled={busy || tool.origin === 'mcp'}
                 className="font-mono text-xs"
               />
             </div>
 
             {/* Permission Select */}
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-slate-700" htmlFor="tool-edit-permission">
+              <label className="mb-1.5 block text-[13px] font-medium text-slate-700">
                 {t('tool.permission', '权限')}
               </label>
-              <select
-                id="tool-edit-permission"
-                className="w-full rounded-lg border border-border px-2 py-2 text-sm"
+              <AppSelect
+                className="w-full"
+                aria-label={t('tool.permission', '权限')}
                 value={permission}
-                onChange={(e) => setPermission(e.target.value as ToolPermission)}
-                disabled={saveMutation.isPending}
-              >
-                <option value="allow">{t('tool.level.allow', '允许')}</option>
-                <option value="ask">{t('tool.level.ask', '询问')}</option>
-                <option value="deny">{t('tool.level.deny', '禁用')}</option>
-              </select>
+                onChange={(value) => setPermission(value as ToolPermission)}
+                disabled={busy}
+                options={[
+                  { value: 'allow', label: t('tool.level.allow', '允许') },
+                  { value: 'ask', label: t('tool.level.ask', '询问') },
+                  { value: 'deny', label: t('tool.level.deny', '禁用') },
+                ]}
+              />
             </div>
 
             {/* Authentication (for HTTP tools) */}
@@ -239,6 +291,13 @@ export function ToolEditorPanel({ tool, open, onClose, onSaved }: ToolEditorPane
               />
             ) : null}
 
+            {/* Applying status */}
+            {applyingRequestId ? (
+              <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">
+                {t('tool.editor.applying', '已保存，正在应用中，完成后会自动关闭…')}
+              </div>
+            ) : null}
+
             {/* Error Message */}
             {errorMsg ? (
               <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
@@ -248,14 +307,18 @@ export function ToolEditorPanel({ tool, open, onClose, onSaved }: ToolEditorPane
           </DialogBody>
 
           <DialogFooter>
-            <Button variant="outline" onClick={handleRequestClose} disabled={saveMutation.isPending}>
+            <Button variant="outline" onClick={handleRequestClose} disabled={busy}>
               {t('chat.cancel', '取消')}
             </Button>
             <Button
               onClick={() => saveMutation.mutate()}
-              disabled={saveMutation.isPending || !name.trim()}
+              disabled={busy || !name.trim()}
             >
-              {saveMutation.isPending ? t('tool.editor.saving', '保存中…') : t('tool.editor.save', '保存修改')}
+              {applyingRequestId
+                ? t('tool.editor.applyingShort', '应用中…')
+                : busy
+                  ? t('tool.editor.saving', '保存中…')
+                  : t('tool.editor.save', '保存修改')}
             </Button>
           </DialogFooter>
         </DialogContent>

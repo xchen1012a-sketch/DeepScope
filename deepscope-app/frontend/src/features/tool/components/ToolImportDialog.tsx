@@ -21,6 +21,7 @@ import { AlertTriangle, Check, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { AppSelect } from '@/components/ui/select';
 import {
   Dialog,
   DialogBody,
@@ -54,12 +55,18 @@ export function ToolImportDialog({ open, onClose, onDone }: ToolImportDialogProp
   const [address, setAddress] = useState('');
   const [permission, setPermission] = useState<ToolPermission>('ask');
   const [auth, setAuth] = useState<ToolAuthConfig>({ type: 'none' });
+  const [toolName, setToolName] = useState('');
+  const [toolDescription, setToolDescription] = useState('');
 
   // Preview state
   const [previewItems, setPreviewItems] = useState<ToolPreviewItem[] | null>(null);
   const [selectedOperations, setSelectedOperations] = useState<string[]>([]);
   const [duplicateActions, setDuplicateActions] = useState<Record<string, DuplicateAction>>({});
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Several operations in one definition cannot share a name, so the typed name applies to a
+  // single-operation definition only.
+  const nameLocked = previewItems !== null && previewItems.length > 1;
 
   const previewMutation = useMutation({
     mutationFn: async () => {
@@ -68,6 +75,8 @@ export function ToolImportDialog({ open, onClose, onDone }: ToolImportDialogProp
         kind,
         content,
         address: address.trim() || undefined,
+        name: toolName.trim() || undefined,
+        description: toolDescription.trim() || undefined,
       });
     },
     onSuccess: (items) => {
@@ -106,6 +115,8 @@ export function ToolImportDialog({ open, onClose, onDone }: ToolImportDialogProp
           kind,
           content,
           address: address.trim() || undefined,
+          name: toolName.trim() || undefined,
+          description: toolDescription.trim() || undefined,
           permission,
           chosenOperations: previewItems ? selectedOperations : undefined,
           duplicateActions: previewItems ? duplicateActions : undefined,
@@ -121,6 +132,8 @@ export function ToolImportDialog({ open, onClose, onDone }: ToolImportDialogProp
       // Reset state
       setContent('');
       setAddress('');
+      setToolName('');
+      setToolDescription('');
       setPreviewItems(null);
       setSelectedOperations([]);
       setDuplicateActions({});
@@ -176,23 +189,23 @@ export function ToolImportDialog({ open, onClose, onDone }: ToolImportDialogProp
           <div>
             <label
               className="mb-1.5 block text-[13px] font-medium text-slate-700"
-              htmlFor="tool-import-kind"
             >
               {t('tool.kindLabel')}
             </label>
-            <select
-              id="tool-import-kind"
-              className="w-full rounded-lg border border-border px-2 py-2 text-sm"
+            <AppSelect
+              className="w-full"
+              aria-label={t('tool.kindLabel')}
               value={kind}
-              onChange={(e) => {
-                setKind(e.target.value as 'openapi' | 'schema');
+              onChange={(value) => {
+                setKind(value as 'openapi' | 'schema');
                 setPreviewItems(null);
               }}
               disabled={importMutation.isPending || previewMutation.isPending}
-            >
-              <option value="openapi">{t('tool.importDialog.openapiFormat')}</option>
-              <option value="schema">{t('tool.importDialog.schemaFormat')}</option>
-            </select>
+              options={[
+                { value: 'openapi', label: t('tool.importDialog.openapiFormat') },
+                { value: 'schema', label: t('tool.importDialog.schemaFormat') },
+              ]}
+            />
           </div>
 
           {/* Definition Content Textarea */}
@@ -219,6 +232,62 @@ export function ToolImportDialog({ open, onClose, onDone }: ToolImportDialogProp
             />
           </div>
 
+          {/* Tool Name */}
+          <div>
+            <label
+              className="mb-1.5 block text-[13px] font-medium text-slate-700"
+              htmlFor="tool-import-name"
+            >
+              {t('tool.importDialog.toolName', '工具名称')}
+            </label>
+            <input
+              id="tool-import-name"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm"
+              value={toolName}
+              onChange={(e) => {
+                setToolName(e.target.value);
+                // The preview carries the operation ids and the definition hash, so a changed
+                // name invalidates both and the definition has to be previewed again.
+                setPreviewItems(null);
+              }}
+              disabled={importMutation.isPending || previewMutation.isPending || nameLocked}
+              placeholder={t('tool.importDialog.toolNamePlaceholder', '留空则沿用定义中的名称')}
+            />
+            {nameLocked ? (
+              <p className="mt-1 text-xs text-slate-500">
+                {t(
+                  'tool.importDialog.nameLocked',
+                  '该定义包含多个操作，工具名称沿用定义中的名称',
+                )}
+              </p>
+            ) : null}
+          </div>
+
+          {/* Tool Description */}
+          <div>
+            <label
+              className="mb-1.5 block text-[13px] font-medium text-slate-700"
+              htmlFor="tool-import-description"
+            >
+              {t('tool.importDialog.toolDescription', '工具描述')}
+            </label>
+            <Textarea
+              id="tool-import-description"
+              rows={3}
+              value={toolDescription}
+              onChange={(e) => {
+                setToolDescription(e.target.value);
+                setPreviewItems(null);
+              }}
+              disabled={importMutation.isPending || previewMutation.isPending}
+              placeholder={t(
+                'tool.importDialog.toolDescriptionPlaceholder',
+                '告诉模型这个工具能做什么，例如：搜索互联网并返回带摘要的结果',
+              )}
+              className="text-sm"
+            />
+          </div>
+
           {/* Address */}
           <div>
             <label
@@ -241,21 +310,21 @@ export function ToolImportDialog({ open, onClose, onDone }: ToolImportDialogProp
           <div>
             <label
               className="mb-1.5 block text-[13px] font-medium text-slate-700"
-              htmlFor="tool-import-permission"
             >
               {t('tool.permission', '权限')}
             </label>
-            <select
-              id="tool-import-permission"
-              className="w-full rounded-lg border border-border px-2 py-2 text-sm"
+            <AppSelect
+              className="w-full"
+              aria-label={t('tool.permission', '权限')}
               value={permission}
-              onChange={(e) => setPermission(e.target.value as ToolPermission)}
+              onChange={(value) => setPermission(value as ToolPermission)}
               disabled={importMutation.isPending || previewMutation.isPending}
-            >
-              <option value="allow">{t('tool.level.allow', '允许')}</option>
-              <option value="ask">{t('tool.level.ask', '询问')}</option>
-              <option value="deny">{t('tool.level.deny', '禁用')}</option>
-            </select>
+              options={[
+                { value: 'allow', label: t('tool.level.allow', '允许') },
+                { value: 'ask', label: t('tool.level.ask', '询问') },
+                { value: 'deny', label: t('tool.level.deny', '禁用') },
+              ]}
+            />
           </div>
 
           {/* Authentication Section */}

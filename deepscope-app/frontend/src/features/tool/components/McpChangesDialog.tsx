@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { AlertTriangle, CheckCircle2, ChevronDown, ChevronRight, FileCode } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { AppSelect } from '@/components/ui/select';
 import {
   Dialog,
   DialogBody,
@@ -319,25 +320,26 @@ export function McpChangesDialog({
                               <span className="text-[12px] text-slate-500">
                                 {t('tool.permission')}
                               </span>
-                              <select
+                              <AppSelect
+                                size="sm"
                                 aria-label={t('tool.permission')}
                                 disabled={!isSelected}
                                 value={permission}
-                                onChange={(e) =>
+                                onChange={(value) =>
                                   setSelectedAdded((prev) => ({
                                     ...prev,
                                     [tool.name]: {
                                       selected: prev[tool.name]?.selected ?? true,
-                                      permission: e.target.value as ToolPermission,
+                                      permission: value as ToolPermission,
                                     },
                                   }))
                                 }
-                                className="rounded-lg border border-border bg-white px-2 py-1 text-xs"
-                              >
-                                <option value="allow">{t('tool.level.allow')}</option>
-                                <option value="ask">{t('tool.level.ask')}</option>
-                                <option value="deny">{t('tool.level.deny')}</option>
-                              </select>
+                                options={[
+                                  { value: 'allow', label: t('tool.level.allow') },
+                                  { value: 'ask', label: t('tool.level.ask') },
+                                  { value: 'deny', label: t('tool.level.deny') },
+                                ]}
+                              />
                             </div>
                           </div>
 

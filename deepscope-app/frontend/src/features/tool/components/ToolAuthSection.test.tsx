@@ -16,6 +16,7 @@
 
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { createInstance } from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -36,6 +37,16 @@ function renderWithI18n(ui: React.ReactElement) {
   return render(<I18nextProvider i18n={i18n}>{ui}</I18nextProvider>);
 }
 
+/** Picks an option from a select control that renders its current value as a button label. */
+async function pickOption(
+  user: ReturnType<typeof userEvent.setup>,
+  triggerLabel: string,
+  optionLabel: string,
+) {
+  await user.click(screen.getByLabelText(triggerLabel));
+  await user.click(screen.getByRole('menuitem', { name: optionLabel }));
+}
+
 afterEach(() => {
   cleanup();
 });
@@ -47,8 +58,7 @@ describe('ToolAuthSection', () => {
 
     expect(screen.getByText('Authentication')).toBeTruthy();
     expect(screen.queryByLabelText('Credential Action')).toBeNull();
-    const typeSelect = screen.getByLabelText('Auth Mode') as HTMLSelectElement;
-    expect(typeSelect.value).toBe('none');
+    expect(screen.getByLabelText('Auth Mode').textContent).toContain('No Auth');
     expect(screen.queryByLabelText('Key Value')).toBeNull();
     expect(screen.queryByLabelText('Token')).toBeNull();
   });
@@ -63,11 +73,8 @@ describe('ToolAuthSection', () => {
       />,
     );
 
-    const typeSelect = screen.getByLabelText('Auth Mode') as HTMLSelectElement;
-    expect(typeSelect.value).toBe('apiKey');
-
-    const placementSelect = screen.getByLabelText('Placement') as HTMLSelectElement;
-    expect(placementSelect.value).toBe('header');
+    expect(screen.getByLabelText('Auth Mode').textContent).toContain('API Key');
+    expect(screen.getByLabelText('Placement').textContent).toContain('Header');
 
     const nameInput = screen.getByLabelText('Key Name') as HTMLInputElement;
     expect(nameInput.value).toBe('X-My-Key');
@@ -132,7 +139,8 @@ describe('ToolAuthSection', () => {
     );
   });
 
-  it('renders edit mode with keep/replace/clear action controls', () => {
+  it('renders edit mode with keep/replace/clear action controls', async () => {
+    const user = userEvent.setup();
     const onChange = vi.fn();
     renderWithI18n(
       <ToolAuthSection
@@ -148,19 +156,20 @@ describe('ToolAuthSection', () => {
         "This tool has configured credentials. Choose 'Keep existing credential' to leave them unchanged.",
       ),
     ).toBeTruthy();
-    const actionSelect = screen.getByLabelText('Credential Action') as HTMLSelectElement;
-    expect(actionSelect.value).toBe('keep');
+    expect(screen.getByLabelText('Credential Action').textContent).toContain(
+      'Keep existing credential',
+    );
 
     // Inputs should not be shown when action is keep
     expect(screen.queryByLabelText('Key Value')).toBeNull();
     expect(screen.queryByLabelText('Token')).toBeNull();
 
     // Change action to clear
-    fireEvent.change(actionSelect, { target: { value: 'clear' } });
+    await pickOption(user, 'Credential Action', 'Clear credential');
     expect(onChange).toHaveBeenCalledWith({ action: 'clear' });
 
     // Change action to replace
-    fireEvent.change(actionSelect, { target: { value: 'replace' } });
+    await pickOption(user, 'Credential Action', 'Replace credential');
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
         action: 'replace',
@@ -179,8 +188,9 @@ describe('ToolAuthSection', () => {
       />,
     );
 
-    const actionSelect = screen.getByLabelText('Credential Action') as HTMLSelectElement;
-    expect(actionSelect.value).toBe('replace');
+    expect(screen.getByLabelText('Credential Action').textContent).toContain(
+      'Replace credential',
+    );
 
     const tokenInput = screen.getByLabelText('Token') as HTMLInputElement;
     expect(tokenInput.value).toBe('old-token');

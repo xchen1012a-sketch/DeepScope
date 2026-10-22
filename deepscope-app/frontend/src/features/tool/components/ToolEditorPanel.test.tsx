@@ -93,7 +93,9 @@ const mockMcpTool: toolApi.CatalogTool = {
 
 describe('ToolEditorPanel', () => {
   it('renders HTTP tool editor fields and saves with If-Match revision', async () => {
-    const updateSpy = vi.spyOn(toolApi, 'updateTool').mockResolvedValue(mockHttpTool);
+    const updateSpy = vi
+      .spyOn(toolApi, 'updateTool')
+      .mockResolvedValue({ tool: mockHttpTool });
     const onClose = vi.fn();
     const onSaved = vi.fn();
 
@@ -107,8 +109,7 @@ describe('ToolEditorPanel', () => {
     const descInput = screen.getByLabelText('Description') as HTMLTextAreaElement;
     expect(descInput.value).toBe('Search web resources');
 
-    const methodSelect = screen.getByLabelText('Method') as HTMLSelectElement;
-    expect(methodSelect.value).toBe('POST');
+    expect(screen.getByLabelText('Method').textContent).toContain('POST');
 
     const urlInput = screen.getByLabelText('Call URL') as HTMLInputElement;
     expect(urlInput.value).toBe('https://api.example.com/search');
@@ -136,6 +137,33 @@ describe('ToolEditorPanel', () => {
 
     await waitFor(() => {
       expect(onSaved).toHaveBeenCalledTimes(1);
+      expect(onClose).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('follows an accepted save until the change is applied', async () => {
+    vi.spyOn(toolApi, 'updateTool').mockResolvedValue({
+      requestId: 'change-1',
+      status: 'pending',
+      tool: mockHttpTool,
+    });
+    const changeSpy = vi
+      .spyOn(toolApi, 'fetchToolChange')
+      .mockResolvedValue({ requestId: 'change-1', status: 'applied' });
+    const onClose = vi.fn();
+    const onSaved = vi.fn();
+
+    renderWithProviders(
+      <ToolEditorPanel tool={mockHttpTool} open={true} onClose={onClose} onSaved={onSaved} />,
+    );
+
+    fireEvent.change(screen.getByLabelText('Description'), {
+      target: { value: 'Updated description' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }));
+
+    await waitFor(() => {
+      expect(changeSpy).toHaveBeenCalledWith('change-1');
       expect(onClose).toHaveBeenCalledTimes(1);
     });
   });

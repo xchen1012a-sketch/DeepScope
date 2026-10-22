@@ -16,6 +16,7 @@
 
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { createInstance } from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -158,8 +159,9 @@ describe('McpChangesDialog', () => {
     );
 
     // Change permission of added tool to 'allow'
-    const permissionSelect = screen.getByLabelText('Permission') as HTMLSelectElement;
-    fireEvent.change(permissionSelect, { target: { value: 'allow' } });
+    const user = userEvent.setup();
+    await user.click(screen.getByLabelText('Permission'));
+    await user.click(screen.getByRole('menuitem', { name: 'Allow' }));
 
     // Click Apply button
     const applyBtn = screen.getByText('Confirm and Apply Changes');

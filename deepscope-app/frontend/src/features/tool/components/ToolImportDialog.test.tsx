@@ -126,6 +126,8 @@ describe('ToolImportDialog', () => {
       kind: 'openapi',
       content: sampleOpenApi,
       address: undefined,
+      name: undefined,
+      description: undefined,
     });
 
     // Check preview items rendered
@@ -239,5 +241,115 @@ describe('ToolImportDialog', () => {
     expect(addrInput.value).toBe('https://override.example.com');
     expect(onClose).not.toHaveBeenCalled();
     expect(onDone).not.toHaveBeenCalled();
+  });
+
+  it('sends the typed name and description with the preview and the import', async () => {
+    const previewSpy = vi.spyOn(toolApi, 'previewTools').mockResolvedValue([samplePreviewItems[0]]);
+    const importSpy = vi.spyOn(toolApi, 'importTools').mockResolvedValue([
+      {
+        toolId: 'tool-new-2',
+        name: 'deepseek_web_search',
+        description: 'Search the web',
+        origin: 'http',
+        permission: 'ask',
+        canEdit: true,
+        approved: true,
+        revision: 1,
+        ownerUserId: 'user-1',
+        mcpServerId: null,
+        httpMethod: 'POST',
+        httpUrl: 'https://api.deepseek.com/v1/tools/search',
+        inputSchema: '{}',
+      },
+    ]);
+
+    renderWithProviders(<ToolImportDialog open={true} onClose={vi.fn()} onDone={vi.fn()} />);
+
+    fireEvent.change(screen.getByLabelText(/Definition content/i), {
+      target: { value: sampleOpenApi },
+    });
+    fireEvent.change(screen.getByLabelText(/Tool name/i), {
+      target: { value: 'deepseek_web_search' },
+    });
+    fireEvent.change(screen.getByLabelText(/Tool description/i), {
+      target: { value: 'Search the web' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /^Preview$/i }));
+
+    await waitFor(() => {
+      expect(previewSpy).toHaveBeenCalledWith({
+        kind: 'openapi',
+        content: sampleOpenApi,
+        address: undefined,
+        name: 'deepseek_web_search',
+        description: 'Search the web',
+      });
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Import tools/i }));
+
+    await waitFor(() => {
+      expect(importSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'deepseek_web_search',
+          description: 'Search the web',
+        }),
+        expect.stringMatching(/^import-/),
+      );
+    });
+  });
+
+  it('locks the typed name when the definition holds several operations', async () => {
+    vi.spyOn(toolApi, 'previewTools').mockResolvedValue(samplePreviewItems);
+
+    renderWithProviders(<ToolImportDialog open={true} onClose={vi.fn()} onDone={vi.fn()} />);
+
+    fireEvent.change(screen.getByLabelText(/Definition content/i), {
+      target: { value: sampleOpenApi },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Preview$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('getUsers')).toBeTruthy();
+    });
+
+    const nameInput = screen.getByLabelText(/Tool name/i) as HTMLInputElement;
+    expect(nameInput.disabled).toBe(true);
+    expect(screen.getByText(/several operations/i)).toBeTruthy();
+  });
+
+  it('asks for a new preview once the typed name changes', async () => {
+    const previewSpy = vi
+      .spyOn(toolApi, 'previewTools')
+      .mockResolvedValue([samplePreviewItems[0]]);
+
+    renderWithProviders(<ToolImportDialog open={true} onClose={vi.fn()} onDone={vi.fn()} />);
+
+    fireEvent.change(screen.getByLabelText(/Definition content/i), {
+      target: { value: sampleOpenApi },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Preview$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('getUsers')).toBeTruthy();
+    });
+
+    fireEvent.change(screen.getByLabelText(/Tool name/i), {
+      target: { value: 'renamed_tool' },
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText('getUsers')).toBeNull();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /^Preview$/i }));
+
+    await waitFor(() => {
+      expect(previewSpy).toHaveBeenCalledTimes(2);
+    });
+    expect(previewSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({ name: 'renamed_tool' }),
+    );
   });
 });

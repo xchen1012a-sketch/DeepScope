@@ -219,12 +219,23 @@ public class AdvisorConfiguration {
     }
 
     @Bean
+    public io.deepscope.advisor.tool.KeyProvider toolKeyProvider(
+            ObjectMapper advisorObjectMapper,
+            io.deepscope.advisor.tool.ToolProperties toolProperties) {
+        return io.deepscope.advisor.tool.LocalKeyringProvider.from(
+                advisorObjectMapper,
+                toolProperties.credentialKeys(),
+                toolProperties.credentialKey(),
+                toolProperties.credentialActiveKey());
+    }
+
+    @Bean
     public io.deepscope.advisor.tool.ToolCredentialStore toolCredentialStore(
             DataSource dataSource,
             ObjectMapper advisorObjectMapper,
-            io.deepscope.advisor.tool.ToolProperties toolProperties) {
+            io.deepscope.advisor.tool.KeyProvider toolKeyProvider) {
         return new io.deepscope.advisor.tool.ToolCredentialStore(
-                advisorObjectMapper, toolProperties.credentialKey(), dataSource);
+                advisorObjectMapper, toolKeyProvider, dataSource);
     }
 
     @Bean

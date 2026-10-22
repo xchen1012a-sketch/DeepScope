@@ -21,13 +21,25 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 /**
  * Tool catalog settings.
  *
- * <p>The credential key is the deployment's, not the app's: without it a tool that needs
- * credentials cannot be saved, while tools that need none keep working.
+ * <p>The keyring is the deployment's, not the app's: without it a tool that needs credentials cannot
+ * be saved, while tools that need none keep working. {@code credentialKeys} maps key ids to base64
+ * keys so a rotation can keep the previous version available while new data keys are wrapped under
+ * the active one. The single {@code credentialKey} form remains for one-key deployments.
  */
 @ConfigurationProperties(prefix = "advisor.tools")
-public record ToolProperties(@DefaultValue("") String credentialKey) {
+public record ToolProperties(
+        @DefaultValue("") String credentialKey,
+        @DefaultValue("") String credentialKeys,
+        @DefaultValue("") String credentialActiveKey) {
+
     @Override
     public String toString() {
-        return "ToolProperties[credentialKey=" + (credentialKey.isBlank() ? "unset" : "set") + "]";
+        return "ToolProperties[credentialKey="
+                + (credentialKey.isBlank() ? "unset" : "set")
+                + ", credentialKeys="
+                + (credentialKeys.isBlank() ? "unset" : "set")
+                + ", credentialActiveKey="
+                + (credentialActiveKey.isBlank() ? "unset" : credentialActiveKey)
+                + "]";
     }
 }

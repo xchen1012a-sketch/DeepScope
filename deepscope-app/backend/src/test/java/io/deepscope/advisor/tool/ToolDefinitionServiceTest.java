@@ -660,6 +660,46 @@ class ToolDefinitionServiceTest {
                                 + "\"}],\"paths\":{\"/first\":{\"get\":{\"operationId\":\"first\"}},\"/second\":{\"get\":{\"operationId\":\"second\"}}}}"));
     }
 
+    @Test
+    void typedNameAndDescriptionOverrideTheImportedDefinition() throws Exception {
+        var request = body("original");
+        request.put("name", "deepseek_web_search");
+        request.put("description", "Search the web");
+        var created = service.importTools("owner", false, request, null).get(0);
+        assertEquals("deepseek_web_search", created.name());
+        assertEquals("Search the web\noriginal", created.description());
+    }
+
+    @Test
+    void aSingleOperationTakesTheTypedName() throws Exception {
+        var request = new LinkedHashMap<String, Object>();
+        request.put("kind", "openapi");
+        request.put("address", base);
+        request.put("permission", "allow");
+        request.put(
+                "content",
+                "{\"openapi\":\"3.0.0\",\"paths\":{\"/only\":{\"get\":{\"operationId\":\"onlyOp\",\"summary\":\"Only\"}}}}");
+        request.put("name", "typed_only");
+        request.put("description", "Typed purpose");
+        var preview = service.preview("owner", false, request);
+        assertEquals(1, preview.size());
+        assertEquals("typed_only", preview.get(0).get("name"));
+        assertEquals("Typed purpose\nOnly", preview.get(0).get("description"));
+    }
+
+    @Test
+    void severalOperationsKeepTheirOwnNamesAndShareTheTypedDescription() throws Exception {
+        var request = batchBody();
+        request.put("name", "ignored_name");
+        request.put("description", "Shared purpose");
+        var preview = service.preview("owner", false, request);
+        assertEquals(2, preview.size());
+        assertEquals("first", preview.get(0).get("name"));
+        assertEquals("second", preview.get(1).get("name"));
+        assertEquals("Shared purpose", preview.get(0).get("description"));
+        assertEquals("Shared purpose", preview.get(1).get("description"));
+    }
+
     private int count(String table) throws SQLException {
         try (var c = source.getConnection();
                 var s = c.createStatement();

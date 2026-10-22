@@ -57,11 +57,17 @@ import {
   type ToolPermission,
 } from '@/api/tool';
 import { McpChangesDialog } from './components/McpChangesDialog';
+import { McpConnectionFields } from './components/McpConnectionFields';
 import { McpEditorDialog } from './components/McpEditorDialog';
 import { ToolDeleteDialog, type ToolDeleteTarget } from './components/ToolDeleteDialog';
 import { ToolEditorPanel } from './components/ToolEditorPanel';
 import { ToolImportDialog } from './components/ToolImportDialog';
 import { ToolTestPanel } from './components/ToolTestPanel';
+import {
+  emptyMcpConnection,
+  toMcpConfigText,
+  type McpConnectionValues,
+} from './mcpConnection';
 
 type PageType = 'catalog' | 'mcp';
 
@@ -621,11 +627,16 @@ function ServerTable({
 
 function ConnectDialog({ open, onClose, onDone }: { open: boolean; onClose: () => void; onDone: () => void }) {
   const { t } = useTranslation();
-  const [text, setText] = useState('');
+  const [values, setValues] = useState<McpConnectionValues>(emptyMcpConnection);
+  const [pasted, setPasted] = useState('');
+  const [pasteMode, setPasteMode] = useState(true);
   const [pending, setPending] = useState<McpServer[] | null>(null);
   const [chosen, setChosen] = useState<Record<string, ToolPermission>>({});
   const connect = useMutation({
-    mutationFn: connectMcp,
+    mutationFn: async () => {
+      const text = pasteMode ? pasted.trim() : toMcpConfigText(values);
+      return connectMcp(text);
+    },
     onSuccess: (servers) => {
       setPending(servers);
       const next: Record<string, ToolPermission> = {};
@@ -648,7 +659,9 @@ function ConnectDialog({ open, onClose, onDone }: { open: boolean; onClose: () =
       onDone();
       onClose();
       setPending(null);
-      setText('');
+      setPasted('');
+      setValues(emptyMcpConnection);
+      setPasteMode(true);
     },
   });
   return (
@@ -661,14 +674,35 @@ function ConnectDialog({ open, onClose, onDone }: { open: boolean; onClose: () =
         <DialogBody className="max-h-[60vh] space-y-3 overflow-y-auto">
           {pending == null ? (
             <>
-              <Textarea
-                rows={8}
-                aria-label={t('tool.mcpPaste')}
-                value={text}
-                onChange={(event) => setText(event.target.value)}
-                placeholder={t('tool.mcpExampleConfig')}
-                className="font-mono text-xs"
-              />
+              {pasteMode ? (
+                <Textarea
+                  rows={8}
+                  aria-label={t('tool.mcpPaste')}
+                  value={pasted}
+                  onChange={(event) => setPasted(event.target.value)}
+                  placeholder={t('tool.mcpExampleConfig')}
+                  className="font-mono text-xs"
+                />
+              ) : (
+                <McpConnectionFields
+                  values={values}
+                  onChange={setValues}
+                  disabled={connect.isPending}
+                  idPrefix="mcp-new"
+                  showName
+                />
+              )}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setPasteMode((current) => !current)}
+                disabled={connect.isPending}
+              >
+                {pasteMode
+                  ? t('tool.mcpEditor.useFields', '改用分项表单')
+                  : t('tool.mcpEditor.usePaste', '粘贴配置')}
+              </Button>
             </>
           ) : (
             pending.map((server) => (
@@ -676,9 +710,10 @@ function ConnectDialog({ open, onClose, onDone }: { open: boolean; onClose: () =
                 <p className="text-sm font-medium">{server.name}</p>
                 {server.status === 'error' ? <p className="text-sm text-red-700">{server.statusMessage || t('tool.connectError')}</p> : null}
                 {(server.discovered ?? []).map((tool: DiscoveredTool) => (
-                  <label key={tool.name} className="flex items-center gap-2 text-sm">
+                  <label key={tool.name} className="flex items-start gap-2 text-sm">
                     <input
                       type="checkbox"
+                      className="mt-1"
                       checked={Boolean(chosen[`${server.serverId}:${tool.name}`])}
                       onChange={(event) =>
                         setChosen((current) => {
@@ -689,11 +724,18 @@ function ConnectDialog({ open, onClose, onDone }: { open: boolean; onClose: () =
                         })
                       }
                     />
-                    <span className="flex-1">{tool.name}</span>
-                    <PermissionSelect
-                      value={chosen[`${server.serverId}:${tool.name}`] ?? 'ask'}
-                      onChange={(permission) => setChosen((current) => ({ ...current, [`${server.serverId}:${tool.name}`]: permission }))}
-                    />
+                    <span className="flex-1">
+                      <span className="block font-medium text-slate-800">{tool.name}</span>
+                      {tool.description ? (
+                        <span className="mt-0.5 block text-xs text-slate-500">{tool.description}</span>
+                      ) : null}
+                    </span>
+                    <span className="mt-0.5">
+                      <PermissionSelect
+                        value={chosen[`${server.serverId}:${tool.name}`] ?? 'ask'}
+                        onChange={(permission) => setChosen((current) => ({ ...current, [`${server.serverId}:${tool.name}`]: permission }))}
+                      />
+                    </span>
                   </label>
                 ))}
               </div>
@@ -704,7 +746,19 @@ function ConnectDialog({ open, onClose, onDone }: { open: boolean; onClose: () =
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>{t('chat.cancel')}</Button>
           {pending == null ? (
-            <Button disabled={!text.trim() || connect.isPending} onClick={() => connect.mutate(text)}>{t('tool.connect')}</Button>
+            <Button
+              disabled={
+                connect.isPending ||
+                (pasteMode
+                  ? !pasted.trim()
+                  : values.transport === 'stdio'
+                    ? !values.command.trim()
+                    : !values.url.trim())
+              }
+              onClick={() => connect.mutate()}
+            >
+              {t('tool.connect')}
+            </Button>
           ) : (
             <Button disabled={approve.isPending} onClick={() => approve.mutate()}>{t('tool.approve')}</Button>
           )}

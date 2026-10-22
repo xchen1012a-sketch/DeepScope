@@ -57,7 +57,11 @@ export ADVISOR_ADMIN_PASSWORD='<初始管理员密码>'
 
 如使用环境配置的默认对话模型，再设置 `MODEL_API_KEY`、`MODEL_BASE_URL` 和 `ADVISOR_MODEL`。模型也可在工作台的模型设置中管理。
 
-需要保存工具凭据时，配置 `ADVISOR_TOOL_CREDENTIAL_KEY`，其值为 Base64 编码的 32 字节密钥，并保持稳定。PDF 图片识别与重排模型在配置后启用。
+需要保存工具凭据时，配置 `ADVISOR_TOOL_CREDENTIAL_KEY`，其值为 Base64 编码的 32 字节密钥，并保持稳定。
+
+工具凭据采用信封加密：每条凭据有自己的数据密钥，数据密钥再由这份根密钥包裹。轮换根密钥时，用 `ADVISOR_TOOL_CREDENTIAL_KEYS`（JSON：`{"v2":"<base64>","local-v1":"<base64>"}`）同时提供新旧版本，并把 `ADVISOR_TOOL_CREDENTIAL_ACTIVE_KEY` 指向新版本（单密钥模式使用的版本号是 `local-v1`）；旧版本保留到所有凭据重新包裹完成即可。旧版本密钥缺失时，对应凭据会被报告为无法解密，界面会要求重新录入，而不是继续发出无鉴权请求。
+
+PDF 图片识别与重排模型在配置后启用。
 
 完整配置见 [application.yaml](deepscope-app/backend/src/main/resources/application.yaml)。本地密钥、数据库、上传文件与运行日志不纳入版本管理。
 

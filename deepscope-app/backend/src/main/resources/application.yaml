@@ -35,9 +35,14 @@ advisor:
   # Runtime files (seeded workspace, agent session state) stay under this directory.
   data-dir: deepscope-app/data
   tools:
-    # Base64-encoded 32-byte key that encrypts saved tool credentials. Without it, tools that
-    # need credentials cannot be saved; tools that need none keep working.
+    # Base64-encoded 32-byte root key. It wraps each credential's own data key, so changing it
+    # never rewrites the stored secrets. Without any key, tools that need credentials cannot be
+    # saved; tools that need none keep working.
     credential-key: ${ADVISOR_TOOL_CREDENTIAL_KEY:}
+    # Optional versioned keyring: {"v2":"<base64>","v1":"<base64>"}. Use it to rotate without
+    # breaking stored credentials: keep the old version until every credential is re-wrapped.
+    credential-keys: ${ADVISOR_TOOL_CREDENTIAL_KEYS:}
+    credential-active-key: ${ADVISOR_TOOL_CREDENTIAL_ACTIVE_KEY:}
   embedding:
     # Empty until a vector model is connected. The chat model is not used.
     provider: ${ADVISOR_EMBEDDING_PROVIDER:}

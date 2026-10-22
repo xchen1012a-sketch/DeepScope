@@ -27,6 +27,7 @@ import io.deepscope.advisor.tool.ToolCatalog;
 import io.deepscope.advisor.tool.ToolCredentialStore;
 import io.deepscope.advisor.tool.ToolHttpExecutor;
 import io.deepscope.advisor.tool.ToolPermissions;
+import io.deepscope.advisor.tool.ToolProblem;
 import io.deepscope.core.agui.registry.AguiAgentRegistry;
 import io.deepscope.core.model.Model;
 import io.deepscope.core.state.JsonFileAgentStateStore;
@@ -331,10 +332,18 @@ public class AgentProvisioner implements ApplicationRunner {
                         () -> {
                             String credId = ToolAuth.credentialId(tool.configJson());
                             if (credId == null || credentials == null) return null;
+                            // Never fall back to an anonymous request: a credential that cannot be
+                            // read must fail the tool call with an actionable error instead of
+                            // letting the remote service answer 401.
                             try {
                                 return credentials.read(tool.ownerUserId(), credId);
+                            } catch (ToolProblem error) {
+                                throw error;
                             } catch (Exception error) {
-                                return null;
+                                throw new ToolProblem(
+                                        422,
+                                        "credential_unreadable",
+                                        "The saved credential cannot be read; enter it again");
                             }
                         };
                 Runnable preflight = () -> new CatalogExecutionGuard(catalog).check(tool.toolId());

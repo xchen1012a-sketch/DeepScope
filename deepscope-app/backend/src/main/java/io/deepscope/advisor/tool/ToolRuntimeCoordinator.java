@@ -323,6 +323,24 @@ public class ToolRuntimeCoordinator {
         }
     }
 
+    /** Records a status a background save reached before it could start applying. */
+    public void recordStatus(
+            String ownerUserId, String requestId, String status, String errorMessage) {
+        recordChange(ownerUserId, requestId, status, List.of(), errorMessage);
+    }
+
+    /** Status of one asynchronous save, or null when this deployment keeps no change records. */
+    public Map<String, Object> status(String ownerUserId, String requestId) {
+        ChangeRecord record = findChangeRecord(ownerUserId, requestId);
+        if (record == null) return null;
+        Map<String, Object> view = new LinkedHashMap<>();
+        view.put("requestId", record.requestId());
+        view.put("status", record.status());
+        view.put("impactedAgentIds", record.impactedAgentIds());
+        if (record.errorMessage() != null) view.put("errorMessage", record.errorMessage());
+        return view;
+    }
+
     private ChangeRecord findChangeRecord(String ownerUserId, String requestId) {
         if (dataSource == null) return null;
         String key = "change:" + requestId;

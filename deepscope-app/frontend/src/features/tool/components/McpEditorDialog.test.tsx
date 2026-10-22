@@ -16,6 +16,7 @@
 
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { createInstance } from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -128,8 +129,9 @@ describe('McpEditorDialog', () => {
       <McpEditorDialog server={mockServer} open={true} onClose={onClose} onSaved={onSaved} />,
     );
 
-    const transportSelect = screen.getByLabelText(/Transport/i);
-    fireEvent.change(transportSelect, { target: { value: 'sse' } });
+    const user = userEvent.setup();
+    await user.click(screen.getByLabelText(/Transport/i));
+    await user.click(screen.getByRole('menuitem', { name: 'SSE (HTTP Server-Sent Events)' }));
 
     expect(screen.queryByLabelText(/Command/i)).toBeNull();
 

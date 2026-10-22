@@ -243,4 +243,37 @@ class ToolImportTest {
                                                 "https://example.test"))
                         .code());
     }
+
+    @Test
+    void aTypedNameFillsInForASchemaThatCarriesNone() {
+        var parsed =
+                importer.parseSchema(
+                        "{\"inputSchema\":{\"type\":\"object\"}}",
+                        "https://example.test",
+                        "deepseek_web_search");
+        assertEquals("deepseek_web_search", parsed.get(0).name());
+    }
+
+    @Test
+    void aTypedNameWinsOverTheNameInTheDocument() {
+        var parsed =
+                importer.parseSchema(
+                        "{\"name\":\"from_document\",\"inputSchema\":{\"type\":\"object\"}}",
+                        "https://example.test",
+                        "typed_name");
+        assertEquals("typed_name", parsed.get(0).name());
+    }
+
+    @Test
+    void aSchemaWithoutAnyNameIsReportedAsMissingRatherThanMalformed() {
+        assertEquals(
+                "name_required",
+                assertThrows(
+                                ToolProblem.class,
+                                () ->
+                                        importer.parseSchema(
+                                                "{\"inputSchema\":{\"type\":\"object\"}}",
+                                                "https://example.test"))
+                        .code());
+    }
 }

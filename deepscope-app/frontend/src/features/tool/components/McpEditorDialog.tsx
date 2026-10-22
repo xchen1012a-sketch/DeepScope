@@ -18,7 +18,6 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/input';
 import {
   Dialog,
   DialogBody,
@@ -34,6 +33,13 @@ import {
 } from '@/api/tool';
 import { ApiError } from '@/lib/apiClient';
 import { toolFailure } from '../toolFailure';
+import {
+  parseMcpArgs,
+  parseMcpJsonObject,
+  type McpConnectionValues,
+  type McpTransport,
+} from '../mcpConnection';
+import { McpConnectionFields } from './McpConnectionFields';
 
 export interface McpEditorDialogProps {
   server: McpServer | null;
@@ -44,22 +50,28 @@ export interface McpEditorDialogProps {
 
 export function McpEditorDialog({ server, open, onClose, onSaved }: McpEditorDialogProps) {
   const { t } = useTranslation();
-  const [transport, setTransport] = useState<'stdio' | 'sse' | 'streamable-http'>('stdio');
-  const [command, setCommand] = useState('');
-  const [url, setUrl] = useState('');
-  const [argsText, setArgsText] = useState('');
-  const [envText, setEnvText] = useState('');
-  const [headersText, setHeadersText] = useState('');
+  const [values, setValues] = useState<McpConnectionValues>({
+    name: 'mcp',
+    transport: 'stdio',
+    command: '',
+    url: '',
+    argsText: '',
+    envText: '',
+    headersText: '',
+  });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (open && server) {
-      setTransport((server.transport as 'stdio' | 'sse' | 'streamable-http') || 'stdio');
-      setCommand(server.command ?? '');
-      setUrl(server.url ?? '');
-      setArgsText('');
-      setEnvText('');
-      setHeadersText('');
+      setValues({
+        name: server.name,
+        transport: (server.transport as McpTransport) || 'stdio',
+        command: server.command ?? '',
+        url: server.url ?? '',
+        argsText: '',
+        envText: '',
+        headersText: '',
+      });
       setErrorMsg(null);
     }
   }, [open, server]);
@@ -69,40 +81,24 @@ export function McpEditorDialog({ server, open, onClose, onSaved }: McpEditorDia
       if (!server) return;
       setErrorMsg(null);
 
-      let parsedArgs: string[] | undefined;
-      if (argsText.trim()) {
-        try {
-          parsedArgs = JSON.parse(argsText);
-        } catch {
-          parsedArgs = argsText.split(/\s+/).filter(Boolean);
-        }
-      }
+      const parsedArgs = parseMcpArgs(values.argsText);
 
       let parsedEnv: Record<string, string> | undefined;
-      if (envText.trim()) {
-        try {
-          parsedEnv = JSON.parse(envText);
-        } catch {
-          throw new Error(t('tool.errors.invalid_mcp_config'));
-        }
-      }
-
       let parsedHeaders: Record<string, string> | undefined;
-      if (headersText.trim()) {
-        try {
-          parsedHeaders = JSON.parse(headersText);
-        } catch {
-          throw new Error(t('tool.errors.invalid_mcp_config'));
-        }
+      try {
+        parsedEnv = parseMcpJsonObject(values.envText);
+        parsedHeaders = parseMcpJsonObject(values.headersText);
+      } catch {
+        throw new Error(t('tool.errors.invalid_mcp_config'));
       }
 
       return await updateMcpServer(
         server.serverId,
         {
           name: server.name,
-          transport,
-          command: transport === 'stdio' ? command : undefined,
-          url: transport !== 'stdio' ? url : undefined,
+          transport: values.transport,
+          command: values.transport === 'stdio' ? values.command : undefined,
+          url: values.transport !== 'stdio' ? values.url : undefined,
           args: parsedArgs,
           env: parsedEnv,
           headers: parsedHeaders,
@@ -133,103 +129,12 @@ export function McpEditorDialog({ server, open, onClose, onSaved }: McpEditorDia
         </DialogHeader>
 
         <DialogBody className="max-h-[70vh] space-y-4 overflow-y-auto">
-          {/* Transport Select */}
-          <div>
-            <label className="mb-1.5 block text-[13px] font-medium text-slate-700" htmlFor="mcp-edit-transport">
-              {t('tool.mcpEditor.transport', '传输协议')}
-            </label>
-            <select
-              id="mcp-edit-transport"
-              className="w-full rounded-lg border border-border px-2 py-2 text-sm"
-              value={transport}
-              onChange={(e) => setTransport(e.target.value as 'stdio' | 'sse' | 'streamable-http')}
-              disabled={saveMutation.isPending}
-            >
-              <option value="stdio">stdio (本地命令)</option>
-              <option value="sse">SSE (HTTP Server-Sent Events)</option>
-              <option value="streamable-http">Streamable HTTP</option>
-            </select>
-          </div>
-
-          {/* Stdio: Command and Args */}
-          {transport === 'stdio' ? (
-            <>
-              <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-slate-700" htmlFor="mcp-edit-command">
-                  {t('tool.mcpEditor.command', '启动命令')}
-                </label>
-                <input
-                  id="mcp-edit-command"
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm font-mono"
-                  value={command}
-                  onChange={(e) => setCommand(e.target.value)}
-                  placeholder="npx, python, uvx..."
-                  disabled={saveMutation.isPending}
-                />
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-slate-700" htmlFor="mcp-edit-args">
-                  {t('tool.mcpEditor.args', '命令参数 (空格分隔或 JSON 数组)')}
-                </label>
-                <input
-                  id="mcp-edit-args"
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm font-mono"
-                  value={argsText}
-                  onChange={(e) => setArgsText(e.target.value)}
-                  placeholder='-y @modelcontextprotocol/server-filesystem /tmp'
-                  disabled={saveMutation.isPending}
-                />
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-slate-700" htmlFor="mcp-edit-env">
-                  {t('tool.mcpEditor.env', '环境变量 (可选 JSON 对象)')}
-                </label>
-                <Textarea
-                  id="mcp-edit-env"
-                  rows={3}
-                  value={envText}
-                  onChange={(e) => setEnvText(e.target.value)}
-                  placeholder='{"DEBUG": "true"}'
-                  disabled={saveMutation.isPending}
-                  className="font-mono text-xs"
-                />
-              </div>
-            </>
-          ) : (
-            /* SSE / HTTP: URL and Headers */
-            <>
-              <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-slate-700" htmlFor="mcp-edit-url">
-                  {t('tool.mcpEditor.url', '服务 URL')}
-                </label>
-                <input
-                  id="mcp-edit-url"
-                  className="w-full rounded-lg border border-border px-3 py-2 text-sm font-mono"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="http://localhost:8080/sse"
-                  disabled={saveMutation.isPending}
-                />
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-slate-700" htmlFor="mcp-edit-headers">
-                  {t('tool.mcpEditor.headers', '请求头 (可选 JSON 对象)')}
-                </label>
-                <Textarea
-                  id="mcp-edit-headers"
-                  rows={3}
-                  value={headersText}
-                  onChange={(e) => setHeadersText(e.target.value)}
-                  placeholder='{"Authorization": "Bearer token"}'
-                  disabled={saveMutation.isPending}
-                  className="font-mono text-xs"
-                />
-              </div>
-            </>
-          )}
+          <McpConnectionFields
+            values={values}
+            onChange={setValues}
+            disabled={saveMutation.isPending}
+            idPrefix="mcp-edit"
+          />
 
           {/* Error Message */}
           {errorMsg ? (
@@ -247,7 +152,7 @@ export function McpEditorDialog({ server, open, onClose, onSaved }: McpEditorDia
             onClick={() => saveMutation.mutate()}
             disabled={
               saveMutation.isPending ||
-              (transport === 'stdio' ? !command.trim() : !url.trim())
+              (values.transport === 'stdio' ? !values.command.trim() : !values.url.trim())
             }
           >
             {saveMutation.isPending

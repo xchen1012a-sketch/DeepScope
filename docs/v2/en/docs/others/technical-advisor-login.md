@@ -195,6 +195,10 @@ HTTP and MCP tools share a test dialog with a fixed-height, internally scrollabl
 
 AI autofill uses the configured model to suggest arguments from the saved tool name, description and schema. It never executes the tool or loads its credentials. Input and Run are locked during generation. Success fills editable JSON; running remains an explicit action. Failure shows an error without replacing the previous input. Closing or changing tools prevents stale results from overwriting new input. Execution failures show an error while retaining redacted diagnostics.
 
+The import dialog offers a tool name and a tool description, and both fall back to the values in the definition when left empty. The description is the only thing that tells the model what a tool is for, so a tool imported without one reaches the model as its bare name. A definition holding several operations keeps the names the definition carries so they stay unique, and the description becomes a shared prefix across them. Tool names accept letters, digits, underscores and hyphens; a missing name and a name with nothing usable in it are reported separately.
+
+Connecting an MCP service pastes a configuration by default, using the same command or config block text as before; a form can be used instead, asking for the service name, the transport, and either the start command with its arguments and environment or the service URL with its headers. Once connected, every reported tool is listed with its name and description so each one can be approved on its own.
+
 The test control endpoint uses POST, while target calls follow the tool's saved method and parameter mappings; MCP calls retain their protocol. An omitted optional confirmed field means unconfirmed, avoiding a primitive-boolean JSON parse error and its 400 response. Existing execution approval remains enforced.
 
 Tools and MCP tools share the tool table; skills remain in their own table. Draft and unavailable resources remain stored for management. Tools, MCP servers and skills are visible only to their creator, including for administrators and capability selectors.

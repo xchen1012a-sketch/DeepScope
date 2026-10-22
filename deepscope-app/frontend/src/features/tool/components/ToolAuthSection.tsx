@@ -17,6 +17,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
+import { AppSelect } from '@/components/ui/select';
 import type { ToolAuthConfig, ToolAuthAction, ToolAuthType } from '@/api/tool';
 
 export interface ToolAuthSectionProps {
@@ -109,56 +110,59 @@ export function ToolAuthSection({
 
       {isEdit ? (
         <div>
-          <label className="mb-1 block text-[12.5px] font-medium text-slate-600" htmlFor="tool-auth-action">
+          <label className="mb-1 block text-[12.5px] font-medium text-slate-600">
             {t('tool.auth.action')}
           </label>
-          <select
-            id="tool-auth-action"
-            className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm shadow-sm"
+          <AppSelect
+            className="w-full"
+            aria-label={t('tool.auth.action')}
             value={action}
-            onChange={(e) => handleActionChange(e.target.value as ToolAuthAction)}
-          >
-            <option value="keep">{t('tool.auth.actionKeep')}</option>
-            <option value="replace">{t('tool.auth.actionReplace')}</option>
-            <option value="clear">{t('tool.auth.actionClear')}</option>
-          </select>
+            onChange={(value) => handleActionChange(value as ToolAuthAction)}
+            options={[
+              { value: 'keep', label: t('tool.auth.actionKeep') },
+              { value: 'replace', label: t('tool.auth.actionReplace') },
+              { value: 'clear', label: t('tool.auth.actionClear') },
+            ]}
+          />
         </div>
       ) : null}
 
       {(!isEdit || action === 'replace') ? (
         <div>
-          <label className="mb-1 block text-[12.5px] font-medium text-slate-600" htmlFor="tool-auth-type">
+          <label className="mb-1 block text-[12.5px] font-medium text-slate-600">
             {t('tool.auth.mode')}
           </label>
-          <select
-            id="tool-auth-type"
-            className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm shadow-sm"
+          <AppSelect
+            className="w-full"
+            aria-label={t('tool.auth.mode')}
             value={authType}
-            onChange={(e) => handleTypeChange(e.target.value as ToolAuthType)}
-          >
-            {!isEdit ? <option value="none">{t('tool.auth.typeNone')}</option> : null}
-            <option value="apiKey">{t('tool.auth.typeApiKey')}</option>
-            <option value="bearer">{t('tool.auth.typeBearer')}</option>
-            <option value="basic">{t('tool.auth.typeBasic')}</option>
-          </select>
+            onChange={(value) => handleTypeChange(value as ToolAuthType)}
+            options={[
+              ...(isEdit ? [] : [{ value: 'none', label: t('tool.auth.typeNone') }]),
+              { value: 'apiKey', label: t('tool.auth.typeApiKey') },
+              { value: 'bearer', label: t('tool.auth.typeBearer') },
+              { value: 'basic', label: t('tool.auth.typeBasic') },
+            ]}
+          />
         </div>
       ) : null}
 
       {showInputs && authType === 'apiKey' ? (
         <div className="space-y-3 pt-1">
           <div>
-            <label className="mb-1 block text-[12.5px] font-medium text-slate-600" htmlFor="tool-auth-apikey-placement">
+            <label className="mb-1 block text-[12.5px] font-medium text-slate-600">
               {t('tool.auth.placement')}
             </label>
-            <select
-              id="tool-auth-apikey-placement"
-              className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm shadow-sm"
+            <AppSelect
+              className="w-full"
+              aria-label={t('tool.auth.placement')}
               value={value?.in ?? 'header'}
-              onChange={(e) => updateField('in', e.target.value)}
-            >
-              <option value="header">{t('tool.auth.placementHeader')}</option>
-              <option value="query">{t('tool.auth.placementQuery')}</option>
-            </select>
+              onChange={(next) => updateField('in', next)}
+              options={[
+                { value: 'header', label: t('tool.auth.placementHeader') },
+                { value: 'query', label: t('tool.auth.placementQuery') },
+              ]}
+            />
           </div>
           <div>
             <label className="mb-1 block text-[12.5px] font-medium text-slate-600" htmlFor="tool-auth-apikey-name">

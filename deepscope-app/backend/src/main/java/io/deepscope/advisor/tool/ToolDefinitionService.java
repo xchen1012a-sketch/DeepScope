@@ -265,10 +265,14 @@ public final class ToolDefinitionService {
                 body.containsKey("addressOverride")
                         ? text(body, "addressOverride")
                         : text(body, "address");
+        String nameOverride = text(body, "name");
+        String descriptionOverride = text(body, "description");
         List<ToolImport.ImportedTool> definitions =
                 "schema".equals(kind)
-                        ? importer.parseSchema(content, address)
+                        ? importer.parseSchema(content, address, nameOverride)
                         : importer.parseOpenApi(content, address);
+        definitions =
+                overridden(definitions, nameOverride, descriptionOverride, "schema".equals(kind));
         String boundId =
                 body.containsKey("boundToolId")
                         ? text(body, "boundToolId")
@@ -331,6 +335,52 @@ public final class ToolDefinitionService {
             candidates.add(new Candidate(definition, sourceId, operationId));
         }
         return candidates;
+    }
+
+    /**
+     * Applies the name and description typed in the import form.
+     *
+     * <p>A single operation takes the typed name, so the tool reaches the model under the name the
+     * user chose. Several operations keep the names their definition carries, because those names
+     * have to stay unique; the typed description becomes a shared prefix instead, so every tool in
+     * the group still carries what the tool is for.
+     *
+     * @param definitions the parsed definitions
+     * @param nameOverride the typed name, or null when none was typed
+     * @param descriptionOverride the typed description, or null when none was typed
+     * @param schemaMode whether the definition came from a bare schema
+     * @return the definitions with the typed values applied
+     */
+    private List<ToolImport.ImportedTool> overridden(
+            List<ToolImport.ImportedTool> definitions,
+            String nameOverride,
+            String descriptionOverride,
+            boolean schemaMode) {
+        if (nameOverride == null && descriptionOverride == null) return definitions;
+        boolean single = definitions.size() == 1;
+        List<ToolImport.ImportedTool> result = new ArrayList<>();
+        for (var definition : definitions) {
+            String name = definition.name();
+            if (single && nameOverride != null && !schemaMode)
+                name = ToolImport.normalizeName(nameOverride);
+            String description = definition.description();
+            if (descriptionOverride != null)
+                description =
+                        description == null || description.isBlank()
+                                ? descriptionOverride
+                                : descriptionOverride + "\n" + description;
+            result.add(
+                    new ToolImport.ImportedTool(
+                            name,
+                            description,
+                            definition.inputSchema(),
+                            definition.origin(),
+                            definition.httpMethod(),
+                            definition.httpUrl(),
+                            definition.configJson(),
+                            definition.mcpServerId()));
+        }
+        return result;
     }
 
     private List<Decision> select(List<Candidate> candidates, Map<String, Object> body) {

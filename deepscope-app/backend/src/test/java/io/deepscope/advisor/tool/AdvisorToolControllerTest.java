@@ -558,6 +558,119 @@ class AdvisorToolControllerTest {
                 .andExpect(jsonPath("$.hasCredential").value(true));
     }
 
+    @Test
+    void renamingSucceedsEvenWhenTheStoredCredentialIsUnreadable() throws Exception {
+        var response =
+                mvc.perform(
+                                post("/api/advisor/tools/import")
+                                        .requestAttr(AccountStore.Account.class.getName(), account)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(
+                                                importBody(
+                                                        guardedAddress,
+                                                        Map.of("type", "bearer", "value", TOKEN))))
+                        .andReturn()
+                        .getResponse();
+        var imported = json.readTree(response.getContentAsString()).get(0).path("toolId").asText();
+        // The stored credential is now undecryptable; a metadata-only edit must not read it.
+        try (var connection = source.getConnection();
+                var statement =
+                        connection.prepareStatement("DELETE FROM advisor_tool_credentials")) {
+            statement.executeUpdate();
+        }
+
+        mvc.perform(
+                        patch("/api/advisor/tools/" + imported)
+                                .requestAttr(AccountStore.Account.class.getName(), account)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        json.writeValueAsString(
+                                                Map.of(
+                                                        "name",
+                                                        "guarded_renamed",
+                                                        "httpUrl",
+                                                        guardedAddress,
+                                                        "httpMethod",
+                                                        "POST",
+                                                        "inputSchema",
+                                                        "{\"type\":\"object\"}",
+                                                        "permission",
+                                                        "ask",
+                                                        "auth",
+                                                        Map.of("action", "keep")))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("guarded_renamed"));
+    }
+
+    @Test
+    void anAsyncSaveReturnsBeforeVerificationAndReportsTheResult() throws Exception {
+        var coordinator = new ToolRuntimeCoordinator(catalog, agentStore, null, source, json);
+        var controller =
+                new AdvisorToolController(
+                        catalog,
+                        mcp,
+                        agentStore,
+                        null,
+                        json,
+                        new AccessGuard(new AccessCatalog(source)),
+                        new ToolCredentialStore(json, CREDENTIAL_KEY, source),
+                        new McpUpdateService(catalog, mcp, json),
+                        coordinator);
+        var asyncMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        var tool =
+                catalog.importTools(
+                                "owner",
+                                List.of(
+                                        new ToolImport.ImportedTool(
+                                                "weather", "Weather", "{}", "http", "GET",
+                                                address)),
+                                "ask")
+                        .get(0);
+
+        var response =
+                asyncMvc.perform(
+                                patch("/api/advisor/tools/" + tool.toolId())
+                                        .param("async", "true")
+                                        .requestAttr(AccountStore.Account.class.getName(), account)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(
+                                                json.writeValueAsString(
+                                                        Map.of(
+                                                                "name",
+                                                                "weather_async",
+                                                                "httpUrl",
+                                                                address,
+                                                                "httpMethod",
+                                                                "GET",
+                                                                "inputSchema",
+                                                                "{}",
+                                                                "permission",
+                                                                "ask"))))
+                        .andExpect(status().isAccepted())
+                        .andExpect(jsonPath("$.requestId").exists())
+                        .andReturn()
+                        .getResponse();
+        var requestId = json.readTree(response.getContentAsString()).path("requestId").asText();
+
+        String state = "pending";
+        long deadline = System.currentTimeMillis() + 5000;
+        while (System.currentTimeMillis() < deadline) {
+            var statusResponse =
+                    asyncMvc.perform(
+                                    get("/api/advisor/tool-changes/" + requestId)
+                                            .requestAttr(
+                                                    AccountStore.Account.class.getName(), account))
+                            .andReturn()
+                            .getResponse();
+            if (statusResponse.getStatus() == 200) {
+                state = json.readTree(statusResponse.getContentAsString()).path("status").asText();
+                if (!"pending".equals(state) && !"running".equals(state)) break;
+            }
+            Thread.sleep(50);
+        }
+        assertEquals("applied", state);
+    }
+
     private String importBody(String endpoint, Map<String, String> auth) throws Exception {
         Map<String, Object> body = new java.util.LinkedHashMap<>();
         body.put("kind", "schema");

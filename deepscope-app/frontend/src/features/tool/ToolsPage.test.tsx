@@ -16,6 +16,7 @@
 
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { createInstance } from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -343,6 +344,85 @@ describe('ToolsPage', () => {
       expect(
         screen.getByText(/Are you sure you want to delete tool "SearchTool"\?/i),
       ).toBeTruthy();
+    });
+  });
+
+  it('shows the description of every discovered MCP tool before approving it', async () => {
+    const connectSpy = vi.spyOn(toolApi, 'connectMcp').mockResolvedValue([
+      {
+        serverId: 'srv-new',
+        name: 'DocsMcp',
+        transport: 'http',
+        command: null,
+        url: 'https://mcp.example.com/sse',
+        status: 'connected',
+        statusMessage: '',
+        ownerUserId: 'user-1',
+        hasSecrets: false,
+        toolCount: 1,
+        tools: ['search_docs'],
+        revision: 1,
+        discovered: [
+          {
+            name: 'search_docs',
+            description: 'Search the documentation index',
+            inputSchema: '{}',
+          },
+        ],
+      },
+    ]);
+
+    renderToolsPage();
+
+    const user = userEvent.setup();
+    fireEvent.click(screen.getByRole('tab', { name: 'MCP' }));
+    fireEvent.click(screen.getByRole('button', { name: /Connect MCP/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Use the form fields/i }));
+
+    fireEvent.change(screen.getByLabelText(/Service name/i), {
+      target: { value: 'docs_mcp' },
+    });
+    await user.click(screen.getByLabelText(/Transport/i));
+    await user.click(screen.getByRole('menuitem', { name: 'Streamable HTTP' }));
+    fireEvent.change(screen.getByLabelText(/Server URL/i), {
+      target: { value: 'https://mcp.example.com/sse' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /^Connect$/i }));
+
+    await waitFor(() => {
+      expect(connectSpy).toHaveBeenCalledTimes(1);
+    });
+    expect(connectSpy).toHaveBeenCalledWith(
+      JSON.stringify({
+        name: 'docs_mcp',
+        url: 'https://mcp.example.com/sse',
+        transport: 'http',
+      }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('search_docs')).toBeTruthy();
+    });
+    expect(screen.getByText('Search the documentation index')).toBeTruthy();
+  });
+
+  it('connects from a pasted configuration by default', async () => {
+    const connectSpy = vi.spyOn(toolApi, 'connectMcp').mockResolvedValue([]);
+
+    renderToolsPage();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'MCP' }));
+    fireEvent.click(screen.getByRole('button', { name: /Connect MCP/i }));
+
+    fireEvent.change(screen.getByLabelText(/Paste a command or config/i), {
+      target: { value: '{"url":"https://mcp.example.com/sse"}' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /^Connect$/i }));
+
+    await waitFor(() => {
+      expect(connectSpy).toHaveBeenCalledWith('{"url":"https://mcp.example.com/sse"}');
     });
   });
 });

@@ -29,7 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
-/** A stored secret comes back only to the owner who saved it, and only with the deployment key. */
+/** A stored secret comes back only to the owner who saved it, and only with a usable key version. */
 class ToolCredentialStoreTest {
 
     private static final String KEY = "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=";
@@ -61,6 +61,7 @@ class ToolCredentialStoreTest {
 
         assertEquals(SECRET, store.read("owner", pending.id()));
         assertFalse(storedCiphertext(pending.id()).contains("s3cret"));
+        assertEquals(LocalKeyringProvider.LEGACY_KEY_ID, storedKeyId(pending.id()));
     }
 
     @Test
@@ -86,7 +87,7 @@ class ToolCredentialStoreTest {
         var other = new ToolCredentialStore(json, OTHER_KEY, source);
 
         assertEquals(
-                "credential_missing",
+                "credential_unreadable",
                 assertThrows(ToolProblem.class, () -> other.read("owner", pending.id())).code());
     }
 
@@ -100,11 +101,63 @@ class ToolCredentialStoreTest {
                 assertThrows(ToolProblem.class, () -> store.read("intruder", pending.id())).code());
     }
 
+    @Test
+    void aSecretSurvivesARotationBecauseItsDataKeyCarriesTheKeyVersion() throws Exception {
+        var v1 = new LocalKeyringProvider(Map.of("v1", KEY), "v1");
+        var before = new ToolCredentialStore(json, v1, source);
+        var pending = before.prepare("owner", SECRET);
+        before.insert(pending);
+
+        var rotated = new LocalKeyringProvider(Map.of("v1", KEY, "v2", OTHER_KEY), "v2");
+        var after = new ToolCredentialStore(json, rotated, source);
+
+        assertEquals(SECRET, after.read("owner", pending.id()));
+    }
+
+    @Test
+    void aCredentialFromBeforeEnvelopeEncryptionIsReportedAsUnreadable() throws Exception {
+        String id = UUID.randomUUID().toString();
+        try (var connection = source.getConnection();
+                var insert =
+                        connection.prepareStatement(
+                                "INSERT INTO advisor_tool_credentials (credential_id,"
+                                        + " owner_user_id, ciphertext, nonce, created_at)"
+                                        + " VALUES (?, ?, ?, ?, ?)")) {
+            insert.setString(1, id);
+            insert.setString(2, "owner");
+            insert.setString(3, "AAAA");
+            insert.setString(4, "AAAA");
+            insert.setLong(5, 1L);
+            insert.executeUpdate();
+        }
+
+        assertEquals(
+                "credential_unreadable",
+                assertThrows(ToolProblem.class, () -> store.read("owner", id)).code());
+    }
+
+    @Test
+    void aKeyringThatNamesAMissingActiveVersionIsRejectedAtStartup() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new LocalKeyringProvider(Map.of("v1", KEY), "v2"));
+    }
+
     private String storedCiphertext(String id) throws Exception {
+        return storedColumn(id, "ciphertext");
+    }
+
+    private String storedKeyId(String id) throws Exception {
+        return storedColumn(id, "dek_key_id");
+    }
+
+    private String storedColumn(String id, String column) throws Exception {
         try (var connection = source.getConnection();
                 var statement =
                         connection.prepareStatement(
-                                "SELECT ciphertext FROM advisor_tool_credentials WHERE"
+                                "SELECT "
+                                        + column
+                                        + " FROM advisor_tool_credentials WHERE"
                                         + " credential_id = ?")) {
             statement.setString(1, id);
             try (var rows = statement.executeQuery()) {

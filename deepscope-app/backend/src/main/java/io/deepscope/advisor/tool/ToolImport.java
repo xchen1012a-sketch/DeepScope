@@ -31,6 +31,11 @@ import java.util.Set;
 
 /** Normalizes supported OpenAPI/Schema input; execution availability is checked before saving. */
 public final class ToolImport {
+
+    /** The rule behind {@code invalid_name}, stated once so both call sites explain it. */
+    private static final String NAME_RULE =
+            "A tool name may only contain letters, digits, underscores and hyphens";
+
     private final ObjectMapper json;
 
     public ToolImport(ObjectMapper json) {
@@ -69,10 +74,27 @@ public final class ToolImport {
     }
 
     public List<ImportedTool> parseSchema(String content, String address) {
+        return parseSchema(content, address, null);
+    }
+
+    /**
+     * Parses a bare input schema.
+     *
+     * <p>{@code nameOverride} is the name typed in the import form. It wins over a name carried by
+     * the pasted document, so a user-typed name is enough to describe a tool whose document only
+     * holds parameters.
+     *
+     * @param content the pasted schema document
+     * @param address the execution address, or null for a document-only definition
+     * @param nameOverride the name typed by the user, or null when none was typed
+     * @return the single parsed tool
+     */
+    public List<ImportedTool> parseSchema(String content, String address, String nameOverride) {
         JsonNode root = read(content);
-        String name = text(root, "name");
+        String name = nameOverride;
+        if (name == null) name = text(root, "name");
         if (name == null) name = text(root, "title");
-        if (name == null) throw problem("invalid_name", "A tool name is required");
+        if (name == null) throw problem("name_required", "A tool name is required");
         name = normalizeName(name);
         JsonNode schema =
                 resolve(
@@ -319,7 +341,7 @@ public final class ToolImport {
                         .replaceAll("[^A-Za-z0-9_-]+", "_")
                         .replaceAll("_{2,}", "_")
                         .replaceAll("^_+|_+$", "");
-        if (cleaned.isEmpty()) throw problem("invalid_name", "A tool name is required");
+        if (cleaned.isEmpty()) throw problem("invalid_name", NAME_RULE);
         if (cleaned.length() <= 64) return cleaned;
         String digest = Integer.toHexString(cleaned.hashCode());
         return cleaned.substring(0, 64 - digest.length() - 1) + "_" + digest;

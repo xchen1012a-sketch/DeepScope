@@ -28,53 +28,70 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.sql.DataSource;
 
-/** Immutable encrypted references. The encryption key is supplied by the deployment. */
+/**
+ * Immutable encrypted credentials.
+ *
+ * <p>Each secret is encrypted with its own data key; the data key is wrapped by a {@link
+ * KeyProvider} and stored beside the ciphertext. A database dump alone is useless, and rotating the
+ * root key never requires the user to enter a secret again.
+ */
 public final class ToolCredentialStore {
-    private final byte[] key;
+    private static final int DATA_KEY_BYTES = 32;
+    private static final int NONCE_BYTES = 12;
+    private static final int TAG_BITS = 128;
+
     private final ObjectMapper json;
+    private final KeyProvider keys;
     private final DataSource dataSource;
 
+    /** Single-key construction kept for deployments and tests that still pass one key. */
     public ToolCredentialStore(ObjectMapper json, String encodedKey, DataSource dataSource) {
-        this.json = json;
-        this.dataSource = dataSource;
-        try {
-            key =
-                    encodedKey == null || encodedKey.isBlank()
-                            ? null
-                            : Base64.getDecoder().decode(encodedKey);
-        } catch (IllegalArgumentException error) {
-            throw new IllegalArgumentException("Invalid tool credential key");
-        }
-        if (key != null && key.length != 32)
-            throw new IllegalArgumentException("Tool credential key must contain 32 bytes");
+        this(json, LocalKeyringProvider.from(json, "", encodedKey, null), dataSource);
     }
 
-    public record Pending(String id, String owner, String ciphertext, String nonce) {}
+    public ToolCredentialStore(ObjectMapper json, KeyProvider keys, DataSource dataSource) {
+        this.json = json;
+        this.keys = keys;
+        this.dataSource = dataSource;
+    }
+
+    public record Pending(
+            String id,
+            String owner,
+            String ciphertext,
+            String nonce,
+            String wrappedDek,
+            String keyId) {}
 
     /** Prepares the encrypted row for a caller's transaction; no secret at all means nothing to do. */
     public Pending prepare(String owner, Object secret) {
         if (secret == null) return null;
-        if (key == null)
+        if (keys.activeKeyId() == null)
             throw new ToolProblem(
                     422,
                     "credential_key_required",
-                    "Configure the tool credential encryption key before saving credentials");
+                    "Configure the tool credential key before saving credentials");
         try {
-            byte[] nonce = new byte[12];
-            new SecureRandom().nextBytes(nonce);
             String id = UUID.randomUUID().toString();
+            byte[] dataKey = new byte[DATA_KEY_BYTES];
+            new SecureRandom().nextBytes(dataKey);
+            byte[] nonce = new byte[NONCE_BYTES];
+            new SecureRandom().nextBytes(nonce);
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(
                     Cipher.ENCRYPT_MODE,
-                    new SecretKeySpec(key, "AES"),
-                    new GCMParameterSpec(128, nonce));
+                    new SecretKeySpec(dataKey, "AES"),
+                    new GCMParameterSpec(TAG_BITS, nonce));
             cipher.updateAAD((owner + ":" + id).getBytes(StandardCharsets.UTF_8));
+            byte[] ciphertext = cipher.doFinal(json.writeValueAsBytes(secret));
+            KeyProvider.Wrapped wrapped = keys.wrap(dataKey);
             return new Pending(
                     id,
                     owner,
-                    Base64.getEncoder()
-                            .encodeToString(cipher.doFinal(json.writeValueAsBytes(secret))),
-                    Base64.getEncoder().encodeToString(nonce));
+                    Base64.getEncoder().encodeToString(ciphertext),
+                    Base64.getEncoder().encodeToString(nonce),
+                    Base64.getEncoder().encodeToString(wrapped.value()),
+                    wrapped.keyId());
         } catch (ToolProblem error) {
             throw error;
         } catch (Exception error) {
@@ -102,12 +119,15 @@ public final class ToolCredentialStore {
         try (var s =
                 c.prepareStatement(
                         "INSERT INTO advisor_tool_credentials (credential_id, owner_user_id,"
-                                + " ciphertext, nonce, created_at) VALUES (?, ?, ?, ?, ?)")) {
+                                + " ciphertext, nonce, dek_wrapped, dek_key_id, created_at)"
+                                + " VALUES (?, ?, ?, ?, ?, ?, ?)")) {
             s.setString(1, p.id());
             s.setString(2, p.owner());
             s.setString(3, p.ciphertext());
             s.setString(4, p.nonce());
-            s.setLong(5, System.currentTimeMillis());
+            s.setString(5, p.wrappedDek());
+            s.setString(6, p.keyId());
+            s.setLong(7, System.currentTimeMillis());
             s.executeUpdate();
         }
     }
@@ -121,24 +141,29 @@ public final class ToolCredentialStore {
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> read(Connection c, String owner, String id) throws SQLException {
-        if (key == null)
-            throw new ToolProblem(
-                    422, "credential_key_required", "The credential encryption key is unavailable");
         try (var s =
                 c.prepareStatement(
-                        "SELECT ciphertext, nonce FROM advisor_tool_credentials WHERE"
-                                + " credential_id=? AND owner_user_id=?")) {
+                        "SELECT ciphertext, nonce, dek_wrapped, dek_key_id FROM"
+                                + " advisor_tool_credentials WHERE credential_id=? AND"
+                                + " owner_user_id=?")) {
             s.setString(1, id);
             s.setString(2, owner);
             try (var r = s.executeQuery()) {
                 if (!r.next())
                     throw new ToolProblem(
                             422, "credential_missing", "The saved credential is unavailable");
+                String wrapped = r.getString(3);
+                if (wrapped == null || wrapped.isBlank())
+                    throw new ToolProblem(
+                            422,
+                            "credential_unreadable",
+                            "This credential predates envelope encryption; enter it again");
+                byte[] dataKey = keys.unwrap(r.getString(4), Base64.getDecoder().decode(wrapped));
                 Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
                 cipher.init(
                         Cipher.DECRYPT_MODE,
-                        new SecretKeySpec(key, "AES"),
-                        new GCMParameterSpec(128, Base64.getDecoder().decode(r.getString(2))));
+                        new SecretKeySpec(dataKey, "AES"),
+                        new GCMParameterSpec(TAG_BITS, Base64.getDecoder().decode(r.getString(2))));
                 cipher.updateAAD((owner + ":" + id).getBytes(StandardCharsets.UTF_8));
                 return json.readValue(
                         cipher.doFinal(Base64.getDecoder().decode(r.getString(1))), Map.class);
@@ -147,7 +172,9 @@ public final class ToolCredentialStore {
             throw error;
         } catch (Exception error) {
             throw new ToolProblem(
-                    422, "credential_missing", "The saved credential cannot be decrypted");
+                    422,
+                    "credential_unreadable",
+                    "The saved credential cannot be decrypted; enter it again");
         }
     }
 }

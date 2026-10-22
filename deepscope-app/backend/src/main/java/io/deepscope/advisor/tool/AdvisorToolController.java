@@ -66,6 +66,15 @@ public class AdvisorToolController {
     private final ToolRuntimeCoordinator coordinator;
     private ToolTestInputService testInputs;
 
+    /** Verification and runtime refresh run here so a save never waits on a remote service. */
+    private final java.util.concurrent.ExecutorService saves =
+            java.util.concurrent.Executors.newSingleThreadExecutor(
+                    runnable -> {
+                        var thread = new Thread(runnable, "advisor-tool-save");
+                        thread.setDaemon(true);
+                        return thread;
+                    });
+
     @Autowired(required = false)
     public void setTestInputService(ToolTestInputService service) {
         this.testInputs = service;
@@ -291,6 +300,7 @@ public class AdvisorToolController {
                         || body.containsKey("httpMethod")
                         || body.containsKey("inputSchema")
                         || body.containsKey("auth");
+        boolean async = "true".equalsIgnoreCase(request.getParameter("async"));
         if (editingDefinition) {
             if (boundId != null) {
                 ToolCatalog.ToolRow boundTool = visible(boundId, account);
@@ -315,19 +325,21 @@ public class AdvisorToolController {
                                     "bound_tool_not_found",
                                     "The server for the MCP tool was not found"));
                 }
-                try {
-                    mcp.list(catalog.endpointOf(server));
-                } catch (Exception error) {
-                    log.error(
-                            "MCP service '{}' could not be reached: {}",
-                            server.name(),
-                            error.toString());
-                    String message =
-                            error.getMessage() == null
-                                    ? "MCP connection failed"
-                                    : error.getMessage();
-                    return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
-                            .body(Map.of("code", "connection_failed", "message", message));
+                if (!async) {
+                    try {
+                        mcp.list(catalog.endpointOf(server));
+                    } catch (Exception error) {
+                        log.error(
+                                "MCP service '{}' could not be reached: {}",
+                                server.name(),
+                                error.toString());
+                        String message =
+                                error.getMessage() == null
+                                        ? "MCP connection failed"
+                                        : error.getMessage();
+                        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                                .body(Map.of("code", "connection_failed", "message", message));
+                    }
                 }
                 String name = text(body, "name");
                 if (name == null) name = tool.name();
@@ -356,6 +368,43 @@ public class AdvisorToolController {
                                 ? tool.permission()
                                 : text(body, "permission"),
                         tool.revision())) return problem(conflict());
+                if (async) {
+                    String requestId = java.util.UUID.randomUUID().toString();
+                    var endpoint = catalog.endpointOf(server);
+                    saves.submit(
+                            () -> {
+                                try {
+                                    mcp.list(endpoint);
+                                    applyToolChanges(
+                                            account.userId(),
+                                            List.of(toolId),
+                                            List.of(),
+                                            requestId);
+                                } catch (Exception error) {
+                                    if (coordinator != null)
+                                        coordinator.recordStatus(
+                                                account.userId(),
+                                                requestId,
+                                                "validation_failed",
+                                                "MCP connection failed");
+                                }
+                            });
+                    return ResponseEntity.status(HttpStatus.ACCEPTED)
+                            .body(
+                                    Map.of(
+                                            "requestId",
+                                            requestId,
+                                            "status",
+                                            "pending",
+                                            "tool",
+                                            toolView(
+                                                    catalog.findTool(toolId).orElseThrow(),
+                                                    account.userId(),
+                                                    access.manage(
+                                                            account,
+                                                            io.deepscope.advisor.access.AccessPoints
+                                                                    .TOOL_MANAGE))));
+                }
                 applyToolChanges(account.userId(), List.of(toolId), List.of());
                 return ResponseEntity.ok(
                         toolView(
@@ -384,12 +433,18 @@ public class AdvisorToolController {
                     body.containsKey("inputSchema")
                             ? text(body, "inputSchema")
                             : tool.inputSchema();
+            Object rawAuth = body.get("auth");
+            Map<?, ?> authMap = rawAuth instanceof Map<?, ?> map ? map : null;
+            String authAction = authMap == null ? null : text(authMap, "action");
+            boolean authChanged = authMap != null && !"keep".equals(authAction);
             boolean executionChanged =
-                    body.containsKey("httpUrl")
-                            || body.containsKey("httpMethod")
-                            || body.containsKey("inputSchema")
-                            || body.containsKey("auth");
-            boolean authGiven = body.containsKey("auth");
+                    (body.containsKey("httpUrl")
+                                    && !java.util.Objects.equals(address, tool.httpUrl()))
+                            || (body.containsKey("httpMethod")
+                                    && !java.util.Objects.equals(method, tool.httpMethod()))
+                            || (body.containsKey("inputSchema")
+                                    && !java.util.Objects.equals(schema, tool.inputSchema()))
+                            || authChanged;
             Map<String, Object> secret = null;
             ToolCredentialStore.Pending replacement = null;
             com.fasterxml.jackson.databind.node.ObjectNode configNode;
@@ -406,28 +461,27 @@ public class AdvisorToolController {
                 configNode = json.createObjectNode();
             }
             try {
-                if (authGiven) {
-                    Object rawAuth = body.get("auth");
-                    if (rawAuth instanceof Map<?, ?> authMap) {
-                        String action = text(authMap, "action");
-                        if (action != null) {
-                            if (!java.util.Set.of("keep", "replace", "clear").contains(action)) {
-                                throw new ToolProblem(
-                                        422,
-                                        "invalid_auth",
-                                        "Supported auth actions are keep, replace, or clear");
+                if (authMap != null) {
+                    if (authAction != null) {
+                        if (!java.util.Set.of("keep", "replace", "clear").contains(authAction)) {
+                            throw new ToolProblem(
+                                    422,
+                                    "invalid_auth",
+                                    "Supported auth actions are keep, replace, or clear");
+                        }
+                        switch (authAction) {
+                            case "keep" -> {
+                                // A metadata-only edit must not touch the stored credential at all:
+                                // an unreadable credential is not a reason to refuse renaming a
+                                // tool.
+                                if (executionChanged) secret = readStoredCredential(tool);
                             }
-                            if ("keep".equals(action)) {
-                                String stored = ToolAuth.credentialId(tool.configJson());
-                                secret =
-                                        stored == null
-                                                ? null
-                                                : credentials.read(tool.ownerUserId(), stored);
-                            } else if ("clear".equals(action)) {
+                            case "clear" -> {
                                 configNode.remove("authType");
                                 configNode.remove("credentialId");
                                 secret = null;
-                            } else {
+                            }
+                            default -> {
                                 String type = text(authMap, "type");
                                 if (type == null || "none".equals(type)) {
                                     throw new ToolProblem(
@@ -440,27 +494,26 @@ public class AdvisorToolController {
                                 configNode.put("authType", String.valueOf(secret.get("type")));
                                 configNode.put("credentialId", replacement.id());
                             }
-                        } else {
-                            String type = text(authMap, "type");
-                            if (type == null || "none".equals(type)) {
-                                configNode.remove("authType");
-                                configNode.remove("credentialId");
-                                secret = null;
-                            } else {
-                                secret = ToolAuth.secret(authMap);
-                                replacement = credentials.prepare(tool.ownerUserId(), secret);
-                                configNode.put("authType", String.valueOf(secret.get("type")));
-                                configNode.put("credentialId", replacement.id());
-                            }
                         }
-                    } else if (rawAuth == null) {
-                        configNode.remove("authType");
-                        configNode.remove("credentialId");
-                        secret = null;
+                    } else {
+                        String type = text(authMap, "type");
+                        if (type == null || "none".equals(type)) {
+                            configNode.remove("authType");
+                            configNode.remove("credentialId");
+                            secret = null;
+                        } else {
+                            secret = ToolAuth.secret(authMap);
+                            replacement = credentials.prepare(tool.ownerUserId(), secret);
+                            configNode.put("authType", String.valueOf(secret.get("type")));
+                            configNode.put("credentialId", replacement.id());
+                        }
                     }
-                } else {
-                    String stored = ToolAuth.credentialId(tool.configJson());
-                    secret = stored == null ? null : credentials.read(tool.ownerUserId(), stored);
+                } else if (rawAuth == null && body.containsKey("auth")) {
+                    configNode.remove("authType");
+                    configNode.remove("credentialId");
+                    secret = null;
+                } else if (executionChanged) {
+                    secret = readStoredCredential(tool);
                 }
             } catch (ToolProblem error) {
                 return problem(error);
@@ -483,8 +536,11 @@ public class AdvisorToolController {
                                                 "OPTIONS")
                                         .contains(method.toUpperCase(java.util.Locale.ROOT))))
                     throw new ToolProblem(422, "invalid_method", "Pick a supported HTTP method");
-                if (executionChanged && parsed.httpUrl() != null)
-                    probe.check(ToolAuth.address(address, secret), ToolAuth.headers(secret));
+                Map<String, Object> verificationSecret = secret;
+                if (!async && executionChanged && parsed.httpUrl() != null)
+                    probe.check(
+                            ToolAuth.address(address, verificationSecret),
+                            ToolAuth.headers(verificationSecret));
                 try (Connection connection = catalog.dataSource().getConnection()) {
                     connection.setAutoCommit(false);
                     try {
@@ -516,6 +572,34 @@ public class AdvisorToolController {
                         connection.rollback();
                         throw error;
                     }
+                }
+                if (async) {
+                    String requestId = java.util.UUID.randomUUID().toString();
+                    String probeAddress = parsed.httpUrl() == null ? null : address;
+                    saves.submit(
+                            () ->
+                                    finishSaveAsync(
+                                            account.userId(),
+                                            toolId,
+                                            probeAddress,
+                                            executionChanged,
+                                            verificationSecret,
+                                            requestId));
+                    return ResponseEntity.status(HttpStatus.ACCEPTED)
+                            .body(
+                                    Map.of(
+                                            "requestId",
+                                            requestId,
+                                            "status",
+                                            "pending",
+                                            "tool",
+                                            toolView(
+                                                    catalog.findTool(toolId).orElseThrow(),
+                                                    account.userId(),
+                                                    access.manage(
+                                                            account,
+                                                            io.deepscope.advisor.access.AccessPoints
+                                                                    .TOOL_MANAGE))));
                 }
                 applyToolChanges(account.userId(), List.of(toolId), List.of());
                 return ResponseEntity.ok(
@@ -602,6 +686,7 @@ public class AdvisorToolController {
     @jakarta.annotation.PreDestroy
     public void closeTests() {
         tests.close();
+        saves.shutdown();
     }
 
     @GetMapping("/api/advisor/tools/{toolId}/impact")
@@ -1111,10 +1196,61 @@ public class AdvisorToolController {
         }
     }
 
+    /** Reads the credential an edit keeps, or null when the tool has none. */
+    private Map<String, Object> readStoredCredential(ToolCatalog.ToolRow tool) throws SQLException {
+        String stored = ToolAuth.credentialId(tool.configJson());
+        return stored == null ? null : credentials.read(tool.ownerUserId(), stored);
+    }
+
+    /**
+     * Verifies the saved definition and refreshes the runtime after the response has been sent.
+     *
+     * <p>The save itself is already committed, so a slow or unreachable endpoint becomes a reported
+     * status instead of a request that appears to hang.
+     */
+    private void finishSaveAsync(
+            String ownerUserId,
+            String toolId,
+            String address,
+            boolean verify,
+            Map<String, Object> secret,
+            String requestId) {
+        try {
+            if (verify && address != null)
+                probe.check(ToolAuth.address(address, secret), ToolAuth.headers(secret));
+            applyToolChanges(ownerUserId, List.of(toolId), List.of(), requestId);
+        } catch (ToolProblem error) {
+            if (coordinator != null)
+                coordinator.recordStatus(
+                        ownerUserId, requestId, "validation_failed", error.getMessage());
+        } catch (Exception error) {
+            if (coordinator != null)
+                coordinator.recordStatus(
+                        ownerUserId,
+                        requestId,
+                        "validation_failed",
+                        "The saved tool could not be verified");
+        }
+    }
+
+    @GetMapping("/api/advisor/tool-changes/{requestId}")
+    public ResponseEntity<?> changeStatus(
+            @PathVariable String requestId, HttpServletRequest request) {
+        if (coordinator == null) return ResponseEntity.notFound().build();
+        Map<String, Object> status = coordinator.status(account(request).userId(), requestId);
+        return status == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(status);
+    }
+
     private void applyToolChanges(String ownerUserId, List<String> toolIds, List<String> serverIds)
             throws SQLException, IOException {
+        applyToolChanges(ownerUserId, toolIds, serverIds, null);
+    }
+
+    private void applyToolChanges(
+            String ownerUserId, List<String> toolIds, List<String> serverIds, String requestId)
+            throws SQLException, IOException {
         if (coordinator != null) {
-            coordinator.applyChanges(ownerUserId, null, toolIds, serverIds);
+            coordinator.applyChanges(ownerUserId, requestId, toolIds, serverIds);
         } else if (provisioner != null) {
             for (AgentStore.AgentRow agent : agents.list()) {
                 provisioner.register(agent);
